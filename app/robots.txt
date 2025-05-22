@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /crm
+Disallow: /admin
+
+User-agent: *
+Allow: /
+
+Sitemap: https://trpe.ae/sitemap.xml
