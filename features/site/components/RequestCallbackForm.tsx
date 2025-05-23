@@ -43,7 +43,7 @@ interface RequestCallBackProps {
 
 function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : RequestCallBackProps) {
     const mutation = useCallbackRequest()
-
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [formSubmitted, setFormSubmitted] = useState(false)
 
     const form = useForm<FormValues>({
@@ -90,7 +90,7 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
 
 
     const onSubmit = (values: FormValues) => {
-
+        setIsSubmitting(true)
 
         mutation.mutate(values, {
             onSuccess: (data) => {
@@ -98,6 +98,9 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
                 form.reset()
                 handleFormSubmitted()
                 setFormSubmitted(true)
+            },
+            onError: () => {
+                setIsSubmitting(false)
             }
         })
     }
@@ -173,8 +176,8 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
                 <div className="flex justify-end  py-4 ">
                     <Button
                         type={'submit'}
-                        loading={mutation.isPending}
-                        disabled={mutation.isPending || formSubmitted}
+                        loading={isSubmitting}
+                        disabled={isSubmitting || formSubmitted}
                         className="w-40 py-2 ">
                         Submit
                     </Button>

@@ -32,6 +32,7 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [file, setFile] = useState<File | undefined>(undefined);
     const [hasDefaultImage, setHasDefaultImage] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { edgestore } = useEdgeStore();
     const mutation = useUpdateCommunity(community.id);
 
@@ -68,10 +69,15 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
     };
 
     const onSubmit = (values: formValues) => {
+        setIsSubmitting(true);
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false);
                 form.reset();
+                setIsSubmitting(false);
+            },
+            onError: () => {
+                setIsSubmitting(false);
             }
         });
     };
@@ -213,7 +219,7 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={mutation.isPending}
+                                    disabled={isSubmitting}
                                     className="btn btn-primary"
                                 >
                                     Save

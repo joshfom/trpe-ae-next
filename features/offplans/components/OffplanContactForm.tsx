@@ -39,6 +39,7 @@ interface OffplanContactFormProps {
 
 function OffplanContactForm({requestType = 'Floor plans', projectName, submissionComplete}: OffplanContactFormProps) {
     const [formSubmitted, setFormSubmitted] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const mutation = useSubmitForm()
 
     const form = useForm<FormValues>({
@@ -82,6 +83,7 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
     }
 
     const onSubmit = (values: FormValues) => {
+        setIsSubmitting(true)
 
         mutation.mutate(values, {
             onSuccess: (data) => {
@@ -89,6 +91,9 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
                 form.reset()
                 submissionComplete()
                 setFormSubmitted(true)
+            },
+            onError: () => {
+                setIsSubmitting(false)
             }
         })
     }
@@ -158,8 +163,8 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
                 <div className="flex justify-end col-span-1 lg:col-span-2 ">
                     <Button
                         type={'submit'}
-                        loading={mutation.isPending}
-                        disabled={mutation.isPending || formSubmitted}
+                        loading={isSubmitting}
+                        disabled={isSubmitting || formSubmitted}
                         className="px-8 py-2 bg-transparent hover:bg-white hover:text-black border border-white">
                         Download {requestType}
                     </Button>

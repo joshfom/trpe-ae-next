@@ -1,33 +1,74 @@
-import {InferRequestType, InferResponseType} from "hono";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+"use client";
 
+import {InferRequestType, InferResponseType} from "hono";
 import {client} from "@/lib/hono"
 import {toast} from "sonner";
+import { useState } from "react";
+import { addAgentAction, RequestData } from "@/actions/admin/add-agent-action";
 
 type ResponseType = InferResponseType<typeof client.api.admin.agents.$post>
 type RequestType = InferRequestType<typeof client.api.admin.agents.$post>["json"]
 
+interface ActionResult {
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
+/**
+ * React hook to add a new agent via server action
+ * This hook mimics the React Query useMutation API to maintain compatibility
+ */
 export const useAddAgent = () => {
-    const queryClient = useQueryClient()
-
-    return useMutation<
-        ResponseType,
-        Error,
-        RequestType
-    >({
-        mutationFn: async (json) => {
-            const response = await client.api.admin.agents.$post({json})
-            return response.json()
-        },
-
-        onSuccess: () => {
-            toast.success('Agent added successfully')
-            queryClient.invalidateQueries({queryKey: ["agents"]})
-        },
-
-        onError: () => {
-            toast.error('An error occurred while updating agent')
+    const [isPending, setIsPending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<any>(null);
+    
+    const mutate = async (agentData: RequestData, options?: { 
+        onSuccess?: (data: any) => void,
+        onError?: (error: Error) => void 
+    }) => {
+        try {
+            setIsPending(true);
+            setIsError(false);
+            setIsSuccess(false);
+            
+            const result = await addAgentAction(agentData);
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to add agent");
+            }
+            
+            setData(result.data || {});
+            setIsSuccess(true);
+            toast.success('Agent added successfully');
+            
+            if (options?.onSuccess && result.data) {
+                options.onSuccess(result.data);
+            }
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            setIsError(true);
+            toast.error('An error occurred while adding agent');
+            
+            if (options?.onError) {
+                options.onError(errorObj);
+            }
+        } finally {
+            setIsPending(false);
         }
-
-    })
+    };
+    
+    return {
+        mutate,
+        isLoading: isPending,
+        isPending,
+        isSuccess,
+        isError,
+        error,
+        data
+    };
 }

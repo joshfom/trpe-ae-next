@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
@@ -26,6 +26,7 @@ type formValues = z.infer<typeof formSchema>
 function AdminDeveloperCard({agent}: AdminAgentCardProps) {
     const [isOpen, setIsOpen] = React.useState(false);
     const [file, setFile] = React.useState<File | undefined>(undefined);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const { edgestore } = useEdgeStore();
 
     const mutation = useUpdateAgent(agent.id)
@@ -62,10 +63,15 @@ function AdminDeveloperCard({agent}: AdminAgentCardProps) {
     }
 
     const onSubmit = (values: formValues) => {
+        setIsSubmitting(true)
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false)
                 form.reset()
+                setIsSubmitting(false)
+            },
+            onError: () => {
+                setIsSubmitting(false)
             }
         })
     }
@@ -204,7 +210,7 @@ function AdminDeveloperCard({agent}: AdminAgentCardProps) {
                                     </Button>
                                     <Button
                                         type={'submit'}
-                                        loading={mutation.isPending}
+                                        loading={isSubmitting}
                                         className={'btn btn-primary'}>
                                         Save
                                     </Button>

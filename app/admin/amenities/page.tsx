@@ -2,11 +2,18 @@
 import Link from "next/link";
 import {useGetAdminAmenities} from "@/features/admin/amenity/api/use-get-admin-amenities";
 
+// Define the Amenity interface if not already imported
+interface Amenity {
+    id: string;
+    name: string;
+    icon: string;
+    // Add other properties as needed
+}
 
 function AdminPropertyPage() {
 
     const amenityQuery = useGetAdminAmenities()
-    const amenities = amenityQuery.data
+    const amenities = amenityQuery.data as Amenity[] | null
 
 
     return (

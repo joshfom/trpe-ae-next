@@ -1,5 +1,4 @@
 "use server"
-import {client} from "@/lib/hono";
 
 /**
  * Server action to fetch properties by offering type with pagination
@@ -22,7 +21,7 @@ export async function getPropertiesByOfferingTypeAction(
     }
 ) {
     try {
-        // Convert queryParams values to strings (same pattern as searchPropertiesAction)
+        // Convert queryParams values to strings
         const stringifiedQueryParams: Record<string, string> = {};
         
         if (queryParams) {
@@ -36,18 +35,17 @@ export async function getPropertiesByOfferingTypeAction(
         // Add page parameter
         stringifiedQueryParams.page = pageParam.toString();
         
-        const response = await client.api.properties.offer[':offeringTypeId'].$get({
-            param: {
-                offeringTypeId,
-            },
-            query: stringifiedQueryParams
-        });
-
+        // Build URL with query parameters
+        const queryString = new URLSearchParams(stringifiedQueryParams).toString();
+        const url = `/api/properties/offer/${offeringTypeId}?${queryString}`;
+        
+        const response = await fetch(url);
+        
         if (!response.ok) {
             console.error('An error occurred while fetching properties by offering type');
             throw new Error('An error occurred while fetching properties by offering type');
         }
-
+        
         const {data} = await response.json();
         
         return {

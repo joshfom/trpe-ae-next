@@ -4,11 +4,19 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getAdminAmenities } from "@/actions/admin/get-admin-amenities-action";
 
+// Define the Amenity type
+interface Amenity {
+    id: string;
+    name: string;
+    icon: string;
+    // Add other properties as needed
+}
+
 export const useGetAdminAmenities = () => {
-    const [data, setData] = useState(null);
+    const [data, setData] = useState<Amenity[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | null>(null);
 
     const fetchData = async () => {
         try {
@@ -21,10 +29,11 @@ export const useGetAdminAmenities = () => {
                 throw new Error(result.error || "Failed to fetch amenities");
             }
             
-            setData(result.data);
+            // Type assertion to ensure the data matches our Amenity[] type
+            setData(result.data as Amenity[]);
         } catch (err) {
             setIsError(true);
-            setError(err);
+            setError(err instanceof Error ? err : new Error(String(err)));
             toast.error('An error occurred while fetching amenities');
             console.error("Fetch error:", err);
         } finally {

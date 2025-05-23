@@ -35,6 +35,7 @@ type FormValues = z.infer<typeof FormSchema>
 
 function ContactForm() {
     const [formSubmitted, setFormSubmitted] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const mutation = useSubmitForm()
 
     const route = useRouter()
@@ -85,13 +86,16 @@ const form = useForm<FormValues>({
     const formErrors = form.formState.errors
 
     const onSubmit = (values: FormValues) => {
-
+        setIsSubmitting(true)
 
         mutation.mutate(values, {
             onSuccess: (data) => {
                 sendBitrix(values)
                 form.reset()
                 setFormSubmitted(true)
+            },
+            onError: () => {
+                setIsSubmitting(false)
             }
         })
     }
@@ -195,8 +199,8 @@ const form = useForm<FormValues>({
                 <div className="flex justify-end col-span-1 lg:col-span-2 ">
                     <Button
                         type={'submit'}
-                        loading={mutation.isPending}
-                        disabled={mutation.isPending || formSubmitted}
+                        loading={isSubmitting}
+                        disabled={isSubmitting || formSubmitted}
                         className="w-40 py-2">
                         Submit
                     </Button>

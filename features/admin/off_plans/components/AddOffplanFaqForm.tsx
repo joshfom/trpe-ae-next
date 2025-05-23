@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useState } from 'react';
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -23,7 +23,7 @@ interface AddOffplanFaqFormProps {
 }
 
 function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
-
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const mutation = useAddOffplanFaq(offplanId)
 
@@ -38,10 +38,15 @@ function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
 
 
     const onSubmit = (values: formValues) => {
+        setIsSubmitting(true)
         mutation.mutate(values, {
             onSuccess: () => {
                 form.reset()
                 offplanAdded()
+                setIsSubmitting(false)
+            },
+            onError: () => {
+                setIsSubmitting(false)
             }
         })
     }
@@ -94,13 +99,13 @@ function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
                         type={'button'}
                         onClick={offplanAdded}
                         variant={'destructive'}
-                        loading={mutation.isPending}
+                        disabled={isSubmitting}
                         className={'btn btn-primary w-40'}>
                         Cancel
                     </Button>
                     <Button
                         type={'submit'}
-                        loading={mutation.isPending}
+                        loading={isSubmitting}
                         className={'btn btn-primary w-40'}>
                         Save FAQ
                     </Button>

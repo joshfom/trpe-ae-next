@@ -20,6 +20,19 @@ import {CommunityFormSchema} from "@/features/admin/community/form-schema/commun
 // Define the form values type
 type formValues = z.infer<typeof CommunityFormSchema>;
 
+interface City {
+    id: string;
+    name: string | null;
+    country?: string;
+}
+
+interface Community {
+    id: string;
+    name: string;
+    slug?: string;
+    cityId?: string;
+}
+
 type CityOption = {
     label: string;
     value: string;
@@ -29,6 +42,7 @@ function CommunitySettingPage() {
     const communityQuery = useGetAdminCommunities();
     const [showAddCommunity, setAddCommunity] = useState(false);
     const [allCities, setAllCities] = useState<CityOption[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const cityQuery = useGetAdminCities();
     const mutation = useAddCommunity();
 
@@ -38,7 +52,7 @@ function CommunitySettingPage() {
     useEffect(() => {
         // Format form data for react select options label -> name value -> id
         if (cities) {
-            const formattedCities = cities.map((city) => {
+            const formattedCities = cities.map((city: City) => {
                 return {
                     label: city.name || '',
                     value: city.id
@@ -58,15 +72,18 @@ function CommunitySettingPage() {
     });
 
     const onSubmit = async (values: formValues) => {
+        setIsSubmitting(true);
         mutation.mutate(values, {
             onError: () => {
                 toast.error('An error occurred while updating community');
+                setIsSubmitting(false);
             },
 
             onSuccess: () => {
                 toast.success('Community updated successfully');
                 form.reset();
                 setAddCommunity(false);
+                setIsSubmitting(false);
             }
         });
 
@@ -100,7 +117,7 @@ function CommunitySettingPage() {
                     </TableHeader>
                     <TableBody>
                         {
-                            communities?.map((community) => (
+                            communities?.map((community: Community) => (
                                 <TableRow key={community.id}>
                                     <TableCell>{community.name}</TableCell>
                                     <TableCell>
@@ -165,7 +182,7 @@ function CommunitySettingPage() {
                                 <div className="flex w-full justify-end mt-6">
                                     <Button
                                         className={'rounded-md'}
-                                        loading={mutation.isPending}
+                                        loading={isSubmitting}
                                         type={'submit'}
                                     >
                                         Add Community

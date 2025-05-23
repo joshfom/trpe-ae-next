@@ -188,7 +188,7 @@ function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
                                 <div className="flex w-full justify-end mt-6">
                                     <Button
                                         className={'rounded-md'}
-                                        loading={mutation.isPending}
+                                        loading={isSubmitting}
                                         type={'submit'}
                                     >
                                         Add Sub Community

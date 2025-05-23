@@ -5,11 +5,23 @@ import { toast } from "sonner";
 import { getAdminLanguages } from "@/actions/admin/get-admin-languages-action";
 
 /**
+ * Define the Language interface based on the database schema
+ */
+export interface Language {
+    id: string;
+    name: string | null;
+    icon: string | null;
+    slug: string;
+    updatedAt: string | null;
+    createdAt: string;
+}
+
+/**
  * React hook to fetch admin languages via server action
  * This hook mimics the React Query useQuery API to maintain compatibility
  */
 export const useGetAdminLanguage = () => {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<Language[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -25,7 +37,7 @@ export const useGetAdminLanguage = () => {
                 throw new Error(result.error || "Failed to fetch languages");
             }
             
-            setData(result.data);
+            setData(result.data as Language[]);
         } catch (err) {
             setIsError(true);
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");

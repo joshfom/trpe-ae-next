@@ -5,7 +5,7 @@ import {useGetAdminAgents} from "@/features/admin/agent/api/use-get-admin-agents
 import AddAgentForm from "@/features/admin/agent/components/AddAgentForm";
 import {useState} from "react";
 import AddLanguageForm from "@/features/admin/language/components/AddLanguageForm";
-import {useGetAdminLanguage} from "@/features/admin/language/api/use-get-admin-language";
+import {useGetAdminLanguage, Language} from "@/features/admin/language/api/use-get-admin-language";
 
 
 function LanguagesPage() {
@@ -41,7 +41,7 @@ function LanguagesPage() {
                 languages &&
                 languages?.length > 0 && (
                     <div className="mt-6 grid grid-cols-8 gap-6">
-                        {languages.map((language) => (
+                        {languages.map((language: Language) => (
 
                             <div key={language.id} className="flex-flex">
                                 <img src={language.icon!} alt={language.name!} />

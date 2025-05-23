@@ -1,5 +1,5 @@
 "use client"
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useEdgeStore} from "@/db/edgestore";
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -32,6 +32,7 @@ function AddDeveloperForm({developer}: AddDeveloperFormProps) {
 
     const mutation = useAddDeveloper()
     const editDeveloperMutation = useUpdateDeveloper(developer?.id)
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const router = useRouter()
 
@@ -74,10 +75,14 @@ function AddDeveloperForm({developer}: AddDeveloperFormProps) {
     }
 
     const onSubmit = (values: formValues) => {
+       setIsSubmitting(true)
        if (isEditing) {
            editDeveloperMutation.mutate(values, {
                 onSuccess: () => {
                     router.push('/admin/developers')
+                },
+                onError: () => {
+                    setIsSubmitting(false)
                 }
            })
        } else {
@@ -85,6 +90,10 @@ function AddDeveloperForm({developer}: AddDeveloperFormProps) {
                onSuccess: () => {
                    form.reset()
                    setFile(undefined)
+                   setIsSubmitting(false)
+               },
+               onError: () => {
+                   setIsSubmitting(false)
                }
            })
        }
@@ -146,7 +155,7 @@ function AddDeveloperForm({developer}: AddDeveloperFormProps) {
                 <div className="flex justify-between pt-8 items-center space-x-4">
                     <Button
                         type={'submit'}
-                        loading={mutation.isPending}
+                        loading={isSubmitting}
                         className={'btn btn-primary w-40'}>
                         Post
                     </Button>
