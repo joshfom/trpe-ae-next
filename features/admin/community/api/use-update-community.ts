@@ -1,7 +1,10 @@
+"use client";
+
 import { InferResponseType, InferRequestType } from "hono";
-import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
 import { client } from "@/lib/hono";
 import { toast } from "sonner";
+import { useState } from "react";
+import { updateCommunity } from "@/actions/admin/update-community-action";
 
 /**
  * Type definitions for API response and request
@@ -10,129 +13,89 @@ type ResponseType = InferResponseType<typeof client.api.admin.communities[":comm
 type RequestType = InferRequestType<typeof client.api.admin.communities[":communityId"]["$patch"]>["json"];
 
 /**
- * Type for revalidation request
- */
-interface RevalidateRequest {
-    path: string;
-    tag: string;
-}
-
-/**
- * Type for cache keys to ensure consistency
- */
-type CacheKeys = {
-    all: ["adminCommunities"];
-    single: (id: string) => ["adminCommunity", string];
-};
-
-/**
- * Cache keys for React Query
- */
-const CACHE_KEYS: CacheKeys = {
-    all: ["adminCommunities"],
-    single: (id: string) => ["adminCommunity", id],
-};
-
-/**
- * Custom hook for updating a community and managing related cache
+ * Custom hook for updating a community
  *
  * This hook handles:
- * 1. Community data update through the API
- * 2. Next.js cache revalidation
- * 3. React Query cache invalidation
- * 4. Success/error notifications
+ * 1. Community data update through server action
+ * 2. Loading, success, and error states
+ * 3. Success/error notifications
  *
  * @param communityId - The ID of the community to update
- * @returns Mutation object for handling community updates
+ * @returns Object with mutation function and states
  *
  * @example
  * ```tsx
  * const UpdateCommunity = () => {
- *   const updateCommunity = useUpdateCommunity('123')
+ *   const { mutate, isPending } = useUpdateCommunity('123')
  *
  *   const handleSubmit = (formData: RequestType) => {
- *     updateCommunity.mutate(formData)
+ *     mutate(formData)
  *   }
  *
  *   return <form onSubmit={handleSubmit}>...</form>
  * }
  * ```
  */
-export const useUpdateCommunity = (
-    communityId?: string
-): UseMutationResult<ResponseType, Error, RequestType> => {
-    const queryClient = useQueryClient();
+export const useUpdateCommunity = (communityId?: string) => {
+    const [isPending, setIsPending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<ResponseType | null>(null);
 
-    /**
-     * Handles Next.js cache revalidation
-     */
-    const revalidateCache = async (id: string): Promise<void> => {
-        const revalidateData: RevalidateRequest = {
-            path: `/communities/${id}`,
-            tag: `community-${id}`
-        };
+    const mutate = async (formData: RequestType, options?: { 
+        onSuccess?: (data: ResponseType) => void, 
+        onError?: (error: Error) => void 
+    }) => {
+        if (!communityId) {
+            const error = new Error("Community ID is required");
+            setError(error);
+            setIsError(true);
+            toast.error(error.message);
+            if (options?.onError) options.onError(error);
+            return;
+        }
 
         try {
-            const revalidateResponse = await fetch('/api/revalidate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(revalidateData)
-            });
-
-            if (!revalidateResponse.ok) {
-                throw new Error('Revalidation failed');
+            setIsPending(true);
+            setIsError(false);
+            setIsSuccess(false);
+            
+            const result = await updateCommunity(communityId, formData);
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to update community");
             }
-        } catch (error) {
-            console.warn('Cache revalidation failed, but community was updated:', error);
+            
+            setData(result.data);
+            setIsSuccess(true);
+            toast.success("Community updated successfully");
+            
+            if (options?.onSuccess) {
+                options.onSuccess(result.data);
+            }
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            setIsError(true);
+            toast.error(errorObj.message || "An error occurred while updating community");
+            console.error("Update error:", err);
+            
+            if (options?.onError) {
+                options.onError(errorObj);
+            }
+        } finally {
+            setIsPending(false);
         }
     };
 
-    return useMutation<ResponseType, Error, RequestType>({
-        mutationFn: async (json: RequestType): Promise<ResponseType> => {
-            if (!communityId) {
-                throw new Error('Community ID is required');
-            }
-
-            // Update community through API
-            const response = await client.api.admin.communities[":communityId"]["$patch"]({
-                param: { communityId },
-                json
-            });
-
-            const data = await response.json() as ResponseType;
-
-            // Trigger Next.js cache revalidation
-            await revalidateCache(communityId);
-
-            return data;
-        },
-
-        onSuccess: (data: ResponseType) => {
-            toast.success('Community updated successfully');
-
-            // Invalidate cached queries
-            queryClient.invalidateQueries({
-                queryKey: CACHE_KEYS.all
-            });
-
-            if (communityId) {
-                queryClient.invalidateQueries({
-                    queryKey: CACHE_KEYS.single(communityId)
-                });
-
-                // Update cache immediately for better UX
-                queryClient.setQueryData(
-                    CACHE_KEYS.single(communityId),
-                    data
-                );
-            }
-        },
-
-        onError: (error: Error) => {
-            toast.error(error.message || 'An error occurred while updating community');
-            console.error('Update error:', error);
-        }
-    });
+    return {
+        mutate,
+        isPending,
+        isLoading: isPending, // For compatibility with React Query
+        isSuccess,
+        isError,
+        error,
+        data
+    };
 };

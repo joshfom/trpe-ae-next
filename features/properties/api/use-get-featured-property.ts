@@ -1,42 +1,59 @@
-import {useQuery} from "@tanstack/react-query";
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
-import {useSearchParams} from "next/navigation";
+"use client"
+// This file now re-exports the client-side function to maintain backward compatibility
+// while transitioning away from React Query
 
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { getClientFeaturedProperty } from './get-client-featured-property';
 
-export const useGetFeaturedProperty = (
-    offeringTypeId:string
-) => {
-
+export const useGetFeaturedProperty = (offeringTypeId: string) => {
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
+    
     const params = useSearchParams();
     const limit = params.get('limit') || '1';
-
-    return useQuery({
-        enabled: !!offeringTypeId,
-        queryKey: ["featured_property", {
-            offeringTypeId
-        }],
-
-        queryFn: async () => {
-            const response = await client.api.featured.properties[":offeringTypeId"].$get({
-                param: {
-                    offeringTypeId,
-                },
-                query: {
-                    limit
-                }
-            });
-
-
-
-            if (!response.ok) {
-                toast.error('An error occurred while fetching properties')
-                throw new Error('An error occurred while fetching properties')
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!offeringTypeId) {
+                setIsLoading(false);
+                return;
             }
-
-            const {data} = await response.json()
-
-            return data
-        },
-    })
-}
+            
+            setIsLoading(true);
+            try {
+                const result = await getClientFeaturedProperty(offeringTypeId, limit);
+                setData(result);
+                setError(null);
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchData();
+    }, [offeringTypeId, limit]);
+    
+    return {
+        data,
+        isLoading,
+        error,
+        isError: !!error,
+        refetch: async () => {
+            setIsLoading(true);
+            try {
+                const result = await getClientFeaturedProperty(offeringTypeId, limit);
+                setData(result);
+                setError(null);
+                return result;
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+                throw err;
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    };
+};

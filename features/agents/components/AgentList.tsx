@@ -1,12 +1,43 @@
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from "next/link";
-import {useGetAgents} from "@/features/agents/api/use-get-agents";
 import {Skeleton} from "@/components/ui/skeleton";
+import { getAgentsAction } from "@/actions/agents/get-agents-action";
+import { toast } from "sonner";
+
+// Define Agent interface
+interface Agent {
+    id: string;
+    firstName: string;
+    lastName: string;
+    slug: string;
+    avatarUrl?: string;
+}
 
 function AgentList() {
+    const [agents, setAgents] = useState<Agent[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const {data: agents, isLoading} = useGetAgents()
+    useEffect(() => {
+        const fetchAgents = async () => {
+            setIsLoading(true);
+            try {
+                const result = await getAgentsAction();
+                if (result.success) {
+                    setAgents(result.data);
+                } else {
+                    toast.error(result.error || 'Failed to fetch agents');
+                }
+            } catch (error) {
+                toast.error('An error occurred while fetching agents');
+                console.error(error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchAgents();
+    }, []);
 
     return (
         <div className="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

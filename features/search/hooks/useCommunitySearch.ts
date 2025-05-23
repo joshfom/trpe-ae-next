@@ -1,6 +1,7 @@
-import { useState } from 'react';
+"use client"
+import { useState, useEffect } from 'react';
 import { CommunityFilterType } from '@/features/search/types/property-search.types';
-import Fuse from 'fuse.js';
+import { searchClientCommunities } from './search-client-communities';
 
 interface UseCommunitySearchProps {
     communities: CommunityFilterType[];
@@ -8,36 +9,25 @@ interface UseCommunitySearchProps {
 }
 
 export const useCommunitySearch = ({ communities, searchInput }: UseCommunitySearchProps) => {
+    const [results, setResults] = useState<CommunityFilterType[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Since we're working with prefetched data, we can perform the search synchronously
-    const performSearch = (): CommunityFilterType[] => {
-        // If search input is empty, return all communities
-        if (!searchInput.trim()) {
-            return communities;
-        }
+    useEffect(() => {
+        const performSearch = async () => {
+            setLoading(true);
+            try {
+                const searchResults = await searchClientCommunities(communities, searchInput);
+                setResults(searchResults);
+            } catch (error) {
+                console.error('Error searching communities:', error);
+                setResults([]);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-        // Create a new Fuse instance with our search configuration
-        const fuse = new Fuse(communities, {
-            keys: ['name', 'shortName'],
-            threshold: 0.3, // Adjust this value to control search sensitivity
-            includeScore: true
-        });
+        performSearch();
+    }, [communities, searchInput]);
 
-        // Perform the search and return the results
-        const searchResults = fuse.search(searchInput);
-        return searchResults.map(result => result.item);
-    };
-
-    // Execute the search immediately
-    try {
-        setLoading(true);
-        const results = performSearch();
-        setLoading(false);
-        return { results, loading };
-    } catch (error) {
-        console.error('Error searching communities:', error);
-        setLoading(false);
-        return { results: [], loading };
-    }
+    return { results, loading };
 };

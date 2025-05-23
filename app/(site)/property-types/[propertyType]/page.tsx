@@ -7,7 +7,7 @@ import {db} from "@/db/drizzle";
 import {propertyTypeTable} from "@/db/schema/property-type-table";
 import {notFound} from "next/navigation";
 import {TipTapView} from "@/components/TiptapView";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";

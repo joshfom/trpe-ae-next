@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from "next/link";
 import Image from "next/image";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {redirect} from "next/navigation";
 export const fetchCache = 'force-no-store';
 interface CrmLayoutProps {

@@ -1,25 +1,50 @@
-import {useQuery} from "@tanstack/react-query";
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+"use client"
+// This file now re-exports the client-side function to maintain backward compatibility
+// while transitioning away from React Query
 
+import { useState, useEffect } from "react";
+import { getClientPropertyType } from './get-client-property-type';
 
 export const useGetPropertyType = () => {
-    return useQuery({
-        queryKey: ["unitType"],
-        queryFn: async () => {
-            const response = await client.api.unit_types.$get();
-
-
-            if (!response.ok) {
-                throw new Error('An error occurred while fetching types')
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const result = await getClientPropertyType();
+                setData(result);
+                setError(null);
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+            } finally {
+                setIsLoading(false);
             }
-
-            const {data} = await response.json()
-
-
-            return {
-                data
+        };
+        
+        fetchData();
+    }, []);
+    
+    return {
+        data,
+        isLoading,
+        error,
+        isError: !!error,
+        refetch: async () => {
+            setIsLoading(true);
+            try {
+                const result = await getClientPropertyType();
+                setData(result);
+                setError(null);
+                return result;
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+                throw err;
+            } finally {
+                setIsLoading(false);
             }
-        },
-    })
-}
+        }
+    };
+};

@@ -1,5 +1,5 @@
 import React from 'react';
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {redirect} from "next/navigation";
 import SiteTopNavigation from "@/components/site-top-navigation";
 import FooterMenuSection from "@/features/site/components/FooterMenuSection";

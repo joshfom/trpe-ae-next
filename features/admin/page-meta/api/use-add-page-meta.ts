@@ -1,61 +1,42 @@
-import {InferRequestType, InferResponseType} from "hono";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+"use client"
+// This file now provides a compatibility layer for useAddPageMeta 
+// while transitioning away from React Query
 
-import {client} from "@/lib/hono"
-import {toast} from "sonner";
+import {InferRequestType, InferResponseType} from "hono";
+import {client} from "@/lib/hono";
+import {useState} from "react";
+import {addClientPageMeta} from "./add-client-page-meta";
 
 type ResponseType = InferResponseType<typeof client.api.admin["page-meta"]["new"]["$post"]>
 type RequestType = InferRequestType<typeof client.api.admin["page-meta"]["new"]["$post"]>["json"]
 
 export const useAddPageMeta = () => {
-    const queryClient = useQueryClient()
-
-    return useMutation<
-        ResponseType,
-        Error,
-        RequestType
-    >({
-       mutationFn: async (json) => {
-                        try {
-
-                            const response = await client.api.admin["page-meta"]["new"].$post({json})
-
-                            console.log('Response status:', response);
-                            if (!response.ok) {
-                                const errorData = await response.json();
-                                console.error('API error response:', errorData);
-                                throw new Error(JSON.stringify(errorData));
-                            }
-
-                            return await response.json();
-                        } catch (error) {
-                            console.log('API request failed:', error);
-                            // Re-throw the error to properly handle it in onError
-                            throw error;
-                        }
-                    },
-
-        onSuccess: (data) => {
-            console.log('Page meta added successfully:', data);
-            toast.success('Page meta added successfully')
-            queryClient.invalidateQueries({queryKey: ["admin-page-meta"]})
-        },
-
-        onError: (error) => {
-            console.error('Error in mutation:', error);
-            if (error instanceof Error) {
-                try {
-                    const errorData = JSON.parse(error.message);
-                    if (errorData.error) {
-                        toast.error(errorData.error);
-                        return;
-                    }
-                } catch (e) {
-                    // Not a JSON error
-                }
-            }
-            toast.error('An error occurred while updating page Meta')
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    
+    const mutate = async (json: RequestType) => {
+        setIsLoading(true);
+        try {
+            const result = await addClientPageMeta(json, (data) => {
+                // This is equivalent to the onSuccess callback in the original code
+                console.log('Page meta added successfully:', data);
+                // Note: invalidation of queries is no longer needed with server actions
+            });
+            setError(null);
+            return result;
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+            console.error('Error in mutation:', err);
+            throw err;
+        } finally {
+            setIsLoading(false);
         }
-
-    })
+    };
+    
+    return {
+        mutate,
+        isLoading,
+        error,
+        isError: !!error
+    };
 }

@@ -1,22 +1,25 @@
-import {useQuery} from "@tanstack/react-query";
+"use client"
+// This file now re-exports the client-side function to maintain backward compatibility
+// while transitioning away from React Query
 
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+import { getClientCommunities } from './get-client-communities';
 
+// For backward compatibility, we provide a dummy hook that logs a deprecation warning
+// This helps identify any places still using the old hook pattern
 export const useGetCommunities = () => {
-    return useQuery({
-        queryKey: ["communities"],
-        queryFn: async () => {
-            const response = await client.api.communities.list.$get()
+    console.warn('useGetCommunities is deprecated. Please use getClientCommunities instead.');
+    
+    return {
+        data: [],
+        isLoading: true,
+        error: null,
+        isError: false,
+        refetch: async () => {
+            console.warn('useGetCommunities.refetch is deprecated. Please use getClientCommunities instead.');
+            return await getClientCommunities();
+        }
+    };
+};
 
-            if (!response.ok) {
-                toast.error('An error occurred while fetching communities')
-                throw new Error('An error occurred while fetching communities')
-            }
-
-            const {communities} = await response.json()
-
-            return communities
-        },
-    })
-}
+// Export the client-side function for direct usage
+export { getClientCommunities };

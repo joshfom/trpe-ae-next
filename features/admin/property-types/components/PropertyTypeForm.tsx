@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useState } from 'react';
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
@@ -11,8 +11,9 @@ import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {Textarea} from "@/components/ui/textarea";
-import {useUpdatePropertyType} from "@/features/admin/property-types/api/use-update-property-type";
 import {TipTapEditor} from "@/components/TiptapEditor";
+import { updatePropertyTypeAction } from "@/actions/admin/update-property-type-action";
+import { toast } from "sonner";
 
 interface PropertyTypeFormProps {
     propertyType?: UnitType
@@ -20,8 +21,7 @@ interface PropertyTypeFormProps {
 }
 
 function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
-
-    console.log('propertyType', propertyType)
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<PropertyTypeFormValues>({
         resolver: zodResolver(PropertyTypeFormSchema),
@@ -41,10 +41,29 @@ function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
         values: propertyType,
     });
 
-    const updateMutation = useUpdatePropertyType(propertyType?.id)
-
     const onSubmit = async (values: PropertyTypeFormValues) => {
-        await updateMutation.mutateAsync(values);
+        if (!propertyType?.id) {
+            toast.error("Property Type ID is required");
+            return;
+        }
+        
+        setIsSubmitting(true);
+        try {
+            const result = await updatePropertyTypeAction(propertyType.id, values);
+            if (result.success) {
+                toast.success("Property type updated successfully");
+                if (onSuccess) {
+                    onSuccess();
+                }
+            } else {
+                toast.error(result.error || "Failed to update property type");
+            }
+        } catch (error) {
+            toast.error("An error occurred while updating property type");
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -208,7 +227,7 @@ function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
                 <div className="mt-6 flex justify-end space-x-4">
                     <Button 
                         type="submit" 
-                       loading={updateMutation.isPending}
+                        disabled={isSubmitting}
                     >
                         Save Changes
                     </Button>

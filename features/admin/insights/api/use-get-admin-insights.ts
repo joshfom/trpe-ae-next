@@ -1,6 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
+"use client";
+
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { getAdminInsights } from "@/actions/admin/get-admin-insights-action";
 
 interface InsightsParams {
   search?: string;
@@ -8,27 +10,54 @@ interface InsightsParams {
   limit?: number;
 }
 
+/**
+ * React hook to fetch admin insights via server action
+ * This hook mimics the React Query useQuery API to maintain compatibility
+ */
 export const useGetAdminInsights = (params: InsightsParams = {}) => {
     const { search = '', page = 1, limit = 9 } = params;
-    
-    return useQuery({
-        queryKey: ["admin-insights", search, page, limit],
-        queryFn: async () => {
-            const response = await client.api.admin['insights'].$get({
-                query: {
-                    search,
-                    page: page.toString(),
-                    limit: limit.toString()
-                }
-            });
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
 
-            if (!response.ok) {
-                toast.error('An error occurred while fetching insights')
-                throw new Error('An error occurred while fetching insights')
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            setIsError(false);
+            
+            const result = await getAdminInsights({ search, page, limit });
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to fetch insights");
             }
+            
+            setData(result.data);
+        } catch (err) {
+            setIsError(true);
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            toast.error('An error occurred while fetching insights');
+            console.error("Fetch error:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-            const data = await response.json();
-            return data;
-        },
-    })
+    // Refetch function that can be called manually
+    const refetch = () => {
+        fetchData();
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [search, page, limit]); // Re-fetch when search, page, or limit changes
+
+    return {
+        data,
+        isLoading,
+        isError,
+        error,
+        refetch
+    };
 }

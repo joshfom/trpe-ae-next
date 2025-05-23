@@ -2,7 +2,7 @@
 import {Metadata} from "next";
 import {redirect} from "next/navigation";
 import LoginForm from "@/app/(auth)/_components/LoginForm";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 
 export const metadata: Metadata = {
     title: "Login - TRPE",

@@ -1,21 +1,13 @@
 "use client"
-import React, {useState} from 'react';
+import React from 'react';
 import TopNavigation from "@/components/top-navigation";
 import Link from "next/link";
-import {usePathname, useRouter} from 'next/navigation'
-import {toast} from "sonner";
-import {useCurrencyStore} from "@/hooks/use-currency-store";
-import {useUnitStore} from "@/hooks/use-unit-store";
-import { Phone } from 'lucide-react';
+import {usePathname} from 'next/navigation'
+import {Phone} from 'lucide-react';
 
 function SiteTopNavigation() {
     const [scroll, setScroll] = React.useState(0)
     const [isHomePage, setIsHomePage] = React.useState(false)
-    const [active, setActive] = useState<string | null>(null);
-    const {unit, setUnit} = useUnitStore();
-    const {currency, setCurrency} = useCurrencyStore();
-
-
     // check if user scrolled is more than 5px
     const pathname = usePathname()
 
@@ -62,7 +54,6 @@ function SiteTopNavigation() {
                                     <img
                                         src={'/trpe-logo.webp'} alt="TRPE Logo" 
                                         width={213} height={40}
-                                        style={{width: '213px', height: '40px'}}
                                     />
                                 </Link>
                             </div>

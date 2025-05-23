@@ -1,33 +1,64 @@
-import {InferRequestType, InferResponseType} from "hono";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+"use client";
 
-import {client} from "@/lib/hono"
-import {toast} from "sonner";
+import { InferRequestType, InferResponseType } from "hono";
+import { useState } from "react";
+import { toast } from "sonner";
+import { client } from "@/lib/hono";
+import { addAuthor } from "@/actions/admin/add-author-action";
 
 type ResponseType = InferResponseType<typeof client.api.admin.authors.$post>
 type RequestType = InferRequestType<typeof client.api.admin.authors.$post>["json"]
 
 export const useAddAuthor = () => {
-    const queryClient = useQueryClient()
-
-    return useMutation<
-        ResponseType,
-        Error,
-        RequestType
-    >({
-        mutationFn: async (json) => {
-            const response = await client.api.admin.authors.$post({json})
-            return response.json()
-        },
-
-        onSuccess: () => {
-            toast.success('Agent added successfully')
-            queryClient.invalidateQueries({queryKey: ["authors"]})
-        },
-
-        onError: () => {
-            toast.error('An error occurred while updating agent')
+    const [isPending, setIsPending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<ResponseType | null>(null);
+    
+    const mutate = async (authorData: RequestType, options?: { 
+        onSuccess?: (data: ResponseType) => void,
+        onError?: (error: Error) => void 
+    }) => {
+        try {
+            setIsPending(true);
+            setIsError(false);
+            setIsSuccess(false);
+            
+            const result = await addAuthor(authorData);
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to add author");
+            }
+            
+            setData(result.data);
+            setIsSuccess(true);
+            toast.success('Author added successfully');
+            
+            if (options?.onSuccess) {
+                options.onSuccess(result.data);
+            }
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            setIsError(true);
+            toast.error('An error occurred while adding author');
+            
+            if (options?.onError) {
+                options.onError(errorObj);
+            }
+        } finally {
+            setIsPending(false);
         }
-
-    })
+    };
+    
+    return {
+        mutate,
+        isPending,
+        isLoading: isPending,
+        isSuccess,
+        isError,
+        error,
+        data
+    };
 }

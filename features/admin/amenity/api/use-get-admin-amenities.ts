@@ -1,22 +1,51 @@
-import {useQuery} from "@tanstack/react-query";
+"use client";
 
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { getAdminAmenities } from "@/actions/admin/get-admin-amenities-action";
 
 export const useGetAdminAmenities = () => {
-    return useQuery({
-        queryKey: ["agents"],
-        queryFn: async () => {
-            const response = await client.api.admin.amenities.$get();
+    const [data, setData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState(null);
 
-            if (!response.ok) {
-                toast.error('An error occurred while fetching agents')
-                throw new Error('An error occurred while fetching agents')
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            setIsError(false);
+            
+            const result = await getAdminAmenities();
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to fetch amenities");
             }
+            
+            setData(result.data);
+        } catch (err) {
+            setIsError(true);
+            setError(err);
+            toast.error('An error occurred while fetching amenities');
+            console.error("Fetch error:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-            const {data} = await response.json()
+    // Refetch function that can be called manually
+    const refetch = () => {
+        fetchData();
+    };
 
-            return data
-        },
-    })
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    return {
+        data,
+        isLoading,
+        isError,
+        error,
+        refetch
+    };
 }

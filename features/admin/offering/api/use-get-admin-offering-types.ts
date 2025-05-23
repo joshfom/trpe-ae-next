@@ -1,22 +1,47 @@
-import {useQuery} from "@tanstack/react-query";
+"use client";
 
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { getAdminOfferingTypes } from "@/actions/admin/get-admin-offering-types-action";
 
+/**
+ * React hook to fetch admin offering types via server action
+ * This hook mimics the React Query useQuery API to maintain compatibility
+ */
 export const useGetAdminOfferingTypes = () => {
-    return useQuery({
-        queryKey: ["adminOfferingTypes"],
-        queryFn: async () => {
-            const response = await client.api.admin["offering-types"].$get();
-
-            if (!response.ok) {
-                toast.error('An error occurred while fetching Offering Type')
-                throw new Error('An error occurred while fetching Offering Type')
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            const result = await getAdminOfferingTypes();
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to fetch offering types");
             }
-
-            const {data} = await response.json()
-
-            return data
-        },
-    })
+            
+            setData(result.data);
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            toast.error('An error occurred while fetching Offering Type');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    useEffect(() => {
+        fetchData();
+    }, []);
+    
+    return {
+        data,
+        isLoading,
+        error,
+        refetch: fetchData
+    };
 }

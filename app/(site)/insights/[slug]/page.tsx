@@ -7,7 +7,7 @@ import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import SimilarInsights from "@/features/insights/components/SimilarInsights";
 import {TipTapView} from "@/components/TiptapView";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {EditInsightSheet} from "@/features/insights/components/EditInsightSheet";
 
 

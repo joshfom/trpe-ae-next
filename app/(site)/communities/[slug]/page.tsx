@@ -8,7 +8,7 @@ import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import {TipTapView} from "@/components/TiptapView";
 import Link from "next/link";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {EditCommunitySheet} from "@/features/community/components/EditCommunitySheet";
 
 interface ShowCommunityPageProps {

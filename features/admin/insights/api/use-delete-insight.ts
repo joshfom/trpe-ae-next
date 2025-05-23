@@ -1,42 +1,64 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
+"use client";
+
+import { useState } from "react";
 import { toast } from "sonner";
-import { s3Service } from "@/lib/s3Service";
+import { deleteInsight } from "@/actions/admin/delete-insight-action";
 
+/**
+ * React hook to delete an insight via server action
+ * This hook mimics the React Query useMutation API to maintain compatibility
+ */
 export const useDeleteInsight = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: async ({ slug, coverUrl }: { slug: string, coverUrl?: string }) => {
-            // First delete the insight from the database
-            const response = await client.api.admin.insights[":insightSlug"].$delete({
-                param: { insightSlug: slug }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to delete insight');
+    const [isPending, setIsPending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<any>(null);
+    
+    const mutate = async ({ slug, coverUrl }: { slug: string, coverUrl?: string }, options?: { 
+        onSuccess?: (data: any) => void,
+        onError?: (error: Error) => void 
+    }) => {
+        try {
+            setIsPending(true);
+            setIsError(false);
+            setIsSuccess(false);
+            
+            const result = await deleteInsight({ slug, coverUrl });
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to delete insight");
             }
-
-            // If there's a cover image, try to delete it from S3
-            // But don't fail the entire operation if S3 deletion fails
-            if (coverUrl) {
-                try {
-                    await s3Service.deleteFile(coverUrl);
-                } catch (error) {
-                    console.error('Error deleting image from S3:', error);
-                    // Don't throw here, as the insight is already deleted from the database
-                }
-            }
-
-            return await response.json();
-        },
-        onSuccess: () => {
+            
+            setData(result.data || {});
+            setIsSuccess(true);
             toast.success('Insight deleted successfully');
-            queryClient.invalidateQueries({ queryKey: ["admin-insights"] });
-        },
-        onError: (error) => {
-            console.error('Error deleting insight:', error);
+            
+            if (options?.onSuccess && result.data) {
+                options.onSuccess(result.data);
+            }
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            setIsError(true);
             toast.error('An error occurred while deleting the insight');
+            console.error('Error deleting insight:', err);
+            
+            if (options?.onError) {
+                options.onError(errorObj);
+            }
+        } finally {
+            setIsPending(false);
         }
-    });
+    };
+    
+    return {
+        mutate,
+        isPending,
+        isLoading: isPending,
+        isSuccess,
+        isError,
+        error,
+        data
+    };
 };

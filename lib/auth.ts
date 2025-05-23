@@ -117,3 +117,12 @@ export async function getServerSession() {
     return null;
   }
 }
+
+// DEPRECATED: This is a wrapper around the new auth-session validateRequest function
+// to maintain backward compatibility with existing code
+export async function validateRequest() {
+  console.error("DEPRECATED: import {validateRequest} from '@/lib/auth' is deprecated - please import {validateRequest} from '@/actions/auth-session' instead");
+  
+  const { validateRequest: newValidateRequest } = await import("@/actions/auth-session");
+  return newValidateRequest();
+}

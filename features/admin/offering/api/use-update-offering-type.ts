@@ -1,7 +1,10 @@
+"use client";
+
 import { InferResponseType, InferRequestType } from "hono";
-import { useMutation, useQueryClient, UseMutationResult } from "@tanstack/react-query";
-import { client } from "@/lib/hono";
+import { useState } from "react";
 import { toast } from "sonner";
+import { client } from "@/lib/hono";
+import { updateOfferingType } from "@/actions/admin/update-offering-type-action";
 
 /**
  * Type definitions for API response and request
@@ -10,91 +13,65 @@ type ResponseType = InferResponseType<typeof client.api.admin["offering-types"][
 type RequestType = InferRequestType<typeof client.api.admin["offering-types"][":offeringTypeId"]["update"]["$patch"]>["json"];
 
 /**
- * Type for revalidation request
+ * Custom hook for updating an offering type via server action
+ * This hook mimics the React Query useMutation API to maintain compatibility
+ *
+ * @param offeringTypeId - The ID of the offering type to update
  */
-interface RevalidateRequest {
-    path: string;
-    tag: string;
-}
-
-/**
- * Type for cache keys to ensure consistency
- */
-type CacheKeys = {
-    all: ["offeringTypes"];
-    single: (id: string) => ["adminOfferingType", string];
-};
-
-/**
- * Cache keys for React Query
- */
-const CACHE_KEYS: CacheKeys = {
-    all: ["offeringTypes"],
-    single: (id: string) => ["adminOfferingType", id],
-};
-
-/**
- * Custom hook for updating a community and managing related cache
- *
- * This hook handles:
- * 1. Community data update through the API
- * 2. Next.js cache revalidation
- * 3. React Query cache invalidation
- * 4. Success/error notifications
- *
- * @param communityId - The ID of the community to update
- * @returns Mutation object for handling community updates
- *
- * @example
- * ```tsx
- * const UpdateCommunity = () => {
- *   const updateCommunity = useUpdateCommunity('123')
- *
- *   const handleSubmit = (formData: RequestType) => {
- *     updateCommunity.mutate(formData)
- *   }
- *
- *   return <form onSubmit={handleSubmit}>...</form>
- * }
- * ```
- */
-export const useUpdateOfferingType = (
-    offeringTypeId?: string
-): UseMutationResult<ResponseType, Error, RequestType> => {
-    const queryClient = useQueryClient();
-
-    /**
-     * Handles Next.js cache revalidation
-     */
-
-
-    return useMutation<ResponseType, Error, RequestType>({
-        mutationFn: async (json: RequestType): Promise<ResponseType> => {
+export const useUpdateOfferingType = (offeringTypeId?: string) => {
+    const [isPending, setIsPending] = useState(false);
+    const [isSuccess, setIsSuccess] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    const [data, setData] = useState<any>(null);
+    
+    const mutate = async (json: RequestType, options?: { 
+        onSuccess?: (data: any) => void,
+        onError?: (error: Error) => void 
+    }) => {
+        try {
             if (!offeringTypeId) {
-                throw new Error('Community ID is required');
+                throw new Error('Offering Type ID is required');
             }
-
-            // Update community through API
-            const response = await client.api.admin["offering-types"][":offeringTypeId"]["update"]["$patch"]({
-                param: { offeringTypeId },
-                json
-            });
-
-            const data = await response.json() as ResponseType;
-
-
-            return data;
-        },
-
-        onSuccess: (data: ResponseType) => {
+            
+            setIsPending(true);
+            setIsError(false);
+            setIsSuccess(false);
+            
+            const result = await updateOfferingType(offeringTypeId, json);
+            
+            if (!result.success) {
+                throw new Error(result.error || "Failed to update offering type");
+            }
+            
+            setData(result.data || {});
+            setIsSuccess(true);
             toast.success('Offering type updated successfully');
-
-
-        },
-
-        onError: (error: Error) => {
-            toast.error(error.message || 'An error occurred while updating community');
-            console.error('Update error:', error);
+            
+            if (options?.onSuccess && result.data) {
+                options.onSuccess(result.data);
+            }
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            setIsError(true);
+            toast.error(errorObj.message || 'An error occurred while updating offering type');
+            
+            if (options?.onError) {
+                options.onError(errorObj);
+            }
+        } finally {
+            setIsPending(false);
         }
-    });
+    };
+    
+    return {
+        mutate,
+        isPending,
+        isLoading: isPending,
+        isSuccess,
+        isError,
+        error,
+        data
+    };
 };

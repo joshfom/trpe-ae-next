@@ -6,7 +6,7 @@ import {Button} from "@/components/ui/button";
 import {Search, SlidersHorizontal, X} from "lucide-react";
 import ClickAwayListener from "@/lib/click-away-listener";
 import {useParams} from "next/navigation";
-import {useGetCommunities} from '@/features/community/api/use-get-communities';
+import {getClientCommunities} from '@/features/community/api/get-client-communities';
 import {useGetUnitType} from '@/features/search/hooks/use-get-unit-type';
 import Fuse from 'fuse.js';
 import Link from 'next/link';
@@ -65,9 +65,25 @@ function MobileSearch({
     setSelectedCommunities,
                           offeringType = 'for-sale'
                       }: MobileSearchProps) {
-    const communityQuery = useGetCommunities()
-    const communities = communityQuery.data || [] as unknown as CommunityFilterType[]
-    const isLoading = communityQuery.isLoading
+    const [communities, setCommunities] = useState<CommunityFilterType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Fetch communities on component mount
+    useEffect(() => {
+        const fetchCommunities = async () => {
+            setIsLoading(true);
+            try {
+                const communitiesData = await getClientCommunities();
+                setCommunities(communitiesData || []);
+            } catch (error) {
+                console.error('Error fetching communities:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchCommunities();
+    }, []);
 
     const searchedUnitTypeQuery = useGetUnitType(propertyType)
     const searchedUnitType = searchedUnitTypeQuery.data?.unitType

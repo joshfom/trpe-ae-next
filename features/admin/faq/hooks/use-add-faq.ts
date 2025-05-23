@@ -1,36 +1,37 @@
-import {InferRequestType, InferResponseType} from "hono";
-import {useMutation, useQueryClient} from "@tanstack/react-query";
+"use client"
+// This file now provides a compatibility layer for the useMutation pattern
+// while transitioning away from React Query
 
-import {client} from "@/lib/hono"
-import {toast} from "sonner";
+import { useState } from "react";
+import { InferRequestType, InferResponseType } from "hono";
+import { client } from "@/lib/hono";
+import { addClientFaq } from './add-client-faq';
 
-type ResponseType = InferResponseType<typeof client.api.admin.faqs[":target"]["faqs"][":targetId"]["new"]["$post"]>
-type RequestType = InferRequestType<typeof client.api.admin.faqs[":target"]["faqs"][":targetId"]["new"]["$post"]>["json"]
+type ResponseType = InferResponseType<typeof client.api.admin.faqs[":target"]["faqs"][":targetId"]["new"]["$post"]>;
+type RequestType = InferRequestType<typeof client.api.admin.faqs[":target"]["faqs"][":targetId"]["new"]["$post"]>["json"];
 
 export const useAddFaq = (targetId: string, target: string) => {
-    const queryClient = useQueryClient()
-
-    return useMutation<
-        ResponseType,
-        Error,
-        RequestType
-    >({
-        mutationFn: async (json) => {
-            const response = await client.api.admin.faqs[":target"]["faqs"][":targetId"]["new"].$post({
-                json,
-                param: {targetId, target}
-            })
-            return response.json()
-        },
-
-        onSuccess: () => {
-            toast.success('Faq added successfully')
-            queryClient.invalidateQueries({queryKey: ["admin-faqs", targetId]})
-        },
-
-        onError: (e) => {
-            toast.error('An error occurred while adding FAQ')
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    
+    const mutate = async (data: RequestType, options?: { onSuccess?: () => void }) => {
+        setIsLoading(true);
+        try {
+            const result = await addClientFaq(targetId, target, data, options?.onSuccess);
+            setError(null);
+            return result;
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+            throw err;
+        } finally {
+            setIsLoading(false);
         }
-
-    })
-}
+    };
+    
+    return {
+        mutate,
+        isLoading,
+        error,
+        isError: !!error
+    };
+};

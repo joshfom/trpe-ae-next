@@ -10,7 +10,7 @@ import ClickAwayListener from "@/lib/click-away-listener";
 import {Form} from "@/components/ui/form";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
-import {useGetCommunities} from '../community/api/use-get-communities';
+import {getClientCommunities} from '../community/api/get-client-communities';
 import Fuse from 'fuse.js';
 import {buildPropertySearchUrl} from './hooks/path-search-helper';
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
@@ -86,9 +86,25 @@ const CommunityItem: React.FC<CommunityItemProps> = ({
 
 function MainSearch({mode = 'general'}: MainSearchProps) {
 
-    const communityQuery = useGetCommunities()
-    const communities = communityQuery.data || [] as unknown as CommunityFilterType[]
+    const [communities, setCommunities] = useState<CommunityFilterType[]>([])
+    const [isLoading, setIsLoading] = useState(true)
 
+    // Fetch communities on component mount
+    useEffect(() => {
+        const fetchCommunities = async () => {
+            setIsLoading(true)
+            try {
+                const communitiesData = await getClientCommunities()
+                setCommunities(communitiesData || [])
+            } catch (error) {
+                console.error('Error fetching communities:', error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        
+        fetchCommunities()
+    }, [])
 
     const [showSearchDropdown, setShowSearchDropdown] = useState(false)
     const [isOpen, setIsOpen] = useState(false)

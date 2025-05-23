@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/db/migrations/0000_red_wolfsbane.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/0001_motionless_gamma_corps.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/0002_chubby_sunspot.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/0003_yielding_dexter_bennett.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/0004_high_turbo.sql" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/db/migrations/0005_huge_norrin_radd.sql" dialect="GenericSQL" />
+  </component>
+</project>

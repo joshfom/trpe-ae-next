@@ -1,9 +1,7 @@
 import {Hono} from "hono";
 import {handle} from "hono/vercel";
-import type {Session, User} from "lucia";
-import {getCookie} from "hono/cookie";
 import {csrf} from "hono/csrf";
-import {lucia} from "@/lib/auth";
+import {auth} from "@/lib/auth";
 import {HTTPException} from "hono/http-exception";
 import communities from "@/app/api/[[...route]]/communityRoute";
 import adminAgents from "@/app/api/[[...route]]/admin/adminAgentRoute";
@@ -37,34 +35,26 @@ export const runtime = "nodejs"
 
 const app = new Hono<{
     Variables: {
-        user: User | null;
-        session: Session | null;
-    };
+        user: typeof auth.$Infer.Session.user | null;
+        session: typeof auth.$Infer.Session.session | null
+    }
 }>().basePath("/api");
 
-app.use("/admin/*", async (c, next) => {
-    const sessionId = getCookie(c, lucia.sessionCookieName) ?? null;
-    if (!sessionId) {
-        c.set("user", null);
-        c.set("session", null);
+
+    app.use("admin/*", async (c, next) => {
+        const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+        if (!session) {
+            c.set("user", null);
+            c.set("session", null);
+            return next();
+        }
+
+        c.set("user", session.user);
+        c.set("session", session.session);
         return next();
-    }
-    const { session, user } = await lucia.validateSession(sessionId);
-    if (session && session.fresh) {
-        // use `header()` instead of `setCookie()` to avoid TS errors
-        c.header("Set-Cookie", lucia.createSessionCookie(session.id).serialize(), {
-            append: true
-        });
-    }
-    if (!session) {
-        c.header("Set-Cookie", lucia.createBlankSessionCookie().serialize(), {
-            append: true
-        });
-    }
-    c.set("user", user);
-    c.set("session", session);
-    return next();
-});
+    });
+
 
 app.onError((err, c) =>
 {

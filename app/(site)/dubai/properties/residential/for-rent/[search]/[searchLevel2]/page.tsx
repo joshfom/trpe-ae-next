@@ -11,7 +11,7 @@ import {propertyTypeTable} from "@/db/schema/property-type-table";
 import {propertyTable} from "@/db/schema/property-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";

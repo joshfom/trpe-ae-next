@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import {useGetCommunities} from '../community/api/use-get-communities';
+import {getClientCommunities} from '../community/api/get-client-communities';
 import Fuse from 'fuse.js';
 import {buildPropertySearchUrl, extractPathSearchParams, formatCommunityNames} from './hooks/path-search-helper';
 import {useGetUnitType} from "@/features/search/hooks/use-get-unit-type";
@@ -163,21 +163,29 @@ const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = ({
 function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSearchFilterProps) {
 
     /**
-     * Fetches the list of communities using the `useGetCommunities` hook.
+     * State to store community data and loading state
      */
-    const communityQuery = useGetCommunities();
+    const [communities, setCommunities] = useState<CommunityFilterType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     /**
-     * Extracts the community data from the query or initializes it as an empty array.
-     * @type {CommunityFilterType[]}
+     * Fetch communities on component mount
      */
-    const communities = (communityQuery.data || []) as CommunityFilterType[];
-
-    /**
-     * Indicates whether the community data is still loading.
-     * @type {boolean}
-     */
-    const isLoading = communityQuery.isLoading;
+    useEffect(() => {
+        const fetchCommunities = async () => {
+            setIsLoading(true);
+            try {
+                const communitiesData = await getClientCommunities();
+                setCommunities(communitiesData || []);
+            } catch (error) {
+                console.error('Error fetching communities:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        fetchCommunities();
+    }, []);
 
     /**
      * Retrieves the URL parameters using the `useParams` hook.

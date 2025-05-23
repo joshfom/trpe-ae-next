@@ -1,35 +1,55 @@
-import {useQuery} from "@tanstack/react-query";
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+"use client"
+// This file now provides a compatibility layer for the useQuery pattern
+// while transitioning away from React Query
 
+import { useState, useEffect } from "react";
+import { getClientUnitType } from './get-client-unit-type';
 
-export const useGetUnitType = (
-    slug?:string,
-
-) => {
-    return useQuery({
-        enabled: !!slug,
-        queryKey: ["property-type", {
-            slug,
-        }],
-        queryFn: async () => {
-            const response = await client.api.unit_types[':slug'].$get({
-                param: {
-                    slug
-                },
-            });
-
-
-            if (!response.ok) {
-                toast.error('An error occurred while fetching properties')
-                throw new Error('An error occurred while fetching properties')
+export const useGetUnitType = (slug?: string) => {
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<Error | null>(null);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            if (!slug) {
+                setIsLoading(false);
+                return;
             }
-
-            const {unitType} = await response.json()
-
-            return {
-                unitType
+            
+            setIsLoading(true);
+            try {
+                const result = await getClientUnitType(slug);
+                setData(result);
+                setError(null);
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+            } finally {
+                setIsLoading(false);
             }
-        },
-    })
-}
+        };
+        
+        fetchData();
+    }, [slug]);
+    
+    return {
+        data,
+        isLoading,
+        error,
+        isError: !!error,
+        refetch: async () => {
+            setIsLoading(true);
+            try {
+                const result = await getClientUnitType(slug);
+                setData(result);
+                setError(null);
+                return result;
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('An unknown error occurred'));
+                throw err;
+            } finally {
+                setIsLoading(false);
+            }
+        }
+    };
+};

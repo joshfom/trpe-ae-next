@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, use } from 'react';
+import React, { useState, use, useEffect } from 'react';
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
@@ -9,14 +9,14 @@ import {Input} from "@/components/ui/input";
 import {z} from "zod";
 import {toast} from "sonner";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
-import {useAddSubCommunity} from "@/features/admin/sub-community/api/use-add-sub-communities";
-import {useGetAdminSubCommunities} from "@/features/admin/sub-community/api/use-get-admin-sub-communities";
-import {useGetAdminCommunity} from "@/features/admin/community/api/use-get-admin-community";
 import Link from "next/link";
 import {ADMIN_BASE_PATH} from "@/lib/constants";
 import SubCommunityList from "@/features/admin/community/components/SubCommunityList";
 import {addSubCommunityFormSchema} from "@/lib/types/form-schema/add-sub-community-form-schema";
 import { CommunityFormSchema } from '@/features/admin/community/form-schema/community-form-schema';
+import { getAdminSubCommunitiesForCommunity } from "@/actions/admin/get-admin-sub-communities-action";
+import { getAdminCommunity } from "@/actions/admin/get-admin-community-action";
+import { addSubCommunityAction } from "@/actions/admin/add-sub-community-action";
 
 // Define the form values type
 type formValues = z.infer<typeof CommunityFormSchema>;
@@ -34,14 +34,45 @@ interface SubCommunitySettingPageProps {
 
 function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
     const params = use(props.params);
-    const communityId = params.communityId
-    const subCommunityQuery = useGetAdminSubCommunities(communityId);
+    const communityId = params.communityId;
+    const [isLoading, setIsLoading] = useState(true);
     const [showAddCommunity, setAddSubCommunity] = useState(false);
-    const communityQuery = useGetAdminCommunity(communityId);
-    const mutation = useAddSubCommunity(communityId);
+    const [community, setCommunity] = useState<any>(null);
+    const [subCommunities, setSubCommunities] = useState<any[]>([]);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const  community = communityQuery.data;
-    const subCommunities = subCommunityQuery.data;
+    // Fetch data using server actions
+    const fetchData = async () => {
+        setIsLoading(true);
+        try {
+            const [communityResult, subCommunitiesResult] = await Promise.all([
+                getAdminCommunity(communityId),
+                getAdminSubCommunitiesForCommunity(communityId)
+            ]);
+
+            if (communityResult.success) {
+                setCommunity(communityResult.data);
+            } else {
+                toast.error(communityResult.error || 'Failed to fetch community');
+            }
+
+            if (subCommunitiesResult.success) {
+                setSubCommunities(subCommunitiesResult.data);
+            } else {
+                toast.error(subCommunitiesResult.error || 'Failed to fetch sub-communities');
+            }
+        } catch (error) {
+            toast.error('An error occurred while fetching data');
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Initial data fetch
+    useEffect(() => {
+        fetchData();
+    }, [communityId]);
 
     const form = useForm<formValues>({
         resolver: zodResolver(addSubCommunityFormSchema),
@@ -53,18 +84,26 @@ function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
     });
 
     const onSubmit = async (values: formValues) => {
-        mutation.mutate(values, {
-            onError: () => {
-                toast.error('An error occurred while updating community');
-            },
-
-            onSuccess: () => {
-                toast.success('Community updated successfully');
+        setIsSubmitting(true);
+        try {
+            const result = await addSubCommunityAction(communityId, values);
+            
+            if (result.success) {
+                toast.success('Sub-community added successfully');
                 form.reset();
                 setAddSubCommunity(false);
+                
+                // Refresh sub-communities list
+                fetchData();
+            } else {
+                toast.error(result.error || 'Failed to add sub-community');
             }
-        });
-
+        } catch (error) {
+            toast.error('An error occurred while adding sub-community');
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

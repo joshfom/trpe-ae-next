@@ -8,7 +8,7 @@ import PropertyPageSearchFilter from "@/features/search/PropertyPageSearchFilter
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
-import {validateRequest} from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";

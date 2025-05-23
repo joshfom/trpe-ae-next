@@ -6,8 +6,9 @@ import {Button} from "@/components/ui/button";
 import {Upload} from "lucide-react";
 import {ImportTable} from "@/features/crm/property-owners/components/ImportTable";
 import {propertyOwnersTable} from "@/db/schema/property-owners-table";
-import {useBulkCreatePropertyOwner} from "@/features/crm/property-owners/api/use-bulk-create-property-owners";
 import {PropertyOwnerFormSchema} from "@/lib/types/form-schema/property-owners-form-schema";
+import { bulkCreatePropertyOwnersAction } from "@/actions/crm/bulk-create-property-owners-action";
+import { toast } from "sonner";
 
 enum VARIANTS {
     LIST = "LIST",
@@ -55,7 +56,7 @@ function UploadPropertyData() {
 
     const headers : any[] = importResults.data[0];
     const body : any[][] = importResults.data;
-    const bulkCreate = useBulkCreatePropertyOwner()
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [progress, setProgress] = React.useState(0);
 
     const onTableHeadSelectChange = (
@@ -102,17 +103,26 @@ function UploadPropertyData() {
     const onSubmitImport = async (
         values: typeof PropertyOwnerFormSchema[],
     ) => {
+        setIsSubmitting(true);
+        try {
+            const data = values.map((value) => ({
+                ...value,
+            }));
 
-        const data = values.map((value) => ({
-            ...value,
-        }));
-
-        // @ts-ignore
-        bulkCreate.mutate(data, {
-            onSuccess: () => {
+            const result = await bulkCreatePropertyOwnersAction(data);
+            
+            if (result.success) {
+                toast.success("Property owners created successfully");
                 onCancel();
-            },
-        });
+            } else {
+                toast.error(result.error || "Failed to create property owners");
+            }
+        } catch (error) {
+            toast.error("An error occurred while creating property owners");
+            console.error(error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleContinue = () => {
@@ -158,8 +168,8 @@ function UploadPropertyData() {
     };
 
     return (
-       <>
-           <CSVReader
+        <>
+            <CSVReader
                onUploadAccepted={handleUpload}
            >
                {({getRootProps} : any) => (
@@ -170,10 +180,10 @@ function UploadPropertyData() {
                    </Button>
                )}
            </CSVReader>
-           <Sheet
-           open={isOpen}
-           onOpenChange={setIsOpen}
-       >
+           <Sheet 
+               open={isOpen}
+               onOpenChange={setIsOpen}
+           >
                <SheetContent className={'w-[95%]'}>
                    <div className={'flex pb-4 justify-between'}>
                        <div>
@@ -183,24 +193,14 @@ function UploadPropertyData() {
                            </p>
                        </div>
 
-                       <div className="flex gap-y-2 items-center gap-x-4">
-                           <Button
-                               onClick={onCancel}
-                               type={'button'}
-                               size="sm"
-                               className="w-full lg:w-auto"
-                           >
-                               Cancel
-                           </Button>
-                           <Button
-                               size="sm"
-                               disabled={progress < requiredOptions.length}
-                               onClick={handleContinue}
-                               className="w-full lg:w-auto"
-                           >
-                               Continue ({progress} / {requiredOptions.length})
-                           </Button>
-                       </div>
+                       <Button
+                           size="sm"
+                           disabled={progress < requiredOptions.length || isSubmitting}
+                           onClick={handleContinue}
+                           className="w-full lg:w-auto"
+                       >
+                           {isSubmitting ? "Processing..." : `Continue (${progress} / ${requiredOptions.length})`}
+                       </Button>
                    </div>
 
                    <div className="border-none drop-shadow-xs">

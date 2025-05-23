@@ -1,8 +1,10 @@
 "use server";
 
 import {z} from "zod";
-import {lucia, validateRequest} from "@/lib/auth";
+import { auth } from "@/lib/auth";
+import {validateRequest} from "@/actions/auth-session";
 import {cookies} from "next/headers";
+import { headers } from "next/headers";
 import {eq} from "drizzle-orm";
 import {redirect} from "next/navigation";
 import {createId} from "@paralleldrive/cuid2";
@@ -96,20 +98,28 @@ export async function signUpWithEmailAndPassword(
     } catch (error: any) {
         return error?.message
     }
-
-    const session = await lucia.createSession(userId, {
-        expiresIn: 60 * 60 * 24 * 30
-    })
-
-    const sessionCookie = lucia.createSessionCookie(session.id)
-
-    // Using correct Next.js cookie API
-    const cookieStore = await cookies()
-    cookieStore.set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-    )
+    
+    try {
+        // Use Better Auth to sign in the user and create a session
+        const response = await auth.api.signInEmail({
+            body: {
+                email: email,
+                password: password
+            },
+            asResponse: true
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to create session for new user');
+        }
+        
+        // Next.js automatically handles cookies from the response
+        // The cookies will be automatically applied when the response is returned
+        
+    } catch (error: any) {
+        console.error("Error creating session:", error);
+        // Continue anyway since the user was created
+    }
 
     return {
         success: true,
@@ -160,19 +170,34 @@ export async function signInWithEmailAndPassword(
         }
     }
 
-    const session = await lucia.createSession(existingUser.id, {
-        expiresIn: 60 * 60 * 24 * 30
-    })
+    try {
+        // Use Better Auth to sign in and create a session
+        const response = await auth.api.signInEmail({
+            body: {
+                email: email,
+                password: password
+            },
+            asResponse: true
+        });
 
-    const sessionCookie = lucia.createSessionCookie(session.id)
+        if (!response.ok) {
+            return {
+                error: {
+                    message: 'Failed to create session'
+                }
+            }
+        }
 
-    // Using correct Next.js cookie API
-    const cookieStore = await cookies()
-    cookieStore.set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-    )
+        // Next.js automatically handles cookies from the response
+        // The cookies will be automatically applied when the response is returned
+        
+    } catch (error: any) {
+        return {
+            error: {
+                message: error.message || 'An error occurred during sign in'
+            }
+        }
+    }
 
     return {
         success: true,
@@ -197,18 +222,21 @@ export async function signOut() {
     }
 
     try {
-        await lucia.invalidateSession(session.id)
-        const sessionCookie = lucia.createBlankSessionCookie()
-
-        // Using correct Next.js cookie API
-        const cookieStore = await cookies()
-        cookieStore.set(
-            sessionCookie.name,
-            sessionCookie.value,
-            sessionCookie.attributes
-        )
-
+        // Use the correct server-side signOut method from Better Auth
+        // For server-side signOut, we need to use a POST request to the signOut endpoint
+        const response = await auth.api.signOut({
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        });
+        
+        // Return the result (no need to manually handle cookies)
+        return { 
+            success: true 
+        }
     } catch (error: any) {
-        return error?.message
+        console.error("Error signing out:", error);
+        return { success: false, error: error instanceof Error ? error.message : "Unknown error" }
     }
 }
