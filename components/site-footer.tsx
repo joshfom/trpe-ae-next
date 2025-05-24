@@ -1,11 +1,17 @@
 'use client'
-import React, {useState} from 'react';
+import React, {useState, useCallback, useMemo} from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
+import Image from "next/image";
 import {Facebook, Home, Instagram, Linkedin, MenuIcon, Search, Youtube} from "lucide-react";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
-import MobileSearch from "@/features/site/components/MobileSearch";
+import dynamic from 'next/dynamic';
+// Use dynamic import with SSR disabled for components that don't need server rendering
+const MobileSearch = dynamic(
+    () => import("@/features/site/components/MobileSearch"), 
+    { ssr: false, loading: () => <div className="p-4">Loading search...</div> }
+);
 import {toast} from "sonner";
 import {useUnitStore} from "@/hooks/use-unit-store";
 import {useCurrencyStore} from "@/hooks/use-currency-store";
@@ -13,40 +19,43 @@ import {usePathname, useRouter} from "next/navigation";
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import FooterCommunitiesClient from "@/features/site/components/FooterCommunitiesClient";
+import dynamic from 'next/dynamic';
+// Use dynamic import with SSR disabled for components that don't need server rendering
+const FooterCommunitiesClient = dynamic(
+    () => import("@/features/site/components/FooterCommunitiesClient"), 
+    { ssr: false }
+);
 
 interface SiteFooterProps {
     showAbout?: boolean;
 }
 
 function SiteFooter({showAbout = true}: SiteFooterProps) {
-    const [isMenuOpen, setIsMenuOpen] = React.useState(false)
-    const [openSearch, setOpenSearch] = React.useState(false)
-    const [openLocation, setOpenLocation] = React.useState(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [openSearch, setOpenSearch] = useState(false)
+    const [openLocation, setOpenLocation] = useState(false)
     const {unit, setUnit} = useUnitStore();
     const {currency, setCurrency} = useCurrencyStore();
     const [active, setActive] = useState<string | null>(null);
 
-    const currentYear = new Date().getFullYear()
+    // Memoize the current year to avoid recalculation on every render
+    const currentYear = useMemo(() => new Date().getFullYear(), []);
 
-
-    // check if user scrolled is more than 5px
     const pathname = usePathname()
     const router = useRouter();
 
-    const changeUnitType = (unitType: string) => {
+    // Memoize callback functions to prevent recreation on each render
+    const changeUnitType = useCallback((unitType: string) => {
         setUnit(unitType as 'sqf' | 'sqm')
-        //reload the page
         router.refresh()
         toast.success(`Unit type changed to ${unitType.toUpperCase()}`)
-    }
+    }, [setUnit, router]);
 
-    const changeCurrency = (currency: string) => {
+    const changeCurrency = useCallback((currency: string) => {
         setCurrency(currency as 'AED' | 'GBP' | 'EUR' | 'USD')
         toast.success(`Currency changed to ${currency}`)
-        //reload the page
         router.refresh()
-    }
+    }, [setCurrency, router]);
 
 
     return (
@@ -568,10 +577,12 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                 <div className="py-3 flex justify-center bg-black">
                                     <Link className={'-mr-8'} href={'/'}>
                                         <span className="sr-only">TRPE Logo</span>
-                                        <img
-                                            src={'/trpe-logo.webp'} alt="TRPE Logo" 
-                                            width={213} height={40}
-                                            style={{width: '213px', height: '40px'}}
+                                        <Image
+                                            src="/trpe-logo.webp"
+                                            alt="TRPE Logo" 
+                                            width={213}
+                                            height={40}
+                                            priority
                                         />
                                     </Link>
                                 </div>
@@ -767,4 +778,5 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
     )
 }
 
-export default SiteFooter;
+// Memoize the entire component to prevent unnecessary re-renders
+export default React.memo(SiteFooter);

@@ -7,12 +7,19 @@ import { revalidateTag } from "next/cache";
 type ResponseType = InferResponseType<typeof client.api.admin.authors.$post>
 type RequestType = InferRequestType<typeof client.api.admin.authors.$post>["json"]
 
+// Return type for the server action
+type AddAuthorResult = {
+  success: boolean;
+  data?: ResponseType;
+  error?: string;
+}
+
 /**
  * Adds a new author
  * @param data Author data to add
  * @returns Object with success status and data or error
  */
-export async function addAuthor(data: RequestType) {
+export async function addAuthor(data: RequestType): Promise<AddAuthorResult> {
   try {
     const response = await client.api.admin.authors.$post({ json: data });
     

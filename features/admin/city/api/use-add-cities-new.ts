@@ -4,7 +4,7 @@ import { InferRequestType, InferResponseType } from "hono";
 import { useState } from "react";
 import { toast } from "sonner";
 import { client } from "@/lib/hono";
-import { addCity } from "@/actions/admin/add-city-action";
+import { addCity, AddCityResult, AddCitySuccessResult } from "@/actions/admin/add-city-action";
 
 type ResponseType = InferResponseType<typeof client.api.admin.cities.$post>
 type RequestType = InferRequestType<typeof client.api.admin.cities.$post>["json"]
@@ -31,12 +31,14 @@ export const useAddCity = () => {
                 throw new Error(result.error || "Failed to add city");
             }
             
-            setData(result.data);
+            // TypeScript now knows this is an AddCitySuccessResult
+            const successResult = result as AddCitySuccessResult;
+            setData(successResult.data);
             setIsSuccess(true);
             toast.success('City added successfully');
             
             if (options?.onSuccess) {
-                options.onSuccess(result.data);
+                options.onSuccess(successResult.data);
             }
         } catch (err) {
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");

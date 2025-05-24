@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { CommunityFilterType } from '@/features/search/types/property-search.types';
+import { CommunityFilterType } from '@/types/community';
 import { cn } from "@/lib/utils";
 
 interface SelectedCommunitiesListProps {

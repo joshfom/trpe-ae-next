@@ -7,6 +7,7 @@ import {Upload} from "lucide-react";
 import {ImportTable} from "@/features/crm/property-owners/components/ImportTable";
 import {propertyOwnersTable} from "@/db/schema/property-owners-table";
 import {PropertyOwnerFormSchema} from "@/lib/types/form-schema/property-owners-form-schema";
+import { z } from "zod";
 import { bulkCreatePropertyOwnersAction } from "@/actions/crm/bulk-create-property-owners-action";
 import { toast } from "sonner";
 
@@ -101,15 +102,16 @@ function UploadPropertyData() {
     // const progress = Object.values(selectedColumns).filter(Boolean).length;
 
     const onSubmitImport = async (
-        values: typeof PropertyOwnerFormSchema[],
+        values: z.infer<typeof PropertyOwnerFormSchema>[],
     ) => {
         setIsSubmitting(true);
         try {
+            // Convert the values to plain objects that match the schema
             const data = values.map((value) => ({
-                ...value,
+                ...value
             }));
 
-            const result = await bulkCreatePropertyOwnersAction(data);
+            const result = await bulkCreatePropertyOwnersAction(data as any);
             
             if (result.success) {
                 toast.success("Property owners created successfully");

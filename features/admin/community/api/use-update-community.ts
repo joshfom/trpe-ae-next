@@ -1,15 +1,27 @@
 "use client";
 
-import { InferResponseType, InferRequestType } from "hono";
+import { InferRequestType } from "hono";
 import { client } from "@/lib/hono";
 import { toast } from "sonner";
 import { useState } from "react";
-import { updateCommunity } from "@/actions/admin/update-community-action";
+import { updateCommunity, UpdateCommunityResult, UpdateCommunitySuccessResult } from "@/actions/admin/update-community-action";
 
 /**
  * Type definitions for API response and request
  */
-type ResponseType = InferResponseType<typeof client.api.admin.communities[":communityId"]["$patch"]>;
+// Define the response type based on the expected structure
+interface CommunityData {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  shortDescription?: string | null;
+  logo?: string | null;
+  banner?: string | null;
+  // Add other fields as needed
+}
+
+type ResponseType = { data: CommunityData };
 type RequestType = InferRequestType<typeof client.api.admin.communities[":communityId"]["$patch"]>["json"];
 
 /**
@@ -67,12 +79,14 @@ export const useUpdateCommunity = (communityId?: string) => {
                 throw new Error(result.error || "Failed to update community");
             }
             
-            setData(result.data);
+            // Now TypeScript knows this is a success result with data
+            const successResult = result as UpdateCommunitySuccessResult;
+            setData(successResult.data);
             setIsSuccess(true);
             toast.success("Community updated successfully");
             
             if (options?.onSuccess) {
-                options.onSuccess(result.data);
+                options.onSuccess(successResult.data);
             }
         } catch (err) {
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");

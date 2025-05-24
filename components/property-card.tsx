@@ -2,6 +2,7 @@
 import React, {useEffect} from 'react';
 import {Dot} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import {truncateText} from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import unitConverter from "@/lib/unit-converter";
@@ -29,13 +30,13 @@ function PropertyCard({property, offeringType}: PropertyCardProps) {
                 setShowBedrooms(true);
             }
         }
-    }, [])
+    }, [property.bedrooms, property.offeringType])
 
     useEffect(() => {
         if (property.offeringType && offeringType && property.offeringType.slug === offeringType) {
             setShowOfferingType(false)
         }
-    }, [])
+    }, [property.offeringType, offeringType])
 
 
     return (
@@ -46,10 +47,13 @@ function PropertyCard({property, offeringType}: PropertyCardProps) {
                     {
                         property.images.length > 0 && (
                             <div className="h-96 relative">
-                                <img
+                                <Image
                                     src={imageUrls[0]}
                                     alt={property.name || 'Property Image'}
-                                    className="pointer-events-none h-full w-full object-cover rounded-xl absolute inset-0"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="pointer-events-none object-cover rounded-xl"
+                                    priority={false}
                                 />
                             </div>
                         )

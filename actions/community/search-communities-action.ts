@@ -1,18 +1,7 @@
 "use server"
 import { unstable_cache } from "next/cache";
 import Fuse from 'fuse.js';
-
-interface CommunityFilterType {
-    id?: string;
-    slug: string;
-    name: string | null;
-    shortName?: string | null;
-    propertyCount?: number;
-    rentCount?: number;
-    saleCount?: number;
-    commercialRentCount?: number;
-    commercialSaleCount?: number;
-}
+import { CommunityFilterType } from "@/types/community";
 
 /**
  * Server action to search communities

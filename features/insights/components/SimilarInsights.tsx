@@ -3,7 +3,7 @@ import React, {Suspense} from 'react';
 import {Skeleton} from "@/components/ui/skeleton";
 import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
-import {useGetSimilarInsights} from "@/features/insights/api/use-get-similar-insights";
+import {useGetSimilarInsightsV2} from "@/features/insights/api/use-get-similar-insights-v2";
 import { db } from '@/db/drizzle';
 import { desc } from 'drizzle-orm';
 import { insightTable } from '@/db/schema-index';

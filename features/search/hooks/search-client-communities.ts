@@ -1,17 +1,6 @@
 "use client"
 import { searchCommunitiesAction } from "@/actions/community/search-communities-action";
-
-interface CommunityFilterType {
-    id?: string;
-    slug: string;
-    name: string | null;
-    shortName?: string | null;
-    propertyCount?: number;
-    rentCount?: number;
-    saleCount?: number;
-    commercialRentCount?: number;
-    commercialSaleCount?: number;
-}
+import { CommunityFilterType } from "@/types/community";
 
 /**
  * Client-side function to search communities using the server action

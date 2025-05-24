@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from 'react';
-import { CommunityFilterType } from '@/features/search/types/property-search.types';
+import { CommunityFilterType } from '@/types/community';
 import { searchClientCommunities } from './search-client-communities';
 
 interface UseCommunitySearchProps {

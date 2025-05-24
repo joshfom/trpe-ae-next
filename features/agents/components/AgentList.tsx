@@ -24,7 +24,15 @@ function AgentList() {
             try {
                 const result = await getAgentsAction();
                 if (result.success) {
-                    setAgents(result.data);
+                    // Type assertion to ensure data conforms to Agent[]
+                    const typedAgents: Agent[] = result.data.map((agent: any) => ({
+                        id: agent.id,
+                        firstName: agent.firstName || '',
+                        lastName: agent.lastName || '',
+                        slug: agent.slug,
+                        avatarUrl: agent.avatarUrl
+                    }));
+                    setAgents(typedAgents);
                 } else {
                     toast.error(result.error || 'Failed to fetch agents');
                 }

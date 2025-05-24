@@ -11,7 +11,7 @@ function AdminOffplanPaymentPlan({offplan}: AdminOffplanPaymentPlanProps) {
 
     const galleryQuery = useGetOffplanPaymentPlan(offplan.id)
     const gallery = galleryQuery.data
-    const isLoaded = galleryQuery.isFetched && !galleryQuery.isError
+    const isLoaded = galleryQuery.data && !galleryQuery.isError
     const isLoading = galleryQuery.isLoading
 
     const [addingImage, setAddingImage] = React.useState(false)

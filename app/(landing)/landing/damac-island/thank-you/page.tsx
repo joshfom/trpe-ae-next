@@ -3,6 +3,7 @@
 import React, { Suspense } from 'react';
 import { Globe, Phone } from "lucide-react";
 import { redirect, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 
 function DamaIslandThankYou() {
     const searchParams = useSearchParams();
@@ -34,8 +35,15 @@ function DamaIslandThankYou() {
             </header>
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
                 <div className={'w-full py-6'}>
-                    <div className="h-[400px] max-w-7xl flex items-center mx-auto rounded-3xl overflow-hidden">
-                        <img src="/assets/damac-island-hero-image.webp" className={'h-[400px] w-full object-cover'} alt="" />
+                    <div className="h-[400px] max-w-7xl flex items-center mx-auto rounded-3xl overflow-hidden relative">
+                        <Image 
+                            src="/assets/damac-island-hero-image.webp" 
+                            alt="Damac Islands" 
+                            fill
+                            sizes="(max-width: 1280px) 100vw, 1280px"
+                            className="object-cover"
+                            priority
+                        />
                     </div>
                 </div>
                 <div className="px-6 lg:px-0 max-w-7xl min-h-[400px] mx-auto flex items-center py-12 justify-between flex-col sm:flex-row gap-8">

@@ -11,7 +11,7 @@ import {z} from "zod";
 import {useGetAdminCommunities} from "@/features/admin/community/api/use-get-admin-communities";
 import Select from "react-tailwindcss-select";
 import {toast} from "sonner";
-import {useAddCommunity} from "@/features/admin/community/api/use-add-community";
+import {useAddCommunityV2} from "@/features/admin/offering/api/use-add-community-v2";
 import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
 import Link from "next/link";
 import {ADMIN_BASE_PATH} from "@/lib/constants";
@@ -44,7 +44,7 @@ function CommunitySettingPage() {
     const [allCities, setAllCities] = useState<CityOption[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const cityQuery = useGetAdminCities();
-    const mutation = useAddCommunity();
+    const mutation = useAddCommunityV2();
 
     const cities = cityQuery.data;
     const communities = communityQuery.data;
@@ -73,20 +73,15 @@ function CommunitySettingPage() {
 
     const onSubmit = async (values: formValues) => {
         setIsSubmitting(true);
-        mutation.mutate(values, {
-            onError: () => {
-                toast.error('An error occurred while updating community');
-                setIsSubmitting(false);
-            },
-
-            onSuccess: () => {
-                toast.success('Community updated successfully');
-                form.reset();
-                setAddCommunity(false);
-                setIsSubmitting(false);
-            }
-        });
-
+        try {
+            await mutation.mutate(values);
+            form.reset();
+            setAddCommunity(false);
+        } catch (error) {
+            console.error("Error adding community:", error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

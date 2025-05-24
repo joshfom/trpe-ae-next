@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback, memo} from "react";
 
 import {cn} from "@/lib/utils";
 
@@ -13,18 +13,19 @@ interface TextProps {
     className?: string;
 }
 
-export default function TextBorderAnimation({text = "Programming", className}: TextProps) {
+function TextBorderAnimation({text = "Programming", className}: TextProps) {
     const [isHoveredIn, setIsHoveredIn] = useState(false);
     const [isHoveredOut, setIsHoveredOut] = useState(false);
 
-    const handleHover = () => {
+    // Memoize event handlers to prevent unnecessary re-renders
+    const handleHover = useCallback(() => {
         setIsHoveredIn(true);
-    };
+    }, []);
 
-    const handleHoverExit = () => {
+    const handleHoverExit = useCallback(() => {
         setIsHoveredIn(false);
         setIsHoveredOut(true);
-    };
+    }, []);
 
     useEffect(() => {
         if (isHoveredOut) {
@@ -58,3 +59,6 @@ export default function TextBorderAnimation({text = "Programming", className}: T
         </div>
     );
 }
+
+// Export the memoized component to prevent unnecessary re-renders
+export default memo(TextBorderAnimation);

@@ -1,42 +1,57 @@
-import {useQuery} from "@tanstack/react-query";
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
-import {useSearchParams} from "next/navigation";
+"use client";
 
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+import { getFeaturedProperties } from "@/actions/property/get-featured-property-action";
 
+/**
+ * Custom hook to fetch featured properties
+ * This hook mimics the React Query useQuery API to maintain compatibility
+ * @param offeringTypeId The ID of the offering type
+ */
 export const useGetFeaturedProperty = (
-    offeringTypeId:string
+    offeringTypeId: string
 ) => {
-
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
+    
     const params = useSearchParams();
     const limit = params.get('limit') || '1';
 
-    return useQuery({
-        enabled: !!offeringTypeId,
-        queryKey: ["featured_property", {
-            offeringTypeId
-        }],
+    const fetchData = async () => {
+        if (!offeringTypeId) return;
+        
+        try {
+            setIsLoading(true);
+            const result = await getFeaturedProperties(offeringTypeId, limit);
 
-        queryFn: async () => {
-            const response = await client.api.featured.properties[":offeringTypeId"].$get({
-                param: {
-                    offeringTypeId,
-                },
-                query: {
-                    limit
-                }
-            });
-
-
-
-            if (!response.ok) {
-                toast.error('An error occurred while fetching properties')
-                throw new Error('An error occurred while fetching properties')
+            if (!result.success) {
+                throw new Error(result.error || 'An error occurred while fetching featured properties');
             }
 
-            const {data} = await response.json()
+            setData(result.data);
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            toast.error('Failed to fetch featured properties');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-            return data
-        },
-    })
+    useEffect(() => {
+        if (offeringTypeId) {
+            fetchData();
+        }
+    }, [offeringTypeId, limit]);
+
+    return {
+        data,
+        isLoading,
+        error,
+        isError: !!error,
+        refetch: fetchData
+    };
 }

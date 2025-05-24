@@ -37,6 +37,58 @@ const app = new Hono()
 
         })
 
+    .patch("/:cityId",
+        zValidator("param", z.object({
+            cityId: z.string()
+        })),
+        zValidator("json", AdminCityFormSchema),
+        async (c) => {
+            const { cityId } = c.req.param();
+            const { name } = c.req.valid('json');
+            
+            const city = await db.query.cityTable.findFirst({
+                where: eq(cityTable.id, cityId)
+            });
+            
+            if (!city) {
+                return c.json({ error: "City not found" }, 404);
+            }
+            
+            // Generate a new slug only if the name has changed
+            const slug = name !== city.name ? slugify(name) : city.slug;
+            
+            await db.update(cityTable)
+                .set({ name, slug })
+                .where(eq(cityTable.id, cityId));
+                
+            const updatedCity = await db.query.cityTable.findFirst({
+                where: eq(cityTable.id, cityId)
+            });
+            
+            return c.json({ data: updatedCity });
+        })
+        
+    .delete("/:cityId",
+        zValidator("param", z.object({
+            cityId: z.string()
+        })),
+        async (c) => {
+            const { cityId } = c.req.param();
+            
+            const city = await db.query.cityTable.findFirst({
+                where: eq(cityTable.id, cityId)
+            });
+            
+            if (!city) {
+                return c.json({ error: "City not found" }, 404);
+            }
+            
+            await db.delete(cityTable)
+                .where(eq(cityTable.id, cityId));
+                
+            return c.json({ success: true });
+        })
+
 
 
 export default app

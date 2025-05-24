@@ -1,4 +1,6 @@
 
+import { CommunityFilterType } from "@/types/community";
+
 export type SearchType = 'for-sale' | 'for-rent' | 'commercial-sale';
 
 export interface PropertySearchFormValues {

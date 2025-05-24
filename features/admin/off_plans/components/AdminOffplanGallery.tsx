@@ -26,7 +26,7 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
     const galleryQuery = useGetAdminOffplanGallery(offplanId)
     const [fileStates, setFileStates] = useState<FileState[]>([]);
     const gallery = galleryQuery.data
-    const isLoaded = galleryQuery.isFetched && !galleryQuery.isError
+    const isLoaded = galleryQuery.data && !galleryQuery.isError
 
     const { edgestore } = useEdgeStore();
 

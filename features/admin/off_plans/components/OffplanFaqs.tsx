@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import {useGetOffplanFaqs} from "@/features/admin/off_plans/api/use-get-offplan-faqs";
+import { useGetOffplanFaqsV2 } from "@/features/admin/page-meta/api/use-get-offplan-faqs-v2";
 import {Button} from "@/components/ui/button";
 import AddOffplanFaqForm from "@/features/admin/off_plans/components/AddOffplanFaqForm";
 
@@ -10,9 +10,9 @@ interface OffplanFaqsProps {
 
 function OffplanFaqs({offplanId}: OffplanFaqsProps) {
 
-    const faqsQuery = useGetOffplanFaqs(offplanId)
+    const faqsQuery = useGetOffplanFaqsV2(offplanId)
     const faqs = faqsQuery.data
-    const isLoaded = faqsQuery.isFetched && !faqsQuery.isError
+    const isLoaded = faqsQuery.data && !faqsQuery.isError
     const isLoading = faqsQuery.isLoading
 
     const [addingFaq, setAddingFaq] = React.useState(false)

@@ -16,7 +16,7 @@ import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import "yet-another-react-lightbox/plugins/captions.css";
 import {Zoom} from "yet-another-react-lightbox/plugins";
-import {useGetOffplanFaqs} from "@/features/admin/off_plans/api/use-get-offplan-faqs";
+import {useGetOffplanFaqsV2} from "@/features/admin/page-meta/api/use-get-offplan-faqs-v2";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger,} from "@/components/ui/accordion"
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import OffplanContactForm from "@/features/offplans/components/OffplanContactForm";
@@ -45,7 +45,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
 
     const [dialogTitle, setDialogTitle] = React.useState('Floor Plan');
 
-    const faqsQuery = useGetOffplanFaqs(project.id)
+    const faqsQuery = useGetOffplanFaqsV2(project.id)
     const faqs = faqsQuery.data
     const isLoading = faqsQuery.isLoading
 
@@ -319,7 +319,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                     }
 
                     {
-                        faqs && faqs.map((faq, index) => (
+                        faqs && faqs.map((faq: { id: string; question: string; answer: string }, index: number) => (
                             <Accordion key={index} type="single" collapsible>
                                 <AccordionItem value={faq.id}>
                                     <AccordionTrigger>

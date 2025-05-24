@@ -43,7 +43,7 @@ function RegisterForm() {
             console.log('Form values changed:', value);
         });
         return () => subscription.unsubscribe();
-    }, [form.watch]);
+    }, [form]);
 
     const isLoading = form.formState.isSubmitting;
 

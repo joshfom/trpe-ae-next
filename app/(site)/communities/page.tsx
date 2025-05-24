@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, cache } from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
 import type {Metadata} from "next";
@@ -14,72 +14,107 @@ export const metadata: Metadata = {
     },
 };
 
-async function CommunitiesPage() {
-    let communities: (CommunitySelect & { properties: any[] })[] = [];
-    
+// Cache the communities data to avoid repeated database calls
+const getCommunities = cache(async (): Promise<(CommunitySelect & { properties: any[] })[]> => {
     try {
         // Check if the community table exists before querying
         try {
             await db.execute(sql`SELECT 1 FROM information_schema.tables WHERE table_name = 'community'`);
-            communities = await db.query.communityTable.findMany({
+            const communities = await db.query.communityTable.findMany({
                 with: {
-                    properties: true
+                    properties: {
+                        limit: 1 // Only get count, not all properties
+                    }
                 }
             });
+            return communities;
         } catch (error) {
             console.error('Error fetching communities:', error);
-            // If the table doesn't exist or another error occurs, use an empty array
-            communities = [];
+            return [];
         }
     } catch (error) {
         console.error('Database query failed:', error);
-        communities = [];
+        return [];
     }
+});
 
+// Component for rendering community list
+function CommunityList({ communities }: { communities: (CommunitySelect & { properties: any[] })[] }) {
     // Only try to sort if we have communities data
     const reOrderedCommunities = communities.length > 0 
         ? communities.sort((a, b) => a.properties.length - b.properties.length).reverse()
         : [];
 
+    if (communities.length === 0) {
+        return (
+            <div className="py-12 max-w-7xl mx-auto">
+                <h1 className="font-semibold text-3xl">Communities in Dubai</h1>
+                <p className="mt-4 text-gray-600">
+                    We&apos;re currently updating our communities information. Please check back later.
+                </p>
+            </div>
+        );
+    }
+
     return (
         <>
-            <div className="py-12 bg-black hidden lg:block">
-
-            </div>
-
             <div className="py-12 max-w-7xl mx-auto">
-                <h1 className="font-semibold text-3xl">
-                    Communities in Dubai
-                </h1>
-                {communities.length === 0 && (
-                    <p className="mt-4 text-gray-600">
-                        We&apos;re currently updating our communities information. Please check back later.
-                    </p>
-                )}
+                <h1 className="font-semibold text-3xl">Communities in Dubai</h1>
             </div>
-            {communities.length > 0 && (
-                <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
-                    {
-                        reOrderedCommunities.map((community) => (
-                            <div key={community.id} className={'bg-white '}>
-                                <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
-                                    <img
-                                        className={'object-cover rounded-lg absolute inset-0 w-full h-full'}
-                                        src={community.image || '/images/communities-default.webp'}
-                                        alt={community.label || 'Community'}
-                                    />
-                                </div>
-                                <div className={'px-4 text-center py-2'}>
-                                    <Link href={`/communities/${community.slug}`} className={'font-semibold text-center text-sm'}>
-                                        {community.label}
-                                    </Link>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
-            )}
+            <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
+                {reOrderedCommunities.map((community) => (
+                    <div key={community.id} className={'bg-white'}>
+                        <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
+                            <img
+                                className={'object-cover rounded-lg absolute inset-0 w-full h-full'}
+                                src={community.image || '/images/communities-default.webp'}
+                                alt={community.label || 'Community'}
+                                loading="lazy"
+                            />
+                        </div>
+                        <div className={'px-4 text-center py-2'}>
+                            <Link href={`/communities/${community.slug}`} className={'font-semibold text-center text-sm'}>
+                                {community.label}
+                            </Link>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+}
 
+// Loading component
+function CommunitiesLoading() {
+    return (
+        <>
+            <div className="py-12 bg-black hidden lg:block"></div>
+            <div className="py-12 max-w-7xl mx-auto">
+                <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
+            </div>
+            <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
+                {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className={'bg-white'}>
+                        <div className={'relative w-full h-60 rounded-lg overflow-hidden bg-gray-200 animate-pulse'}></div>
+                        <div className={'px-4 text-center py-2'}>
+                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mx-auto"></div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </>
+    );
+}
+
+async function CommunitiesPage() {
+    const communities = await getCommunities();
+
+    return (
+        <>
+            <div className="py-12 bg-black hidden lg:block"></div>
+            <Suspense fallback={<CommunitiesLoading />}>
+                <CommunityList communities={communities} />
+            </Suspense>
         </>
     );
 }

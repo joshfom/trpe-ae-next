@@ -20,8 +20,8 @@ function MenuFeaturedProperty({offeringType}: MenuFeaturedPropertyProps) {
         if (property && property.images.length) {
             // Filter out any null values
             setPropertyImages(property.images
-                .map(image => image.s3Url)
-                .filter((url): url is string => url !== null)
+                .map((image: { s3Url: string | null }) => image.s3Url)
+                .filter((url: string | null): url is string => url !== null)
             )
         }
     }, [property])

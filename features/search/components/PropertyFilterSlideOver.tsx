@@ -12,11 +12,17 @@ import SelectedCommunitiesList from "@/features/search/components/communities/Se
 
 interface PropertyFilterSlideOverProps {
     form: UseFormReturn<SearchFormData>;
-    showFilters: boolean;
-    setShowFilters: (value: boolean) => void;
-    filtersCount: number;
-    selectedCommunities: any[];
-    setSelectedCommunities: (communities: any[]) => void;
+    // Original props
+    showFilters?: boolean;
+    setShowFilters?: (value: boolean) => void;
+    filtersCount?: number;
+    selectedCommunities?: any[];
+    setSelectedCommunities?: (communities: any[]) => void;
+    
+    // New props for compatibility with server-action version
+    open?: boolean;
+    setOpen?: (value: boolean) => void;
+    
     onSubmit: any;
 }
 
@@ -25,19 +31,24 @@ function PropertyFilterSlideOver(
         form,
         showFilters,
         setShowFilters,
-        filtersCount,
-        selectedCommunities,
-        setSelectedCommunities,
+        filtersCount = 0,
+        selectedCommunities = [],
+        setSelectedCommunities = () => {},
+        open,
+        setOpen,
         onSubmit
     }: PropertyFilterSlideOverProps
 ) {
+    // Handle both prop styles (original and server-action version)
+    const isOpen = open !== undefined ? open : showFilters;
+    const setIsOpen = setOpen || setShowFilters || (() => {});
     return (
         <div className="flex pl-8 lg:pl-16 space-x-6 items-center">
 
 
             <Sheet
-                open={showFilters}
-                onOpenChange={setShowFilters}
+                open={isOpen}
+                onOpenChange={setIsOpen}
             >
                 <SheetTrigger
                     className={'relative'}
@@ -55,7 +66,7 @@ function PropertyFilterSlideOver(
                         <div className={'absolute -right-4 -top-4'}>
                             <button
                                 type={'button'}
-                                onClick={() => setShowFilters(true)}
+                                onClick={() => setIsOpen(true)}
                                 className="flex items-center bg-black text-white justify-center border px-3 rounded-full  py-1">
                                 {
                                     filtersCount
@@ -337,7 +348,7 @@ function PropertyFilterSlideOver(
                         <Button
                             onClick={() => {
                                 form.handleSubmit(onSubmit)();
-                                setShowFilters(false);
+                                setIsOpen(false);
                             }}
                             className={' bg-black text-white py-3 px-8 '}>
                             <Search className="h-5 w-5 text-white stroke-1 mr-2"/>

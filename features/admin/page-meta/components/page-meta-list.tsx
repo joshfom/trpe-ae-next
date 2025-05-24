@@ -64,7 +64,7 @@ export function PageMetaList() {
               </TableCell>
             </TableRow>
           ) : (
-            pageMetas.map((pageMeta) => (
+            pageMetas.map((pageMeta: PageMeta) => (
               <TableRow key={pageMeta.id}>
                 <TableCell className="font-medium">{pageMeta.path}</TableCell>
                 <TableCell>{pageMeta.title}</TableCell>

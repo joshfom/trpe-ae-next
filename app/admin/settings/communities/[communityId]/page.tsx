@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, use, useEffect } from 'react';
+import React, { useState, use, useEffect, useCallback } from 'react';
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
@@ -17,6 +17,7 @@ import { CommunityFormSchema } from '@/features/admin/community/form-schema/comm
 import { getAdminSubCommunitiesForCommunity } from "@/actions/admin/get-admin-sub-communities-action";
 import { getAdminCommunity } from "@/actions/admin/get-admin-community-action";
 import { addSubCommunityAction } from "@/actions/admin/add-sub-community-action";
+import { SubCommunity } from '@/features/admin/community/api/use-get-admin-sub-community';
 
 // Define the form values type
 type formValues = z.infer<typeof CommunityFormSchema>;
@@ -42,7 +43,7 @@ function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Fetch data using server actions
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
             const [communityResult, subCommunitiesResult] = await Promise.all([
@@ -67,12 +68,12 @@ function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [communityId]);
 
     // Initial data fetch
     useEffect(() => {
         fetchData();
-    }, [communityId]);
+    }, [fetchData]);
 
     const form = useForm<formValues>({
         resolver: zodResolver(addSubCommunityFormSchema),
@@ -135,7 +136,7 @@ function SubCommunitySettingPage(props: SubCommunitySettingPageProps) {
                     </TableHeader>
                     <TableBody>
                         {
-                            subCommunities?.map((subCommunity) => (
+                            subCommunities?.map((subCommunity: SubCommunity) => (
                                 <TableRow key={subCommunity.id}>
                                     <TableCell>{subCommunity.name}</TableCell>
                                     <TableCell>

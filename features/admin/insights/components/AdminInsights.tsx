@@ -9,6 +9,7 @@ import { Eye, Pencil, Search, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Pagination } from "@/components/ui/pagination";
 import { 
     AlertDialog,
@@ -43,7 +44,7 @@ function AdminInsights() {
     const totalPages = insightsQuery.data?.totalPages || 1;
     
     // is loaded without error
-    const isLoaded = insightsQuery.isFetched && !insightsQuery.isError;
+    const isLoaded = !insightsQuery.isLoading && !insightsQuery.isError && insightsQuery.data !== null;
     const isLoading = insightsQuery.isLoading;
 
     const handleSearch = (e: React.FormEvent) => {
@@ -74,9 +75,13 @@ function AdminInsights() {
     const handleConfirmDelete = async () => {
         if (insightToDelete) {
             try {
-                await deleteInsightMutation.mutateAsync(insightToDelete);
-                setDeleteDialogOpen(false);
-                setInsightToDelete(null);
+                await deleteInsightMutation.mutate(insightToDelete, {
+                    onSuccess: () => {
+                        setDeleteDialogOpen(false);
+                        setInsightToDelete(null);
+                        insightsQuery.refetch();
+                    }
+                });
             } catch (error) {
                 console.error('Failed to delete insight:', error);
             }
@@ -124,8 +129,15 @@ function AdminInsights() {
                             insights.map((insight: any) => (
                                 <div key={insight.id} className={'bg-white flex flex-col rounded-lg'}>
                                     <div className="grow">
-                                        <img src={insight?.coverUrl || ''} alt={insight?.title || ''}
-                                             className={'w-full h-80 object-cover rounded-lg'}/>
+                                        <div className="relative w-full h-80">
+                                            <Image 
+                                                src={insight?.coverUrl || ''} 
+                                                alt={insight?.title || ''}
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                className="object-cover rounded-lg"
+                                            />
+                                        </div>
                                         <h2 className={'text-lg mt-4 px-3'}>{insight.title}</h2>
                                     </div>
                                     <div className="flex justify-between mt-4 py-4 border-t px-4">
@@ -148,7 +160,7 @@ function AdminInsights() {
                                                 className="inline-flex items-center" 
                                                 size="sm"
                                                 onClick={() => handleDeleteClick(insight.slug, insight.coverUrl)}
-                                                disabled={deleteInsightMutation.isPending}
+                                                disabled={!!deleteInsightMutation.isPending}
                                             >
                                                 <Trash2 className={'w-5 h-5 mr-2'} />
                                                 Delete
@@ -205,7 +217,7 @@ function AdminInsights() {
                         <AlertDialogAction 
                             onClick={handleConfirmDelete}
                             className="bg-red-600 hover:bg-red-700"
-                            disabled={deleteInsightMutation.isPending}
+                            disabled={!!deleteInsightMutation.isPending}
                         >
                             {deleteInsightMutation.isPending ? "Deleting..." : "Delete"}
                         </AlertDialogAction>

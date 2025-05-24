@@ -1,16 +1,18 @@
 import React from "react";
+import Image from "next/image";
 
 const AgentCard = () => {
     return <div className={'rounded-xl border border-gray-100 shadow-lg p-3'}>
         <div className={'flex flex-col items-center'}>
-            <img 
-                src="https://trpe.ae/wp-content/uploads/2024/03/rosie-agent-bio.jpg" 
-                alt="TRPE Agent"
-                width={300}
-                height={300}
-                style={{width: '300px', height: '300px'}}
-                className="rounded-xl"
-            />
+            <div className="relative w-[300px] h-[300px]">
+                <Image 
+                    src="https://trpe.ae/wp-content/uploads/2024/03/rosie-agent-bio.jpg" 
+                    alt="TRPE Agent"
+                    width={300}
+                    height={300}
+                    className="rounded-xl object-cover"
+                />
+            </div>
             <h2 className={'text-xl font-semibold mt-3'}>Rosie Ramirez</h2>
             <p className={'text-trpe-primary'}>Real Estate Agent</p>
             <div className={'grid grid-cols-2 gap-4 w-full mt-4'}>

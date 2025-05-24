@@ -1,5 +1,6 @@
 import { useReducer } from 'react';
-import { FilterState, CommunityFilterType } from '@/features/search/types/property-search.types';
+import { FilterState } from '@/features/search/types/property-search.types';
+import { CommunityFilterType } from '@/types/community';
 
 type SearchAction =
     | { type: 'SET_SHOW_FILTERS'; payload: boolean }

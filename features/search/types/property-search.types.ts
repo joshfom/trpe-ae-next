@@ -1,14 +1,4 @@
-export interface CommunityFilterType {
-    id: string;
-    slug: string;
-    name: string | null;
-    shortName: string;
-    propertyCount?: number;        // Make these counts optional if they're not always present
-    rentCount?: number;
-    saleCount?: number;
-    commercialRentCount?: number;
-    commercialSaleCount?: number;
-}
+import { CommunityFilterType } from "@/types/community";
 
 export interface SearchFormData {
     query: string;

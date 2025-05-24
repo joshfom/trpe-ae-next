@@ -39,7 +39,7 @@ function LoginForm() {
     // For debugging purposes only
     useEffect(() => {
         console.log('Current form values:', form.watch());
-    }, [form.watch()]);
+    }, [form]);
 
     const isLoading = form.formState.isSubmitting;
 

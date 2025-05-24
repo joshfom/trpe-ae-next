@@ -31,12 +31,14 @@ export const useAddAuthor = () => {
                 throw new Error(result.error || "Failed to add author");
             }
             
-            setData(result.data);
+            // Cast the data to ensure TypeScript is satisfied with the response type
+            const responseData = result.data as ResponseType;
+            setData(responseData);
             setIsSuccess(true);
             toast.success('Author added successfully');
             
             if (options?.onSuccess) {
-                options.onSuccess(result.data);
+                options.onSuccess(responseData);
             }
         } catch (err) {
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");

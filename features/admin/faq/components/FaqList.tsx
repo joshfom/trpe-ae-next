@@ -7,6 +7,17 @@ import {useGetFaqList} from "@/features/admin/faq/hooks/use-get-faq-list";
 import AddFaqForm from "@/features/admin/faq/components/AddFaqForm";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 
+interface Faq {
+    id: string;
+    question: string | null;
+    answer: string | null;
+    imageUrl: string | null;
+    targetId: string | null;
+    targetModel: string | null;
+    createdAt: string;
+    updatedAt: string | null;
+}
+
 interface FaqListProps {
     target: {
         id: string
@@ -17,8 +28,8 @@ interface FaqListProps {
 function FaqList({target}: FaqListProps) {
 
     const faqsQuery = useGetFaqList(target.id, target.name)
-    const faqs = faqsQuery.data || [] // Provide a default empty array if data is undefined
-    const isLoaded = faqsQuery.isFetched && !faqsQuery.isError
+    const faqs = (faqsQuery.data || []) as Faq[] // Provide a default empty array if data is undefined
+    const isLoaded = !faqsQuery.isLoading && !faqsQuery.isError && faqsQuery.data !== null
     const isLoading = faqsQuery.isLoading
 
     const [addingFaq, setAddingFaq] = React.useState(false)

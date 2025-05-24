@@ -1,7 +1,7 @@
 "use client"
-import React, {useState} from 'react';
+import React, {useState, memo} from 'react';
 import Link from "next/link";
-import {Menu, MenuItem} from "@/features/site/components/navbar-menu";
+import {Menu, MenuItem} from "@/features/site/components/navbar-menu-optimized";
 import {ArrowRight} from "lucide-react";
 import MenuFeaturedProperty from "@/features/site/components/MenuFeaturedProperty";
 import TextBorderAnimation from "@/features/site/components/TextBorderAnimation";
@@ -267,4 +267,5 @@ function TopNavigation() {
     );
 }
 
-export default TopNavigation;
+// Memoize the component to prevent unnecessary re-renders
+export default memo(TopNavigation);

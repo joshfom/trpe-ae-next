@@ -12,7 +12,7 @@ const transition = {
     restSpeed: 0.001,
 };
 
-export const MenuItem = ({
+export const MenuItem = React.memo(({
                              setActive,
                              active,
                              item,
@@ -25,8 +25,13 @@ export const MenuItem = ({
     item: string | React.ReactNode;
     children?: React.ReactNode;
 }) => {
+    // Use useCallback for the event handler to prevent unnecessary re-renders
+    const handleMouseEnter = React.useCallback(() => {
+        setActive(slug);
+    }, [setActive, slug]);
+    
     return (
-        <div onMouseEnter={() => setActive(slug)} className="relative ">
+        <div onMouseEnter={handleMouseEnter} className="relative ">
             <motion.div
                 transition={{duration: 0.8}}
                 className="cursor-pointer text-white hover:opacity-[0.9] dark:text-white"

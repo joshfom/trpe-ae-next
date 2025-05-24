@@ -100,5 +100,36 @@ const app = new Hono()
             return c.json({data});
         })
 
+    .delete("/:authorId",
+        zValidator("param", z.object({
+            authorId: z.string()
+        })),
+        async (c) => {
+            const user: User = (c.get as any)("user");
+
+            if (!user) {
+                throw new HTTPException(401, { message: 'Please log in or your session to access resource.' });
+            }
+
+            const { authorId } = c.req.param();
+
+            const author = await db.query.authorTable.findFirst({
+                where: eq(authorTable.id, authorId)
+            });
+
+            if (!author) {
+                throw new HTTPException(404, { message: 'Author not found.' });
+            }
+
+            try {
+                // Delete the author
+                await db.delete(authorTable).where(eq(authorTable.id, authorId));
+                return c.json({ success: true });
+            } catch (e) {
+                console.log('Error deleting author:', e);
+                throw new HTTPException(500, { message: 'An error occurred while deleting the author.' });
+            }
+        })
+
 
 export default app

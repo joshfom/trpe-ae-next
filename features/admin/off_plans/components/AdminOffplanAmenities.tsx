@@ -12,7 +12,7 @@ function AdminOffplanAmenities({offplanId}: AdminOffplanAmenitiesProps) {
 
     const amenitiesQuery = useGetOffplanFaqs(offplanId)
     const amenities = amenitiesQuery.data
-    const isLoaded = amenitiesQuery.isFetched && !amenitiesQuery.isError
+    const isLoaded = amenitiesQuery.data && !amenitiesQuery.isError
     const isLoading = amenitiesQuery.isLoading
 
     const [addingAmenity, setAddingAmenity] = React.useState(false)

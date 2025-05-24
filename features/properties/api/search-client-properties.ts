@@ -23,9 +23,9 @@ export const searchClientProperties = async (
 ) => {
     try {
         // Extract areas from path if provided
-        const areas = pathName ? extractPathSearchParams(pathName) : [];
+        const params = pathName ? extractPathSearchParams(pathName) : { areas: [] };
         
-        const result = await searchPropertiesAction(offerType, searchParams, areas);
+        const result = await searchPropertiesAction(offerType, searchParams, params.areas);
         return result;
     } catch (error) {
         toast.error('An error occurred while searching properties');

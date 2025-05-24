@@ -8,7 +8,7 @@ import {env} from "@/config/env";
 export const authClient = createAuthClient({
     baseURL: env.NEXT_PUBLIC_APP_URL || '/api/auth',
     debug: true, // Enable debug logging
-    onError: (error) => {
+    onError: (error: { code?: string; message?: string }) => {
         console.error('Auth Client Error:', error);
         // Add more specific diagnostics
         if (error.code === 'ECONNREFUSED') {

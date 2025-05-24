@@ -1,6 +1,7 @@
 'use client'
 import React from 'react';
 import Link from "next/link";
+import Image from "next/image";
 
 interface FooterGridNavigationProps {
     image: string,
@@ -16,7 +17,15 @@ function FooterGridNavigation({image, title, url, caption}: FooterGridNavigation
     return (
         <div onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
              className={'relative col-span-1 h-[350px] w-full rounded-3xl overflow-hidden'}>
-            <img className={'z-0 w-full h-[350px] object-cover absolute inset-0'} src={image} alt={title}/>
+            <div className="absolute inset-0 z-0">
+                <Image 
+                    className="object-cover" 
+                    src={image} 
+                    alt={title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+            </div>
 
             <div className={`absolute z-0 inset-0 ${isHovered ? 'bg-black/80' : 'bg-black/30'}`}>
 

@@ -14,17 +14,7 @@ import {getClientCommunities} from '../community/api/get-client-communities';
 import Fuse from 'fuse.js';
 import {buildPropertySearchUrl} from './hooks/path-search-helper';
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
-
-
-interface CommunityFilterType {
-    slug: string;
-    name: string | null;
-    propertyCount: number;
-    rentCount: number;
-    saleCount: number;
-    commercialRentCount: number;
-    commercialSaleCount: number;
-}
+import { CommunityFilterType } from '@/types/community';
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -95,7 +85,19 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
             setIsLoading(true)
             try {
                 const communitiesData = await getClientCommunities()
-                setCommunities(communitiesData || [])
+                // Transform the data to ensure it matches CommunityFilterType
+                const typedCommunities: CommunityFilterType[] = (communitiesData || []).map(community => ({
+                    id: community.slug || '',  // Use slug as id if not present
+                    slug: community.slug,
+                    name: community.name,
+                    shortName: community.shortName || null,
+                    propertyCount: community.propertyCount || 0,
+                    rentCount: community.rentCount || 0,
+                    saleCount: community.saleCount || 0,
+                    commercialRentCount: community.commercialRentCount || 0,
+                    commercialSaleCount: community.commercialSaleCount || 0
+                }));
+                setCommunities(typedCommunities)
             } catch (error) {
                 console.error('Error fetching communities:', error)
             } finally {
@@ -113,7 +115,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
     const [openMobileSearch, setOpenMobileSearch] = useState(false)
     const [selectedCommunities, setSelectedCommunities] = useState<CommunityFilterType[]>([]);
 
-    const [communityResults, setCommunityResults] = useState<CommunityFilterType[]>(communities);
+    const [communityResults, setCommunityResults] = useState<CommunityFilterType[]>([]);
 
 
     const offeringTypes = [

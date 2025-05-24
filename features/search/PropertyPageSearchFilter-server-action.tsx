@@ -19,16 +19,8 @@ import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import { getCommunitiesAction } from '@/actions/get-communities-action';
 import { searchPropertiesAction } from '@/actions/properties/search-properties-action';
 import { getUnitTypeAction } from '@/actions/properties/get-unit-type-action';
-
-interface CommunityFilterType {
-    slug: string;
-    name: string | null;
-    propertyCount: number;
-    rentCount: number;
-    saleCount: number;
-    commercialRentCount: number;
-    commercialSaleCount: number;
-}
+import { CommunityFilterType } from '@/types/community';
+import { SearchFormData } from './types/property-search.types';
 
 interface PropertyPageSearchFilterProps {
     offeringType: string;
@@ -52,17 +44,21 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
     const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
     
     // Form setup
-    const form = useForm({
+    const form = useForm<SearchFormData>({
         defaultValues: {
-            offeringType: offeringType || 'buy',
-            propertyType: propertyType || 'residential',
+            query: '',
             unitType: '',
             minPrice: '',
             maxPrice: '',
-            minBed: '',
-            maxBed: '',
             minSize: '',
             maxSize: '',
+            bed: 0,
+            bath: 0,
+            status: '',
+            offerType: offeringType === 'rent' ? 'rent' : 'buy',
+            furnishing: '',
+            sortBy: '',
+            currency: 'AED'
         }
     });
 
@@ -73,7 +69,19 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                 setIsLoading(true);
                 // Fetch communities using server action
                 const communityData = await getCommunitiesAction();
-                setCommunities(communityData || []);
+                // Transform data to match CommunityFilterType
+                const typedCommunities: CommunityFilterType[] = (communityData || []).map(community => ({
+                    id: community.slug || '',  // Use slug as id if not present
+                    slug: community.slug,
+                    name: community.name,
+                    shortName: community.shortName || null,
+                    propertyCount: community.propertyCount || 0,
+                    rentCount: community.rentCount || 0,
+                    saleCount: community.saleCount || 0,
+                    commercialRentCount: community.commercialRentCount || 0,
+                    commercialSaleCount: community.commercialSaleCount || 0
+                }));
+                setCommunities(typedCommunities);
                 
                 // Fetch unit types using server action
                 const unitTypeResult = await getUnitTypeAction();
@@ -92,13 +100,21 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
 
     // Extract search parameters from path
     useEffect(() => {
-        const searchParams = extractPathSearchParams(pathname, offeringType);
-        setSearchingFor(searchParams.searchingFor);
+        const searchParams = extractPathSearchParams(pathname);
         
         // Set unit type if found in path
         if (searchParams.unitType) {
             setSelectedUnitType(searchParams.unitType);
             form.setValue('unitType', searchParams.unitType);
+        }
+        
+        // Infer what we're searching for based on the pathname
+        if (offeringType && offeringType === 'rent') {
+            setSearchingFor('Properties for rent');
+        } else if (offeringType && offeringType === 'buy') {
+            setSearchingFor('Properties for sale');
+        } else {
+            setSearchingFor('Properties');
         }
     }, [pathname, offeringType, form]);
 
@@ -121,15 +137,26 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
     }, [searchInputValue, communities]);
 
     // Form submission handler
-    const onSubmit = async (values: any) => {
-        const searchUrl = buildPropertySearchUrl(values, searchingFor);
+    const onSubmit = async (values: SearchFormData) => {
+        // Transform values to match expected format for buildPropertySearchUrl
+        const searchUrl = buildPropertySearchUrl({
+            searchType: values.offerType === 'rent' ? 'rent' : 'buy',
+            selectedCommunities: filteredCommunities,
+            formData: {
+                ...values,
+                minPrice: values.minPrice ? parseFloat(values.minPrice) : undefined, 
+                maxPrice: values.maxPrice ? parseFloat(values.maxPrice) : undefined,
+                minSize: values.minSize ? parseFloat(values.minSize) : undefined,
+                maxSize: values.maxSize ? parseFloat(values.maxSize) : undefined
+            }
+        });
         router.push(searchUrl);
     };
 
     return (
         <div className="w-full py-4 bg-white shadow-sm">
             <div className="max-w-7xl mx-auto px-4">
-                <SearchPageH1Heading pathname={pathname} offeringType={offeringType}/>
+                <SearchPageH1Heading heading={searchingFor || `Properties ${offeringType === 'rent' ? 'for rent' : 'for sale'}`}/>
                 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col md:flex-row gap-4 items-stretch">
@@ -140,7 +167,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                             >
                                 <Search size={18} className="mr-2" />
                                 <span className="text-sm text-gray-500">
-                                    {searchingFor ? formatCommunityNames(searchingFor) : "Where do you want to live?"}
+                                    {searchingFor || "Where do you want to live?"}
                                 </span>
                                 {searchingFor && (
                                     <X 
@@ -260,6 +287,9 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                 setOpen={setMobileFilterOpen}
                 form={form}
                 onSubmit={onSubmit}
+                selectedCommunities={filteredCommunities}
+                setSelectedCommunities={setFilteredCommunities}
+                filtersCount={filteredCommunities.length}
             />
         </div>
     );

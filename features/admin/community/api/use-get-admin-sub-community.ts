@@ -4,12 +4,25 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { getAdminSubCommunities } from "@/actions/admin/get-admin-sub-communities-action";
 
+// Define the SubCommunity interface matching the database schema
+export interface SubCommunity {
+  id: string;
+  name: string | null;
+  label: string | null;
+  communityId: string | null;
+  longitude: string | null;
+  latitude: string | null;
+  slug: string;
+  updatedAt: string | null;
+  createdAt: string;
+}
+
 /**
  * React hook to fetch admin sub-communities via server action
  * This hook mimics the React Query useQuery API to maintain compatibility
  */
 export const useGetAdminSubCommunities = () => {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<SubCommunity[] | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
@@ -25,7 +38,7 @@ export const useGetAdminSubCommunities = () => {
                 throw new Error(result.error || "Failed to fetch sub-communities");
             }
             
-            setData(result.data);
+            setData(result.data || []);
         } catch (err) {
             setIsError(true);
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");

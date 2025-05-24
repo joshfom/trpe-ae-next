@@ -84,6 +84,7 @@ export default function RootLayout({
               width="1"
               style={{display: "none"}}
               src={`https://www.facebook.com/tr?${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}&ev=PageView&noscript=1`}
+              alt="Facebook Pixel"
           />
       </noscript>
       </body>

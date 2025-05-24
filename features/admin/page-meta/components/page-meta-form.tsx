@@ -53,57 +53,56 @@ export function PageMetaForm({defaultValues, onSubmitted, pathname}: PageMetaFor
         },
     });
 
-    const onSubmit = form.handleSubmit((values: FormValues) => {
+    const onSubmit = form.handleSubmit(async (values: FormValues) => {
         console.log('Submitting form values:', values);
 
         // Determine if we're creating or updating based on whether we have defaultValues with an id
         const isUpdating = !!defaultValues?.id;
         
         if (isUpdating) {
-            updateFormMutation.mutate(values, {
-                onSuccess: (data) => {
-                    console.log('Update successful:', data);
-                    if (onSubmitted) {
-                        onSubmitted();
-                    }
-                },
-                onError: (error) => {
-                    console.error('Error updating page meta:', error);
-                    handleFormError(error);
-                },
-            });
+            try {
+                const result = await updateFormMutation.mutate(values);
+                console.log('Update successful:', result);
+                if (onSubmitted) {
+                    onSubmitted();
+                }
+            } catch (error) {
+                console.error('Error updating page meta:', error);
+                handleFormError(error);
+            }
         } else {
-            addFormMutation.mutate(values, {
-                onSuccess: (data) => {
-                    console.log('Creation successful:', data);
-                    form.reset();
-                    if (onSubmitted) {
-                        onSubmitted();
-                    }
-                },
-                onError: (error) => {
-                    console.error('Error creating page meta:', error);
-                    handleFormError(error);
-                },
-            });
+            try {
+                const result = await addFormMutation.mutate(values);
+                console.log('Creation successful:', result);
+                form.reset();
+                if (onSubmitted) {
+                    onSubmitted();
+                }
+            } catch (error) {
+                console.error('Error creating page meta:', error);
+                handleFormError(error);
+            }
         }
     });
     
     // Helper function to handle form errors
-    const handleFormError = (error: Error) => {
-        if (error instanceof Error) {
-            console.error('Error message:', error.message);
-            try {
-                const errorData = JSON.parse(error.message);
-                if (errorData.error) {
-                    form.setError('path', {
-                        type: 'manual',
-                        message: errorData.error
-                    });
-                }
-            } catch (e) {
-                // Not a JSON error
+    const handleFormError = (err: unknown) => {
+        const error = err instanceof Error ? err : new Error('An unknown error occurred');
+        console.error('Error message:', error.message);
+        try {
+            const errorData = JSON.parse(error.message);
+            if (errorData.error) {
+                form.setError('path', {
+                    type: 'manual',
+                    message: errorData.error
+                });
             }
+        } catch (e) {
+            // Not a JSON error
+            form.setError('path', {
+                type: 'manual',
+                message: error.message
+            });
         }
     };
 
@@ -296,9 +295,9 @@ export function PageMetaForm({defaultValues, onSubmitted, pathname}: PageMetaFor
 
                 <Button 
                     type="submit" 
-                    disabled={addFormMutation.isPending || updateFormMutation.isPending}
+                    disabled={addFormMutation.isLoading || updateFormMutation.isLoading}
                 >
-                    {addFormMutation.isPending || updateFormMutation.isPending ? 'Saving...' : 
+                    {addFormMutation.isLoading || updateFormMutation.isLoading ? 'Saving...' : 
                      defaultValues?.id ? 'Update Page' : 'Create Page'}
                 </Button>
             </form>

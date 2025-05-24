@@ -1,4 +1,3 @@
-import {useQuery} from "@tanstack/react-query";
 import {client} from "@/lib/hono";
 import {toast} from "sonner";
 

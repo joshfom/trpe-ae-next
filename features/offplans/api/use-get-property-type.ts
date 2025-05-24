@@ -1,25 +1,46 @@
-import {useQuery} from "@tanstack/react-query";
-import {client} from "@/lib/hono";
-import {toast} from "sonner";
+"use client";
 
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import { getPropertyTypes } from "@/actions/property/get-property-type-action";
 
+/**
+ * Custom hook to fetch property types
+ * This hook mimics the React Query useQuery API to maintain compatibility
+ */
 export const useGetPropertyType = () => {
-    return useQuery({
-        queryKey: ["unitType"],
-        queryFn: async () => {
-            const response = await client.api.unit_types.$get();
+    const [data, setData] = useState<any>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<Error | null>(null);
 
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            const result = await getPropertyTypes();
 
-            if (!response.ok) {
-                throw new Error('An error occurred while fetching types')
+            if (!result.success) {
+                throw new Error(result.error || 'An error occurred while fetching property types');
             }
 
-            const {data} = await response.json()
+            setData({ data: result.data });
+        } catch (err) {
+            const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
+            setError(errorObj);
+            toast.error('Failed to fetch property types');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-            return {
-                data
-            }
-        },
-    })
+    return {
+        data,
+        isLoading,
+        error,
+        isError: !!error,
+        refetch: fetchData
+    };
 }

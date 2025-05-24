@@ -1,6 +1,6 @@
+// Server component that manages the layout
 import React from 'react';
-import SiteFooter from "@/components/site-footer";
-import SiteTopNavigation from "@/components/site-top-navigation";
+import SiteLayoutClient from './site-layout-client';
 
 interface LayoutProps {
     children: React.ReactNode
@@ -8,16 +8,11 @@ interface LayoutProps {
 
 function Layout({children}: LayoutProps) {
     return (
-        <>
-            <SiteTopNavigation />
-
-           <div className="">
-               {children}
-           </div>
-
-
-            <SiteFooter/>
-        </>
+        <SiteLayoutClient>
+            <div className="">
+                {children}
+            </div>
+        </SiteLayoutClient>
     );
 }
 

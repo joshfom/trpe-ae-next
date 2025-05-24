@@ -2,7 +2,7 @@
 import React from 'react';
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useForm} from "react-hook-form";
-import {useGetAdminSubCommunities} from '../api/use-get-admin-sub-community';
+import {useGetAdminSubCommunities, SubCommunity} from '../api/use-get-admin-sub-community';
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table';
 import {Button} from '@/components/ui/button';
 import {ADMIN_BASE_PATH} from '@/lib/constants';
@@ -64,7 +64,7 @@ function SubCommunityList({communityId}: SubCommunityListProps) {
                     </TableHeader>
                     <TableBody>
                         {
-                            subCommunities?.map((subCommunity) => (
+                            subCommunities?.map((subCommunity: SubCommunity) => (
                                 <TableRow key={subCommunity.id}>
                                     <TableCell>{subCommunity.name}</TableCell>
                                     <TableCell>

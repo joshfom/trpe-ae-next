@@ -1,27 +1,36 @@
 "use client"
-import React from 'react';
-import TopNavigation from "@/components/top-navigation";
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+// Use dynamic import with SSR disabled for the TopNavigation component
+const TopNavigation = dynamic(() => import("@/components/top-navigation"), { ssr: false });
 import Link from "next/link";
+import Image from "next/image";
 import {usePathname} from 'next/navigation'
 import {Phone} from 'lucide-react';
 
 function SiteTopNavigation() {
-    const [scroll, setScroll] = React.useState(0)
-    const [isHomePage, setIsHomePage] = React.useState(false)
-    // check if user scrolled is more than 5px
+    const [scroll, setScroll] = useState(0)
+    const [isHomePage, setIsHomePage] = useState(false)
     const pathname = usePathname()
 
-    React.useEffect(() => {
-        window.addEventListener('scroll', () => {
-            setScroll(window.scrollY)
-        })
-
-
-        if (pathname === '/') {
-            setIsHomePage(true)
-        }
-
+    // Memoize the check for homepage
+    useEffect(() => {
+        setIsHomePage(pathname === '/')
+    }, [pathname])
+    
+    // Memoize scroll handler to prevent recreation on each render
+    const handleScroll = useCallback(() => {
+        setScroll(window.scrollY)
     }, [])
+
+    // Setup and cleanup the event listener
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [handleScroll])
 
    
 
@@ -51,9 +60,12 @@ function SiteTopNavigation() {
 
                             <div className="flex-1 flex justify-center">
                                 <Link className={''} href={'/'}>
-                                    <img
-                                        src={'/trpe-logo.webp'} alt="TRPE Logo" 
-                                        width={213} height={40}
+                                    <Image
+                                        src={'/trpe-logo.webp'} 
+                                        alt="TRPE Logo" 
+                                        width={213} 
+                                        height={40}
+                                        priority
                                     />
                                 </Link>
                             </div>
@@ -82,4 +94,5 @@ function SiteTopNavigation() {
         ;
 }
 
-export default SiteTopNavigation;
+// Memoize the entire component to prevent unnecessary re-renders
+export default React.memo(SiteTopNavigation);

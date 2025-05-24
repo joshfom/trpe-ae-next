@@ -1,17 +1,5 @@
 import path from "path";
-
-/**
- * Represents a community filter type.
- */
-interface CommunityFilterType {
-    slug: string;
-    name: string | null;
-    propertyCount: number;
-    rentCount: number;
-    saleCount: number;
-    commercialRentCount: number;
-    commercialSaleCount: number;
-}
+import { CommunityFilterType } from "@/types/community";
 
 /**
  * Represents the search parameters extracted from the URL.

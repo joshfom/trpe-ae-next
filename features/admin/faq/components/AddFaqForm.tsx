@@ -95,13 +95,13 @@ function AddFaqForm({targetId, target, faqAdded}: AddFaqFormProps) {
                         type={'button'}
                         onClick={faqAdded}
                         variant={'destructive'}
-                        loading={addFaqMu.isPending}
+                        loading={addFaqMu.isLoading}
                         className={'btn btn-primary w-40'}>
                         Cancel
                     </Button>
                     <Button
                         type={'submit'}
-                        loading={addFaqMu.isPending}
+                        loading={addFaqMu.isLoading}
                         className={'btn btn-primary w-40'}>
                         Save FAQ
                     </Button>

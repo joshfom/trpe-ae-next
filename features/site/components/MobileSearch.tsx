@@ -16,17 +16,7 @@ import PriceFilter from "@/features/search/PriceFilter";
 import SizeFilter from "@/features/search/SizeFilter";
 import FurnishingFilter from "@/features/search/components/Filters/FurnishingFilter";
 import BedroomFilter from "@/features/search/components/Filters/BedroomFilter";
-
-
-interface CommunityFilterType {
-    slug: string;
-    name: string | null;
-    propertyCount: number;
-    rentCount: number;
-    saleCount: number;
-    commercialRentCount: number;
-    commercialSaleCount: number;
-}
+import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
 
 const OFFERING_TYPES = [
     {
@@ -74,7 +64,9 @@ function MobileSearch({
             setIsLoading(true);
             try {
                 const communitiesData = await getClientCommunities();
-                setCommunities(communitiesData || []);
+                // Convert API data to our CommunityFilterType using the utility function
+                const processedCommunities = (communitiesData || []).map(toCommunityFilterType);
+                setCommunities(processedCommunities);
             } catch (error) {
                 console.error('Error fetching communities:', error);
             } finally {
