@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet";
 import {Button} from "@/components/ui/button";
 import {Search, SlidersVertical} from "lucide-react";
@@ -26,7 +26,7 @@ interface PropertyFilterSlideOverProps {
     onSubmit: any;
 }
 
-function PropertyFilterSlideOver(
+const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
     {
         form,
         showFilters,
@@ -37,15 +37,85 @@ function PropertyFilterSlideOver(
         open,
         setOpen,
         onSubmit
-    }: PropertyFilterSlideOverProps
-) {
+    }
+) => {
     // Handle both prop styles (original and server-action version)
     const isOpen = open !== undefined ? open : showFilters;
     const setIsOpen = setOpen || setShowFilters || (() => {});
+
+    // Memoized callback functions for form value setters
+    const handleFurnishingReset = useCallback(() => {
+        form.setValue('status', '');
+    }, [form]);
+
+    const handleFurnishingFurnished = useCallback(() => {
+        form.setValue('furnishing', 'furnished');
+    }, [form]);
+
+    const handleFurnishingPartly = useCallback(() => {
+        form.setValue('furnishing', 'partly-furnished');
+    }, [form]);
+
+    const handleStatusReset = useCallback(() => {
+        form.setValue('status', '');
+    }, [form]);
+
+    const handleStatusReady = useCallback(() => {
+        form.setValue('status', 'ready');
+    }, [form]);
+
+    const handleStatusOffPlan = useCallback(() => {
+        form.setValue('status', 'off-plan');
+    }, [form]);
+
+    const handleBedAny = useCallback(() => {
+        form.setValue('bed', 0);
+    }, [form]);
+
+    const handleBed1 = useCallback(() => {
+        form.setValue('bed', 1);
+    }, [form]);
+
+    const handleBed2 = useCallback(() => {
+        form.setValue('bed', 2);
+    }, [form]);
+
+    const handleBed3 = useCallback(() => {
+        form.setValue('bed', 3);
+    }, [form]);
+
+    const handleBed4 = useCallback(() => {
+        form.setValue('bed', 4);
+    }, [form]);
+
+    const handleBed5 = useCallback(() => {
+        form.setValue('bed', 5);
+    }, [form]);
+
+    const handleBed6 = useCallback(() => {
+        form.setValue('bed', 6);
+    }, [form]);
+
+    const handleBed7 = useCallback(() => {
+        form.setValue('bed', 7);
+    }, [form]);
+
+    const handleClearFilters = useCallback(() => {
+        form.reset();
+        setSelectedCommunities([]);
+    }, [form, setSelectedCommunities]);
+
+    const handleSearchSubmit = useCallback(() => {
+        form.handleSubmit(onSubmit)();
+        setIsOpen(false);
+    }, [form, onSubmit, setIsOpen]);
+
+    const handleOpenFilter = useCallback(() => {
+        setIsOpen(true);
+    }, [setIsOpen]);
+
     return (
         <div className="flex pl-8 lg:pl-16 space-x-6 items-center">
-
-
             <Sheet
                 open={isOpen}
                 onOpenChange={setIsOpen}
@@ -66,7 +136,7 @@ function PropertyFilterSlideOver(
                         <div className={'absolute -right-4 -top-4'}>
                             <button
                                 type={'button'}
-                                onClick={() => setIsOpen(true)}
+                                onClick={handleOpenFilter}
                                 className="flex items-center bg-black text-white justify-center border px-3 rounded-full  py-1">
                                 {
                                     filtersCount
@@ -109,24 +179,18 @@ function PropertyFilterSlideOver(
 
                             <div className="flex py-3 gap-2 lg:gap-4">
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('status', '')
-                                        }}
+                                        onClick={handleFurnishingReset}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('furnishing') === '' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     All Furnishing
                                 </button>
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('furnishing', 'furnished')
-                                        }}
+                                        onClick={handleFurnishingFurnished}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('furnishing') === 'furnished' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     Furnished
                                 </button>
 
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('furnishing', 'partly-furnished')
-                                        }}
+                                        onClick={handleFurnishingPartly}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('furnishing') === 'partly-furnished' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     Partly Furnished
                                 </button>
@@ -142,24 +206,18 @@ function PropertyFilterSlideOver(
 
                             <div className="flex py-3 gap-2 lg:gap-4">
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('status', '')
-                                        }}
+                                        onClick={handleStatusReset}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('status') === '' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     Any
                                 </button>
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('status', 'ready')
-                                        }}
+                                        onClick={handleStatusReady}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('status') === 'ready' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     Ready
                                 </button>
 
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('status', 'off-plan')
-                                        }}
+                                        onClick={handleStatusOffPlan}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('status') === 'off-plan' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                                     Off-plan
                                 </button>
@@ -213,17 +271,13 @@ function PropertyFilterSlideOver(
 
                             <div className="flex py-3 gap-3 flex-wrap">
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('bed', 0)
-                                        }}
+                                        onClick={handleBedAny}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 0 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
                                     Any
                                 </button>
                                 <button type={'button'}
-                                        onClick={() => {
-                                            form.setValue('bed', 1)
-                                        }}
+                                        onClick={handleBed1}
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 1 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
                                     1+
@@ -231,9 +285,7 @@ function PropertyFilterSlideOver(
 
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 2)
-                                            }
+                                            handleBed2
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -242,9 +294,7 @@ function PropertyFilterSlideOver(
 
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 3)
-                                            }
+                                            handleBed3
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 3 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -253,9 +303,7 @@ function PropertyFilterSlideOver(
 
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 4)
-                                            }
+                                            handleBed4
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 4 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -264,9 +312,7 @@ function PropertyFilterSlideOver(
 
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 5)
-                                            }
+                                            handleBed5
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 5 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -274,9 +320,7 @@ function PropertyFilterSlideOver(
                                 </button>
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 6)
-                                            }
+                                            handleBed6
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 6 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -284,9 +328,7 @@ function PropertyFilterSlideOver(
                                 </button>
                                 <button type={'button'}
                                         onClick={
-                                            () => {
-                                                form.setValue('bed', 7)
-                                            }
+                                            handleBed7
                                         }
                                         className={` px-4 lg:px-6 py-2 border rounded-full ${form.watch('bed') === 7 ? 'bg-black text-white' : 'bg-white text-black'}`}
                                 >
@@ -337,19 +379,13 @@ function PropertyFilterSlideOver(
                         className={'flex justify-between  py-4 pb-8 px-6 items-center'}>
                         <Button
                             variant={'destructive'}
-                            onClick={() => {
-                                form.reset();
-                                setSelectedCommunities([]);
-                            }}
+                            onClick={handleClearFilters}
                             type={'button'}
                         >
                             Clear
                         </Button>
                         <Button
-                            onClick={() => {
-                                form.handleSubmit(onSubmit)();
-                                setIsOpen(false);
-                            }}
+                            onClick={handleSearchSubmit}
                             className={' bg-black text-white py-3 px-8 '}>
                             <Search className="h-5 w-5 text-white stroke-1 mr-2"/>
                             Search
@@ -368,6 +404,8 @@ function PropertyFilterSlideOver(
 
         </div>
     );
-}
+})
+
+PropertyFilterSlideOver.displayName = 'PropertyFilterSlideOver';
 
 export default PropertyFilterSlideOver;

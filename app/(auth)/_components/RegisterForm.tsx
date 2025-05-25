@@ -1,5 +1,5 @@
 "use client";
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo, useCallback, useMemo} from 'react';
 import {SubmitHandler, useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -20,21 +20,24 @@ import {signUpWithEmailAndPassword} from "@/actions/auth/auth-actions";
 import {useRouter} from "next/navigation";
 import {SignUpFormSchema} from "@/lib/types/form-schema/auth-form-schema";
 
-function RegisterForm() {
+const RegisterForm = memo(() => {
     // Create form state with zod validation
     const [submitError, setSubmitError] = useState<string | null>('');
     const router = useRouter();
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        email: "",
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmPassword: ""
+    }), []);
+
     const form = useForm<z.infer<typeof SignUpFormSchema>>({
         mode: "onBlur",
         resolver: zodResolver(SignUpFormSchema),
-        defaultValues: {
-            email: "",
-            firstName: "",
-            lastName: "",
-            password: "",
-            confirmPassword: ""
-        },
+        defaultValues,
     });
 
     // For debugging purposes - can be removed in production
@@ -47,7 +50,7 @@ function RegisterForm() {
 
     const isLoading = form.formState.isSubmitting;
 
-    const onSubmit: SubmitHandler<z.infer<typeof SignUpFormSchema>> = async (formData) => {
+    const onSubmit: SubmitHandler<z.infer<typeof SignUpFormSchema>> = useCallback(async (formData) => {
         try {
             // Validate that all required fields are present
             if (!formData.email || !formData.password || !formData.firstName ||
@@ -82,12 +85,12 @@ function RegisterForm() {
             console.error('Registration error:', error);
             setSubmitError(error?.message || 'An unexpected error occurred');
         }
-    };
+    }, [router]);
 
     // Clear error on form change
-    const handleFormChange = () => {
+    const handleFormChange = useCallback(() => {
         if (submitError) setSubmitError('');
-    };
+    }, [submitError]);
 
     return (
         <div>
@@ -222,6 +225,8 @@ function RegisterForm() {
             </div>
         </div>
     );
-}
+});
+
+RegisterForm.displayName = 'RegisterForm';
 
 export default RegisterForm;

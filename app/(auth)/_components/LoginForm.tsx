@@ -1,5 +1,5 @@
 "use client";
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo, useCallback, useMemo} from 'react';
 import {SubmitHandler, useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -21,19 +21,22 @@ import {useRouter} from "next/navigation";
 import {signInWithEmailAndPassword} from "@/actions/auth/auth-actions";
 import {LoginFormSchema} from "@/lib/types/form-schema/auth-form-schema";
 
-function LoginForm() {
+const LoginForm = memo(() => {
     // Create form state with zod validation
     const [submitError, setSubmitError] = useState<string | null>('');
     const router = useRouter();
+
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        email: "",
+        password: "",
+    }), []);
 
     // Define the form using useForm hook
     const form = useForm<z.infer<typeof LoginFormSchema>>({
         mode: "onChange",
         resolver: zodResolver(LoginFormSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
+        defaultValues,
     });
 
     // For debugging purposes only
@@ -50,7 +53,7 @@ function LoginForm() {
      * @param {Object} formData - The form data to be submitted.
      * @returns {Promise} A Promise that resolves once the submission is complete.
      */
-    const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = async (formData) => {
+    const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = useCallback(async (formData) => {
         // Log the current state of the form
         const currentValues = form.getValues();
         console.log('Form direct values:', currentValues);
@@ -78,12 +81,12 @@ function LoginForm() {
             console.error('Login error:', error);
             setSubmitError(error?.message || 'An unexpected error occurred');
         }
-    };
+    }, [form, router]);
 
     // Clear error on form change
-    const handleFormChange = () => {
+    const handleFormChange = useCallback(() => {
         if (submitError) setSubmitError('');
-    };
+    }, [submitError]);
 
     return (
         <div className="px-6 min-w-[500px]">
@@ -161,6 +164,8 @@ function LoginForm() {
             </div>
         </div>
     );
-}
+});
+
+LoginForm.displayName = 'LoginForm';
 
 export default LoginForm;

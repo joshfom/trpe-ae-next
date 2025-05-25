@@ -1,5 +1,5 @@
 "use client"
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, memo, useCallback, useMemo} from 'react';
 import {useForm} from "react-hook-form";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -26,17 +26,14 @@ interface AddOffPlanFormProps {
 }
 
 
-function AddOffPlanForm({offplan}: AddOffPlanFormProps) {
-
+const AddOffPlanForm = memo<AddOffPlanFormProps>(({offplan}) => {
     const [showDeveloper, setShowDeveloper] = useState(false)
     const [showCommunity, setShowCommunity] = useState(false)
     const communityQuery = useGetAdminCommunities()
     const developerQuery = useGetAdminDeveloper()
     const [isEditing, setIsEditing] = useState(false)
 
-
     const router = useRouter()
-
 
     const communities = communityQuery.data as unknown as CommunityType[]
     const developers = developerQuery.data  as unknown as DeveloperType[]
@@ -44,36 +41,46 @@ function AddOffPlanForm({offplan}: AddOffPlanFormProps) {
     const mutation = useAddOffplan()
     const updateOffplanMutation = useUpdateOffplan(offplan?.id)
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: offplan?.name || '',
+        about: offplan?.about || '',
+        floors: offplan?.floors || null,
+        fromPrice: offplan?.fromPrice || null,
+        toPrice: offplan?.toPrice || null,
+        developerId: offplan?.developerId || '',
+        paymentTitle: offplan?.paymentTitle || '',
+        communityId: offplan?.communityId || '',
+        longitude: offplan?.longitude || '',
+        latitude: offplan?.latitude || '',
+        fromSize: offplan?.fromSize || null,
+        toSize: offplan?.toSize || null,
+        serviceCharge: offplan?.serviceCharge || null,
+        permitNumber: offplan?.permitNumber || '',
+    }), [offplan]);
+
     const form = useForm({
         mode: "onChange",
         resolver: zodResolver(OffplanFormSchema),
-        defaultValues: {
-            name: offplan?.name || '',
-            about: offplan?.about || '',
-            floors: offplan?.floors || null,
-            fromPrice: offplan?.fromPrice || null,
-            toPrice: offplan?.toPrice || null,
-            developerId: offplan?.developerId || '',
-            paymentTitle: offplan?.paymentTitle || '',
-            communityId: offplan?.communityId || '',
-            longitude: offplan?.longitude || '',
-            latitude: offplan?.latitude || '',
-            fromSize: offplan?.fromSize || null,
-            toSize: offplan?.toSize || null,
-            serviceCharge: offplan?.serviceCharge || null,
-            permitNumber: offplan?.permitNumber || '',
-        }
-    })
+        defaultValues,
+    });
 
-
-    const onSubmit = (values: formValues) => {
-
+    // Memoize callback functions
+    const onSubmit = useCallback((values: formValues) => {
         if(isEditing){
             updateOffplanMutation.mutate(values)
         }else{
             mutation.mutate(values)
         }
-    }
+    }, [isEditing, updateOffplanMutation, mutation]);
+
+    const handleDeveloperToggle = useCallback(() => {
+        setShowDeveloper(prev => !prev);
+    }, []);
+
+    const handleCommunityToggle = useCallback(() => {
+        setShowCommunity(prev => !prev);
+    }, []);
 
 
     useEffect(() => {
@@ -421,6 +428,8 @@ function AddOffPlanForm({offplan}: AddOffPlanFormProps) {
             </form>
         </Form>
     );
-}
+});
+
+AddOffPlanForm.displayName = 'AddOffPlanForm';
 
 export default AddOffPlanForm;

@@ -1,26 +1,28 @@
 "use client"
-import React, {useState} from 'react';
-import {PhoneNumberUtil} from 'google-libphonenumber';
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {PhoneInput} from "react-international-phone";
+import React, { useState, useCallback, useMemo, memo } from 'react';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { PhoneInput } from "react-international-phone";
 import 'react-international-phone/style.css';
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
-import {useSubmitForm} from "@/features/site/api/use-submit-form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useSubmitForm } from "@/features/site/api/use-submit-form";
 
 const FormSchema = z.object({
-    firstName: z.string().min(3, {message: 'Name is required'}),
+    firstName: z.string().min(3, { message: 'Name is required' }),
     requestType: z.string().optional(),
-    email: z.string().email().min(4, {message: 'Enter a valid email'}),
-    phone: z.string().min(4, {message: 'Enter a valid phone number'}),
+    email: z.string().email().min(4, { message: 'Enter a valid email' }),
+    phone: z.string().min(4, { message: 'Enter a valid phone number' }),
     message: z.string().optional(),
 });
 
+// Memoize phone utility instance
 const phoneUtil = PhoneNumberUtil.getInstance();
 
+// Memoize phone validation function
 const isPhoneValid = (phone: string) => {
     try {
         return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
@@ -33,30 +35,33 @@ type FormValues = z.infer<typeof FormSchema>
 
 interface OffplanContactFormProps {
     requestType?: string,
-    projectName? : string,
+    projectName?: string,
     submissionComplete: () => void
 }
 
-function OffplanContactForm({requestType = 'Floor plans', projectName, submissionComplete}: OffplanContactFormProps) {
+const OffplanContactForm = memo(({ requestType = 'Floor plans', projectName, submissionComplete }: OffplanContactFormProps) => {
     const [formSubmitted, setFormSubmitted] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const mutation = useSubmitForm()
+
+    // Memoize default values
+    const defaultValues = useMemo(() => ({
+        firstName: '',
+        requestType: requestType,
+        email: '',
+        phone: '',
+        message: '',
+    } as FormValues), [requestType]);
 
     const form = useForm<FormValues>({
         mode: 'onBlur',
         resolver: zodResolver(FormSchema),
         reValidateMode: 'onChange',
-        defaultValues: {
-            firstName: '',
-            requestType: requestType,
-            email: '',
-            phone: '',
-            message: '',
-        } as FormValues
+        defaultValues
     })
 
-    //send data to external CRM
-    const sendBitrix = async (data: FormValues) => {
+    // Memoize sendBitrix function
+    const sendBitrix = useCallback(async (data: FormValues) => {
         const crmUrl = `https://crm.trpeglobal.com/rest/18/l3lel0d42eptuymb/crm.lead.add.json?
             FIELDS[TITLE]=${encodeURIComponent(`New TRPE.AE Offplan lead - ${projectName}`)}
             &FIELDS[NAME]=${encodeURIComponent(data?.firstName!)}
@@ -78,15 +83,15 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
             }
         } catch (error) {
             console.error('Error creating lead in CRM:', error);
-            // return c.json({ error: 'Failed to create lead in CRM' }, 500);
         }
-    }
+    }, [projectName]);
 
-    const onSubmit = (values: FormValues) => {
+    // Memoize onSubmit handler
+    const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
         mutation.mutate(values, {
-            onSuccess: (data) => {
+            onSuccess: (data: any) => {
                 sendBitrix(values)
                 form.reset()
                 submissionComplete()
@@ -96,21 +101,23 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
                 setIsSubmitting(false)
             }
         })
-    }
+    }, [mutation, sendBitrix, form, submissionComplete]);
+
+    // Memoize phone change handler
+    const handlePhoneChange = useCallback((value: string) => {
+        isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
+    }, [form]);
 
     return (
         <Form {...form}>
 
             <form
-                onSubmit={
-                // @ts-ignore
-                form.handleSubmit(onSubmit)
-            }
+                onSubmit={form.handleSubmit(onSubmit)}
                 className="flex flex-col pt-12 gap-8">
                 <div className="col-span-1 lg:col-span-2">
                     <FormField
-                        name={'name'}
-                        render={({field, formState}) => (
+                        name={'firstName'}
+                        render={({field}) => (
                             <FormItem>
                                 <Input
                                     {...field}
@@ -126,7 +133,7 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
                 <div className="col-span-1 ">
                     <FormField
                         name={'email'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <Input
                                     type={'email'}
@@ -143,16 +150,13 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
                 <div className="col-span-1 ">
                     <FormField
                         name={'phone'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <PhoneInput
                                     value={field.value}
                                     placeholder="Your phone"
                                     className="w-full bg-transparent text-white"
-                                    onChange={(value) => {
-                                        // @ts-ignore
-                                        isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
-                                    }}
+                                    onChange={handlePhoneChange}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -172,6 +176,8 @@ function OffplanContactForm({requestType = 'Floor plans', projectName, submissio
             </form>
         </Form>
     );
-}
+});
+
+OffplanContactForm.displayName = 'OffplanContactForm';
 
 export default OffplanContactForm;

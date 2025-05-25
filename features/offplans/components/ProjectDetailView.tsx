@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect} from 'react';
+import React, { memo, useEffect, useCallback } from 'react';
 import {Button} from "@/components/ui/button";
 import {Share} from "lucide-react";
 import Link from "next/link";
@@ -30,7 +30,7 @@ interface ProjectDetailViewProps {
     // projectSlug: string
 }
 
-function ProjectDetailView({project}: ProjectDetailViewProps) {
+const ProjectDetailView = memo<ProjectDetailViewProps>(({project}) => {
     const [viewGallery, setViewGallery] = React.useState(false)
     const [openDialog, setOpenDialog] = React.useState(false)
     const pathname = usePathname()
@@ -116,6 +116,32 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
     //     }
     // }
 
+    // Memoized callback functions
+    const handleViewGallery = useCallback(() => {
+        setViewGallery(true);
+    }, []);
+
+    const handleRequestFloorPlan = useCallback(() => {
+        requestFloorPlan();
+    }, []);
+
+    const handleRequestBrochure = useCallback(() => {
+        requestBrochure();
+    }, []);
+
+    const handleImageClick = useCallback(() => {
+        setViewGallery(true);
+    }, []);
+
+    const handleCloseLightbox = useCallback(() => {
+        setViewGallery(false);
+    }, []);
+
+    const handleDialogSubmissionComplete = useCallback(() => {
+        setOpenDialog(false);
+    }, []);
+
+
     return (
         <div className={'py-8 px-6 max-w-7xl mx-auto'}>
 
@@ -186,7 +212,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                 <div className={'col-span-1 relative h-[300px] lg:h-[550px]'}>
                     <div className="relative h-full w-full">
                         <Image 
-                            onClick={() => setViewGallery(true)} 
+                            onClick={handleImageClick} 
                             src={project.images[1].url} 
                             alt={project.name}
                             fill
@@ -206,7 +232,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                     )
                 }
                 <div className={'pt-3'}>
-                    <Button onClick={() => setViewGallery(true)} className={'py-1 text-sm'} variant={'outline'}>
+                    <Button onClick={handleViewGallery} className={'py-1 text-sm'} variant={'outline'}>
                         View Gallery
                     </Button>
                 </div>
@@ -264,7 +290,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                             project.images.slice(0, 6).map((image, index) => (
                                 <div key={index} className={'relative'}>
                                     <Image 
-                                        onClick={() => setViewGallery(true)} 
+                                        onClick={handleImageClick} 
                                         src={image.url} 
                                         alt={`${project.name} - image ${index+1}`}
                                         width={300}
@@ -277,16 +303,16 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                     </div>
                     <div className="flex justify-end space-x-6">
                         <Button
-                            onClick={() => requestFloorPlan()}
+                            onClick={handleRequestFloorPlan}
                         >
                             Download Floor Plan
                         </Button>
                         <Button
-                            onClick={() => requestBrochure()}
+                            onClick={handleRequestBrochure}
                         >
                             Download Brochure
                         </Button>
-                        <Button onClick={() => setViewGallery(true)}
+                        <Button onClick={handleViewGallery}
                                 variant={'outline'}>
                             View Gallery
                         </Button>
@@ -348,7 +374,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
             <Lightbox
                 open={viewGallery}
                 plugins={[Captions, Zoom]}
-                close={() => setViewGallery(false)}
+                close={handleCloseLightbox}
                 zoom={{
                     maxZoomPixelRatio,
                     zoomInMultiplier,
@@ -377,7 +403,7 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
                         <DialogTitle>Request {dialogTitle}</DialogTitle>
                         <DialogDescription>
                             <OffplanContactForm
-                                submissionComplete={() => setOpenDialog(false)}
+                                submissionComplete={handleDialogSubmissionComplete}
                                 projectName={project.name}
                                 requestType={dialogTitle}
                             />
@@ -388,6 +414,8 @@ function ProjectDetailView({project}: ProjectDetailViewProps) {
 
         </div>
     );
-}
+})
 
 export default ProjectDetailView;
+
+ProjectDetailView.displayName = 'ProjectDetailView';

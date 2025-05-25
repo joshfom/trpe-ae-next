@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {useEdgeStore} from "@/db/edgestore";
 import {useForm} from "react-hook-form";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
@@ -26,18 +26,20 @@ function AuthorForm({isOpen, setIsOpen}: AuthorFormProps) {
 
     const mutation = useAddAuthor();
 
+    const defaultValues = useMemo(() => ({
+        name: '',
+        about: '',
+        avatar: ''
+    }), []);
+
     const form = useForm<FormValues>({
         mode: "onChange",
         reValidateMode: "onChange",
         resolver: zodResolver(authorFormSchema),
-        defaultValues: {
-            name: '',
-            about: '',
-            avatar: ''
-        }
+        defaultValues
     });
 
-    const updateAvatar = async (file: File | undefined) => {
+    const updateAvatar = useCallback(async (file: File | undefined) => {
         if (file) {
             const res = await edgestore.publicFiles.upload({
                 file,
@@ -50,9 +52,9 @@ function AuthorForm({isOpen, setIsOpen}: AuthorFormProps) {
             setFile(file);
             form.setValue('avatar', res.url);
         }
-    };
+    }, [edgestore, form]);
 
-    const onSubmit = (values: FormValues) => {
+    const onSubmit = useCallback((values: FormValues) => {
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false);
@@ -60,7 +62,11 @@ function AuthorForm({isOpen, setIsOpen}: AuthorFormProps) {
                 setFile(undefined);
             }
         });
-    };
+    }, [mutation, setIsOpen, form]);
+
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, [setIsOpen]);
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -123,7 +129,7 @@ function AuthorForm({isOpen, setIsOpen}: AuthorFormProps) {
                             <div className="flex justify-between pt-8 items-center space-x-4">
                                 <Button
                                     variant={'destructive'}
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={handleCancelClick}
                                     type={'button'}
                                     className={'btn btn-secondary'}>
                                     Cancel
@@ -143,4 +149,7 @@ function AuthorForm({isOpen, setIsOpen}: AuthorFormProps) {
     );
 }
 
-export default AuthorForm;
+const AuthorFormMemo = memo(AuthorForm);
+AuthorFormMemo.displayName = 'AuthorForm';
+
+export default AuthorFormMemo;

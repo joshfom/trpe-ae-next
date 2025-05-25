@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import {Dot} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -16,57 +16,66 @@ interface ProjectCardProps {
     project: ProjectType
 }
 
-function ProjectCard({project}: ProjectCardProps) {
+const ProjectCard = memo<ProjectCardProps>(({ project }) => {
+    // Memoize computed values
+    const imageUrls = useMemo(() => 
+        project.images.slice(0, 3).map(image => image.url), 
+        [project.images]
+    );
+    
+    const formattedValues = useMemo(() => ({
+        title: truncateText(project.name, 35),
+        description: prepareExcerpt(project.about, 200),
+        fromPrice: currencyConverter(parseInt(`${project.fromPrice}`)),
+        toSize: unitConverter(parseInt(`${project.toSize}`) / 100)
+    }), [project.name, project.about, project.fromPrice, project.toSize]);
 
-   const imageUrls = project.images.slice(0, 3).map(image => image.url);
+    const projectLink = useMemo(() => 
+        `/off-plan/${project.slug}`, 
+        [project.slug]
+    );
+
+    const communityLink = useMemo(() => 
+        `/communities/${project.community?.slug}`,
+        [project.community?.slug]
+    );
+
+    const developerLink = useMemo(() =>
+        `/developers/${project.developer?.slug}`,
+        [project.developer?.slug]
+    );
     return (
-        <div
-            className={'rounded-xl  bg-white'}>
+        <div className={'rounded-xl bg-white'}>
             <div className="relative">
                 <div className="relative">
-                    {
-                        project.images.length > 0 && (
-                            <div className="h-96 ">
-                                <ImageSwiper images={imageUrls}/>
-                            </div>
-                        )
-                    }
+                    {project.images.length > 0 && (
+                        <div className="h-96">
+                            <ImageSwiper images={imageUrls}/>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="p-3 pt-8 border-b border-x rounded-b-xl border-white/20 relative">
-                <div
-                    className="flex flex-col space-y-2 text-lg justify-center">
-                    <Link href={`/off-plan/${project.slug}`} className={'text-xl font-semibold'}>
-                        {
-                            truncateText(project.name, 35)
-                        }
+                <div className="flex flex-col space-y-2 text-lg justify-center">
+                    <Link href={projectLink} className={'text-xl font-semibold'}>
+                        {formattedValues.title}
                     </Link>
-
                 </div>
                 <div className="py-2">
-                    <Link href={`/off-plan/${project.slug}`}
-                          className={'text-sm '}>
-                        {
-                            prepareExcerpt(project.about, 200)
-                        }
+                    <Link href={projectLink} className={'text-sm'}>
+                        {formattedValues.description}
                     </Link>
                 </div>
-                <div
-                    className="absolute  z-20  text-white -top-4 left-4">
-                    <p
-                        className={'rounded-full  bg-[#141414] border border-white py-1 px-3 text-center text-white text-sm'}>
+                <div className="absolute z-20 text-white -top-4 left-4">
+                    <p className={'rounded-full bg-[#141414] border border-white py-1 px-3 text-center text-white text-sm'}>
                         <span className="sr-only">Property Details</span>
-                        <Link href={`/communities/${project.community?.slug}`}>
-                            {
-                                project.community?.name
-                            }
+                        <Link href={communityLink}>
+                            {project.community?.name}
                         </Link>
-
                     </p>
                 </div>
 
-                <div
-                    className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-4 items-center space-x-2 pb-2 justify-between">
+                <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-4 items-center space-x-2 pb-2 justify-between">
                     <div className="p-3 text-center">
                         <div className="h-24 w-full flex justify-center items-center relative">
                             <Image 
@@ -82,25 +91,22 @@ function ProjectCard({project}: ProjectCardProps) {
                         <p className={'text-end'}>
                             Price from {' '}
                             <span className="font-semibold">
-                            {
-                                currencyConverter(parseInt(`${project.fromPrice}`))
-                            }
-                       </span>
+                                {formattedValues.fromPrice}
+                            </span>
                         </p>
                         <p className={'text-end'}>
-                           Size upto {' '}
+                            Size upto {' '}
                             <span className="font-semibold">
-                            {
-                                unitConverter(parseInt(`${project.toSize}`) / 100)
-                            }
-                       </span>
+                                {formattedValues.toSize}
+                            </span>
                         </p>
                     </div>
                 </div>
             </div>
-
         </div>
     );
-}
+});
+
+ProjectCard.displayName = 'ProjectCard';
 
 export default ProjectCard;

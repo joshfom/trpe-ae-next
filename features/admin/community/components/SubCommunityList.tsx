@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,} from "@/components/ui/sheet"
 import {useForm} from "react-hook-form";
 import {useGetAdminSubCommunities, SubCommunity} from '../api/use-get-admin-sub-community';
@@ -28,7 +28,7 @@ function SubCommunityList({communityId}: SubCommunityListProps) {
 
     // console.log('subCommunities', subCommunities)
 
-    const attachSubCommunity = (id : string) => {
+    const attachSubCommunity = useCallback((id: string) => {
         attachMutation.mutate({subCommunityId: id},
             {
                 onError: () => {
@@ -38,7 +38,12 @@ function SubCommunityList({communityId}: SubCommunityListProps) {
                     console.log('success')
                 }
             });
-    }
+    }, [attachMutation]);
+
+    // Memoized callback function
+    const handleAttachSubCommunity = useCallback((subCommunityId: string) => {
+        attachSubCommunity(subCommunityId);
+    }, [attachSubCommunity]);
 
 
 
@@ -73,7 +78,7 @@ function SubCommunityList({communityId}: SubCommunityListProps) {
                                         </Link>
                                     </TableCell>
                                     <TableCell>
-                                        <Button onClick={() => attachSubCommunity(subCommunity.id)}>
+                                        <Button onClick={() => handleAttachSubCommunity(subCommunity.id)}>
                                             Attach
                                         </Button>
                                     </TableCell>
@@ -90,4 +95,7 @@ function SubCommunityList({communityId}: SubCommunityListProps) {
     );
 }
 
-export default SubCommunityList;
+const SubCommunityListComponent = memo(SubCommunityList);
+SubCommunityListComponent.displayName = 'SubCommunityList';
+
+export default SubCommunityListComponent;

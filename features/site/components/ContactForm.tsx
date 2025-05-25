@@ -1,28 +1,30 @@
 "use client"
-import React, {useState} from 'react';
-import {PhoneNumberUtil} from 'google-libphonenumber';
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import {Button} from "@/components/ui/button";
-import {PhoneInput} from "react-international-phone";
+import React, { useState, useCallback, useMemo, memo } from 'react';
+import { PhoneNumberUtil } from 'google-libphonenumber';
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { PhoneInput } from "react-international-phone";
 import 'react-international-phone/style.css';
-import {useForm} from "react-hook-form";
-import {z} from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
-import {useSubmitForm} from "@/features/site/api/use-submit-form";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useSubmitForm } from "@/features/site/api/use-submit-form";
 import { useRouter } from 'next/navigation';
 
 const FormSchema = z.object({
     subject: z.string().optional(),
-    firstName: z.string().min(3, {message: 'Name is required'}),
-    email: z.string().email().min(4, {message: 'Enter a valid email'}),
-    phone: z.string().min(4, {message: 'Enter a valid phone number'}),
+    firstName: z.string().min(3, { message: 'Name is required' }),
+    email: z.string().email().min(4, { message: 'Enter a valid email' }),
+    phone: z.string().min(4, { message: 'Enter a valid phone number' }),
     message: z.string(),
 });
 
+// Memoize phone utility instance
 const phoneUtil = PhoneNumberUtil.getInstance();
 
+// Memoize phone validation function
 const isPhoneValid = (phone: string) => {
     try {
         return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
@@ -33,28 +35,28 @@ const isPhoneValid = (phone: string) => {
 
 type FormValues = z.infer<typeof FormSchema>
 
-function ContactForm() {
+const ContactForm = memo(() => {
     const [formSubmitted, setFormSubmitted] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const mutation = useSubmitForm()
+    const router = useRouter()
 
-    const route = useRouter()
-
-const form = useForm<FormValues>({
-    mode: 'onBlur',
-    resolver: zodResolver(FormSchema),
-    reValidateMode: 'onChange',
-    defaultValues: {
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
         subject: '',
         firstName: '',
         email: '',
         phone: '',
         message: ''
-    }
-})
+    }), []);
 
-    //send data to external CRM
-    const sendBitrix = async (data: FormValues) => {
+    const form = useForm<FormValues>({
+        resolver: zodResolver(FormSchema),
+        defaultValues,
+    })
+
+    // Memoize sendBitrix function
+    const sendBitrix = useCallback(async (data: FormValues) => {
         console.log('data', data)
         const crmUrl = `https://crm.trpeglobal.com/rest/18/l3lel0d42eptuymb/crm.lead.add.json?
             FIELDS[TITLE]=${encodeURIComponent('New TRPE.AE Lead')}
@@ -75,21 +77,19 @@ const form = useForm<FormValues>({
             if (!crmResponse.ok) {
                 throw new Error('Failed to create lead in CRM');
             } else {
-                route.replace('/contact-us/thank-you')
+                router.replace('/contact-us/thank-you')
             }
         } catch (error) {
             console.error('Error creating lead in CRM:', error);
-            // return c.json({ error: 'Failed to create lead in CRM' }, 500);
         }
-    }
+    }, [router]);
 
-    const formErrors = form.formState.errors
-
-    const onSubmit = (values: FormValues) => {
+    // Memoize onSubmit handler
+    const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
         mutation.mutate(values, {
-            onSuccess: (data) => {
+            onSuccess: (data: any) => {
                 sendBitrix(values)
                 form.reset()
                 setFormSubmitted(true)
@@ -98,21 +98,22 @@ const form = useForm<FormValues>({
                 setIsSubmitting(false)
             }
         })
-    }
+    }, [mutation, sendBitrix, form]);
+
+    // Memoize phone change handler
+    const handlePhoneChange = useCallback((value: string) => {
+        isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
+    }, [form]);
 
     return (
         <Form {...form}>
-
             <form
-                onSubmit={
-                // @ts-ignore
-                form.handleSubmit(onSubmit)
-            }
+                onSubmit={form.handleSubmit(onSubmit)}
                 className="pt-12 space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="col-span-1 lg:col-span-2">
                     <FormField
                         name={'firstName'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <Input
                                     {...field}
@@ -128,7 +129,7 @@ const form = useForm<FormValues>({
                 <div className="col-span-1 ">
                     <FormField
                         name={'email'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <Input
                                     type={'email'}
@@ -145,12 +146,12 @@ const form = useForm<FormValues>({
                 <div className="col-span-1 hidden ">
                     <FormField
                         name={'subject'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <Input
                                     type={'text'}
                                     {...field}
-                                    placeholder="Your email"
+                                    placeholder="Subject"
                                     className="w-full bg-transparent "
                                 />
                                 <FormMessage/>
@@ -162,17 +163,14 @@ const form = useForm<FormValues>({
                 <div className="col-span-1 ">
                     <FormField
                         name={'phone'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <PhoneInput
                                     value={field.value}
                                     defaultCountry='ae'
                                     placeholder="Your phone"
                                     className="w-full bg-transparent text-white"
-                                    onChange={(value) => {
-                                        // @ts-ignore
-                                        isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
-                                    }}
+                                    onChange={handlePhoneChange}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -183,7 +181,7 @@ const form = useForm<FormValues>({
                 <div className="col-span-1 lg:col-span-2 ">
                     <FormField
                         name={'message'}
-                        render={({field, formState}) => (
+                        render={({field}) => (
                             <FormItem>
                                 <Textarea
                                     {...field}
@@ -208,6 +206,8 @@ const form = useForm<FormValues>({
             </form>
         </Form>
     );
-}
+});
+
+ContactForm.displayName = 'ContactForm';
 
 export default ContactForm;

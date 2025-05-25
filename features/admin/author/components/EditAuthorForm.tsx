@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -89,6 +89,11 @@ function EditAuthorForm({ author, isOpen, setIsOpen, onSuccess }: EditAuthorForm
         }
     };
 
+    // Memoized callback functions
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, [setIsOpen]);
+
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetContent className="bg-white max-w-2xl flex flex-col">
@@ -143,7 +148,7 @@ function EditAuthorForm({ author, isOpen, setIsOpen, onSuccess }: EditAuthorForm
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={handleCancelClick}
                                     disabled={isSubmitting}
                                 >
                                     Cancel
@@ -163,4 +168,7 @@ function EditAuthorForm({ author, isOpen, setIsOpen, onSuccess }: EditAuthorForm
     );
 }
 
-export default EditAuthorForm;
+const EditAuthorFormComponent = memo(EditAuthorForm);
+EditAuthorFormComponent.displayName = 'EditAuthorForm';
+
+export default EditAuthorFormComponent;

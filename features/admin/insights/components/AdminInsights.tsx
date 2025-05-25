@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useGetAdminInsights } from "@/features/admin/insights/api/use-get-admin-insights";
 import { useDeleteInsight } from "@/features/admin/insights/api/use-delete-insight";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -44,10 +44,13 @@ function AdminInsights() {
     const totalPages = insightsQuery.data?.totalPages || 1;
     
     // is loaded without error
-    const isLoaded = !insightsQuery.isLoading && !insightsQuery.isError && insightsQuery.data !== null;
+    const isLoaded = useMemo(() => 
+        !insightsQuery.isLoading && !insightsQuery.isError && insightsQuery.data !== null,
+        [insightsQuery.isLoading, insightsQuery.isError, insightsQuery.data]
+    );
     const isLoading = insightsQuery.isLoading;
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = useCallback((e: React.FormEvent) => {
         e.preventDefault();
         const params = new URLSearchParams(searchParams.toString());
         
@@ -59,20 +62,20 @@ function AdminInsights() {
         
         params.set('page', '1'); // Reset to first page on new search
         router.push(`?${params.toString()}`);
-    };
+    }, [tempSearch, searchParams, router]);
 
-    const handlePageChange = (page: number) => {
+    const handlePageChange = useCallback((page: number) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set('page', page.toString());
         router.push(`?${params.toString()}`);
-    };
+    }, [searchParams, router]);
     
-    const handleDeleteClick = (slug: string, coverUrl?: string) => {
+    const handleDeleteClick = useCallback((slug: string, coverUrl?: string) => {
         setInsightToDelete({ slug, coverUrl });
         setDeleteDialogOpen(true);
-    };
+    }, []);
     
-    const handleConfirmDelete = async () => {
+    const handleConfirmDelete = useCallback(async () => {
         if (insightToDelete) {
             try {
                 await deleteInsightMutation.mutate(insightToDelete, {
@@ -86,7 +89,11 @@ function AdminInsights() {
                 console.error('Failed to delete insight:', error);
             }
         }
-    };
+    }, [insightToDelete, deleteInsightMutation, insightsQuery]);
+
+    const handleRetry = useCallback(() => {
+        insightsQuery.refetch();
+    }, [insightsQuery]);
 
     return (
         <div className={'pb-12'}>
@@ -196,7 +203,7 @@ function AdminInsights() {
                 insightsQuery.isError &&
                 <div className={'flex flex-col justify-center gap-3 items-center mind-[600px]'}>
                     <h2 className={'text-2xl font-bold'}>Oops! Something went wrong</h2>
-                    <button onClick={() => insightsQuery.refetch()} className={'bg-black text-white px-4 py-2 rounded-lg mt-4'}>
+                    <button onClick={handleRetry} className={'bg-black text-white px-4 py-2 rounded-lg mt-4'}>
                         Retry
                     </button>
                 </div>
@@ -228,4 +235,7 @@ function AdminInsights() {
     );
 }
 
-export default AdminInsights;
+const AdminInsightsMemo = memo(AdminInsights);
+AdminInsightsMemo.displayName = 'AdminInsights';
+
+export default AdminInsightsMemo;

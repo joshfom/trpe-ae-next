@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {useGetOffplanFaqs} from "@/features/admin/off_plans/api/use-get-offplan-faqs";
 import {Button} from "@/components/ui/button";
 import AddOffplanFaqForm from "@/features/admin/off_plans/components/AddOffplanFaqForm";
@@ -17,12 +17,17 @@ function AdminOffplanAmenities({offplanId}: AdminOffplanAmenitiesProps) {
 
     const [addingAmenity, setAddingAmenity] = React.useState(false)
 
+    // Memoized callback functions
+    const handleToggleAddingAmenity = useCallback(() => {
+        setAddingAmenity(!addingAmenity);
+    }, [addingAmenity]);
+
 
     return (
         <div className={'flex flex-col gap-8 px-8'}>
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Amenities</h2>
-                <Button size={'sm'} variant={'outline'} onClick={() => setAddingAmenity(!addingAmenity)} className="">Add Amenity</Button>
+                <Button size={'sm'} variant={'outline'} onClick={handleToggleAddingAmenity} className="">Add Amenity</Button>
             </div>
 
             {/*{*/}
@@ -37,4 +42,7 @@ function AdminOffplanAmenities({offplanId}: AdminOffplanAmenitiesProps) {
     );
 }
 
-export default AdminOffplanAmenities;
+const AdminOffplanAmenitiesComponent = memo(AdminOffplanAmenities);
+AdminOffplanAmenitiesComponent.displayName = 'AdminOffplanAmenities';
+
+export default AdminOffplanAmenitiesComponent;

@@ -1,9 +1,18 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 
 function FloatingOptions() {
     const [sizeType, setSizeType] = React.useState('sqf')
+
+    // Memoized callback functions
+    const handleSetSqf = useCallback(() => {
+        setSizeType('sqf');
+    }, []);
+
+    const handleSetSqm = useCallback(() => {
+        setSizeType('sqm');
+    }, []);
 
 
     return (
@@ -106,12 +115,12 @@ function FloatingOptions() {
                             <div className="">
                                 <div className={'rounded-full border-white border overflow-hidden text-xs'}>
                                     <button
-                                        onClick={() => setSizeType('sqf')}
+                                        onClick={handleSetSqf}
                                         className={`${sizeType === 'sqf' ? 'bg-white text-black' : 'bg-transparent text-white'} px-3 py-1`}>
                                         SQF
                                     </button>
                                     <button
-                                        onClick={() => setSizeType('sqm')}
+                                        onClick={handleSetSqm}
                                         className={`${sizeType === 'sqm' ? 'bg-white text-black' : 'bg-transparent text-white'} px-3 py-1`}>
                                         SQM
                                     </button>
@@ -125,4 +134,7 @@ function FloatingOptions() {
     );
 }
 
-export default FloatingOptions;
+const FloatingOptionsComponent = memo(FloatingOptions);
+FloatingOptionsComponent.displayName = 'FloatingOptions';
+
+export default FloatingOptionsComponent;

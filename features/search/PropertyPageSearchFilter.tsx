@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, memo, useCallback, useMemo} from 'react';
 import {Search, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
@@ -59,7 +59,7 @@ interface FormValues {
     currency: string;
 }
 
-export const CommunityItem: React.FC<CommunityItemProps> = ({
+export const CommunityItem: React.FC<CommunityItemProps> = memo(({
                                                                 community,
                                                                 selectedCommunities,
                                                                 setSelectedCommunities,
@@ -69,7 +69,7 @@ export const CommunityItem: React.FC<CommunityItemProps> = ({
                                                                 offeringType,
                                                                 closeDropdown
                                                             }) => {
-    const propertyCount = (() => {
+    const propertyCount = useMemo(() => {
         switch (offeringType) {
             case 'for-rent':
                 return community.rentCount;
@@ -84,18 +84,24 @@ export const CommunityItem: React.FC<CommunityItemProps> = ({
             default:
                 return community.propertyCount;
         }
-    })();
+    }, [offeringType, community]);
 
+    const handleCommunityClick = useCallback(() => {
+        setSelectedCommunities([...selectedCommunities, community]);
+        setSearchInput('');
+        isMobile && closeDropdown && closeDropdown();
+    }, [selectedCommunities, community, setSelectedCommunities, setSearchInput, isMobile, closeDropdown]);
+
+    const isDisabled = useMemo(() => 
+        selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0),
+        [selectedCommunities, community.slug, propertyCount]
+    );
 
     return (
         <button
             type="button"
-            disabled={selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0)}
-            onClick={() => {
-                setSelectedCommunities([...selectedCommunities, community]);
-                setSearchInput('');
-                isMobile && closeDropdown && closeDropdown();
-            }}
+            disabled={isDisabled}
+            onClick={handleCommunityClick}
             key={index}
             className="flex hover:bg-slate-50 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -105,7 +111,9 @@ export const CommunityItem: React.FC<CommunityItemProps> = ({
             </div>
         </button>
     );
-};
+});
+
+CommunityItem.displayName = 'CommunityItem';
 
 const OFFERING_TYPES = [
     {
@@ -126,30 +134,36 @@ const OFFERING_TYPES = [
     }
 ]
 
-const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = ({
+const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = memo(({
                                                                              selectedCommunities,
                                                                              setSelectedCommunities,
                                                                              classNames
-                                                                         }) => (
-    <div
-        className={`${cn('w-full rounded-full px-3 py-2 bg-white shadow-sm border mb-2 flex flex-wrap gap-4 overflow-y-auto', classNames)}`}>
-        {
-            selectedCommunities.map((community, index) => (
-                <button
-                    type={'button'}
-                    onClick={() => {
-                        setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== community.slug))
-                    }}
-                    key={index}
-                    className="flex group items-center border rounded-full hover:text-red-600 hover:border-red-600 px-4 py-1"
-                >
-                    <span className="text-sm">{community.name}</span>
-                    <X className="h-4 w-4 ml-2 stroke-1 group:hover-text-red-500"/>
-                </button>
-            ))
-        }
-    </div>
-);
+                                                                         }) => {
+    const handleRemoveCommunity = useCallback((communitySlug: string) => {
+        setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== communitySlug));
+    }, [selectedCommunities, setSelectedCommunities]);
+
+    return (
+        <div
+            className={`${cn('w-full rounded-full px-3 py-2 bg-white shadow-sm border mb-2 flex flex-wrap gap-4 overflow-y-auto', classNames)}`}>
+            {
+                selectedCommunities.map((community, index) => (
+                    <button
+                        type={'button'}
+                        onClick={() => handleRemoveCommunity(community.slug)}
+                        key={index}
+                        className="flex group items-center border rounded-full hover:text-red-600 hover:border-red-600 px-4 py-1"
+                    >
+                        <span className="text-sm">{community.name}</span>
+                        <X className="h-4 w-4 ml-2 stroke-1 group:hover-text-red-500"/>
+                    </button>
+                ))
+            }
+        </div>
+    );
+});
+
+SelectedCommunitiesList.displayName = 'SelectedCommunitiesList';
 
 function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSearchFilterProps) {
 
@@ -290,7 +304,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      * Handles form submission and navigates to the search results page.
      * @param {FormValues} data - The form data.
      */
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = useCallback((data: FormValues) => {
         // Create a transformed version of the data with proper types
         const transformedData = {
             ...data,
@@ -308,13 +322,13 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         });
 
         router.push(finalUrl);
-    };
+    }, [selectedCommunities, router]);
 
     /**
      * Handles community search input and updates the community results.
      * @param {string} value - The search input value.
      */
-    const handleCommunitySearch = (value: string) => {
+    const handleCommunitySearch = useCallback((value: string) => {
         if (value.length === 0) {
             setCommunityResults(communities);
             return;
@@ -327,7 +341,11 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         const results = fuse.search(value);
         const items = results.map((result) => result.item);
         setCommunityResults(items);
-    };
+    }, [communities]);
+
+    const handleOpenMobileSearch = useCallback(() => {
+        setIsOpen(true);
+    }, []);
 
     /**
      * Filters and sets the searched communities based on the search parameters.
@@ -359,7 +377,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      */
     useEffect(() => {
         handleCommunitySearch(searchInput);
-    }, [searchInput]);
+    }, [searchInput, handleCommunitySearch]);
 
     /**
      * Effect hook to set the search mode based on the search type.
@@ -569,7 +587,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                             {/*MOBILE SEARCH*/}
 
                             <div className={'lg:hidden'}>
-                                <div onClick={() => setIsOpen(true)}
+                                <div onClick={handleOpenMobileSearch}
                                      className="flex flex-col justify-center items-center">
                                     <div className="relative w-full">
                                         <Input className={'w-full rounded-full px-8 py-3'}
@@ -613,4 +631,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
     );
 }
 
-export default PropertyPageSearchFilter;
+const PropertyPageSearchFilterMemo = memo(PropertyPageSearchFilter);
+PropertyPageSearchFilterMemo.displayName = 'PropertyPageSearchFilter';
+
+export default PropertyPageSearchFilterMemo;

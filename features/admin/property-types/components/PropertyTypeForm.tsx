@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
@@ -20,28 +20,32 @@ interface PropertyTypeFormProps {
     onSuccess?: () => void;
 }
 
-function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
+const PropertyTypeForm = memo<PropertyTypeFormProps>(({propertyType, onSuccess}) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: '',
+        short_name: '',
+        slug: '',
+        rentH1: '',
+        saleH1: '',
+        rentMetaTitle: '',
+        rentMetaDescription: '',
+        saleMetaTitle: '',
+        saleMetaDescription: '',
+        saleContent: '',
+        rentContent: ''
+    }), []);
 
     const form = useForm<PropertyTypeFormValues>({
         resolver: zodResolver(PropertyTypeFormSchema),
-        defaultValues: {
-            name: '',
-            short_name: '',
-            slug: '',
-            rentH1: '',
-            saleH1: '',
-            rentMetaTitle: '',
-            rentMetaDescription: '',
-            saleMetaTitle: '',
-            saleMetaDescription: '',
-            saleContent: '',
-            rentContent: ''
-        },
+        defaultValues,
         values: propertyType,
     });
 
-    const onSubmit = async (values: PropertyTypeFormValues) => {
+    // Memoize the submit handler
+    const onSubmit = useCallback(async (values: PropertyTypeFormValues) => {
         if (!propertyType?.id) {
             toast.error("Property Type ID is required");
             return;
@@ -64,7 +68,7 @@ function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
         } finally {
             setIsSubmitting(false);
         }
-    };
+    }, [propertyType?.id, onSuccess]);
 
     return (
         <Form {...form}>
@@ -235,6 +239,8 @@ function PropertyTypeForm({propertyType, onSuccess}: PropertyTypeFormProps) {
             </form>
         </Form>
     );
-}
+});
+
+PropertyTypeForm.displayName = 'PropertyTypeForm';
 
 export default PropertyTypeForm;

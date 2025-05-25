@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { cache, Suspense } from 'react';
 import {Metadata, ResolvingMetadata} from "next";
 import {propertyTable} from "@/db/schema/property-table";
 import {db} from "@/db/drizzle";
@@ -7,6 +7,48 @@ import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
 import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
+
+// Cached database queries for better performance
+const getProperty = cache(async (slug: string): Promise<PropertyType | null> => {
+    try {
+        const property = await db.query.propertyTable.findFirst({
+            where: eq(propertyTable.slug, slug),
+            with: {
+                offeringType: true,
+                images: true,
+                agent: true,
+                community: true,
+                // propertyType: true, // This field doesn't exist, commenting out
+            }
+        }) as unknown as PropertyType;
+        return property;
+    } catch (error) {
+        console.error('Error fetching property:', error);
+        return null;
+    }
+});
+
+const getSimilarProperties = cache(async (propertyId: string, communityId: string, offeringTypeId: string): Promise<PropertyType[]> => {
+    try {
+        return await db.query.propertyTable.findMany({
+            where: and(
+                ne(propertyTable.id, propertyId),
+                eq(propertyTable.communityId, communityId),
+                eq(propertyTable.offeringTypeId, offeringTypeId)
+            ),
+            limit: 6,
+            with: {
+                images: true,
+                agent: true,
+                community: true,
+                offeringType: true,
+            }
+        }) as unknown as PropertyType[];
+    } catch (error) {
+        console.error('Error fetching similar properties:', error);
+        return [];
+    }
+});
 
 
 type Props = {
@@ -21,13 +63,7 @@ export async function generateMetadata(
     // read route params
     const slug = (await params).slug
 
-    const property = await db.query.propertyTable.findFirst({
-        where: eq(propertyTable.slug, slug),
-        with: {
-            offeringType: true,
-            images: true,
-        }
-    }) as unknown as PropertyType;
+    const property = await getProperty(slug);
 
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
@@ -63,39 +99,17 @@ interface ListingViewPageProps {
 async function ListingViewPage(props: ListingViewPageProps) {
     const params = await props.params;
 
-    const property = await db.query.propertyTable.findFirst({
-        where: eq(propertyTable.slug, params.slug),
-        with: {
-            agent: true,
-            community: true,
-            city: true,
-            offeringType: true,
-            images: true,
-            subCommunity:true ,
-        }
-    }) as unknown as PropertyType;
+    const property = await getProperty(params.slug);
 
     if (!property) {
         return notFound()
     }
 
-    const similarProperties = await db.query.propertyTable.findMany({
-        where: and(
-            eq(propertyTable.communityId, property?.communityId!),
-            eq(propertyTable.offeringTypeId, property?.offeringTypeId),
-            ne(propertyTable.id, property.id),
-        ),
-        with: {
-            community: true,
-            subCommunity: true,
-            agent: true,
-            city: true,
-            offeringType: true,
-            images: true,
-            type: true,
-        },
-        limit: 3,
-    }) as unknown as PropertyType[];
+    const similarProperties = await getSimilarProperties(
+        property.id, 
+        property.communityId || '', 
+        property.offeringTypeId
+    );
 
 
     // const {data} = useGetProperty(params.slug)

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -24,12 +24,13 @@ interface AuthorCardProps {
     onAuthorUpdated: () => void;
 }
 
-function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
+const AuthorCard = memo<AuthorCardProps>(({ author, onAuthorUpdated }) => {
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDelete = async () => {
+    // Memoize callback functions
+    const handleDelete = useCallback(async () => {
         try {
             setIsDeleting(true);
             const result = await deleteAuthor(author.id);
@@ -47,7 +48,23 @@ function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
         } finally {
             setIsDeleting(false);
         }
-    };
+    }, [author.id, onAuthorUpdated]);
+
+    const handleEditClick = useCallback(() => {
+        setIsEditOpen(true);
+    }, []);
+
+    const handleDeleteClick = useCallback(() => {
+        setIsDeleteDialogOpen(true);
+    }, []);
+
+    const handleDeleteDialogClose = useCallback(() => {
+        setIsDeleteDialogOpen(false);
+    }, []);
+
+    const handleEditSuccess = useCallback(() => {
+        onAuthorUpdated();
+    }, [onAuthorUpdated]);
 
     return (
         <>
@@ -79,14 +96,14 @@ function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
                     <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => setIsEditOpen(true)}
+                        onClick={handleEditClick}
                     >
                         Edit
                     </Button>
                     <Button 
                         variant="destructive" 
                         size="sm"
-                        onClick={() => setIsDeleteDialogOpen(true)}
+                        onClick={handleDeleteClick}
                     >
                         Delete
                     </Button>
@@ -98,7 +115,7 @@ function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
                     author={author} 
                     isOpen={isEditOpen} 
                     setIsOpen={setIsEditOpen} 
-                    onSuccess={onAuthorUpdated}
+                    onSuccess={handleEditSuccess}
                 />
             )}
 
@@ -113,7 +130,7 @@ function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
                     <DialogFooter>
                         <Button
                             variant="outline"
-                            onClick={() => setIsDeleteDialogOpen(false)}
+                            onClick={handleDeleteDialogClose}
                             disabled={isDeleting}
                         >
                             Cancel
@@ -130,6 +147,8 @@ function AuthorCard({ author, onAuthorUpdated }: AuthorCardProps) {
             </Dialog>
         </>
     );
-}
+});
+
+AuthorCard.displayName = 'AuthorCard';
 
 export default AuthorCard;

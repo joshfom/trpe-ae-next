@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
@@ -23,27 +23,32 @@ const formSchema = employeeCreateSchema.omit({
 })
 
 type formValues = z.infer<typeof formSchema>
-function AdminAgentCard({agent}: AdminAgentCardProps) {
+
+const AdminAgentCard = memo(({agent}: AdminAgentCardProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [file, setFile] = React.useState<File | undefined>(undefined);
     const { edgestore } = useEdgeStore();
 
     const mutation = useUpdateAgent(agent.id)
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        firstName: agent.firstName,
+        lastName: agent.lastName,
+        avatarUrl: agent.avatarUrl,
+        email: agent.email,
+        phone: agent.phone,
+        agentId: agent.id,
+        bio: agent.bio
+    }), [agent.firstName, agent.lastName, agent.avatarUrl, agent.email, agent.phone, agent.id, agent.bio]);
+
     const form = useForm({
         mode: "onChange",
-        defaultValues: {
-            firstName: agent.firstName,
-            lastName: agent.lastName,
-            avatarUrl: agent.avatarUrl,
-            email: agent.email,
-            phone: agent.phone,
-            agentId: agent.id,
-            bio: agent.bio
-        }
-    })
+        defaultValues,
+    });
 
-    const updateAvtar = async (file: File | undefined) => {
+    // Memoize callback functions
+    const updateAvtar = useCallback(async (file: File | undefined) => {
         if (file) {
             const res = await edgestore.publicFiles.upload({
                 file,
@@ -59,16 +64,28 @@ function AdminAgentCard({agent}: AdminAgentCardProps) {
             console.log( 'rest', res);
             form.setValue('avatarUrl', res.url)
         }
-    }
+    }, [edgestore, form]);
 
-    const onSubmit = (values: formValues) => {
+    const onSubmit = useCallback((values: formValues) => {
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false)
                 form.reset()
             }
         })
-    }
+    }, [mutation, form]);
+
+    const handleEditClick = useCallback(() => {
+        setIsOpen(true);
+    }, []);
+
+    const handleSheetChange = useCallback((open: boolean) => {
+        setIsOpen(open);
+    }, []);
+
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, []);
 
     return (
         <div className="bg-white rounded-2xl flex flex-col justify-between" key={agent.id}>
@@ -87,13 +104,13 @@ function AdminAgentCard({agent}: AdminAgentCardProps) {
                         <p className="text-sm px-3">{agent.email}</p>
                         <p className="text-sm px-3">{agent.phone}</p>
                     </div>
-                    <button onClick={() => setIsOpen(true)} className={'text-sm py-1 px-3 border rounded-2xl'}>
+                    <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
                         Edit
                     </button>
                 </div>
             </div>
 
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet open={isOpen} onOpenChange={handleSheetChange}>
                 <SheetContent className={'bg-white max-w-2xl flex flex-col'}>
                     <SheetHeader className={'p-4 px-6'}>
                         <SheetTitle>
@@ -197,7 +214,7 @@ function AdminAgentCard({agent}: AdminAgentCardProps) {
 
                                     <Button
                                         variant={'destructive'}
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={handleCancelClick}
                                         type={'button'}
                                         className={'btn btn-secondary'}>
                                         Cancel
@@ -217,6 +234,8 @@ function AdminAgentCard({agent}: AdminAgentCardProps) {
 
         </div>
     );
-}
+});
+
+AdminAgentCard.displayName = 'AdminAgentCard';
 
 export default AdminAgentCard;

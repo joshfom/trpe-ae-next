@@ -1,5 +1,5 @@
 "use client"
-import React, {useEffect} from 'react';
+import React, {useEffect, memo, useCallback, useMemo} from 'react';
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
@@ -22,25 +22,30 @@ const formSchema = CommunityFormSchema
 
 type formValues = z.infer<typeof formSchema>
 
-function AdminCommunityCard({community}: AdminCommunityCardProps) {
+const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const [file, setFile] = React.useState<File | undefined>(undefined);
     const [hasDefaultImage, setHasDefaultImage] = React.useState(false);
     const {edgestore} = useEdgeStore();
 
     const mutation = useUpdateCommunity(community.id)
+
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: community.name,
+        image: community.image || '',
+        about: community.about || '',
+        metaTitle: community.metaTitle || '',
+        metaDesc: community.metaDesc || '',
+    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc]);
+
     const form = useForm({
         mode: "onChange",
-        defaultValues: {
-            name: community.name,
-            image: community.image || '',
-            about: community.about || '',
-            metaTitle: community.metaTitle || '',
-            metaDesc: community.metaDesc || '',
-        }
-    })
+        defaultValues,
+    });
 
-    const updateAvtar = async (file: File | undefined) => {
+    // Memoize callback functions
+    const updateAvtar = useCallback(async (file: File | undefined) => {
         if (file) {
             const res = await edgestore.publicFiles.upload({
                 file,
@@ -53,16 +58,32 @@ function AdminCommunityCard({community}: AdminCommunityCardProps) {
             setFile(file);
             form.setValue('image', res.url)
         }
-    }
+    }, [edgestore, form]);
 
-    const onSubmit = (values: formValues) => {
+    const onSubmit = useCallback((values: formValues) => {
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false)
                 form.reset()
             }
         })
-    }
+    }, [mutation, form]);
+
+    const handleEditClick = useCallback(() => {
+        setIsOpen(true);
+    }, []);
+
+    const handleSheetChange = useCallback((open: boolean) => {
+        setIsOpen(open);
+    }, []);
+
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
+    const handleRemoveImage = useCallback(() => {
+        setHasDefaultImage(false);
+    }, []);
 
     useEffect(() => {
         if (community.image) {
@@ -83,13 +104,13 @@ function AdminCommunityCard({community}: AdminCommunityCardProps) {
                     <h2 className=" font-bold">{community.name}</h2>
                 </div>
                 <div className={'flex justify-end items-end px-4 pb-4'}>
-                    <button onClick={() => setIsOpen(true)} className={'text-sm py-1 px-3 border rounded-2xl'}>
+                    <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
                         Edit
                     </button>
                 </div>
             </div>
 
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet open={isOpen} onOpenChange={handleSheetChange}>
                 <SheetContent className={'bg-white max-w-7xl h-screen flex flex-col'}>
                     <SheetHeader className={'p-4 px-6'}>
                         <SheetTitle>
@@ -183,9 +204,7 @@ function AdminCommunityCard({community}: AdminCommunityCardProps) {
                                                                     />
                                                                     <Button
                                                                         className={'absolute  -top-4 -right-4'}
-                                                                        onClick={() => {
-                                                                            setHasDefaultImage(false)
-                                                                        }}
+                                                                        onClick={handleRemoveImage}
                                                                         variant={'destructive'}
                                                                         size={'icon'}
                                                                     >
@@ -216,7 +235,7 @@ function AdminCommunityCard({community}: AdminCommunityCardProps) {
 
                                     <Button
                                         variant={'destructive'}
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={handleCancelClick}
                                         type={'button'}
                                         className={'btn btn-secondary'}>
                                         Cancel
@@ -236,6 +255,8 @@ function AdminCommunityCard({community}: AdminCommunityCardProps) {
 
         </div>
     );
-}
+});
+
+AdminCommunityCard.displayName = 'AdminCommunityCard';
 
 export default AdminCommunityCard;

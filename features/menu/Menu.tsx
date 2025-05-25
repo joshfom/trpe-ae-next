@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import Link from "next/link";
 import {MoveRight} from "lucide-react";
 import MenuFeaturedProperty from "@/features/site/components/MenuFeaturedProperty";
@@ -11,14 +11,20 @@ interface MenuProps {
         children: Array<Record<string, string>> | null;
     }
 }
-function TrpeMenu({ menuItem}: MenuProps) {
+
+const TrpeMenu = memo(({ menuItem}: MenuProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
     const hasChildren = menuItem.children && menuItem.children.length > 0;
 
+    // Memoize event handlers
+    const handleMouseEnter = useCallback(() => setIsOpen(true), []);
+    const handleMouseLeave = useCallback(() => setIsOpen(false), []);
+    const handleLinkClick = useCallback(() => setIsOpen(false), []);
+
     return (
         <div
-            onMouseEnter={() => setIsOpen(true)}
-            onMouseLeave={() => setIsOpen(false)}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className={'text-slate-200 pt-4 hover:text-white'}
         >
            <Link href={menuItem.href} className="px-2 cursor-pointer">
@@ -34,7 +40,7 @@ function TrpeMenu({ menuItem}: MenuProps) {
                            <div className="col-span-2 flex h-full pl-6  justify-between py-6 flex-col">
                                <div>
                                    <Link
-                                       onClick={() => setIsOpen(false)}
+                                       onClick={handleLinkClick}
                                        className={'py-4 px-4 flex items-center text-lg   border-b border-transparent hover:border-white'}
                                        href={`${menuItem.href}`}
                                    >
@@ -42,7 +48,7 @@ function TrpeMenu({ menuItem}: MenuProps) {
                                        <MoveRight className={'text-white w-6 h-6 ml-4'}/>
                                    </Link>
                                    <Link
-                                       onClick={() => setIsOpen(false)}
+                                       onClick={handleLinkClick}
                                        className={'py-4 px-4 flex items-center text-lg   border-b border-transparent hover:border-white'}
                                        href={`${menuItem.href}?ty=apartments`}
                                    >
@@ -51,7 +57,7 @@ function TrpeMenu({ menuItem}: MenuProps) {
                                    </Link>
 
                                    <Link
-                                       onClick={() => setIsOpen(false)}
+                                       onClick={handleLinkClick}
                                        className={'py-4 px-4 flex items-center text-lg  border-b border-transparent hover:border-white'}
                                        href={`${menuItem.href}?ty=villa`}
                                    >
@@ -63,7 +69,7 @@ function TrpeMenu({ menuItem}: MenuProps) {
                                    {
                                        menuItem.children.map((child, index) => (
                                            <Link
-                                               onClick={() => setIsOpen(false)}
+                                               onClick={handleLinkClick}
                                                className={'py-4 px-4 flex items-center text-lg border-b border-transparent hover:border-white'}
                                                key={index}
                                                href={child.href}
@@ -83,6 +89,8 @@ function TrpeMenu({ menuItem}: MenuProps) {
             }
         </div>
     );
-}
+});
+
+TrpeMenu.displayName = 'TrpeMenu';
 
 export default TrpeMenu;

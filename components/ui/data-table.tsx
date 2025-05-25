@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, memo, useCallback, useMemo } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -36,7 +36,7 @@ interface DataTableProps<TData, TValue> {
   onSearch?: (value: string) => void
 }
 
-export function DataTable<TData, TValue>({
+export const DataTable = memo(<TData, TValue>({
   columns,
   data,
   searchKey,
@@ -45,12 +45,13 @@ export function DataTable<TData, TValue>({
   currentPage,
   onPageChange,
   onSearch,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [searchValue, setSearchValue] = useState("")
 
-  const table = useReactTable({
+  // Memoize table configuration
+  const tableConfig = useMemo(() => ({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
@@ -63,13 +64,35 @@ export function DataTable<TData, TValue>({
       sorting,
       columnFilters,
     },
-  })
+  }), [data, columns, sorting, columnFilters]);
 
-  const handleSearch = () => {
+  const table = useReactTable(tableConfig);
+
+  // Memoize callback functions
+  const handleSearch = useCallback(() => {
     if (onSearch) {
       onSearch(searchValue);
     }
-  }
+  }, [onSearch, searchValue]);
+
+  const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+  }, []);
+
+  const handlePreviousPage = useCallback(() => {
+    onPageChange(currentPage - 1);
+  }, [onPageChange, currentPage]);
+
+  const handleNextPage = useCallback(() => {
+    onPageChange(currentPage + 1);
+  }, [onPageChange, currentPage]);
+
+  // Memoize pagination calculations
+  const paginationInfo = useMemo(() => {
+    const startEntry = (currentPage - 1) * table.getState().pagination.pageSize + 1;
+    const endEntry = Math.min(currentPage * table.getState().pagination.pageSize, totalCount);
+    return { startEntry, endEntry };
+  }, [currentPage, table, totalCount]);
 
   return (
     <div>
@@ -78,7 +101,7 @@ export function DataTable<TData, TValue>({
           <Input
             placeholder={`Search...`}
             value={searchValue}
-            onChange={(event) => setSearchValue(event.target.value)}
+            onChange={handleSearchChange}
             className="max-w-sm"
           />
           <Button onClick={handleSearch}>Search</Button>
@@ -130,15 +153,15 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="text-sm text-muted-foreground">
-          Showing {(currentPage - 1) * table.getState().pagination.pageSize + 1} to{" "}
-          {Math.min(currentPage * table.getState().pagination.pageSize, totalCount)} of{" "}
+          Showing {paginationInfo.startEntry} to{" "}
+          {paginationInfo.endEntry} of{" "}
           {totalCount} entries
         </div>
         <div className="space-x-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage - 1)}
+            onClick={handlePreviousPage}
             disabled={currentPage === 1}
           >
             <ChevronLeft className="h-4 w-4" />
@@ -146,7 +169,7 @@ export function DataTable<TData, TValue>({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => onPageChange(currentPage + 1)}
+            onClick={handleNextPage}
             disabled={currentPage === pageCount}
           >
             <ChevronRight className="h-4 w-4" />
@@ -154,5 +177,7 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
     </div>
-  )
-}
+  );
+});
+
+DataTable.displayName = 'DataTable';

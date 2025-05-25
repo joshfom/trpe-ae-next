@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from 'react';
+import React, {useState, useCallback, useMemo, memo} from 'react';
 import {Button} from "@/components/ui/button";
 import {useGetAdminCities} from "@/features/admin/city/api/use-get-admin-cities";
 import {Dialog, DialogContent, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
@@ -14,24 +14,42 @@ import {useAddCity} from "@/features/admin/city/api/use-add-cities";
 
 type formValues = z.infer<typeof AdminCityFormSchema>;
 
-function CitySettingPage() {
+const CitySettingPage = memo(() => {
     const cityQuery = useGetAdminCities();
     const [showAddCity, setShowAddCity] = useState(false);
     const mutate = useAddCity();
 
     const cities = cityQuery.data;
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: '',
+    }), []);
+
     const form = useForm({
         resolver: zodResolver(AdminCityFormSchema),
         mode: "onBlur",
         reValidateMode: "onChange",
-        defaultValues: {
-            name: '',
-        }
-    })
+        defaultValues,
+    });
 
-    const onSubmit = (values: formValues) => {
-    }
+    // Memoize callback functions
+    const onSubmit = useCallback((values: formValues) => {
+        mutate.mutate(values, {
+            onSuccess: () => {
+                setShowAddCity(false);
+                form.reset();
+            }
+        });
+    }, [mutate, form]);
+
+    const handleAddCityClick = useCallback(() => {
+        setShowAddCity(true);
+    }, []);
+
+    const handleDialogChange = useCallback((open: boolean) => {
+        setShowAddCity(open);
+    }, []);
 
 
 
@@ -40,22 +58,20 @@ function CitySettingPage() {
             <div className={'w-full flex justify-between items-center'}>
                 <h1 className="text-xl">
                     Cities
-                </h1>
-                <div>
+                </h1>                <div>
                     <Button
-                        onClick={() => setShowAddCity(true)}
+                        onClick={handleAddCityClick}
                     >
                         Add City
                     </Button>
                 </div>
             </div>
-
             <div className={'mt-6'}>
 
             </div>
             <Dialog
                 open={showAddCity}
-                onOpenChange={setShowAddCity}
+                onOpenChange={handleDialogChange}
             >
                 <DialogContent
                     className={'max-w-xl'}
@@ -99,6 +115,8 @@ function CitySettingPage() {
 
         </div>
     );
-}
+});
+
+CitySettingPage.displayName = 'CitySettingPage';
 
 export default CitySettingPage;

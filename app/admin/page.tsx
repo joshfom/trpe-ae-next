@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import DashboardWidgets from '@/features/admin/dashboard/components/DashboardWidgets';
 import { useGetDashboardStats } from '@/features/admin/dashboard/api/use-get-dashboard-stats';
 import RecentActivity from '@/features/admin/dashboard/components/RecentActivity';
@@ -10,7 +10,7 @@ import MenuSortingSkeleton from '@/features/admin/dashboard/components/MenuSorti
 import SortingSkeleton from '@/features/admin/dashboard/components/SortingSkeleton';
 import WelcomeCard from '@/features/admin/dashboard/components/WelcomeCard';
 
-function Page() {
+const AdminDashboardPage = memo(() => {
     const { stats, isLoading } = useGetDashboardStats();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [sortMode, setSortMode] = useState<string>('newest');
@@ -26,15 +26,16 @@ function Page() {
         }
     }, [sortingChanging]);
 
-    const handleViewChange = (view: 'grid' | 'list') => {
+    // Memoize callback functions
+    const handleViewChange = useCallback((view: 'grid' | 'list') => {
         setSortingChanging(true);
         setViewMode(view);
-    };
+    }, []);
 
-    const handleSortChange = (sort: string) => {
+    const handleSortChange = useCallback((sort: string) => {
         setSortingChanging(true);
         setSortMode(sort);
-    };
+    }, []);
 
     return (
         <div className="p-6 space-y-6">
@@ -68,6 +69,8 @@ function Page() {
             </div>
         </div>
     );
-}
+});
 
-export default Page;
+AdminDashboardPage.displayName = 'AdminDashboardPage';
+
+export default AdminDashboardPage;

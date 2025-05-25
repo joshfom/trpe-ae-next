@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, memo, useCallback} from 'react';
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -97,6 +97,32 @@ function MobileSearch({
 
     const mainFiltersRef = useRef(null);
 
+    // Memoized callback functions
+    const handleOfferingTypeChange = useCallback((slug: string) => {
+        setSearchType(slug);
+        form.setValue('sType', slug);
+    }, [form]);
+
+    const handleSearchInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value);
+    }, []);
+
+    const handleShowSearchDropdown = useCallback(() => {
+        setShowSearchDropdown(true);
+    }, []);
+
+    const handleRemoveCommunity = useCallback((communitySlug: string) => {
+        setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== communitySlug));
+    }, [selectedCommunities, setSelectedCommunities]);
+
+    const handleToggleFilters = useCallback(() => {
+        setShowFilters(!showFilters);
+    }, [showFilters]);
+
+    const handleFormSubmit = useCallback(() => {
+        form.handleSubmit(onSubmit)();
+    }, [form, onSubmit]);
+
     const handleCommunitySearch = (value: string) => {
 
         if (value.length === 0) {
@@ -176,10 +202,7 @@ function MobileSearch({
                                     OFFERING_TYPES.map((item, index) => (
                                         <button
                                             type={'button'}
-                                            onClick={() => {
-                                                setSearchType(item.slug)
-                                                form.setValue('sType', item.slug)
-                                            }}
+                                            onClick={() => handleOfferingTypeChange(item.slug)}
                                             className={`py-1 px-3 lg:py-1.5 lg:px-4 text-sm border lg:text-base rounded-full ${searchType === item.slug ? 'bg-black text-white border border-black' : 'bg-white text-black'}`}
                                             key={index}
                                         >
@@ -193,10 +216,8 @@ function MobileSearch({
                                 <div className="flex grow">
 
                                     <Input
-                                        onChange={(e) => {
-                                            setSearchInput(e.target.value);
-                                        }}
-                                        onFocus={() => setShowSearchDropdown(true)}
+                                        onChange={handleSearchInputChange}
+                                        onFocus={handleShowSearchDropdown}
                                         autoComplete='off'
                                         autoFocus={true}
                                         value={searchInput}
@@ -314,9 +335,7 @@ function MobileSearch({
                                         selectedCommunities?.map((community, index) => (
                                             <button
                                                 type={'button'}
-                                                onClick={() => {
-                                                    setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== community.slug))
-                                                }}
+                                                onClick={() => handleRemoveCommunity(community.slug)}
                                                 key={index}
                                                 className="flex group items-center border roudned-full hover:text-red-600 hover:border-red-600 px-4 py-1 rounded-full"
                                             >
@@ -333,7 +352,7 @@ function MobileSearch({
                                 <div className={'flex items-center '}>
                                     <button
                                         type={'button'}
-                                        onClick={() => setShowFilters(!showFilters)}
+                                        onClick={handleToggleFilters}
                                         className={'flex '}>
                                         <SlidersHorizontal className="h-5 w-5 text-black stroke-1 mr-2"/>
                                         {
@@ -345,7 +364,7 @@ function MobileSearch({
                                 <div className={'w-2/3'}>
                                     <Button
                                         type={'submit'}
-                                        onClick={() =>  form.handleSubmit(onSubmit)()}
+                                        onClick={handleFormSubmit}
                                         className={' bg-black text-white py-3 px-8 w-full '}>
                                         <Search className="h-5 w-5 text-white stroke-1 mr-2"/>
                                         Search
@@ -366,4 +385,8 @@ function MobileSearch({
     );
 }
 
-export default MobileSearch;
+// Memoize the component to prevent unnecessary re-renders
+const MobileSearchMemo = memo(MobileSearch);
+MobileSearchMemo.displayName = 'MobileSearch';
+
+export default MobileSearchMemo;

@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from 'react';
+import React, {useState, memo, useCallback, useMemo} from 'react';
 import {PhoneNumberUtil} from 'google-libphonenumber';
 import {Input} from "@/components/ui/input";
 import {Textarea} from "@/components/ui/textarea";
@@ -46,19 +46,21 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formSubmitted, setFormSubmitted] = useState(false)
 
+    const defaultValues = useMemo(() => ({
+        firstName: '',
+        phone: '',
+        timeToCall: ''
+    }), [])
+
     const form = useForm<FormValues>({
         mode: 'onBlur',
         resolver: zodResolver(FormSchema),
         reValidateMode: 'onChange',
-        defaultValues: {
-            firstName: '',
-            phone: '',
-            timeToCall: ''
-        }
+        defaultValues
     })
 
     //send data to external CRM
-    const sendBitrix = async (data: FormValues) => {
+    const sendBitrix = useCallback(async (data: FormValues) => {
         let message = `I am interested in ${itemType} ${itemUrl} and would like to know more. Please contact me at ${data.phone}`
         const crmUrl = `https://crm.trpeglobal.com/rest/18/l3lel0d42eptuymb/crm.lead.add.json?
             FIELDS[TITLE]=${encodeURIComponent(`New TRPE.AE Callback Request - ${agentName} - ${itemType}`)}
@@ -84,12 +86,12 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
         } catch (error) {
 
         }
-    }
+    }, [itemType, itemUrl, agentName, handleFormSubmitted])
 
     const formErrors = form.formState.errors
 
 
-    const onSubmit = (values: FormValues) => {
+    const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
         mutation.mutate(values, {
@@ -103,7 +105,7 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
                 setIsSubmitting(false)
             }
         })
-    }
+    }, [mutation, sendBitrix, form, handleFormSubmitted])
 
     return (
 
@@ -162,10 +164,10 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
                                     value={field.value}
                                     placeholder="Your phone"
                                     className="w-full bg-transparent text-white"
-                                    onChange={(value) => {
+                                    onChange={useCallback((value) => {
                                         // @ts-ignore
                                         isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
-                                    }}
+                                    }, [form])}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -187,4 +189,7 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
     );
 }
 
-export default RequestCallBack;
+const RequestCallBackMemo = memo(RequestCallBack);
+RequestCallBackMemo.displayName = 'RequestCallBack';
+
+export default RequestCallBackMemo;

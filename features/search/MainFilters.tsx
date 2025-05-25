@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {Checkbox} from "@/components/ui/checkbox";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Button} from "@/components/ui/button";
@@ -154,6 +154,62 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
         }
     };
 
+    // Memoized completion handlers
+    const handleCompletionAny = useCallback(() => {
+        setCompletion('any');
+        handleFormValueChange('any', 'completion');
+    }, [handleFormValueChange]);
+
+    const handleCompletionReady = useCallback(() => {
+        setCompletion('ready');
+        handleFormValueChange('ready', 'completion');
+    }, [handleFormValueChange]);
+
+    const handleCompletionOffPlan = useCallback(() => {
+        setCompletion('off-plan');
+        handleFormValueChange('off-plan', 'completion');
+    }, [handleFormValueChange]);
+
+    // Memoized bedroom handlers
+    const handleBedroomsAny = useCallback(() => {
+        setBedrooms(0);
+        handleFormValueChange(0, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms1 = useCallback(() => {
+        setBedrooms(1);
+        handleFormValueChange(1, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms2 = useCallback(() => {
+        setBedrooms(2);
+        handleFormValueChange(2, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms3 = useCallback(() => {
+        setBedrooms(3);
+        handleFormValueChange(3, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms4 = useCallback(() => {
+        setBedrooms(4);
+        handleFormValueChange(4, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms5 = useCallback(() => {
+        setBedrooms(5);
+        handleFormValueChange(5, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms6 = useCallback(() => {
+        setBedrooms(6);
+        handleFormValueChange(6, 'bedrooms');
+    }, [handleFormValueChange]);
+
+    const handleBedrooms7 = useCallback(() => {
+        setBedrooms(7);
+        handleFormValueChange(7, 'bedrooms');
+    }, [handleFormValueChange]);
 
     return (
         <div
@@ -289,27 +345,18 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                 <div className="flex py-3 gap-2 lg:gap-4">
                     <button
-                        onClick={() => {
-                            setCompletion('any')
-                            handleFormValueChange('any', 'completion');
-                        }}
+                        onClick={handleCompletionAny}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${completion === 'any' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                         Any
                     </button>
                     <button
-                        onClick={() => {
-                            setCompletion('ready')
-                            handleFormValueChange('ready', 'completion');
-                        }}
+                        onClick={handleCompletionReady}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${completion === 'ready' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                         Ready
                     </button>
 
                     <button
-                        onClick={() => {
-                            setCompletion('off-plan')
-                            handleFormValueChange('off-plan', 'completion');
-                        }}
+                        onClick={handleCompletionOffPlan}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${completion === 'off-plan' ? 'bg-black text-white' : 'bg-white text-black'}`}>
                         Off-plan
                     </button>
@@ -323,19 +370,13 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                 <div className="flex py-3 gap-3 flex-wrap">
                     <button
-                        onClick={() => {
-                            setBedrooms(0)
-                            handleFormValueChange(0, 'bedrooms');
-                        }}
+                        onClick={handleBedroomsAny}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 0 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
                         Any
                     </button>
                     <button
-                        onClick={() => {
-                            setBedrooms(1)
-                            handleFormValueChange(1, 'bedrooms');
-                        }}
+                        onClick={handleBedrooms1}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 1 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
                         1+
@@ -343,10 +384,7 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                     <button
                         onClick={
-                            () => {
-                                setBedrooms(2)
-                                handleFormValueChange(2, 'bedrooms');
-                            }
+                            handleBedrooms2
                         }
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 2 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
@@ -355,10 +393,7 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                     <button
                         onClick={
-                            () => {
-                                setBedrooms(3)
-                                handleFormValueChange(3, 'bedrooms');
-                            }
+                            handleBedrooms3
                         }
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 3 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
@@ -367,10 +402,7 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                     <button
                         onClick={
-                            () => {
-                                setBedrooms(4)
-                                handleFormValueChange(4, 'bedrooms');
-                            }
+                            handleBedrooms4
                         }
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 4 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
@@ -379,10 +411,7 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
 
                     <button
                         onClick={
-                            () => {
-                                setBedrooms(5)
-                                handleFormValueChange(5, 'bedrooms');
-                            }
+                            handleBedrooms5
                         }
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 5 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
@@ -390,22 +419,14 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
                     </button>
                     <button
                         onClick={
-                            () => {
-                                setBedrooms(6)
-                                handleFormValueChange(6, 'bedrooms');
-                            }
+                            handleBedrooms6
                         }
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 6 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
                         6+
                     </button>
                     <button
-                        onClick={
-                            () => {
-                                setBedrooms(7)
-                                handleFormValueChange(7, 'bedrooms');
-                            }
-                        }
+                        onClick={handleBedrooms7}
                         className={` px-4 lg:px-6 py-2 border rounded-full ${bedrooms === 7 ? 'bg-black text-white' : 'bg-white text-black'}`}
                     >
                         7+
@@ -483,4 +504,8 @@ function MainFilters({handleFormValueChange, setValue, getValues}: MainFiltersPr
     );
 }
 
-export default MainFilters;
+// Memoize the component to prevent unnecessary re-renders
+const MainFiltersMemo = memo(MainFilters);
+MainFiltersMemo.displayName = 'MainFilters';
+
+export default MainFiltersMemo;

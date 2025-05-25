@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useEffect, useState, useMemo } from 'react';
 import {ArrowRight} from "lucide-react";
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import {useGetFeaturedProperty} from "@/features/properties/api/use-get-featured-property";
@@ -11,12 +11,23 @@ interface MenuFeaturedPropertyProps {
     offeringType: string;
 }
 
-function MenuFeaturedProperty({offeringType}: MenuFeaturedPropertyProps) {
-    const [propertyImages, setPropertyImages] = React.useState<string[]>([]);
+const MenuFeaturedProperty = memo(({offeringType}: MenuFeaturedPropertyProps) => {
+    const [propertyImages, setPropertyImages] = useState<string[]>([]);
     const slug = offeringType.replace("/properties/", "");
     const {data: property, isLoading} = useGetFeaturedProperty(slug);
 
-    React.useEffect(() => {
+    // Memoize computed values
+    const computedValues = useMemo(() => {
+        if (!property) return null;
+        
+        return {
+            size: unitConverter(property?.size ? Number(property.size) : null),
+            price: currencyConverter(property?.price ? Number(property.price) : null),
+            propertyUrl: `/properties/${property?.offeringType?.slug}/${property.slug}`
+        };
+    }, [property]);
+
+    useEffect(() => {
         if (property && property.images.length) {
             // Filter out any null values
             setPropertyImages(property.images
@@ -46,22 +57,18 @@ function MenuFeaturedProperty({offeringType}: MenuFeaturedPropertyProps) {
                             </div>
                             <div className={'space-y-2'}>
                                 {
-                                    property &&
-                                    <Link href={`/properties/${property?.offeringType?.slug}/${property.slug}`}
+                                    property && computedValues &&
+                                    <Link href={computedValues.propertyUrl}
                                           className="text-xl text-white">
                                         {property?.title}
                                     </Link>
                                 }
                                 <div className="flex justify-between">
                                     <p>
-                                        {
-                                            property && unitConverter(property?.size ? Number(property.size) : null)
-                                        }
+                                        {computedValues?.size}
                                     </p>
                                     <p className={'text-xl '}>
-                                        {
-                                            property && currencyConverter(property?.price ? Number(property.price) : null)
-                                        }
+                                        {computedValues?.price}
                                     </p>
                                 </div>
                             </div>
@@ -72,6 +79,8 @@ function MenuFeaturedProperty({offeringType}: MenuFeaturedPropertyProps) {
 
         </div>
     );
-}
+});
+
+MenuFeaturedProperty.displayName = 'MenuFeaturedProperty';
 
 export default MenuFeaturedProperty;

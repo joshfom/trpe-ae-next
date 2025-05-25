@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import AuthorCard from './AuthorCard';
 import AuthorForm from './AuthorForm';
@@ -22,7 +22,7 @@ function AllAuthors() {
     const [authors, setAuthors] = useState<Author[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchAuthors = async () => {
+    const fetchAuthors = useCallback(async () => {
         try {
             setIsLoading(true);
             const result = await getAllAuthors();
@@ -37,7 +37,11 @@ function AllAuthors() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
+
+    const handleOpenForm = useCallback(() => {
+        setIsOpen(true);
+    }, []);
 
     useEffect(() => {
         fetchAuthors();
@@ -47,7 +51,7 @@ function AllAuthors() {
         <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Authors</h1>
-                <Button onClick={() => setIsOpen(true)} className="btn btn-primary">
+                <Button onClick={handleOpenForm} className="btn btn-primary">
                     Add Author
                 </Button>
             </div>
@@ -74,4 +78,7 @@ function AllAuthors() {
     );
 }
 
-export default AllAuthors;
+const AllAuthorsMemo = memo(AllAuthors);
+AllAuthorsMemo.displayName = 'AllAuthors';
+
+export default AllAuthorsMemo;

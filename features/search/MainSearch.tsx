@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, memo, useCallback, useMemo} from 'react';
 import {Button} from "@/components/ui/button";
 import {PlusIcon, Search, SlidersHorizontal, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
@@ -29,7 +29,7 @@ interface MainSearchProps {
     mode?: 'rental' | 'sale' | 'general' | 'off-plan';
 }
 
-const CommunityItem: React.FC<CommunityItemProps> = ({
+const CommunityItem: React.FC<CommunityItemProps> = memo(({
                                                          community,
                                                          selectedCommunities,
                                                          setSelectedCommunities,
@@ -37,7 +37,7 @@ const CommunityItem: React.FC<CommunityItemProps> = ({
                                                          index,
                                                          offeringType
                                                      }) => {
-    const propertyCount = (() => {
+    const propertyCount = useMemo(() => {
         switch (offeringType) {
             case 'for-rent':
                 return community.rentCount;
@@ -52,16 +52,23 @@ const CommunityItem: React.FC<CommunityItemProps> = ({
             default:
                 return community.propertyCount;
         }
-    })();
+    }, [offeringType, community]);
+
+    const handleCommunityClick = useCallback(() => {
+        setSelectedCommunities([...selectedCommunities, community]);
+        setSearchInput('');
+    }, [selectedCommunities, community, setSelectedCommunities, setSearchInput]);
+
+    const isDisabled = useMemo(() => 
+        selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0),
+        [selectedCommunities, community.slug, propertyCount]
+    );
 
     return (
         <button
             type="button"
-            disabled={selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0)}
-            onClick={() => {
-                setSelectedCommunities([...selectedCommunities, community]);
-                setSearchInput('');
-            }}
+            disabled={isDisabled}
+            onClick={handleCommunityClick}
             key={index}
             className="flex hover:bg-slate-50 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -71,7 +78,9 @@ const CommunityItem: React.FC<CommunityItemProps> = ({
             </div>
         </button>
     );
-};
+});
+
+CommunityItem.displayName = 'CommunityItem';
 
 
 function MainSearch({mode = 'general'}: MainSearchProps) {
@@ -263,7 +272,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
         }
     });
 
-    const onSubmit = (data: any) => {
+    const onSubmit = useCallback((data: any) => {
         const finalUrl = buildPropertySearchUrl({
             searchType: searchType, // or 'sale'
             selectedCommunities: selectedCommunities,
@@ -271,16 +280,14 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
         });
         
         router.push(finalUrl);
-    };
+    }, [searchType, selectedCommunities, router]);
 
-    const handleFormValueChange = (value: any, fieldName: string): void => {
+    const handleFormValueChange = useCallback((value: any, fieldName: string): void => {
         //@ts-ignore
         form.setValue(fieldName, value);
-    }
+    }, [form]);
 
-
-    const handleCommunitySearch = (value: string) => {
-
+    const handleCommunitySearch = useCallback((value: string) => {
         if (value.length === 0) {
             setCommunityResults(communities);
             return;
@@ -293,7 +300,24 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
         const results = fuse.search(value);
         const items = results.map((result) => result.item);
         setCommunityResults(items);
-    };
+    }, [communities]);
+
+    const handleOfferingTypeClick = useCallback((slug: string) => {
+        setSearchType(slug);
+        form.setValue('offerType', slug);
+    }, [form]);
+
+    const handleRemoveCommunity = useCallback((communitySlug: string) => {
+        setSelectedCommunities(prev => prev.filter((item) => item.slug !== communitySlug));
+    }, []);
+
+    const handleShowSearchDropdown = useCallback(() => {
+        setShowSearchDropdown(true);
+    }, []);
+
+    const handleOpenMobileSearch = useCallback(() => {
+        setIsOpen(true);
+    }, []);
 
 
     const getOfferingTypeLabel = (unitType: string) => {
@@ -304,7 +328,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
 
     useEffect(() => {
         handleCommunitySearch(searchInput)
-    }, [searchInput]);
+    }, [searchInput, handleCommunitySearch]);
 
     return (
         <Form {...form}>
@@ -319,10 +343,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                             offeringTypes.map((item, index) => (
                                 <button
                                     type={'button'}
-                                    onClick={() => {
-                                        setSearchType(item.slug)
-                                        form.setValue('offerType', item.slug)
-                                    }}
+                                    onClick={() => handleOfferingTypeClick(item.slug)}
                                     className={`py-1 px-3 lg:py-1.5 lg:px-4 text-sm lg:text-base rounded-full ${searchType === item.slug ? 'bg-black text-white border border-white' : 'bg-white text-black'}`}
                                     key={index}
                                 >
@@ -406,9 +427,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                                 selectedCommunities.map((community, index) => (
                                                     <button
                                                         type={'button'}
-                                                        onClick={() => {
-                                                            setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== community.slug))
-                                                        }}
+                                                        onClick={() => handleRemoveCommunity(community.slug)}
                                                         key={index}
                                                         className="flex group items-center border roudned-full hover:text-red-600 hover:border-red-600 px-4 py-1 rounded-full"
                                                     >
@@ -450,7 +469,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                 selectedCommunities.length > 0 &&
                                 <button
                                     type={'button'}
-                                    onClick={() => setShowSearchDropdown(true)}
+                                    onClick={handleShowSearchDropdown}
                                     className="flex items-center justify-center border px-3 rounded-full  py-1">
                                     <PlusIcon className="w-4 h-4 mr-1 stroke-1"/> {selectedCommunities.length}
                                 </button>
@@ -474,7 +493,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                     {/*MOBILE SEARCH*/}
 
                     <div className={'lg:hidden'}>
-                        <div onClick={() => setIsOpen(true)} className="flex flex-col justify-center items-center">
+                        <div onClick={handleOpenMobileSearch} className="flex flex-col justify-center items-center">
                             <div className="relative w-full">
                                 <Input className={'w-full rounded-full px-8 py-3'} placeholder="Search Properties"/>
                                 <Search className={'absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700'}/>
@@ -517,4 +536,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
     );
 }
 
-export default MainSearch;
+const MainSearchMemo = memo(MainSearch);
+MainSearchMemo.displayName = 'MainSearch';
+
+export default MainSearchMemo;

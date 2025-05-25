@@ -1,10 +1,10 @@
-import React, {Suspense} from 'react';
+import React, {Suspense, cache} from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilter from "@/features/search/PropertyPageSearchFilter";
+import PropertyPageSearchFilterOptimized from "@/features/search/PropertyPageSearchFilterOptimized";
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
@@ -14,15 +14,35 @@ import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
+// Cached database queries for better performance
+const getPageMeta = cache(async (pathname: string) => {
+    try {
+        return await db.query.pageMetaTable.findFirst({
+            where: eq(pageMetaTable.path, pathname)
+        }) as unknown as PageMetaType;
+    } catch (error) {
+        console.error('Error fetching page meta:', error);
+        return null;
+    }
+});
+
+const getOfferingType = cache(async (offering: string) => {
+    try {
+        return await db.query.offeringTypeTable.findFirst({
+            where: eq(offeringTypeTable.slug, offering),
+        });
+    } catch (error) {
+        console.error('Error fetching offering type:', error);
+        return null;
+    }
+});
 
 export async function generateMetadata(): Promise<Metadata> {
     const headersList = await headers();
     const pathname = headersList.get("x-pathname") || "";
     
-    // Check for pageMeta first
-    const pageMeta = await db.query.pageMetaTable.findFirst({
-        where: eq(pageMetaTable.path, pathname)
-    }) as unknown as PageMetaType | null;
+    // Check for pageMeta first using cached function
+    const pageMeta = await getPageMeta(pathname);
     
     // Default metadata
     let title = "Commercial properties for sale in Dubai | Find Your Next Home";
@@ -92,7 +112,7 @@ async function CommercialSalePage({searchParams}: Props) {
 
             </div>
 
-            <PropertyPageSearchFilter offeringType='commercial-sale' />
+            <PropertyPageSearchFilterOptimized offeringType='commercial-sale' />
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">

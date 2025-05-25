@@ -64,7 +64,7 @@ export const MenuItem = React.memo(({
             )}
         </div>
     );
-};
+});
 
 export const Menu = ({
                          setActive,

@@ -1,9 +1,43 @@
-import React from 'react';
+import React, { cache, Suspense } from 'react';
 import type {Metadata} from "next";
 import { client } from "@/lib/hono";
-import ProjectCardServer from "@/features/offplans/components/ProjectCardServer";
 import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
+import dynamic from "next/dynamic";
+
+// Dynamic import for ProjectCardServer to reduce initial bundle size
+const ProjectCardServer = dynamic(() => import("@/features/offplans/components/ProjectCardServer"), {
+    loading: () => <ProjectCardSkeleton />,
+    ssr: true
+});
+
+// Skeleton component for loading state
+const ProjectCardSkeleton = React.memo(() => (
+    <div className="rounded-xl bg-gray-200 animate-pulse">
+        <div className="h-96 bg-gray-300 rounded-t-xl"></div>
+        <div className="p-6 space-y-4">
+            <div className="h-6 bg-gray-300 rounded w-3/4"></div>
+            <div className="h-4 bg-gray-300 rounded w-full"></div>
+            <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+        </div>
+    </div>
+));
+ProjectCardSkeleton.displayName = 'ProjectCardSkeleton';
+
+// Cached project fetching function
+const getProjects = cache(async (): Promise<ProjectType[]> => {
+    try {
+        const response = await client.api.projects.$get();
+        if (response.ok) {
+            const { data } = await response.json();
+            return data as unknown as ProjectType[];
+        }
+        return [];
+    } catch (error) {
+        console.error("Error fetching projects:", error);
+        return [];
+    }
+});
 
 export const metadata: Metadata = {
     title: "Off-Plan Properties in Dubai | New Projects for Sale - TRPE AE",
@@ -14,18 +48,8 @@ export const metadata: Metadata = {
 };
 
 async function NewProjectsPage() {
-    // Fetch projects directly server-side
-    let listings: ProjectType[] = [];
-    
-    try {
-        const response = await client.api.projects.$get();
-        if (response.ok) {
-            const { data } = await response.json();
-            listings = data as unknown as ProjectType[];
-        }
-    } catch (error) {
-        console.error("Error fetching projects:", error);
-    }
+    // Fetch projects using cached function
+    const listings = await getProjects();
 
     return (
         <div>
@@ -53,17 +77,25 @@ async function NewProjectsPage() {
                     <div className="flex space-x-2 py-6 items-center justify-between">
                     </div>
                     
-                    <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
-                        {listings.map((listing) => (
-                            <ProjectCardServer key={listing.id} project={listing} />
-                        ))}
-                        
-                        {listings.length === 0 && (
-                            <div className="col-span-2 text-center py-12">
-                                <p className="text-xl">No projects available at the moment.</p>
-                            </div>
-                        )}
-                    </div>
+                    <Suspense fallback={
+                        <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
+                            {Array.from({ length: 4 }).map((_, index) => (
+                                <ProjectCardSkeleton key={index} />
+                            ))}
+                        </div>
+                    }>
+                        <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
+                            {listings.map((listing) => (
+                                <ProjectCardServer key={listing.id} project={listing} />
+                            ))}
+                            
+                            {listings.length === 0 && (
+                                <div className="col-span-2 text-center py-12">
+                                    <p className="text-xl">No projects available at the moment.</p>
+                                </div>
+                            )}
+                        </div>
+                    </Suspense>
                 </div>
             </div>
         </div>

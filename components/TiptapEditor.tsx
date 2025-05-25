@@ -6,7 +6,7 @@ import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
 import CharacterCount from '@tiptap/extension-character-count'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo, memo } from 'react'
 import {
     Bold,
     Italic,
@@ -58,13 +58,13 @@ interface ToolbarButtonProps {
     className?: string
 }
 
-const ToolbarButton = ({
+const ToolbarButton = memo<ToolbarButtonProps>(({
                            onClick,
                            isActive,
                            disabled,
                            children,
                            className,
-                       }: ToolbarButtonProps) => (
+                       }) => (
     <Button
         type="button"
         variant="ghost"
@@ -79,13 +79,15 @@ const ToolbarButton = ({
     >
         {children}
     </Button>
-)
+));
+
+ToolbarButton.displayName = 'ToolbarButton';
 
 interface MenuBarProps {
     editor: Editor | null
 }
 
-const MenuBar = ({ editor }: MenuBarProps) => {
+const MenuBar = memo<MenuBarProps>(({ editor }) => {
     const [isLinkPopoverOpen, setIsLinkPopoverOpen] = useState(false)
     const [linkUrl, setLinkUrl] = useState('')
     const [linkStatus, setLinkStatus] = useState<string>('')
@@ -113,7 +115,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
         }
     }, [isLinkPopoverOpen, editor])
 
-    const setLink = (e: React.FormEvent) => {
+    const setLink = useCallback((e: React.FormEvent) => {
         e.preventDefault()
         e.stopPropagation() // Add this line to stop event bubbling
         if (!editor) return
@@ -150,7 +152,65 @@ const MenuBar = ({ editor }: MenuBarProps) => {
                 console.error('Invalid URL')
             }
         }
-    }
+    }, [editor, linkUrl])
+
+    // Memoized toolbar button handlers
+    const handleBoldClick = useCallback(() => editor?.chain().focus().toggleBold().run(), [editor])
+    const handleItalicClick = useCallback(() => editor?.chain().focus().toggleItalic().run(), [editor])
+    const handleUnderlineClick = useCallback(() => editor?.chain().focus().toggleUnderline().run(), [editor])
+    const handleStrikeClick = useCallback(() => editor?.chain().focus().toggleStrike().run(), [editor])
+    const handleBulletListClick = useCallback(() => editor?.chain().focus().toggleBulletList().run(), [editor])
+    const handleOrderedListClick = useCallback(() => editor?.chain().focus().toggleOrderedList().run(), [editor])
+    const handleAlignLeftClick = useCallback(() => editor?.chain().focus().setTextAlign('left').run(), [editor])
+    const handleAlignCenterClick = useCallback(() => editor?.chain().focus().setTextAlign('center').run(), [editor])
+    const handleAlignRightClick = useCallback(() => editor?.chain().focus().setTextAlign('right').run(), [editor])
+    const handleAlignJustifyClick = useCallback(() => editor?.chain().focus().setTextAlign('justify').run(), [editor])
+    const handleBlockquoteClick = useCallback(() => editor?.chain().focus().toggleBlockquote().run(), [editor])
+    const handleUndoClick = useCallback(() => editor?.chain().focus().undo().run(), [editor])
+    const handleRedoClick = useCallback(() => editor?.chain().focus().redo().run(), [editor])
+
+    // Memoized heading handlers
+    const handleParagraphClick = useCallback(() => editor?.chain().focus().setParagraph().run(), [editor])
+    const handleH2Click = useCallback(() => editor?.chain().focus().toggleHeading({ level: 2 }).run(), [editor])
+    const handleH3Click = useCallback(() => editor?.chain().focus().toggleHeading({ level: 3 }).run(), [editor])
+    const handleH4Click = useCallback(() => editor?.chain().focus().toggleHeading({ level: 4 }).run(), [editor])
+    const handleH5Click = useCallback(() => editor?.chain().focus().toggleHeading({ level: 5 }).run(), [editor])
+
+    // Memoized link URL change handler
+    const handleLinkUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setLinkUrl(e.target.value);
+        // Update link status when URL changes
+        const url = e.target.value.trim();
+        if (url) {
+            try {
+                const urlWithProtocol = url.match(/^(https?:\/\/|mailto:|tel:)/i) ? url : `https://${url}`;
+                const urlObj = new URL(urlWithProtocol);
+                const isInternal = urlObj.hostname.includes('trpe.ae');
+                setLinkStatus(isInternal ? 
+                    'This link will be followed (internal link)' : 
+                    'This link will have nofollow attribute (external link)');
+            } catch (e) {
+                setLinkStatus('');
+            }
+        } else {
+            setLinkStatus('');
+        }
+    }, [])
+
+    // Memoized heading click handler
+    const handleHeadingSelect = useCallback((value: string) => {
+        if (value === 'paragraph') {
+            handleParagraphClick()
+        } else if (value === 'h2') {
+            handleH2Click()
+        } else if (value === 'h3') {
+            handleH3Click()
+        } else if (value === 'h4') {
+            handleH4Click()
+        } else if (value === 'h5') {
+            handleH5Click()
+        }
+    }, [handleParagraphClick, handleH2Click, handleH3Click, handleH4Click, handleH5Click])
 
     if (!editor) return null
 
@@ -181,19 +241,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
                     {headingOptions.map((option) => (
                         <DropdownMenuItem
                             key={option.value}
-                            onSelect={() => {
-                                if (option.value === 'paragraph') {
-                                    editor.chain().focus().setParagraph().run()
-                                } else {
-                                    editor
-                                        .chain()
-                                        .focus()
-                                        .toggleHeading({
-                                            level: parseInt(option.value.charAt(1)) as 1 | 2 | 3 | 4 | 5,
-                                        })
-                                        .run()
-                                }
-                            }}
+                            onSelect={() => handleHeadingSelect(option.value)}
                             className="min-w-[180px]"
                         >
                             {option.label}
@@ -205,28 +253,28 @@ const MenuBar = ({ editor }: MenuBarProps) => {
             <div className="w-px h-6 bg-border mx-1" />
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleBold().run()}
+                onClick={handleBoldClick}
                 isActive={editor.isActive('bold')}
             >
                 <Bold className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleItalic().run()}
+                onClick={handleItalicClick}
                 isActive={editor.isActive('italic')}
             >
                 <Italic className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleUnderline().run()}
+                onClick={handleUnderlineClick}
                 isActive={editor.isActive('underline')}
             >
                 <UnderlineIcon className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleStrike().run()}
+                onClick={handleStrikeClick}
                 isActive={editor.isActive('strike')}
             >
                 <Strikethrough className="h-4 w-4" />
@@ -235,14 +283,14 @@ const MenuBar = ({ editor }: MenuBarProps) => {
             <div className="w-px h-6 bg-border mx-1" />
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleBulletList().run()}
+                onClick={handleBulletListClick}
                 isActive={editor.isActive('bulletList')}
             >
                 <List className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
+                onClick={handleOrderedListClick}
                 isActive={editor.isActive('orderedList')}
             >
                 <ListOrdered className="h-4 w-4" />
@@ -251,28 +299,28 @@ const MenuBar = ({ editor }: MenuBarProps) => {
             <div className="w-px h-6 bg-border mx-1" />
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().setTextAlign('left').run()}
+                onClick={handleAlignLeftClick}
                 isActive={editor.isActive({ textAlign: 'left' })}
             >
                 <AlignLeft className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().setTextAlign('center').run()}
+                onClick={handleAlignCenterClick}
                 isActive={editor.isActive({ textAlign: 'center' })}
             >
                 <AlignCenter className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().setTextAlign('right').run()}
+                onClick={handleAlignRightClick}
                 isActive={editor.isActive({ textAlign: 'right' })}
             >
                 <AlignRight className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().setTextAlign('justify').run()}
+                onClick={handleAlignJustifyClick}
                 isActive={editor.isActive({ textAlign: 'justify' })}
             >
                 <AlignJustify className="h-4 w-4" />
@@ -302,25 +350,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
                         <Input
                             placeholder="Enter URL"
                             value={linkUrl}
-                            onChange={(e) => {
-                                setLinkUrl(e.target.value);
-                                // Update link status when URL changes
-                                const url = e.target.value.trim();
-                                if (url) {
-                                    try {
-                                        const urlWithProtocol = url.match(/^(https?:\/\/|mailto:|tel:)/i) ? url : `https://${url}`;
-                                        const urlObj = new URL(urlWithProtocol);
-                                        const isInternal = urlObj.hostname.includes('trpe.ae');
-                                        setLinkStatus(isInternal ? 
-                                            'This link will be followed (internal link)' : 
-                                            'This link will have nofollow attribute (external link)');
-                                    } catch (e) {
-                                        setLinkStatus('');
-                                    }
-                                } else {
-                                    setLinkStatus('');
-                                }
-                            }}
+                            onChange={handleLinkUrlChange}
                             className="flex-1"
                         />
                         {linkStatus && (
@@ -336,7 +366,7 @@ const MenuBar = ({ editor }: MenuBarProps) => {
             </Popover>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
+                onClick={handleBlockquoteClick}
                 isActive={editor.isActive('blockquote')}
             >
                 <Quote className="h-4 w-4" />
@@ -345,21 +375,23 @@ const MenuBar = ({ editor }: MenuBarProps) => {
             <div className="w-px h-6 bg-border mx-1" />
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().undo().run()}
+                onClick={handleUndoClick}
                 disabled={!editor.can().undo()}
             >
                 <Undo className="h-4 w-4" />
             </ToolbarButton>
 
             <ToolbarButton
-                onClick={() => editor.chain().focus().redo().run()}
+                onClick={handleRedoClick}
                 disabled={!editor.can().redo()}
             >
                 <Redo className="h-4 w-4" />
             </ToolbarButton>
         </div>
     )
-}
+})
+
+MenuBar.displayName = 'MenuBar';
 
 interface TipTapEditorProps {
     name: string
@@ -367,11 +399,11 @@ interface TipTapEditorProps {
     defaultValue?: string
 }
 
-export const TipTapEditor = ({
+export const TipTapEditor = memo<TipTapEditorProps>(({
                                  name,
                                  control,
                                  defaultValue = '',
-                             }: TipTapEditorProps) => {
+                             }) => {
     const { field } = useController({
         name,
         control,
@@ -498,4 +530,6 @@ export const TipTapEditor = ({
             </div>
         </div>
     )
-}
+})
+
+TipTapEditor.displayName = 'TipTapEditor';

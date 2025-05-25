@@ -1,7 +1,23 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import {MapPin, MessageCircle, Phone} from "lucide-react";
 import type {Metadata} from "next";
-import ContactForm from "@/features/site/components/ContactForm";
+import dynamic from "next/dynamic";
+
+// Dynamic import for ContactForm to improve initial page load
+const ContactForm = dynamic(() => import("@/features/site/components/ContactForm"), {
+    loading: () => (
+        <div className="bg-white rounded-lg shadow-lg p-8 animate-pulse">
+            <div className="space-y-4">
+                <div className="h-6 bg-gray-300 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-10 bg-gray-300 rounded"></div>
+                <div className="h-10 bg-gray-300 rounded"></div>
+                <div className="h-24 bg-gray-300 rounded"></div>
+                <div className="h-10 bg-gray-300 rounded w-1/4"></div>
+            </div>
+        </div>
+    )
+});
 
 export const metadata: Metadata = {
     title: "Contact Us | Dubai Real Estate - TRPE AE",

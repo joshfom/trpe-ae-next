@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, memo, useEffect } from 'react';
 import { 
     Sheet, 
     SheetContent, 
@@ -28,7 +28,7 @@ interface EditCommunitySheetProps {
 
 type formValues = z.infer<typeof CommunityFormSchema>;
 
-export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
+export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [file, setFile] = useState<File | undefined>(undefined);
     const [hasDefaultImage, setHasDefaultImage] = useState(false);
@@ -36,24 +36,28 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
     const { edgestore } = useEdgeStore();
     const mutation = useUpdateCommunity(community.id);
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: community.name,
+        image: community.image || '',
+        about: community.about || '',
+        metaTitle: community.metaTitle || '',
+        metaDesc: community.metaDesc || '',
+    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc]);
+
     const form = useForm({
         mode: "onChange",
-        defaultValues: {
-            name: community.name,
-            image: community.image || '',
-            about: community.about || '',
-            metaTitle: community.metaTitle || '',
-            metaDesc: community.metaDesc || '',
-        }
+        defaultValues,
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (community.image) {
             setHasDefaultImage(true);
         }
     }, [community.image]);
 
-    const updateAvatar = async (file: File | undefined) => {
+    // Memoize callback functions
+    const updateAvatar = useCallback(async (file: File | undefined) => {
         if (file) {
             const res = await edgestore.publicFiles.upload({
                 file,
@@ -66,9 +70,9 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
             setFile(file);
             form.setValue('image', res.url);
         }
-    };
+    }, [edgestore, form]);
 
-    const onSubmit = (values: formValues) => {
+    const onSubmit = useCallback((values: formValues) => {
         setIsSubmitting(true);
         mutation.mutate(values, {
             onSuccess: () => {
@@ -80,7 +84,23 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
                 setIsSubmitting(false);
             }
         });
-    };
+    }, [mutation, form]);
+
+    const handleSheetChange = useCallback((open: boolean) => {
+        setIsOpen(open);
+    }, []);
+
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, []);
+
+    const handleImageRemove = useCallback(() => {
+        setHasDefaultImage(false);
+    }, []);
+
+    const handleImageChange = useCallback((file: File | undefined) => {
+        updateAvatar(file);
+    }, [updateAvatar]);
 
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -182,9 +202,7 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
                                                             />
                                                             <Button
                                                                 className="absolute -top-4 -right-4"
-                                                                onClick={() => {
-                                                                    setHasDefaultImage(false);
-                                                                }}
+                                                                onClick={handleImageRemove}
                                                                 variant="destructive"
                                                                 size="icon"
                                                             >
@@ -197,9 +215,7 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
                                                         width={200}
                                                         height={200}
                                                         value={file}
-                                                        onChange={(file) => {
-                                                            updateAvatar(file);
-                                                        }}
+                                                        onChange={handleImageChange}
                                                     />
                                                 )}
                                             </FormItem>
@@ -211,7 +227,7 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
                             <div className="flex border border-t justify-between pt-6 pb-10 px-6 items-center space-x-4">
                                 <Button
                                     variant="destructive"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={handleCancelClick}
                                     type="button"
                                     className="btn btn-secondary"
                                 >
@@ -231,4 +247,6 @@ export const EditCommunitySheet = ({ community }: EditCommunitySheetProps) => {
             </SheetContent>
         </Sheet>
     );
-};
+});
+
+EditCommunitySheet.displayName = 'EditCommunitySheet';

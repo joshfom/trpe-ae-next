@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -22,22 +22,25 @@ interface AddOffplanFaqFormProps {
     offplanAdded: () => void;
 }
 
-function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
+const AddOffplanFaqForm = memo<AddOffplanFaqFormProps>(({offplanId, offplanAdded}) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const mutation = useAddOffplanFaq(offplanId)
 
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        question: '',
+        answer: ''
+    }), []);
+
     const form = useForm({
         mode: "onChange",
         resolver: zodResolver(FaqFormSchema),
-        defaultValues: {
-            question: '',
-            answer: ''
-        }
+        defaultValues,
     })
 
-
-    const onSubmit = (values: formValues) => {
+    // Memoize onSubmit callback
+    const onSubmit = useCallback((values: formValues) => {
         setIsSubmitting(true)
         mutation.mutate(values, {
             onSuccess: () => {
@@ -49,7 +52,7 @@ function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
                 setIsSubmitting(false)
             }
         })
-    }
+    }, [mutation, form, offplanAdded]);
 
 
     return (
@@ -113,6 +116,8 @@ function AddOffplanFaqForm({offplanId, offplanAdded}: AddOffplanFaqFormProps) {
             </form>
         </Form>
     );
-}
+});
+
+AddOffplanFaqForm.displayName = 'AddOffplanFaqForm';
 
 export default AddOffplanFaqForm;

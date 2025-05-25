@@ -1,6 +1,7 @@
-import React, { Suspense, cache } from 'react';
+import React, { Suspense, cache, memo } from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
+import Image from "next/image";
 import type {Metadata} from "next";
 import { sql } from "drizzle-orm";
 import { communityTable, type CommunitySelect } from "@/db/schema/community-table";
@@ -38,8 +39,32 @@ const getCommunities = cache(async (): Promise<(CommunitySelect & { properties: 
     }
 });
 
+// Memoized Community Card component
+const CommunityCard = memo(({ community }: { community: CommunitySelect & { properties: any[] } }) => (
+    <article className={'bg-white'}>
+        <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
+            <Image
+                className={'object-cover rounded-lg'}
+                src={community.image || '/images/communities-default.webp'}
+                alt={community.label || 'Community'}
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                loading="lazy"
+                placeholder="blur"
+                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+            />
+        </div>
+        <div className={'px-4 text-center py-2'}>
+            <Link href={`/communities/${community.slug}`} className={'font-semibold text-center text-sm hover:text-blue-600 transition-colors'}>
+                {community.label}
+            </Link>
+        </div>
+    </article>
+));
+CommunityCard.displayName = 'CommunityCard';
+
 // Component for rendering community list
-function CommunityList({ communities }: { communities: (CommunitySelect & { properties: any[] })[] }) {
+const CommunityList = memo(({ communities }: { communities: (CommunitySelect & { properties: any[] })[] }) => {
     // Only try to sort if we have communities data
     const reOrderedCommunities = communities.length > 0 
         ? communities.sort((a, b) => a.properties.length - b.properties.length).reverse()
@@ -63,48 +88,34 @@ function CommunityList({ communities }: { communities: (CommunitySelect & { prop
             </div>
             <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
                 {reOrderedCommunities.map((community) => (
-                    <div key={community.id} className={'bg-white'}>
-                        <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
-                            <img
-                                className={'object-cover rounded-lg absolute inset-0 w-full h-full'}
-                                src={community.image || '/images/communities-default.webp'}
-                                alt={community.label || 'Community'}
-                                loading="lazy"
-                            />
-                        </div>
-                        <div className={'px-4 text-center py-2'}>
-                            <Link href={`/communities/${community.slug}`} className={'font-semibold text-center text-sm'}>
-                                {community.label}
-                            </Link>
-                        </div>
-                    </div>
+                    <CommunityCard key={community.id} community={community} />
                 ))}
             </div>
         </>
     );
-}
+});
+CommunityList.displayName = 'CommunityList';
 
 // Loading component
-function CommunitiesLoading() {
-    return (
-        <>
-            <div className="py-12 bg-black hidden lg:block"></div>
-            <div className="py-12 max-w-7xl mx-auto">
-                <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
-            </div>
-            <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
-                {Array.from({ length: 6 }).map((_, i) => (
-                    <div key={i} className={'bg-white'}>
-                        <div className={'relative w-full h-60 rounded-lg overflow-hidden bg-gray-200 animate-pulse'}></div>
-                        <div className={'px-4 text-center py-2'}>
-                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mx-auto"></div>
-                        </div>
+const CommunitiesLoading = memo(() => (
+    <>
+        <div className="py-12 bg-black hidden lg:block"></div>
+        <div className="py-12 max-w-7xl mx-auto">
+            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
+        </div>
+        <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
+            {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className={'bg-white'}>
+                    <div className={'relative w-full h-60 rounded-lg overflow-hidden bg-gray-200 animate-pulse'}></div>
+                    <div className={'px-4 text-center py-2'}>
+                        <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mx-auto"></div>
                     </div>
-                ))}
-            </div>
-        </>
-    );
-}
+                </div>
+            ))}
+        </div>
+    </>
+));
+CommunitiesLoading.displayName = 'CommunitiesLoading';
 
 async function CommunitiesPage() {
     const communities = await getCommunities();

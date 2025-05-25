@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {Button} from "@/components/ui/button";
 import {useGetOffplanPaymentPlan} from "@/features/admin/off_plans/api/use-get-offplan-payment-plan";
 
@@ -16,12 +16,17 @@ function AdminOffplanPaymentPlan({offplan}: AdminOffplanPaymentPlanProps) {
 
     const [addingImage, setAddingImage] = React.useState(false)
 
+    // Memoized callback functions
+    const handleToggleAddingPayment = useCallback(() => {
+        setAddingImage(!addingImage);
+    }, [addingImage]);
+
 
     return (
         <div className={'flex flex-col gap-6 px-8 '}>
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Payment Plan</h2>
-                <Button size={'sm'} variant={'outline'} onClick={() => setAddingImage(!addingImage)} >Add payment</Button>
+                <Button size={'sm'} variant={'outline'} onClick={handleToggleAddingPayment} >Add payment</Button>
             </div>
 
             <div className="p-6  bg-white">
@@ -32,4 +37,7 @@ function AdminOffplanPaymentPlan({offplan}: AdminOffplanPaymentPlanProps) {
     );
 }
 
-export default AdminOffplanPaymentPlan;
+const AdminOffplanPaymentPlanComponent = memo(AdminOffplanPaymentPlan);
+AdminOffplanPaymentPlanComponent.displayName = 'AdminOffplanPaymentPlan';
+
+export default AdminOffplanPaymentPlanComponent;

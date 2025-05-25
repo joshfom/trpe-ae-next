@@ -11,57 +11,85 @@ import {asc, eq} from "drizzle-orm";
 import FeaturedListingsSection from "@/features/site/Homepage/components/FeaturedListingsSection";
 import Image from "next/image"
 import {communityTable} from "@/db/schema/community-table";
-import React from "react";
-import Expandable from "@/features/site/components/carousel/expandable";
+import React, { cache, Suspense } from "react";
 import WordPullUp from "@/features/site/components/WordPullUp";
+import NextDynamic from "next/dynamic";
+
+// Dynamic imports for better code splitting
+const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
+    loading: () => <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>
+});
+
+// Cached database queries for better performance
+const getOfferingTypes = cache(async () => {
+    try {
+        const [rentalType] = await db.select().from(offeringTypeTable).where(
+            eq(offeringTypeTable.slug, 'for-rent')
+        ).limit(1);
+
+        const [saleType] = await db.select().from(offeringTypeTable).where(
+            eq(offeringTypeTable.slug, 'for-sale')
+        ).limit(1);
+
+        return { rentalType, saleType };
+    } catch (error) {
+        console.error('Error fetching offering types:', error);
+        return { rentalType: null, saleType: null };
+    }
+});
+
+const getListings = cache(async (offeringTypeId: string, limit: number = 3): Promise<PropertyType[]> => {
+    try {
+        return await db.query.propertyTable.findMany({
+            where: eq(propertyTable.offeringTypeId, offeringTypeId),
+            limit,
+            with: {
+                images: true,
+                agent: true,
+                community: true,
+                city: true,
+                subCommunity: true,
+                offeringType: true,
+                type: true,
+            }
+        }) as unknown as PropertyType[];
+    } catch (error) {
+        console.error('Error fetching listings:', error);
+        return [];
+    }
+});
+
+const getCommunities = cache(async () => {
+    try {
+        return await db.query.communityTable.findMany({
+            orderBy: [asc(communityTable.name)],
+            limit: 10,
+            with: {
+                image: true,
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching communities:', error);
+        return [];
+    }
+});
 
 
 export const dynamic = 'force-dynamic';
 export default async function Home() {
+    // Use cached functions for better performance
+    const { rentalType, saleType } = await getOfferingTypes();
+    
+    if (!rentalType || !saleType) {
+        return <div>Error loading page data</div>;
+    }
 
-    const [rentalType] = await db.select().from(offeringTypeTable).where(
-        eq(offeringTypeTable.slug, 'for-rent')
-    ).limit(1);
-
-    const [saleType] = await db.select().from(offeringTypeTable).where(
-        eq(offeringTypeTable.slug, 'for-sale')
-    ).limit(1);
-
-
-    const rentalListings = await db.query.propertyTable.findMany({
-        where: eq(propertyTable.offeringTypeId, rentalType.id),
-        limit: 3,
-        with: {
-            images: true,
-            agent: true,
-            community: true,
-            city: true,
-            subCommunity: true,
-            offeringType: true,
-            type: true,
-        }
-    }) as unknown as PropertyType[];
-
-    const saleListings = await db.query.propertyTable.findMany({
-        where: eq(propertyTable.offeringTypeId, saleType.id),
-        limit: 3,
-        with: {
-            images: true,
-            agent: true,
-            community: true,
-            city: true,
-            subCommunity: true,
-            offeringType: true,
-            type: true
-        }
-    }) as unknown as PropertyType[];
-
-
-    const communities = await db.query.communityTable.findMany({
-        orderBy: [asc(communityTable.createdAt)],
-        limit: 8,
-    }) as unknown as CommunityType[];
-
+    // Fetch listings in parallel for better performance
+    const [rentalListings, saleListings, communities] = await Promise.all([
+        getListings(rentalType.id, 3),
+        getListings(saleType.id, 3),
+        getCommunities()
+    ]);
 
     const webpageJsonLD = {
         "@id": "https://trpe.ae#WebPage",
@@ -143,7 +171,7 @@ export default async function Home() {
                             Top Communities In Dubai
                         </h3>
 
-                        <Expandable list={communities} className="w-full hidden md:flex  min-w-72 mt-6 storybook-fix"/>
+                        <DynamicExpandable list={communities} className="w-full hidden md:flex  min-w-72 mt-6 storybook-fix"/>
 
                         <div className="grid grid-cols-1 md:hidden gap-6 mt-8 py-6">
                             {

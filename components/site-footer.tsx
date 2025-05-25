@@ -1,5 +1,5 @@
 'use client'
-import React, {useState, useCallback, useMemo} from 'react';
+import React, {useState, useCallback, useMemo, memo} from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
@@ -7,11 +7,6 @@ import Image from "next/image";
 import {Facebook, Home, Instagram, Linkedin, MenuIcon, Search, Youtube} from "lucide-react";
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import dynamic from 'next/dynamic';
-// Use dynamic import with SSR disabled for components that don't need server rendering
-const MobileSearch = dynamic(
-    () => import("@/features/site/components/MobileSearch"), 
-    { ssr: false, loading: () => <div className="p-4">Loading search...</div> }
-);
 import {toast} from "sonner";
 import {useUnitStore} from "@/hooks/use-unit-store";
 import {useCurrencyStore} from "@/hooks/use-currency-store";
@@ -19,8 +14,13 @@ import {usePathname, useRouter} from "next/navigation";
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import dynamic from 'next/dynamic';
+
 // Use dynamic import with SSR disabled for components that don't need server rendering
+const MobileSearch = dynamic(
+    () => import("@/features/site/components/MobileSearch"), 
+    { ssr: false, loading: () => <div className="p-4">Loading search...</div> }
+);
+
 const FooterCommunitiesClient = dynamic(
     () => import("@/features/site/components/FooterCommunitiesClient"), 
     { ssr: false }
@@ -56,6 +56,60 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
         toast.success(`Currency changed to ${currency}`)
         router.refresh()
     }, [setCurrency, router]);
+
+    const handleOpenSearch = useCallback(() => {
+        setOpenSearch(true);
+    }, []);
+
+    const handleOpenLocation = useCallback(() => {
+        setOpenLocation(true);
+    }, []);
+
+    const handleOpenMenu = useCallback(() => {
+        setIsMenuOpen(true);
+    }, []);
+
+    const handleCloseMenu = useCallback(() => {
+        setIsMenuOpen(false);
+    }, []);
+
+    const handleChangeUnitSqm = useCallback(() => {
+        changeUnitType('sqm');
+    }, [changeUnitType]);
+
+    const handleChangeUnitSqf = useCallback(() => {
+        changeUnitType('sqf');
+    }, [changeUnitType]);
+
+    const handleChangeCurrencyGBP = useCallback(() => {
+        changeCurrency('GBP');
+        setIsMenuOpen(false);
+    }, [changeCurrency]);
+
+    const handleChangeCurrencyEUR = useCallback(() => {
+        changeCurrency('EUR');
+        setIsMenuOpen(false);
+    }, [changeCurrency]);
+
+    const handleChangeCurrencyUSD = useCallback(() => {
+        changeCurrency('USD');
+        setIsMenuOpen(false);
+    }, [changeCurrency]);
+
+    const handleChangeCurrencyAED = useCallback(() => {
+        changeCurrency('AED');
+        setIsMenuOpen(false);
+    }, [changeCurrency]);
+
+    const handleChangeUnitSqmAndClose = useCallback(() => {
+        changeUnitType('sqm');
+        setIsMenuOpen(false);
+    }, [changeUnitType]);
+
+    const handleChangeUnitSqfAndClose = useCallback(() => {
+        changeUnitType('sqf');
+        setIsMenuOpen(false);
+    }, [changeUnitType]);
 
 
     return (
@@ -425,7 +479,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                             <div className={'flex border-transparent hover:border-white py-2 '}>
                                 <button
                                     type={'button'}
-                                    onClick={() => changeUnitType('sqm')}
+                                    onClick={handleChangeUnitSqm}
                                     className={''}>
                                     SQM
                                 </button>
@@ -433,7 +487,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                             <div className={'flex border-transparent hover:border-white py-2 '}>
                                 <button
                                     type={'button'}
-                                    onClick={() => changeUnitType('sqf')}
+                                    onClick={handleChangeUnitSqf}
                                     className={''}>
                                     SQF
                                 </button>
@@ -512,7 +566,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                     </Link>
 
 
-                    <button onClick={() => setOpenSearch(true)}
+                    <button onClick={handleOpenSearch}
                             className={'inline-flex flex-col justify-center items-center'}>
                         <Search size={26} className={' stroke-1 text-white'}/>
                         <span className="text-xs text-white mt-1">
@@ -520,7 +574,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                         </span>
                     </button>
 
-                    <button onClick={() => setOpenLocation(true)}
+                    <button onClick={handleOpenLocation}
                             className={'inline-flex flex-col justify-center items-center'}>
                         <svg className={'w-6 h-6 border rounded-full border-white'} xmlSpace="preserve"
                              viewBox="0 0 473.68 473.68">
@@ -552,7 +606,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                         </span>
                     </button>
 
-                    <button onClick={() => setIsMenuOpen(true)}
+                    <button onClick={handleOpenMenu}
                             className={'inline-flex flex-col justify-center items-center'}>
                         <MenuIcon size={26} className={' stroke-1 text-white'}/>
                         <span className="text-xs text-white mt-1">
@@ -569,7 +623,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                     onOpenChange={setIsMenuOpen}
                 >
                     <SheetContent
-                        onClick={() => setIsMenuOpen(false)}
+                        onClick={handleCloseMenu}
                         side={'left'} className="w-[90%] flex flex-col bg-white"
                     >
                         <SheetHeader>
@@ -698,10 +752,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                 <AccordionTrigger>{currency}</AccordionTrigger>
                                 <AccordionContent>
                                     <div className={'flex justify-center py-2'}>
-                                        <button onClick={() => {
-                                            changeCurrency('GBP')
-                                            setIsMenuOpen(false)
-                                        }} className={'inline-flex py-1'}>
+                                        <button onClick={handleChangeCurrencyGBP} className={'inline-flex py-1'}>
                                             <span className="mr-1"></span>
                                             GBP
                                         </button>
@@ -709,10 +760,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
 
                                     <div className={'flex py-2 justify-center'}>
                                         <button className={'inline-flex'}
-                                                onClick={() => {
-                                                    setIsMenuOpen(false)
-                                                    changeCurrency('EUR')
-                                                }}
+                                                onClick={handleChangeCurrencyEUR}
                                         >
                                             <span className="mr-1">
 
@@ -722,10 +770,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                     </div>
                                     <div className={'flex py-2 justify-center'}>
                                         <button className={'inline-flex'}
-                                                onClick={() => {
-                                                    changeCurrency('USD')
-                                                    setIsMenuOpen(false)
-                                                }}
+                                                onClick={handleChangeCurrencyUSD}
                                         >
                                             <span className="mr-1">
 
@@ -735,10 +780,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                     </div>
                                     <div className={'flex py-2 justify-center'}>
                                         <button className={'inline-flex'}
-                                                onClick={() => {
-                                                    changeCurrency('AED')
-                                                    setIsMenuOpen(false)
-                                                }}
+                                                onClick={handleChangeCurrencyAED}
                                         >
                                             <span className="mr-1">
 
@@ -754,16 +796,10 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                 <AccordionTrigger>{unit.toUpperCase()}</AccordionTrigger>
                                 <AccordionContent>
                                     <div className={'flex flex-col px-8  py-2 space-y-4'}>
-                                        <button onClick={() => {
-                                            changeUnitType('sqm')
-                                            setIsMenuOpen(false)
-                                        }} className={''}>
+                                        <button onClick={handleChangeUnitSqmAndClose} className={''}>
                                             SQM
                                         </button>
-                                        <button onClick={() => {
-                                            changeUnitType('sqf')
-                                            setIsMenuOpen(false)
-                                        }} className={''}>
+                                        <button onClick={handleChangeUnitSqfAndClose} className={''}>
                                             SQF
                                         </button>
                                     </div>
@@ -779,4 +815,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
 }
 
 // Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(SiteFooter);
+const SiteFooterMemo = memo(SiteFooter);
+SiteFooterMemo.displayName = 'SiteFooter';
+
+export default SiteFooterMemo;

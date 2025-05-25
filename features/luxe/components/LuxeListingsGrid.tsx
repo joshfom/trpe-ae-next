@@ -1,53 +1,59 @@
 
 
-import React, {Suspense} from 'react';
-import PropertyCard from "@/components/property-card";
-import {Skeleton} from "@/components/ui/skeleton";
-import LuxePropertyCard from "@/features/luxe/components/LuxePropertyCard";
+"use client"
 
+import React, { Suspense, memo } from 'react';
+import { Skeleton } from "@/components/ui/skeleton";
+import LuxePropertyCard from "@/features/luxe/components/LuxePropertyCard";
 
 interface LuxeListingsProps {
     listings?: PropertyType[]
 }
 
-function LuxeListingsGrid({listings}: LuxeListingsProps) {
+// Memoized skeleton component
+const LuxeListingsGridSkeleton = memo(() => (
+    <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
+        {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className={''}>
+                <Skeleton className={'h-96 w-full bg-zinc-300/40 rounded-xl'} />
+                <div className="px-2 py-4 space-y-2">
+                    <Skeleton className={'h-5 w-full bg-zinc-300/40 rounded-xl'} />
+                    <Skeleton className={'h-3 w-full bg-zinc-300/40 rounded-xl'} />
+                    <Skeleton className={'h-3 w-full bg-zinc-300/40 rounded-xl'} />
+                </div>
+                <div className={'flex justify-between px-2'}>
+                    <Skeleton className={'h-3 w-1/3 bg-zinc-300/40 rounded-xl'} />
+                    <Skeleton className={'h-3 w-1/3 bg-zinc-300/40 rounded-xl'} />
+                </div>
+            </div>
+        ))}
+    </div>
+));
+
+LuxeListingsGridSkeleton.displayName = 'LuxeListingsGridSkeleton';
+
+// Memoized main component
+const LuxeListingsGrid = memo<LuxeListingsProps>(({ listings }) => {
+    if (!listings || listings.length === 0) {
+        return (
+            <div className="text-center py-12">
+                <p className="text-gray-500">No luxury properties found</p>
+            </div>
+        );
+    }
 
     return (
-
         <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
-
-        {
-            listings?.map((listing) => (
-
-                <LuxePropertyCard key={listing.id} property={listing}/>
+            {listings.map((listing) => (
+                <LuxePropertyCard key={listing.id} property={listing} />
             ))}
-
-    </div>
+        </div>
     );
-}
+});
+
+LuxeListingsGrid.displayName = 'LuxeListingsGrid';
+
+// Attach skeleton as static property
+LuxeListingsGrid.Skeleton = LuxeListingsGridSkeleton;
 
 export default LuxeListingsGrid;
-
-// eslint-disable-next-line react/display-name
-LuxeListingsGrid.Skeleton = () => {
-    return (
-        <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
-            {
-                Array.from({length: 6}, (_, i) => (
-                    <div key={i} className={''}>
-                        <Skeleton className={'h-96 w-full bg-zinc-300/40 rounded-xl'}/>
-                        <div className="px-2 py-4 space-y-2">
-                            <Skeleton className={'h-5 w-full bg-zinc-300/40 rounded-xl'}/>
-                            <Skeleton className={'h-3 w-full bg-zinc-300/40 rounded-xl'}/>
-                            <Skeleton className={'h-3 w-full bg-zinc-300/40 rounded-xl'}/>
-                        </div>
-                        <div className={'flex justify-between px-2'}>
-                            <Skeleton className={'h-3 w-1/3 bg-zinc-300/40 rounded-xl'}/>
-                            <Skeleton className={'h-3 w-1/3 bg-zinc-300/40 rounded-xl'}/>
-                        </div>
-                    </div>
-                ))
-            }
-        </div>
-    )
-}

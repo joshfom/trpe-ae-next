@@ -10,18 +10,28 @@ interface ProjectCardServerProps {
     project: ProjectType
 }
 
-function ProjectCardServer({project}: ProjectCardServerProps) {
+const ProjectCardServer = React.memo<ProjectCardServerProps>(({project}) => {
+    // Memoized computed values
+    const truncatedName = React.useMemo(() => truncateText(project.name, 35), [project.name]);
+    const excerpt = React.useMemo(() => prepareExcerpt(project.about, 200), [project.about]);
+    const primaryImage = React.useMemo(() => project.images?.[0]?.url, [project.images]);
+    const communityLink = React.useMemo(() => `/communities/${project.community?.slug}`, [project.community?.slug]);
+    const projectLink = React.useMemo(() => `/off-plan/${project.slug}`, [project.slug]);
     return (
         <div className={'rounded-xl bg-white'}>
             <div className="relative">
                 <div className="relative">
-                    {project.images.length > 0 && (
+                    {primaryImage && (
                         <div className="h-96 relative">
                             <Image 
-                                src={project.images[0].url} 
+                                src={primaryImage} 
                                 alt={project.name}
                                 fill
                                 className="object-cover rounded-t-xl"
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                loading="lazy"
+                                placeholder="blur"
+                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                             />
                         </div>
                     )}
@@ -29,21 +39,21 @@ function ProjectCardServer({project}: ProjectCardServerProps) {
             </div>
             <div className="p-3 pt-8 border-b border-x rounded-b-xl border-white/20 relative">
                 <div className="flex flex-col space-y-2 text-lg justify-center">
-                    <Link href={`/off-plan/${project.slug}`} className={'text-xl font-semibold'}>
-                        {truncateText(project.name, 35)}
+                    <Link href={projectLink} className={'text-xl font-semibold'}>
+                        {truncatedName}
                     </Link>
                 </div>
                 
                 <div className="py-2">
-                    <Link href={`/off-plan/${project.slug}`} className={'text-sm'}>
-                        {prepareExcerpt(project.about, 200)}
+                    <Link href={projectLink} className={'text-sm'}>
+                        {excerpt}
                     </Link>
                 </div>
                 
                 <div className="absolute z-20 text-white -top-4 left-4">
                     <p className={'rounded-full bg-[#141414] border border-white py-1 px-3 text-center text-white text-sm'}>
                         <span className="sr-only">Property Details</span>
-                        <Link href={`/communities/${project.community?.slug}`}>
+                        <Link href={communityLink}>
                             {project.community?.name}
                         </Link>
                     </p>
@@ -83,6 +93,8 @@ function ProjectCardServer({project}: ProjectCardServerProps) {
             </div>
         </div>
     );
-}
+});
+
+ProjectCardServer.displayName = 'ProjectCardServer';
 
 export default ProjectCardServer;

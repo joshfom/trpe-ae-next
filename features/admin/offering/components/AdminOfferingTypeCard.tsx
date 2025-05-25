@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
@@ -20,32 +20,47 @@ const formSchema = OfferingTypeFormSchema
 
 type formValues = z.infer<typeof formSchema>
 
-function AdminOfferingTypeCard({offeringType}: AdminOfferingTypeProps) {
+const AdminOfferingTypeCard = memo(({offeringType}: AdminOfferingTypeProps) => {
     const [isOpen, setIsOpen] = React.useState(false);
 
     const mutation = useUpdateOfferingType(offeringType.id)
+
+    // Memoize form default values
+    const defaultValues = useMemo(() => ({
+        name: offeringType.name,
+        about: offeringType.about,
+        metaDesc: offeringType.metaDesc,
+        metaTitle: offeringType.metaTitle,
+        pageTitle: offeringType.pageTitle,
+    }), [offeringType.name, offeringType.about, offeringType.metaDesc, offeringType.metaTitle, offeringType.pageTitle]);
+
     const form = useForm({
         mode: "onChange",
         resolver: zodResolver(formSchema),
-        defaultValues: {
-            name: offeringType.name,
-            about: offeringType.about,
-            metaDesc: offeringType.metaDesc,
-            metaTitle: offeringType.metaTitle,
-            pageTitle: offeringType.pageTitle,
-        }
-    })
+        defaultValues,
+    });
 
-
-
-    const onSubmit = (values: formValues) => {
+    // Memoize callback functions
+    const onSubmit = useCallback((values: formValues) => {
         mutation.mutate(values, {
             onSuccess: () => {
                 setIsOpen(false)
                 form.reset()
             }
         })
-    }
+    }, [mutation, form]);
+
+    const handleEditClick = useCallback(() => {
+        setIsOpen(true);
+    }, []);
+
+    const handleSheetChange = useCallback((open: boolean) => {
+        setIsOpen(open);
+    }, []);
+
+    const handleCancelClick = useCallback(() => {
+        setIsOpen(false);
+    }, []);
 
 
     return (
@@ -58,13 +73,13 @@ function AdminOfferingTypeCard({offeringType}: AdminOfferingTypeProps) {
                     <h2 className=" font-bold">{offeringType.name}</h2>
                 </div>
                 <div className={'flex justify-end items-end px-4 pb-4'}>
-                    <button onClick={() => setIsOpen(true)} className={'text-sm py-1 px-3 border rounded-2xl'}>
+                    <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
                         Edit
                     </button>
                 </div>
             </div>
 
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <Sheet open={isOpen} onOpenChange={handleSheetChange}>
                 <SheetContent className={'bg-white max-w-7xl h-screen flex flex-col'}>
                     <SheetHeader className={'p-4 px-6'}>
                         <SheetTitle>
@@ -160,7 +175,7 @@ function AdminOfferingTypeCard({offeringType}: AdminOfferingTypeProps) {
 
                                     <Button
                                         variant={'destructive'}
-                                        onClick={() => setIsOpen(false)}
+                                        onClick={handleCancelClick}
                                         type={'button'}
                                         className={'btn btn-secondary'}>
                                         Cancel
@@ -180,6 +195,8 @@ function AdminOfferingTypeCard({offeringType}: AdminOfferingTypeProps) {
 
         </div>
     );
-}
+});
+
+AdminOfferingTypeCard.displayName = 'AdminOfferingTypeCard';
 
 export default AdminOfferingTypeCard;

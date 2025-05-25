@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {useForm} from "react-hook-form";
 import {Form, FormField, FormItem, FormLabel} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -24,28 +24,27 @@ interface AddFaqFormProps {
 }
 
 function AddFaqForm({targetId, target, faqAdded}: AddFaqFormProps) {
-
-
     const addFaqMu = useAddFaq(targetId, target)
+
+    const defaultValues = useMemo(() => ({
+        question: '',
+        answer: ''
+    }), []);
 
     const form = useForm({
         mode: "onChange",
         resolver: zodResolver(FaqFormSchema),
-        defaultValues: {
-            question: '',
-            answer: ''
-        }
+        defaultValues
     })
 
-
-    const onSubmit = (values: formValues) => {
+    const onSubmit = useCallback((values: formValues) => {
         addFaqMu.mutate(values, {
             onSuccess: () => {
                 form.reset()
                 faqAdded()
             }
         })
-    }
+    }, [addFaqMu, form, faqAdded])
 
 
     return (
@@ -111,4 +110,7 @@ function AddFaqForm({targetId, target, faqAdded}: AddFaqFormProps) {
     );
 }
 
-export default AddFaqForm;
+const AddFaqFormMemo = memo(AddFaqForm);
+AddFaqFormMemo.displayName = 'AddFaqForm';
+
+export default AddFaqFormMemo;

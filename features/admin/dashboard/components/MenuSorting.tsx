@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
     DropdownMenu, 
@@ -15,6 +15,14 @@ interface MenuSortingProps {
 }
 
 const MenuSorting: React.FC<MenuSortingProps> = ({ onViewChange, onSortChange }) => {
+    const handleSortNewest = useCallback(() => onSortChange?.('newest'), [onSortChange]);
+    const handleSortOldest = useCallback(() => onSortChange?.('oldest'), [onSortChange]);
+    const handleSortAZ = useCallback(() => onSortChange?.('a-z'), [onSortChange]);
+    const handleSortZA = useCallback(() => onSortChange?.('z-a'), [onSortChange]);
+    
+    const handleViewGrid = useCallback(() => onViewChange?.('grid'), [onViewChange]);
+    const handleViewList = useCallback(() => onViewChange?.('list'), [onViewChange]);
+
     return (
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
@@ -31,16 +39,16 @@ const MenuSorting: React.FC<MenuSortingProps> = ({ onViewChange, onSortChange })
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onSortChange?.('newest')}>
+                        <DropdownMenuItem onClick={handleSortNewest}>
                             Newest
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onSortChange?.('oldest')}>
+                        <DropdownMenuItem onClick={handleSortOldest}>
                             Oldest
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onSortChange?.('a-z')}>
+                        <DropdownMenuItem onClick={handleSortAZ}>
                             A-Z
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => onSortChange?.('z-a')}>
+                        <DropdownMenuItem onClick={handleSortZA}>
                             Z-A
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -50,7 +58,7 @@ const MenuSorting: React.FC<MenuSortingProps> = ({ onViewChange, onSortChange })
                     <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => onViewChange?.('grid')}
+                        onClick={handleViewGrid}
                         className="rounded-none border-r"
                     >
                         <Grid2X2 className="h-4 w-4" />
@@ -59,7 +67,7 @@ const MenuSorting: React.FC<MenuSortingProps> = ({ onViewChange, onSortChange })
                     <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => onViewChange?.('list')}
+                        onClick={handleViewList}
                     >
                         <List className="h-4 w-4" />
                         <span className="sr-only">List view</span>
@@ -70,4 +78,7 @@ const MenuSorting: React.FC<MenuSortingProps> = ({ onViewChange, onSortChange })
     );
 };
 
-export default MenuSorting;
+const MenuSortingMemo = memo(MenuSorting);
+MenuSortingMemo.displayName = 'MenuSorting';
+
+export default MenuSortingMemo;

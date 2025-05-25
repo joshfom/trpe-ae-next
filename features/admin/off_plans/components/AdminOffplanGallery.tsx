@@ -1,5 +1,5 @@
 "use client"
-import React, {useState} from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {useGetAdminOffplanGallery} from "@/features/admin/off_plans/api/use-get-admin-offplan-gallery";
 import {Button} from "@/components/ui/button";
 import {useForm} from "react-hook-form";
@@ -73,12 +73,17 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
         })
     }
 
+    // Memoized callback functions
+    const handleToggleAddingImage = useCallback(() => {
+        setAddingImage(!addingImage);
+    }, [addingImage]);
+
 
     return (
         <div className={'flex flex-col gap-6 px-8 '}>
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Gallery</h2>
-                <Button size={'sm'} variant={'outline'} onClick={() => setAddingImage(!addingImage)} >Add Image</Button>
+                <Button size={'sm'} variant={'outline'} onClick={handleToggleAddingImage} >Add Image</Button>
             </div>
 
             {
@@ -137,4 +142,7 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
     );
 }
 
-export default AdminOffplanGallery;
+const AdminOffplanGalleryComponent = memo(AdminOffplanGallery);
+AdminOffplanGalleryComponent.displayName = 'AdminOffplanGallery';
+
+export default AdminOffplanGalleryComponent;

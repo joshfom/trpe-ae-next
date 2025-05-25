@@ -1,7 +1,7 @@
 "use client"
-import React from 'react';
+import React, { memo } from 'react';
 
-function SimilarCommunities() {
+const SimilarCommunities = memo(() => {
     return (
         <div>
             <h2 className={'text-2xl font-semibold'}> Similar Communities</h2>
@@ -12,6 +12,8 @@ function SimilarCommunities() {
 
         </div>
     );
-}
+});
+
+SimilarCommunities.displayName = 'SimilarCommunities';
 
 export default SimilarCommunities;

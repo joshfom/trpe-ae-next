@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {useGetOffplanFaqs} from "@/features/admin/off_plans/api/use-get-offplan-faqs";
 import {Button} from "@/components/ui/button";
 import AddOffplanFaqForm from "@/features/admin/off_plans/components/AddOffplanFaqForm";
@@ -17,12 +17,17 @@ function AdminOffplanFloorPlans({offplanId}: AdminOffplanFloorPlansProps) {
 
     const [addingAmenity, setAddingAmenity] = React.useState(false)
 
+    // Memoized callback functions
+    const handleToggleAddingPlan = useCallback(() => {
+        setAddingAmenity(!addingAmenity);
+    }, [addingAmenity]);
+
 
     return (
         <div className={'flex flex-col gap-8 px-8'}>
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">Floor plans</h2>
-                <Button size={'sm'} variant={'outline'} onClick={() => setAddingAmenity(!addingAmenity)} className="">Add plan</Button>
+                <Button size={'sm'} variant={'outline'} onClick={handleToggleAddingPlan} className="">Add plan</Button>
             </div>
 
             {/*{*/}
@@ -37,4 +42,7 @@ function AdminOffplanFloorPlans({offplanId}: AdminOffplanFloorPlansProps) {
     );
 }
 
-export default AdminOffplanFloorPlans;
+const AdminOffplanFloorPlansComponent = memo(AdminOffplanFloorPlans);
+AdminOffplanFloorPlansComponent.displayName = 'AdminOffplanFloorPlans';
+
+export default AdminOffplanFloorPlansComponent;

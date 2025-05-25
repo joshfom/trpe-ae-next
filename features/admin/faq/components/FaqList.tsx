@@ -1,5 +1,5 @@
 "use client"
-import React from 'react';
+import React, { useCallback, memo } from 'react';
 import {useGetOffplanFaqs} from "@/features/admin/off_plans/api/use-get-offplan-faqs";
 import {Button} from "@/components/ui/button";
 import AddOffplanFaqForm from "@/features/admin/off_plans/components/AddOffplanFaqForm";
@@ -35,18 +35,26 @@ function FaqList({target}: FaqListProps) {
     const [addingFaq, setAddingFaq] = React.useState(false)
     const [editingFaqId, setEditingFaqId] = React.useState<string | null>(null)
 
-    const handleEditClick = (faqId: string) => {
+    const handleEditClick = useCallback((faqId: string) => {
         setEditingFaqId(faqId)
         // Here you would typically open an edit form or modal
         console.log(`Editing FAQ with ID: ${faqId}`)
-    }
+    }, []);
+
+    const handleToggleAddFaq = useCallback(() => {
+        setAddingFaq(!addingFaq);
+    }, [addingFaq]);
+
+    const handleFaqAdded = useCallback(() => {
+        setAddingFaq(false);
+    }, []);
 
 
     return (
         <div className={'flex flex-col gap-8 px-8'}>
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold">FAQs</h2>
-                <Button size={'sm'} variant={'outline'} onClick={() => setAddingFaq(!addingFaq)} className="">Add FAQ</Button>
+                <Button size={'sm'} variant={'outline'} onClick={handleToggleAddFaq} className="">Add FAQ</Button>
             </div>
 
             {
@@ -54,7 +62,7 @@ function FaqList({target}: FaqListProps) {
                 <AddFaqForm
                     targetId={target.id}
                     target={target.name}
-                    faqAdded={() => setAddingFaq(false)}
+                    faqAdded={handleFaqAdded}
                 />
             }
 
@@ -100,4 +108,7 @@ function FaqList({target}: FaqListProps) {
     );
 }
 
-export default FaqList;
+const FaqListMemo = memo(FaqList);
+FaqListMemo.displayName = 'FaqList';
+
+export default FaqListMemo;
