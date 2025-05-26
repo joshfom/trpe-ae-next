@@ -10,7 +10,6 @@ import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
-import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -38,8 +37,8 @@ const getOfferingType = cache(async (offering: string) => {
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Define the static pathname
+    const pathname = "/properties/for-rent";
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -79,9 +78,8 @@ async function PropertyForRentPage({searchParams} : Props) {
     const { user } = await validateRequest();
     const offering = 'for-rent';
     
-    // Get pathname from headers
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Define the static pathname
+    const pathname = "/properties/for-rent";
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)

@@ -9,7 +9,6 @@ import {notFound} from "next/navigation";
 import {TipTapView} from "@/components/TiptapView";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
-import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -28,11 +27,10 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const slug = (await params).offeringType
+    const propertyTypeSlug = (await params).propertyType
 
-    // Get pathname from headers for pageMeta
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/property-types/${propertyTypeSlug}`;
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -48,13 +46,13 @@ export async function generateMetadata(
             title: pageMeta.metaTitle,
             description: pageMeta?.metaDescription || description,
             alternates: {
-                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${(await params).propertyType}/${slug}`,
+                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${(await params).propertyType}`,
             },
         };
     }
 
     const offeringType = await db.query.offeringTypeTable.findFirst({
-        where: eq(offeringTypeTable.slug, slug)
+        where: eq(offeringTypeTable.slug, propertyTypeSlug)
     }) as unknown as OfferingType;
 
 
@@ -89,9 +87,8 @@ async function PropertyForRentPage(props: PropertyTypePage) {
     const params = await props.params;
     const { user } = await validateRequest();
     
-    // Get pathname from headers
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/property-types/${params.propertyType}`;
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)

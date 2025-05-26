@@ -11,7 +11,6 @@ import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {TipTapView} from "@/components/TiptapView";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
 import {validateRequest} from "@/actions/auth-session";
-import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -36,9 +35,8 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
     const params = await props.params;
     const slug = params.search;
 
-    // Get pathname from headers for pageMeta
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/dubai/properties/residential/for-rent/${slug}`;
 
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -135,9 +133,8 @@ async function PropertySearchPage({searchParams, params}: Props) {
     const unitTypeSlugPlural = unitTypeSlug.endsWith('s') ? unitTypeSlug : unitTypeSlug + 's';
 
     const {user} = await validateRequest();
-    // Get pathname from headers
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/dubai/properties/residential/for-rent/${slug}`;
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)

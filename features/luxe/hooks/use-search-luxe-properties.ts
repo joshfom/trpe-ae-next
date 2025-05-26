@@ -63,7 +63,7 @@ interface CountResult {
 }
 
 // Luxury property minimum price - constant for easy adjustment
-const LUXURY_MIN_PRICE = 7000000;
+const LUXURY_MIN_PRICE = 18000000;
 
 export async function getLuxePropertiesServer({
                                              offeringType,

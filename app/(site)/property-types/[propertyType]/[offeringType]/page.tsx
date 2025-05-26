@@ -12,7 +12,6 @@ import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
-import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -29,9 +28,8 @@ export async function generateMetadata(
     // read route params
     const slug = (await params).propertyType
     
-    // Get pathname from headers for pageMeta
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/property-types/${slug}/${(await params).offeringType}`;
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -102,9 +100,8 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
     const params = await props.params;
     const { user } = await validateRequest();
     
-    // Get pathname from headers
-    const headersList = await headers();
-    const pathname = headersList.get("x-pathname") || "";
+    // Construct pathname directly from URL parameters
+    const pathname = `/property-types/${params.propertyType}/${params.offeringType}`;
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
