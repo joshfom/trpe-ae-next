@@ -1,28 +1,22 @@
 "use client";
-import React, {useState, useEffect, memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {SubmitHandler, useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {cn} from "@/lib/utils";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {AlertTriangle, Github, Linkedin} from "lucide-react";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "@/components/ui/form";
+import {AlertTriangle} from "lucide-react";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import Link from "next/link";
-import {Checkbox} from "@/components/ui/checkbox";
 import {useRouter} from "next/navigation";
-import {signInWithEmailAndPassword} from "@/actions/auth/auth-actions";
 import {LoginFormSchema} from "@/lib/types/form-schema/auth-form-schema";
+import {authClient} from "@/lib/auth-client";
 
 const LoginForm = memo(() => {
     // Create form state with zod validation
+    const [serverError, setServerError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>('');
     const router = useRouter();
 
@@ -44,8 +38,6 @@ const LoginForm = memo(() => {
         console.log('Current form values:', form.watch());
     }, [form]);
 
-    const isLoading = form.formState.isSubmitting;
-
     /**
      * Represents the onSubmit handler for login form.
      *
@@ -54,32 +46,23 @@ const LoginForm = memo(() => {
      * @returns {Promise} A Promise that resolves once the submission is complete.
      */
     const onSubmit: SubmitHandler<z.infer<typeof LoginFormSchema>> = useCallback(async (formData) => {
-        // Log the current state of the form
-        const currentValues = form.getValues();
-        console.log('Form direct values:', currentValues);
-        console.log('Submitted formData:', formData);
-        console.log('Form validation state:', form.formState.isValid);
-
         try {
-            // Check if we have valid data before proceeding
-            if (!formData.email || !formData.password) {
-                setSubmitError('Email and password are required');
-                return;
-            }
+            setIsLoading(true);
+            setServerError(null);
 
-            const {error} = await signInWithEmailAndPassword({
+            const result = await authClient.signIn.email({
                 email: formData.email,
-                password: formData.password
+                password: formData.password,
+                callbackURL: '/admin',
             });
 
-            if (error) {
-                setSubmitError(error?.message);
-            } else {
-                router.replace('/crm');
+            if (result.error) {
+                setServerError(result.error.message || "Invalid email or password");
+                setIsLoading(false);
             }
-        } catch (error: any) {
-            console.error('Login error:', error);
-            setSubmitError(error?.message || 'An unexpected error occurred');
+        } catch (error) {
+            setServerError("Failed to sign in. Please try again.");
+            setIsLoading(false);
         }
     }, [form, router]);
 

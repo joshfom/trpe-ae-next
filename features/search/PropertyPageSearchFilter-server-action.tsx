@@ -242,7 +242,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                <SelectItem value="">Any Type</SelectItem>
+                                                <SelectItem value="all">Any Type</SelectItem>
                                                 {isLoading ? (
                                                     <div className="p-2">
                                                         <Skeleton className="h-4 w-full mb-2" />

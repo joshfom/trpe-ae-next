@@ -1,5 +1,5 @@
 "use client";
-import React, {useState, useEffect, memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {SubmitHandler, useForm} from "react-hook-form";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
@@ -7,21 +7,15 @@ import {cn} from "@/lib/utils";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import {AlertTriangle} from "lucide-react";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage
-} from "@/components/ui/form";
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import Link from "next/link";
-import {signUpWithEmailAndPassword} from "@/actions/auth/auth-actions";
 import {useRouter} from "next/navigation";
 import {SignUpFormSchema} from "@/lib/types/form-schema/auth-form-schema";
+import {authClient} from "@/lib/auth-client";
 
 const RegisterForm = memo(() => {
-    // Create form state with zod validation
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>('');
     const router = useRouter();
 
@@ -48,42 +42,57 @@ const RegisterForm = memo(() => {
         return () => subscription.unsubscribe();
     }, [form]);
 
-    const isLoading = form.formState.isSubmitting;
 
     const onSubmit: SubmitHandler<z.infer<typeof SignUpFormSchema>> = useCallback(async (formData) => {
         try {
-            // Validate that all required fields are present
-            if (!formData.email || !formData.password || !formData.firstName ||
-                !formData.lastName || !formData.confirmPassword) {
-                setSubmitError('All fields are required');
-                return;
-            }
+            setError(null);
 
-            // Validate password match
-            if (formData.password !== formData.confirmPassword) {
-                setSubmitError('Passwords do not match');
-                return;
-            }
-
-            // Log form data for debugging (remove in production)
-            console.log('Submitting registration data:', {
+            const { data, error } = await authClient.signUp.email({
                 email: formData.email,
-                firstName: formData.firstName,
-                lastName: formData.lastName,
-                // Don't log passwords
+                password: formData.password,
+                name: formData.firstName + " " + formData.lastName,
+                callbackURL: '/crm',
+            }, {
+                onRequest: () => {
+                    console.log("Sign-up request initiated");
+                    setIsLoading(true);
+                },
+                onSuccess: async (result) => {
+                    console.log("Sign-up successful:", result);
+                    setIsLoading(false);
+                    router.push("/feed");
+                },
+                onError: (ctx) => {
+                    console.log("Sign-up error:", {
+                        message: ctx.error.message,
+                        cause: ctx.error.cause,
+                        status: ctx.error.status,
+                        code: ctx.error.code,
+                    });
+
+                    // Provide more helpful error messages
+                    let errorMessage = ctx.error.message;
+                    if (ctx.error.code === 'ECONNREFUSED') {
+                        errorMessage = "Unable to connect to authentication service. Please try again later.";
+                    } else if (ctx.error.message?.includes('duplicate key')) {
+                        errorMessage = "This email is already registered. Try signing in instead.";
+                    }
+
+                    setError(errorMessage);
+                    setIsLoading(false);
+                },
             });
 
-            const result = await signUpWithEmailAndPassword(formData);
-            const {error} = result;
-
             if (error) {
-                setSubmitError(error?.message);
-            } else {
-                return router.push('/crm');
+                console.log("Error from auth client:", error);
             }
-        } catch (error: any) {
-            console.error('Registration error:', error);
-            setSubmitError(error?.message || 'An unexpected error occurred');
+
+        } catch (err) {
+            console.log("Unexpected error during sign-up:", err);
+            setError(err instanceof Error ?
+                err.message :
+                "Something went wrong during sign up. Please try again.");
+            setIsLoading(false);
         }
     }, [router]);
 

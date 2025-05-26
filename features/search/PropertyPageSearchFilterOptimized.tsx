@@ -177,7 +177,8 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
     const params = useParams() as { [key: string]: string };
 
     // Get unit types with error handling
-    const { data: unitTypes = [], isLoading: isLoadingUnitTypes } = useGetUnitType();
+    const { data: unitTypesData, isLoading: isLoadingUnitTypes } = useGetUnitType();
+    const unitTypes = unitTypesData || [];
 
     // Extract path search params - memoized to prevent unnecessary recalculations
     const pathSearchParams = useMemo(() => 
@@ -372,7 +373,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="">All Types</SelectItem>
+                                                    <SelectItem value="all">All Types</SelectItem>
                                                     {unitTypes.map((type: { name: string; slug: string }) => (
                                                         <SelectItem key={type.slug} value={type.slug}>
                                                             {type.name}
