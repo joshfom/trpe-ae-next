@@ -31,7 +31,7 @@ export type Redirect = {
   updatedAt: string | null
 }
 
-export const columns: ColumnDef<Redirect>[] = [
+export const columns: ColumnDef<Redirect, unknown>[] = [
   {
     accessorKey: "fromUrl",
     header: ({ column }) => {

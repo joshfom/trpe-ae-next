@@ -3,7 +3,7 @@ import {db} from "@/db/drizzle";
 import {zValidator} from "@hono/zod-validator";
 import {z} from "zod";
 import {eq} from "drizzle-orm";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 import {PageMetaFormSchema} from "@/lib/types/form-schema/page-meta-form-schema";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {createId} from "@paralleldrive/cuid2";

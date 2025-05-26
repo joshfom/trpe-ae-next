@@ -1,4 +1,5 @@
 import {create} from 'zustand';
+import { PropertyType } from "@/types/property";
 
 interface PropertiesState {
     properties: PropertyType[];

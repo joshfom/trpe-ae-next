@@ -5,7 +5,7 @@ import {z} from "zod";
 import {eq} from "drizzle-orm";
 import {createId} from "@paralleldrive/cuid2";
 import {employeeCreateSchema, employeeTable} from "@/db/schema/employee-table";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 
 const app = new Hono()
 

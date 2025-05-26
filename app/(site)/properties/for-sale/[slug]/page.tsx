@@ -7,6 +7,7 @@ import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
 import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
+import { PropertyType } from "@/types/property";
 
 // Cached database queries for better performance
 const getProperty = cache(async (slug: string): Promise<PropertyType | null> => {

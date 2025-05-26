@@ -3,7 +3,7 @@ import {db} from "@/db/drizzle";
 import {zValidator} from "@hono/zod-validator";
 import {z} from "zod";
 import {eq} from "drizzle-orm";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 import {OffplanFormSchema} from "@/lib/types/form-schema/offplan-form-schema";
 import {offplanTable} from "@/db/schema/offplan-table";
 import {createId} from "@paralleldrive/cuid2";

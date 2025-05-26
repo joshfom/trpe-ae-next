@@ -6,6 +6,7 @@ import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import { Dot } from "lucide-react";
 import unitConverter from "@/lib/unit-converter";
+import { PropertyType } from "@/types/property";
 
 interface PropertyListCardProps {
     listing: PropertyType

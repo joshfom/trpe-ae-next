@@ -32,7 +32,7 @@ const SelectedCommunitiesList = memo<SelectedCommunitiesListProps>(({
                     key={community.slug}
                     className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
                 >
-                    <span>{community.label}</span>
+                    <span>{community.name || community.shortName}</span>
                     <button
                         type="button"
                         onClick={() => removeCommunity(community)}

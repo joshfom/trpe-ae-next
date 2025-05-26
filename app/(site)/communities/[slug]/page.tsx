@@ -9,6 +9,7 @@ import {truncateText} from "@/lib/truncate-text";
 import {TipTapView} from "@/components/TiptapView";
 import Link from "next/link";
 import {validateRequest} from "@/actions/auth-session";
+import { PropertyType } from "@/types/property";
 import {EditCommunitySheet} from "@/features/community/components/EditCommunitySheet";
 
 interface ShowCommunityPageProps {

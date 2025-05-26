@@ -1,5 +1,6 @@
 import React, {Suspense} from 'react';
 import Listings from "@/features/properties/components/Listings";
+import ListingsWrapper from "@/features/properties/components/ListingsWrapper";
 import {Metadata, ResolvingMetadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
@@ -172,11 +173,13 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
                 )}
             </div>
 
-            <Listings
-                offeringType={params?.offeringType}
-                propertyType={params.propertyType}
-                page={page}
-            />
+            <ListingsWrapper>
+                <Listings
+                    offeringType={params?.offeringType}
+                    propertyType={params.propertyType}
+                    page={page}
+                />
+            </ListingsWrapper>
 
 
 

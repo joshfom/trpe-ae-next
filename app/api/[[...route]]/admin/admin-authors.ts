@@ -5,7 +5,7 @@ import {z} from "zod";
 import {eq} from "drizzle-orm";
 import {createId} from "@paralleldrive/cuid2";
 import {HTTPException} from "hono/http-exception";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 import {authorFormSchema} from "@/features/admin/author/schema/author-form-schema";
 import {authorTable} from "@/db/schema/author-table";
 

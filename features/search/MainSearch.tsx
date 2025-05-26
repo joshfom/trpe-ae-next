@@ -524,11 +524,9 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                 <MobileSearch
                     isOpen={openMobileSearch}
                     form={form}
-                    setCommunityResults={setCommunityResults}
                     selectedCommunities={selectedCommunities}
                     setSelectedCommunities={setSelectedCommunities}
                     setIsOpen={setOpenMobileSearch}
-                    // @ts-ignore
                     onSubmit={onSubmit}
                 />
             </form>

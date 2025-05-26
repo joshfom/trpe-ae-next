@@ -14,6 +14,7 @@ import {communityTable} from "@/db/schema/community-table";
 import React, { cache, Suspense } from "react";
 import WordPullUp from "@/features/site/components/WordPullUp";
 import NextDynamic from "next/dynamic";
+import { PropertyType } from "@/types/property";
 
 // Dynamic imports for better code splitting
 const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
@@ -61,13 +62,27 @@ const getListings = cache(async (offeringTypeId: string, limit: number = 3): Pro
 
 const getCommunities = cache(async () => {
     try {
-        return await db.query.communityTable.findMany({
+        // Fetch communities
+        const communities = await db.query.communityTable.findMany({
             orderBy: [asc(communityTable.name)],
             limit: 10,
             with: {
-                image: true,
-            }
+                properties: {
+                    // Just to count them, we don't need the full property data
+                    columns: {
+                        id: true,
+                    },
+                },
+            },
         });
+
+        // Transform to match CommunityType by adding propertyCount
+        return communities.map(community => ({
+            ...community,
+            propertyCount: community.properties ? community.properties.length : 0,
+            // Remove the properties array since we just needed it for counting
+            properties: undefined
+        })) as unknown as CommunityType[];
     } catch (error) {
         console.error('Error fetching communities:', error);
         return [];

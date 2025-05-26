@@ -8,7 +8,7 @@ import {insightTable} from "@/db/schema/insight-table";
 import {employeeTable} from "@/db/schema/employee-table";
 import slugify from "slugify";
 import {HTTPException} from "hono/http-exception";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 import {insightFormSchema} from "@/app/crm/schema/insight-form-schema";
 import {revalidatePath} from "next/cache";
 import { 

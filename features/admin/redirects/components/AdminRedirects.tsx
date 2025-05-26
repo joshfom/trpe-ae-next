@@ -8,6 +8,7 @@ import { columns, Redirect } from "./columns"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import Link from "next/link"
+import { ColumnDef } from "@tanstack/react-table"
 
 export function AdminRedirects() {
   const router = useRouter()
@@ -88,8 +89,8 @@ export function AdminRedirects() {
       
       <div className="border rounded-md p-4">
         <DataTable
-          columns={columns}
-          data={redirects}
+          columns={columns as ColumnDef<unknown, unknown>[]}
+          data={redirects as unknown[]}
           searchKey="search"
           totalCount={totalCount}
           pageCount={totalPages}

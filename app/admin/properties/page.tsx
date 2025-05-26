@@ -2,6 +2,7 @@ import {db} from "@/db/drizzle";
 import ImportListing from "@/features/admin/listings/components/ImportListing";
 import Link from "next/link";
 import Image from "next/image";
+import { PropertyType } from "@/types/property";
 
 
 async function AdminPropertyPage() {

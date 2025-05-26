@@ -7,7 +7,7 @@ import {createId} from "@paralleldrive/cuid2";
 import {employeeCreateSchema, employeeTable} from "@/db/schema/employee-table";
 import {PropertyOwnerFormSchema} from "@/lib/types/form-schema/property-owners-form-schema";
 import {propertyOwnersTable} from "@/db/schema/property-owners-table";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 
 const app = new Hono()
     .get("/", async (c) => {

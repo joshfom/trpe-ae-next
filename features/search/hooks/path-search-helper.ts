@@ -5,6 +5,7 @@ import { CommunityFilterType } from "@/types/community";
  * Represents the search parameters extracted from the URL.
  */
 interface SearchedParams {
+    query?: string;
     minPrice?: number;
     maxPrice?: number;
     minSize?: number;
@@ -14,6 +15,11 @@ interface SearchedParams {
     status?: string;
     shortBy?: string;
     unitType?: string;
+    offerType?: string;
+    furnishing?: string;
+    sortBy?: string;
+    currency?: string;
+    communityNames?: string;
     areas: string[];
 }
 
@@ -40,6 +46,7 @@ export const extractPathSearchParams = (url: string): SearchedParams => {
     if (!url) return {areas: []};
 
     let searchedParams: SearchedParams = {
+        query: undefined,
         minPrice: undefined,
         maxPrice: undefined,
         minSize: undefined,
@@ -49,6 +56,11 @@ export const extractPathSearchParams = (url: string): SearchedParams => {
         status: undefined,
         shortBy: undefined,
         unitType: undefined,
+        offerType: undefined,
+        furnishing: undefined,
+        sortBy: undefined,
+        currency: undefined,
+        communityNames: undefined,
         areas: []
     }
 
@@ -76,6 +88,8 @@ export const extractPathSearchParams = (url: string): SearchedParams => {
             .map(area => area.replace('area-', '').trim())
             .filter(Boolean);
         searchedParams.areas = areas;
+        // Set communityNames as a comma-separated string of area names
+        searchedParams.communityNames = areas.join(',');
     }
 
     return searchedParams

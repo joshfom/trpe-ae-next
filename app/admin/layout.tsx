@@ -3,6 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import {validateRequest} from "@/actions/auth-session";
 import {redirect} from "next/navigation";
+
+// Force dynamic rendering for all admin routes since they require authentication
+export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 interface AdminLayoutProps {
     children: React.ReactNode;

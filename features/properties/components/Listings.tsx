@@ -1,11 +1,11 @@
-import React, { Suspense, cache } from 'react';
+import React, { cache } from 'react';
 import ListingsGrid from "@/features/properties/components/ListingsGrid";
 import Pagination from "@/components/Pagination";
 import { getPropertiesServer } from "@/features/properties/api/get-properties-server";
 import { getPropertiesByTypeServer } from "@/features/properties/api/get-properties-by-type-server";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { ErrorBoundary } from "react-error-boundary";
+import { PropertyType } from "@/types/property";
 
 interface ListingsProps {
     offeringType?: string;
@@ -34,38 +34,6 @@ const getPropertiesWithCache = cache(async (params: {
         };
     }
 });
-
-// Optimized loading component for Suspense boundary
-function ListingsLoading() {
-    return (
-        <div className='pb-8'>
-            <div className={'max-w-7xl lg:px-0 mx-auto grid px-4 pb-6 lg:pb-12'}>
-                <div className={'grid grid-cols-1 lg:grid-cols-3 gap-8'}>
-                    {Array.from({length: 6}, (_, i) => (
-                        <div key={i} className={'bg-zinc-600/40 h-96 animate-pulse rounded-lg'}></div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// Enhanced error component with retry functionality
-function ListingsError({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) {
-    return (
-        <div className={'h-[300px] lg:h-[600px] flex flex-col justify-center items-center gap-4'}>
-            <p className="text-lg text-center text-gray-500">
-                {error.message || 'Sorry, we encountered an error while loading properties.'}
-            </p>
-            <button 
-                onClick={resetErrorBoundary}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-            >
-                Try Again
-            </button>
-        </div>
-    );
-}
 
 // Empty state component
 function EmptyListings() {
@@ -114,36 +82,27 @@ async function Listings({offeringType, propertyType, searchParams = {}, isLandin
     const error = data.error;
 
     return (
-        <ErrorBoundary
-            FallbackComponent={ListingsError}
-            onError={(error, errorInfo) => {
-                console.error('Listings error:', error, errorInfo);
-            }}
-        >
-            <Suspense fallback={<ListingsLoading />}>
-                <div className='pb-8'>
-                    <div className={'max-w-7xl lg:px-0 mx-auto grid px-4 pb-6 lg:pb-12'}>
-                        {listings && listings.length > 0 ? (
-                            <ListingsGrid listings={listings}/>
-                        ) : null}
+        <div className='pb-8'>
+            <div className={'max-w-7xl lg:px-0 mx-auto grid px-4 pb-6 lg:pb-12'}>
+                {listings && listings.length > 0 ? (
+                    <ListingsGrid listings={listings}/>
+                ) : null}
 
-                        {metaLinks && !isLandingPage && (
-                            <Pagination metaLinks={metaLinks} />
-                        )}
+                {metaLinks && !isLandingPage && (
+                    <Pagination metaLinks={metaLinks} />
+                )}
 
-                        {error && (
-                            <div className={'h-[300px] lg:h-[600px] flex flex-col justify-center items-center'}>
-                                <p className="text-lg text-center text-gray-500">
-                                    Oops! Something went wrong from our end. Please try again later.
-                                </p>
-                            </div>
-                        )}
-
-                        {!error && listings && listings.length === 0 && <EmptyListings />}
+                {error && (
+                    <div className={'h-[300px] lg:h-[600px] flex flex-col justify-center items-center'}>
+                        <p className="text-lg text-center text-gray-500">
+                            Oops! Something went wrong from our end. Please try again later.
+                        </p>
                     </div>
-                </div>
-            </Suspense>
-        </ErrorBoundary>
+                )}
+
+                {!error && listings && listings.length === 0 && <EmptyListings />}
+            </div>
+        </div>
     );
 }
 

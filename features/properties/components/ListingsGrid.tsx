@@ -3,6 +3,7 @@
 import React, { Suspense, memo } from 'react';
 import PropertyCard from "@/components/property-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { PropertyType } from "@/types/property";
 
 interface ListingsGridProps {
     listings?: PropertyType[]

@@ -7,6 +7,7 @@ import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import unitConverter from "@/lib/unit-converter";
 import { prepareExcerpt } from "@/lib/prepare-excerpt";
+import { PropertyType } from "@/types/property";
 
 interface PropertyCardProps {
     property: PropertyType,

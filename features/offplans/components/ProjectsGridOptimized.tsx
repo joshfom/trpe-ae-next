@@ -51,7 +51,12 @@ const ProjectsGrid = memo<ListingsGridProps>(({ listings }) => {
 
 ProjectsGrid.displayName = 'ProjectsGrid';
 
-// Attach skeleton as static property
-ProjectsGrid.Skeleton = ProjectsGridSkeleton;
+// Create a compound component with proper typing
+const ProjectsGridWithSkeleton = ProjectsGrid as typeof ProjectsGrid & {
+    Skeleton: typeof ProjectsGridSkeleton;
+};
 
-export default ProjectsGrid;
+// Attach skeleton as static property
+ProjectsGridWithSkeleton.Skeleton = ProjectsGridSkeleton;
+
+export default ProjectsGridWithSkeleton;

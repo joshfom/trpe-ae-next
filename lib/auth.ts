@@ -1,4 +1,3 @@
-
 import {db} from "@/db/drizzle";
 import {betterAuth} from "better-auth";
 import {drizzleAdapter} from "better-auth/adapters/drizzle";
@@ -46,44 +45,8 @@ export const auth = betterAuth({
         enabled: true
     },
 
-    socialProviders: {
-        github: {
-            clientId: process.env.GITHUB_CLIENT_ID as string,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-        },
-        linkedin: {
-            clientId: process.env.LINKEDIN_CLIENT_ID as string,
-            clientSecret: process.env.LINKEDIN_CLIENT_SECRET as string,
-        },
+    appName: "TRPE Real Estate",
 
-        google: {
-            clientId: process.env.GOOGLE_CLIENT_ID as string,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        },
-    },
-    appName: "IntoKit",
-    plugins: [
-        username(),
-        emailOTP({
-            async sendVerificationOTP({ email, otp, type}) {
-                console.log("Sending OTP to", email, otp, type);
-            },
-        }),
-        phoneNumber({
-            sendOTP: ({ phoneNumber, code }, request) => {
-                console.log("Sending OTP to", phoneNumber, code);
-                console.log('request', request);
-            }
-        }),
-        oneTap(),
-        magicLink({
-            sendMagicLink: async ({ email, token, url }, request) => {
-               console.log(email, token, url);
-                console.log('request', request);
-            }
-        }),
-        twoFactor()
-    ]
 })
 
 // Create a NextAuth-compatible getServerSession function for Better Auth
@@ -117,6 +80,17 @@ export async function getServerSession() {
     return null;
   }
 }
+
+// Export User type for backward compatibility with lucia imports
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  image?: string;
+  emailVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 // DEPRECATED: This is a wrapper around the new auth-session validateRequest function
 // to maintain backward compatibility with existing code

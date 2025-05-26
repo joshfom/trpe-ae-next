@@ -14,6 +14,7 @@ import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
+import { PropertyType } from "@/types/property";
 import "yet-another-react-lightbox/plugins/captions.css";
 import {Zoom} from "yet-another-react-lightbox/plugins";
 import RequestCallBack from "@/features/site/components/RequestCallBack";

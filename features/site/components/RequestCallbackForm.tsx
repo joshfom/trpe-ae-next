@@ -164,7 +164,7 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
                                     value={field.value}
                                     placeholder="Your phone"
                                     className="w-full bg-transparent text-white"
-                                    onChange={useCallback((value) => {
+                                    onChange={useCallback((value: string) => {
                                         // @ts-ignore
                                         isPhoneValid(value) ? form.setValue('phone', value) : form.setValue('phone', '')
                                     }, [form])}

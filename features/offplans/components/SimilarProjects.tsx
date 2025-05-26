@@ -1,5 +1,6 @@
 import React from 'react';
 import PropertyCard from "@/components/property-card";
+import { PropertyType } from "@/types/property";
 
 interface SimilarPropertiesProps {
     properties: PropertyType[];

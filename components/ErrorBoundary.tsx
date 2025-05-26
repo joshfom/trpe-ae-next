@@ -4,6 +4,7 @@ import React, { Component, ReactNode } from 'react';
 interface Props {
     children: ReactNode;
     fallback?: ReactNode;
+    FallbackComponent?: React.ComponentType<{ error: Error; resetErrorBoundary: () => void }>;
     onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
 }
 
@@ -29,6 +30,17 @@ class ErrorBoundary extends Component<Props, State> {
 
     render() {
         if (this.state.hasError) {
+            const resetErrorBoundary = () => {
+                this.setState({ hasError: false, error: undefined });
+            };
+
+            if (this.props.FallbackComponent && this.state.error) {
+                return <this.props.FallbackComponent 
+                    error={this.state.error} 
+                    resetErrorBoundary={resetErrorBoundary} 
+                />;
+            }
+
             if (this.props.fallback) {
                 return this.props.fallback;
             }
@@ -43,7 +55,7 @@ class ErrorBoundary extends Component<Props, State> {
                             We apologize for the inconvenience. Please try refreshing the page.
                         </p>
                         <button
-                            onClick={() => this.setState({ hasError: false, error: undefined })}
+                            onClick={resetErrorBoundary}
                             className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                         >
                             Try Again

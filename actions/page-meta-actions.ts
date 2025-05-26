@@ -1,7 +1,7 @@
-import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import { Metadata } from "next";
+import {db} from "@/db/drizzle";
 
 export async function getPageMetaByPath(path: string) {
     // Ensure path starts with /

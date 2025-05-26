@@ -1,4 +1,4 @@
-type PropertyType = {
+export type PropertyType = {
     id: string;
     title: string;
     name: string;

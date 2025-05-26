@@ -7,7 +7,7 @@ import {createId} from "@paralleldrive/cuid2";
 import slugify from "slugify";
 import {DeveloperFormSchema} from "@/features/admin/developers/schema/developer-form-schema";
 import {developerTable} from "@/db/schema/developer-table";
-import {User} from "lucia";
+import {User} from "@/lib/auth";
 import {HTTPException} from "hono/http-exception";
 
 const app = new Hono()

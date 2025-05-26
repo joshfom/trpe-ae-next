@@ -8,6 +8,7 @@ import {
     DialogTrigger
 } from "@/components/ui/dialog";
 import Image from "next/image";
+import { PropertyType } from "@/types/property";
 
 interface ListingGalleryOverViewProps {
     property: PropertyType,

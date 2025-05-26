@@ -181,8 +181,8 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
 
     // Extract path search params - memoized to prevent unnecessary recalculations
     const pathSearchParams = useMemo(() => 
-        extractPathSearchParams(pathname, params), 
-        [pathname, params]
+        extractPathSearchParams(pathname), 
+        [pathname]
     );
 
     // Form initialization with proper defaults
@@ -190,10 +190,10 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
         defaultValues: useMemo(() => ({
             query: pathSearchParams.query || '',
             unitType: pathSearchParams.unitType || '',
-            minPrice: pathSearchParams.minPrice || '',
-            maxPrice: pathSearchParams.maxPrice || '',
-            minSize: pathSearchParams.minSize || '',
-            maxSize: pathSearchParams.maxSize || '',
+            minPrice: pathSearchParams.minPrice?.toString() || '',
+            maxPrice: pathSearchParams.maxPrice?.toString() || '',
+            minSize: pathSearchParams.minSize?.toString() || '',
+            maxSize: pathSearchParams.maxSize?.toString() || '',
             bed: pathSearchParams.bed || 0,
             bath: pathSearchParams.bath || 0,
             status: pathSearchParams.status || '',
@@ -245,13 +245,19 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
 
     const handleFormSubmit = useCallback((data: FormValues) => {
         const url = buildPropertySearchUrl({
-            ...data,
+            searchType: data.offerType || offeringType || 'for-sale',
             selectedCommunities,
-            offeringType,
-            propertyType
+            formData: {
+                ...data,
+                // Convert string numbers back to numbers for the URL builder
+                minPrice: data.minPrice ? parseFloat(data.minPrice) : undefined,
+                maxPrice: data.maxPrice ? parseFloat(data.maxPrice) : undefined,
+                minSize: data.minSize ? parseFloat(data.minSize) : undefined,
+                maxSize: data.maxSize ? parseFloat(data.maxSize) : undefined
+            }
         });
         router.push(url);
-    }, [selectedCommunities, offeringType, propertyType, router]);
+    }, [selectedCommunities, offeringType, router]);
 
     // Load communities on mount
     useEffect(() => {
@@ -259,7 +265,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
             setIsLoadingCommunities(true);
             try {
                 const response = await getClientCommunities();
-                const mappedCommunities = response.data?.map(toCommunityFilterType) || [];
+                const mappedCommunities = (response || []).map(toCommunityFilterType);
                 setCommunities(mappedCommunities);
             } catch (error) {
                 console.error('Failed to load communities:', error);
@@ -277,7 +283,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
             const communityNames = pathSearchParams.communityNames.split(',');
             const matchedCommunities = communities.filter(community =>
                 communityNames.some(name => 
-                    community.slug === name || community.name.toLowerCase() === name.toLowerCase()
+                    community.slug === name || (community.name && community.name.toLowerCase() === name.toLowerCase())
                 )
             );
             setSelectedCommunities(matchedCommunities);
@@ -367,7 +373,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                                                 </FormControl>
                                                 <SelectContent>
                                                     <SelectItem value="">All Types</SelectItem>
-                                                    {unitTypes.map((type) => (
+                                                    {unitTypes.map((type: { name: string; slug: string }) => (
                                                         <SelectItem key={type.slug} value={type.slug}>
                                                             {type.name}
                                                         </SelectItem>
@@ -417,6 +423,7 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
                                     form={form}
                                     selectedCommunities={selectedCommunities}
                                     setSelectedCommunities={setSelectedCommunities}
+                                    onSubmit={handleFormSubmit}
                                 />
 
                                 {/* Search Button */}
@@ -448,6 +455,12 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
             <MobileSearch
                 isOpen={isMobileSearchOpen}
                 setIsOpen={setIsMobileSearchOpen}
+                setSelectedCommunities={setSelectedCommunities}
+                selectedCommunities={selectedCommunities}
+                form={form}
+                onSubmit={handleFormSubmit}
+                offeringType={offeringType}
+                propertyType={propertyType}
             />
         </>
     );

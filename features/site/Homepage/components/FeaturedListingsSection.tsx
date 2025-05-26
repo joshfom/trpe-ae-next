@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PropertyCard from "@/components/property-card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { PropertyType } from "@/types/property";
 
 interface FeaturedListingsSectionProps {
     saleListings: PropertyType[],

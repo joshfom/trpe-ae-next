@@ -8,6 +8,7 @@ import {propertyTypeTable} from "@/db/schema/property-type-table";
 import {notFound} from "next/navigation";
 import {propertyTable} from "@/db/schema/property-table";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
+import { PropertyType } from "@/types/property";
 
 
 type Props = {

@@ -62,7 +62,7 @@ const CommunityItem = memo<CommunityItemProps>(({
             className="flex hover:bg-slate-50 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
             <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-gray-900">{community.label}</p>
+                <p className="text-sm font-medium text-gray-900">{community.name || community.shortName}</p>
                 <p className="text-xs text-gray-500">{propertyCount} properties</p>
             </div>
         </button>

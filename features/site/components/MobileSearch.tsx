@@ -42,7 +42,7 @@ interface MobileSearchProps {
     setSelectedCommunities: (communities: any[]) => void,
     selectedCommunities: any[],
     form: any,
-    onSubmit: void
+    onSubmit: (data: any) => void
 }
 
 function MobileSearch({

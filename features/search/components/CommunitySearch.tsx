@@ -3,7 +3,7 @@
 import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { CommunityFilterType } from "@/types/community";
+import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
 import { getClientCommunities } from '../../community/api/get-client-communities';
 import Fuse from 'fuse.js';
 import CommunityItem from './CommunityItem';
@@ -34,7 +34,9 @@ const CommunitySearch = memo<CommunitySearchProps>(({
         const fetchCommunities = async () => {
             try {
                 const data = await getClientCommunities();
-                setCommunities(data);
+                // Transform the data to ensure it matches CommunityFilterType
+                const typedCommunities = (data || []).map(toCommunityFilterType);
+                setCommunities(typedCommunities);
             } catch (error) {
                 console.error('Failed to fetch communities:', error);
             } finally {

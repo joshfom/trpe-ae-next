@@ -5,6 +5,7 @@
 import React, { Suspense, memo } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import LuxePropertyCard from "@/features/luxe/components/LuxePropertyCard";
+import { PropertyType } from "@/types/property";
 
 interface LuxeListingsProps {
     listings?: PropertyType[]
@@ -53,7 +54,12 @@ const LuxeListingsGrid = memo<LuxeListingsProps>(({ listings }) => {
 
 LuxeListingsGrid.displayName = 'LuxeListingsGrid';
 
-// Attach skeleton as static property
-LuxeListingsGrid.Skeleton = LuxeListingsGridSkeleton;
+// Create a compound component with proper typing
+const LuxeListingsGridWithSkeleton = LuxeListingsGrid as typeof LuxeListingsGrid & {
+    Skeleton: typeof LuxeListingsGridSkeleton;
+};
 
-export default LuxeListingsGrid;
+// Attach skeleton as static property
+LuxeListingsGridWithSkeleton.Skeleton = LuxeListingsGridSkeleton;
+
+export default LuxeListingsGridWithSkeleton;

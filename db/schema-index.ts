@@ -22,3 +22,4 @@ export * from "./schema/offplan-images-table"
 export * from "./schema/author-table"
 export * from "./schema/redirect-table"
 export * from "./schema/page-meta-table"
+export * from '../auth-schema';

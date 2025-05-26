@@ -11,6 +11,7 @@ import 'swiper/css';
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import Image from "next/image";
+import { PropertyType } from "@/types/property";
 
 interface LuxePropertyCardProps {
     property: PropertyType

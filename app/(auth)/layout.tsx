@@ -5,6 +5,9 @@ import SiteTopNavigation from "@/components/site-top-navigation";
 import FooterMenuSection from "@/features/site/components/FooterMenuSection";
 import SiteFooter from "@/components/site-footer";
 
+// Force dynamic rendering for auth routes since they check authentication status
+export const dynamic = 'force-dynamic';
+
 async function GuestLayout(
     {
         children,

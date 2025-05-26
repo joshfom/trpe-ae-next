@@ -29,13 +29,21 @@ const List = ({item, className, index, activeItem, ...props}: ImageProps) => {
             {...props}
         >
             <Link href={`/communities/${item.slug}`} className="relative h-full w-full">
-                <img
-                    src={item.image}
-                    alt={item.name}
-                    className={cn("object-cover absolute inset-0 w-full h-full", {
+                {item.image && item.image.trim() !== "" ? (
+                    <img
+                        src={item.image}
+                        alt={item.name}
+                        className={cn("object-cover absolute inset-0 w-full h-full", {
+                            // "blur-[1px]": index !== activeItem,
+                        })}
+                    />
+                ) : (
+                    <div className={cn("absolute inset-0 w-full h-full bg-gray-200 flex items-center justify-center", {
                         // "blur-[1px]": index !== activeItem,
-                    })}
-                />
+                    })}>
+                        <span className="text-gray-500 text-lg font-medium">{item.name}</span>
+                    </div>
+                )}
             </Link>
             {index === activeItem && (
                 <div className="absolute bottom-4 left-4 min-w-fit text-white md:bottom-8 md:left-8">
