@@ -251,13 +251,13 @@ export const createEdgeOptimizedPropertyFetcher = (
   }
 ) => {
   if (options.runtime === 'edge') {
-    // Simplified query for edge runtime
-    return async (filters: any) => {
-      // Use lightweight operations only
+    // Simplified query for edge runtime using path-based routing
+    return async (searchPath: string) => {
+      // Use path-based URLs for edge runtime
       // Avoid heavy database joins
       // Return essential data only
       
-      const basicProperties = await fetch(`/api/properties/edge?${new URLSearchParams(filters)}`);
+      const basicProperties = await fetch(`${searchPath}?format=json`);
       return basicProperties.json();
     };
   }
@@ -276,31 +276,23 @@ export const createEdgeOptimizedPropertyFetcher = (
  * Cache warming utility for popular property searches
  */
 export class PropertyCacheWarmer {
-  private static popularSearches = [
-    { offeringType: 'for-sale', propertyType: 'apartment' },
-    { offeringType: 'for-rent', propertyType: 'villa' },
-    { offeringType: 'for-sale', community: 'dubai-marina' },
-    { offeringType: 'for-rent', community: 'downtown-dubai' },
+  private static popularSearchPaths = [
+    '/dubai/properties/residential/for-sale/property-type-apartment',
+    '/dubai/properties/residential/for-rent/property-type-villa',
+    '/dubai/properties/residential/for-sale/area-dubai-marina',
+    '/dubai/properties/residential/for-rent/area-downtown-dubai',
   ];
   
   static async warmCache() {
     console.log('🔥 Warming property cache...');
     
-    for (const search of this.popularSearches) {
+    for (const searchPath of this.popularSearchPaths) {
       try {
-        // Filter out undefined values for URLSearchParams
-        const params = Object.entries(search)
-          .filter(([_, value]) => value !== undefined)
-          .reduce((acc, [key, value]) => {
-            acc[key] = String(value);
-            return acc;
-          }, {} as Record<string, string>);
-        
-        // Pre-load popular searches
-        await fetch(`/api/properties/search?${new URLSearchParams(params)}`);
-        console.log(`✅ Warmed cache for:`, search);
+        // Pre-load popular searches using path-based URLs
+        await fetch(`${searchPath}`);
+        console.log(`✅ Warmed cache for:`, searchPath);
       } catch (error) {
-        console.error(`❌ Failed to warm cache for:`, search, error);
+        console.error(`❌ Failed to warm cache for:`, searchPath, error);
       }
     }
     

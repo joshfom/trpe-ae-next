@@ -10,6 +10,7 @@ interface CacheMetrics {
   diskUsage: number;
   errorRate: number;
   lastCleared: Date | null;
+  lastSet?: Date;
   popularKeys: Array<{ key: string; hits: number }>;
 }
 
@@ -184,15 +185,15 @@ export function createMonitoredCache(options: {
   
   // Wrap cache methods with monitoring
   const originalGet = cache.get.bind(cache);
-  const originalSet = cache.set.bind(cache);
-  const originalClear = cache.clear.bind(cache);
+  const originalSet = cache.set?.bind(cache);
+  const originalClear = cache.clear?.bind(cache);
   
   let requestCount = 0;
   let hitCount = 0;
   let errorCount = 0;
   let totalResponseTime = 0;
   
-  cache.get = async (key: string, fetcher?: () => Promise<any>) => {
+  cache.get = async (key: string, fetcher: () => Promise<any>) => {
     const startTime = Date.now();
     requestCount++;
     
@@ -234,12 +235,23 @@ export function createMonitoredCache(options: {
     }
   };
   
-  cache.clear = async () => {
-    await originalClear();
-    monitor.updateMetrics(options.namespace, {
-      lastCleared: new Date()
-    });
-  };
+  if (originalClear) {
+    cache.clear = async () => {
+      await originalClear();
+      monitor.updateMetrics(options.namespace, {
+        lastCleared: new Date()
+      });
+    };
+  }
+  
+  if (originalSet) {
+    cache.set = async (key: string, value: any) => {
+      await originalSet(key, value);
+      monitor.updateMetrics(options.namespace, {
+        lastSet: new Date()
+      });
+    };
+  }
   
   return cache;
 }
