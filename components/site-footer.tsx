@@ -15,15 +15,21 @@ import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
 
-// Use dynamic import with SSR disabled for components that don't need server rendering
+// Use dynamic import with SSR enabled for better performance where possible
 const MobileSearch = dynamic(
     () => import("@/features/site/components/MobileSearch"), 
-    { ssr: false, loading: () => <div className="p-4">Loading search...</div> }
+    { 
+        ssr: false, // Keep false for client-only interactions
+        loading: () => <div className="p-4 animate-pulse bg-gray-100 rounded" aria-label="Loading search...">Loading search...</div> 
+    }
 );
 
 const FooterCommunitiesClient = dynamic(
     () => import("@/features/site/components/FooterCommunitiesClient"), 
-    { ssr: false }
+    { 
+        ssr: true, // Enable SSR for footer communities
+        loading: () => <div className="animate-pulse bg-gray-100 h-20 rounded" aria-label="Loading communities..." />
+    }
 );
 
 interface SiteFooterProps {

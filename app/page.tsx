@@ -1,5 +1,6 @@
 import 'swiper/css';
-import MainSearch from "@/features/search/MainSearch";
+import MainSearchServer from "@/features/search/MainSearchServer";
+import SearchEnhancement from "@/features/search/SearchEnhancement";
 import SiteFooter from "@/components/site-footer";
 import SiteTopNavigation from "@/components/site-top-navigation";
 import Link from "next/link";
@@ -8,89 +9,119 @@ import {db} from "@/db/drizzle";
 import {propertyTable} from "@/db/schema/property-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {asc, eq} from "drizzle-orm";
-import FeaturedListingsSection from "@/features/site/Homepage/components/FeaturedListingsSection";
+import FeaturedListingsSectionServer from "@/features/site/Homepage/components/FeaturedListingsSectionServer";
 import Image from "next/image"
 import {communityTable} from "@/db/schema/community-table";
 import React, { cache, Suspense } from "react";
 import WordPullUp from "@/features/site/components/WordPullUp";
 import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
+import { unstable_cache } from 'next/cache';
+import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
 
-// Dynamic imports for better code splitting
+// Dynamic imports for better code splitting - SSR compatible
 const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
-    loading: () => <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>
+    loading: () => <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>,
+    ssr: true
 });
 
-// Cached database queries for better performance
+// Cached database queries with Next.js cache for better performance and SSR optimization
 const getOfferingTypes = cache(async () => {
-    try {
-        const [rentalType] = await db.select().from(offeringTypeTable).where(
-            eq(offeringTypeTable.slug, 'for-rent')
-        ).limit(1);
+    return unstable_cache(
+        async () => {
+            try {
+                const [rentalType] = await db.select().from(offeringTypeTable).where(
+                    eq(offeringTypeTable.slug, 'for-rent')
+                ).limit(1);
 
-        const [saleType] = await db.select().from(offeringTypeTable).where(
-            eq(offeringTypeTable.slug, 'for-sale')
-        ).limit(1);
+                const [saleType] = await db.select().from(offeringTypeTable).where(
+                    eq(offeringTypeTable.slug, 'for-sale')
+                ).limit(1);
 
-        return { rentalType, saleType };
-    } catch (error) {
-        console.error('Error fetching offering types:', error);
-        return { rentalType: null, saleType: null };
-    }
+                return { rentalType, saleType };
+            } catch (error) {
+                console.error('Error fetching offering types:', error);
+                return { rentalType: null, saleType: null };
+            }
+        },
+        ['offering-types'],
+        {
+            revalidate: 3600, // Revalidate every hour
+            tags: ['offering-types']
+        }
+    )();
 });
 
 const getListings = cache(async (offeringTypeId: string, limit: number = 3): Promise<PropertyType[]> => {
-    try {
-        return await db.query.propertyTable.findMany({
-            where: eq(propertyTable.offeringTypeId, offeringTypeId),
-            limit,
-            with: {
-                images: true,
-                agent: true,
-                community: true,
-                city: true,
-                subCommunity: true,
-                offeringType: true,
-                type: true,
+    return unstable_cache(
+        async (offeringTypeId: string, limit: number) => {
+            try {
+                return await db.query.propertyTable.findMany({
+                    where: eq(propertyTable.offeringTypeId, offeringTypeId),
+                    limit,
+                    with: {
+                        images: true,
+                        agent: true,
+                        community: true,
+                        city: true,
+                        subCommunity: true,
+                        offeringType: true,
+                        type: true,
+                    }
+                }) as unknown as PropertyType[];
+            } catch (error) {
+                console.error('Error fetching listings:', error);
+                return [];
             }
-        }) as unknown as PropertyType[];
-    } catch (error) {
-        console.error('Error fetching listings:', error);
-        return [];
-    }
+        },
+        [`listings-${offeringTypeId}-${limit}`],
+        {
+            revalidate: 1800, // Revalidate every 30 minutes
+            tags: ['listings', `offerings-${offeringTypeId}`]
+        }
+    )(offeringTypeId, limit);
 });
 
 const getCommunities = cache(async () => {
-    try {
-        // Fetch communities
-        const communities = await db.query.communityTable.findMany({
-            orderBy: [asc(communityTable.name)],
-            limit: 10,
-            with: {
-                properties: {
-                    // Just to count them, we don't need the full property data
-                    columns: {
-                        id: true,
+    return unstable_cache(
+        async () => {
+            try {
+                // Fetch communities
+                const communities = await db.query.communityTable.findMany({
+                    orderBy: [asc(communityTable.name)],
+                    limit: 10,
+                    with: {
+                        properties: {
+                            // Just to count them, we don't need the full property data
+                            columns: {
+                                id: true,
+                            },
+                        },
                     },
-                },
-            },
-        });
+                });
 
-        // Transform to match CommunityType by adding propertyCount
-        return communities.map(community => ({
-            ...community,
-            propertyCount: community.properties ? community.properties.length : 0,
-            // Remove the properties array since we just needed it for counting
-            properties: undefined
-        })) as unknown as CommunityType[];
-    } catch (error) {
-        console.error('Error fetching communities:', error);
-        return [];
-    }
+                // Transform to match CommunityType by adding propertyCount
+                return communities.map(community => ({
+                    ...community,
+                    propertyCount: community.properties ? community.properties.length : 0,
+                    // Remove the properties array since we just needed it for counting
+                    properties: undefined
+                })) as unknown as CommunityType[];
+            } catch (error) {
+                console.error('Error fetching communities:', error);
+                return [];
+            }
+        },
+        ['homepage-communities'],
+        {
+            revalidate: 3600, // Revalidate every hour
+            tags: ['communities', 'homepage']
+        }
+    )();
 });
 
-
-export const dynamic = 'force-dynamic';
+// Enable static generation with revalidation
+export const revalidate = 3600; // Revalidate every hour
 export default async function Home() {
     // Use cached functions for better performance
     const { rentalType, saleType } = await getOfferingTypes();
@@ -157,8 +188,11 @@ export default async function Home() {
                                     words="Your Gateway to Dubai&apos;s Real Estate Market"
                                 />
                             </div>
-
-                            <MainSearch/>
+                            {/* Server-rendered search with client enhancement */}
+                            <Suspense fallback={<SearchSkeleton />}>
+                                <MainSearchServer mode="general" />
+                                <SearchEnhancement mode="general" />
+                            </Suspense>
 
                         </div>
 
@@ -167,10 +201,12 @@ export default async function Home() {
 
                 </section>
 
-                <FeaturedListingsSection
-                    saleListings={saleListings}
-                    rentalListings={rentalListings}
-                />
+                <Suspense fallback={<FeaturedListingsSkeleton />}>
+                    <FeaturedListingsSectionServer
+                        saleListings={saleListings}
+                        rentalListings={rentalListings}
+                    />
+                </Suspense>
 
 
                 {/* ABOUT SECTION */}

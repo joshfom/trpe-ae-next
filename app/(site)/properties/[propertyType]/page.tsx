@@ -9,6 +9,50 @@ import {notFound} from "next/navigation";
 import {propertyTable} from "@/db/schema/property-table";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
+import {unstable_cache} from "next/cache";
+
+// Enable ISR with aggressive caching
+export const revalidate = 3600; // 1 hour static regeneration
+
+// Cached property type lookup
+const getPropertyTypeWithCache = unstable_cache(
+  async (slug: string) => {
+    return await db.query.propertyTypeTable.findFirst({
+      where: eq(propertyTypeTable.slug, slug),
+    }) as unknown as PropertyType;
+  },
+  ['property-type-detail'],
+  {
+    revalidate: 14400, // 4 hours cache
+    tags: ['property-types']
+  }
+);
+
+// Generate static params for most common property types
+export async function generateStaticParams() {
+  // Use hardcoded property types to avoid database queries during build
+  try {
+    const staticPropertyTypes = [
+      'apartment',
+      'villa',
+      'townhouse',
+      'penthouse',
+      'duplex',
+      'studio',
+      'office',
+      'retail',
+      'warehouse',
+      'land'
+    ];
+    
+    return staticPropertyTypes.map((slug) => ({
+      propertyType: slug,
+    }));
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
+}
 
 
 type Props = {
@@ -23,17 +67,20 @@ export async function generateMetadata(
     // read route params
     const slug = (await params).propertyType
 
-    const propertyType = await db.query.propertyTypeTable.findFirst({
-        where: eq(propertyTypeTable.slug, slug),
-    }) as unknown as PropertyType;
+    const propertyType = await getPropertyTypeWithCache(slug);
 
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
 
-
+    if (!propertyType) {
+        return {
+            title: 'Property Type not found',
+            description: 'The property type you are looking for does not exist.',
+        };
+    }
 
     return {
-        title: `${propertyType?.name}  in Dubai | Find Your Next Home - TRPE AE`,
+        title: `${propertyType?.name} in Dubai | Find Your Next Home - TRPE AE`,
         description: `Explore premium ${propertyType.name} in Dubai with TRPE. Your trusted experts for exceptional living spaces and investment opportunities.`,
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_URL}/properties/${slug}`,
@@ -56,10 +103,7 @@ async function PropertyForRentPage(props: PropertyTypePage) {
     const searchParams = await props.searchParams;
     const page = searchParams.page ;
 
-
-    const [unitType] = await db.select().from(propertyTypeTable).where(
-        eq(propertyTypeTable.slug, params.propertyType)
-    ).limit(1);
+    const unitType = await getPropertyTypeWithCache(params.propertyType);
 
     if (!unitType) {
         return notFound()
@@ -67,10 +111,16 @@ async function PropertyForRentPage(props: PropertyTypePage) {
 
     return (
         <div className={'bg-black lg:pt-20'}>
-            <Listings
-                propertyType={unitType.slug}
-                page={page}
-            />
+            <Suspense fallback={
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                </div>
+            }>
+                <Listings
+                    propertyType={unitType.slug}
+                    page={page}
+                />
+            </Suspense>
         </div>
     );
 }

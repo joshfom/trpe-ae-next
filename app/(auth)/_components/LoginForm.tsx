@@ -64,7 +64,7 @@ const LoginForm = memo(() => {
             setServerError("Failed to sign in. Please try again.");
             setIsLoading(false);
         }
-    }, [form, router]);
+    }, []);
 
     // Clear error on form change
     const handleFormChange = useCallback(() => {

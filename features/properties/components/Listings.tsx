@@ -6,6 +6,7 @@ import { getPropertiesByTypeServer } from "@/features/properties/api/get-propert
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { PropertyType } from "@/types/property";
+import { unstable_cache } from 'next/cache';
 
 interface ListingsProps {
     offeringType?: string;
@@ -15,7 +16,7 @@ interface ListingsProps {
     page?: string
 }
 
-// Enhanced cache with multiple cache strategies
+// Enhanced cache with aggressive caching for property listings
 const getPropertiesWithCache = cache(async (params: {
     offeringType?: string;
     propertyType?: string;
@@ -23,16 +24,46 @@ const getPropertiesWithCache = cache(async (params: {
     pathname: string;
     page?: string;
 }) => {
-    try {
-        return await getPropertiesServer(params);
-    } catch (error) {
-        console.error('Error fetching properties:', error);
-        return { 
-            properties: [], 
-            error: 'Failed to load properties',
-            notFound: false 
-        };
-    }
+    // Create cache key based on parameters
+    const cacheKey = [
+        'properties',
+        params.offeringType || 'all',
+        params.propertyType || 'all',
+        params.page || '1',
+        params.searchParams.toString()
+    ].filter(Boolean).join('-');
+
+    return unstable_cache(
+        async (cacheParams: {
+            offeringType?: string;
+            propertyType?: string;
+            searchParams: URLSearchParams;
+            pathname: string;
+            page?: string;
+        }) => {
+            try {
+                return await getPropertiesServer(cacheParams);
+            } catch (error) {
+                console.error('Error fetching properties:', error);
+                return { 
+                    properties: [], 
+                    error: 'Failed to load properties',
+                    notFound: false 
+                };
+            }
+        },
+        [cacheKey],
+        {
+            revalidate: 1800, // 30 minutes - properties can change more frequently
+            tags: [
+                'properties', 
+                'listings',
+                `offering-${params.offeringType}`,
+                `property-type-${params.propertyType}`,
+                `page-${params.page || '1'}`
+            ]
+        }
+    )(params);
 });
 
 // Empty state component

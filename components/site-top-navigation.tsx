@@ -1,8 +1,11 @@
 "use client"
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-// Use dynamic import with SSR disabled for the TopNavigation component
-const TopNavigation = dynamic(() => import("@/components/top-navigation"), { ssr: false });
+// Use dynamic import with SSR enabled for better performance
+const TopNavigation = dynamic(() => import("@/components/top-navigation"), { 
+    ssr: true,
+    loading: () => <div className="h-16 bg-black animate-pulse" aria-label="Loading navigation" />
+});
 import Link from "next/link";
 import Image from "next/image";
 import {usePathname} from 'next/navigation'

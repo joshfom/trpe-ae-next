@@ -1,6 +1,7 @@
 import React, { cache, Suspense } from 'react';
 import {Metadata, ResolvingMetadata} from "next";
 import {propertyTable} from "@/db/schema/property-table";
+import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {db} from "@/db/drizzle";
 import {and, eq, ne} from "drizzle-orm";
 import {notFound} from "next/navigation";
@@ -8,49 +9,78 @@ import ListingDetailView from "@/features/properties/components/ListingDetailVie
 import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
+import {unstable_cache} from "next/cache";
 
-// Cached database queries for better performance
-const getProperty = cache(async (slug: string): Promise<PropertyType | null> => {
-    try {
-        const property = await db.query.propertyTable.findFirst({
-            where: eq(propertyTable.slug, slug),
-            with: {
-                offeringType: true,
-                images: true,
-                agent: true,
-                community: true,
-                // propertyType: true, // This field doesn't exist, commenting out
-            }
-        }) as unknown as PropertyType;
-        return property;
-    } catch (error) {
-        console.error('Error fetching property:', error);
-        return null;
+// Enable ISR with aggressive caching for property details
+export const revalidate = 7200; // 2 hours static regeneration
+
+// Enhanced cached database queries with unstable_cache for better SSR performance
+const getProperty = unstable_cache(
+    async (slug: string): Promise<PropertyType | null> => {
+        try {
+            const property = await db.query.propertyTable.findFirst({
+                where: eq(propertyTable.slug, slug),
+                with: {
+                    offeringType: true,
+                    images: true,
+                    agent: true,
+                    community: true,
+                    city: true,
+                    subCommunity: true,
+                    type: true,
+                }
+            }) as unknown as PropertyType;
+            return property;
+        } catch (error) {
+            console.error('Error fetching property:', error);
+            return null;
+        }
+    },
+    ['property-detail-rent'],
+    {
+        revalidate: 3600, // 1 hour cache for property details
+        tags: ['properties', 'property-details', 'for-rent']
     }
-});
+);
 
-const getSimilarProperties = cache(async (propertyId: string, communityId: string, offeringTypeId: string): Promise<PropertyType[]> => {
-    try {
-        return await db.query.propertyTable.findMany({
-            where: and(
-                ne(propertyTable.id, propertyId),
-                eq(propertyTable.communityId, communityId),
-                eq(propertyTable.offeringTypeId, offeringTypeId)
-            ),
-            limit: 6,
-            with: {
-                images: true,
-                agent: true,
-                community: true,
-                offeringType: true,
-            }
-        }) as unknown as PropertyType[];
-    } catch (error) {
-        console.error('Error fetching similar properties:', error);
-        return [];
+const getSimilarProperties = unstable_cache(
+    async (propertyId: string, communityId: string, offeringTypeId: string): Promise<PropertyType[]> => {
+        try {
+            return await db.query.propertyTable.findMany({
+                where: and(
+                    ne(propertyTable.id, propertyId),
+                    eq(propertyTable.communityId, communityId),
+                    eq(propertyTable.offeringTypeId, offeringTypeId)
+                ),
+                limit: 6,
+                with: {
+                    images: true,
+                    agent: true,
+                    community: true,
+                    offeringType: true,
+                    city: true,
+                    subCommunity: true,
+                    type: true,
+                }
+            }) as unknown as PropertyType[];
+        } catch (error) {
+            console.error('Error fetching similar properties:', error);
+            return [];
+        }
+    },
+    ['similar-properties-rent'],
+    {
+        revalidate: 1800, // 30 minutes cache for similar properties
+        tags: ['properties', 'similar-properties', 'for-rent']
     }
-});
+);
 
+// Generate static params for most popular rental properties
+export async function generateStaticParams() {
+  // Disable static generation for individual properties to prevent database connection exhaustion
+  // Properties will be generated on-demand with ISR caching
+  return [];
+}
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -106,26 +136,19 @@ async function ListingViewPage(props: ListingViewPageProps) {
         return notFound()
     }
 
+    console.log('Property details fetched:', property);
+
     const similarProperties = await getSimilarProperties(
         property.id, 
         property.communityId || '', 
         property.offeringTypeId
     );
 
-
-    // const {data} = useGetProperty(params.slug)
-
-    if(!property) {
-        notFound()
-    }
-
     const propertyJsonLd = {
         "@context": "https://schema.org/",
         "@type": "Product",
         "name": property?.title,
-        "image": [
-            "https://trpe.ae/uploads/property123.jpg"
-        ],
+        "image": property?.images?.[0]?.crmUrl || "",
         "description": property?.description,
         "offers": {
             "@type": "Offer",
@@ -136,20 +159,31 @@ async function ListingViewPage(props: ListingViewPageProps) {
         }
     }
 
-
     return (
         <div>
-            <script type="application/ld+json">
-                {JSON.stringify(propertyJsonLd)}
-            </script>
-            <div className="hidden lg:block h-20 bg-black">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(propertyJsonLd) }}
+            />
+            
+            <div className="hidden lg:block h-20 bg-black"></div>
 
-            </div>
-
-            <ListingDetailView property={property} />
-            <SimilarProperties properties={similarProperties} />
+            <Suspense fallback={
+                <div className="flex justify-center items-center h-96">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+            }>
+                <ListingDetailView property={property} />
+            </Suspense>
+            
+            <Suspense fallback={
+                <div className="flex justify-center items-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+                </div>
+            }>
+                <SimilarProperties properties={similarProperties} />
+            </Suspense>
         </div>
-
     );
 }
 

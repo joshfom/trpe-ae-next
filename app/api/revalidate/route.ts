@@ -1,12 +1,15 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextRequest } from 'next/server'
+import { revalidateAllContent, revalidateHomepage, revalidateListings, revalidateCommunities } from '@/lib/cache-revalidation';
 
 /**
  * Request body type definition for the revalidation endpoint
  * @example
  * {
  *   path: '/posts/123',
- *   tag: 'post-123'
+ *   tag: 'post-123',
+ *   type: 'homepage',
+ *   secret: 'your-secret-key'
  * }
  */
 export interface RevalidateRequestBody {
@@ -14,6 +17,12 @@ export interface RevalidateRequestBody {
     path?: string;
     /** The cache tag to revalidate (e.g., 'post-123') */
     tag?: string;
+    /** The type of content to revalidate (homepage, listings, communities, all) */
+    type?: 'homepage' | 'listings' | 'communities' | 'all';
+    /** Secret key for authentication */
+    secret?: string;
+    /** Optional offering type ID for listings revalidation */
+    offeringTypeId?: string;
 }
 
 /**
@@ -80,14 +89,37 @@ export type RevalidateResponse = RevalidateSuccessResponse | RevalidateErrorResp
  *   headers: { 'Content-Type': 'application/json' },
  *   body: JSON.stringify({ tag: 'post-123' })
  * })
- *
- * @param request - Next.js request object
- * @returns Response object indicating success or failure
  */
 export async function POST(request: NextRequest): Promise<Response> {
     try {
-        const { path, tag } = (await request.json()) as RevalidateRequestBody;
+        const { path, tag, type, secret, offeringTypeId } = (await request.json()) as RevalidateRequestBody;
 
+        // Check for secret if type-based revalidation is requested
+        if (type && secret !== process.env.REVALIDATION_SECRET) {
+            return Response.json({ revalidated: false, error: 'Invalid secret' }, { status: 401 });
+        }
+
+        // Handle type-based revalidation (new SSR optimization)
+        if (type) {
+            switch (type) {
+                case 'homepage':
+                    await revalidateHomepage();
+                    break;
+                case 'listings':
+                    await revalidateListings(offeringTypeId);
+                    break;
+                case 'communities':
+                    await revalidateCommunities();
+                    break;
+                case 'all':
+                    await revalidateAllContent();
+                    break;
+                default:
+                    return Response.json({ revalidated: false, error: 'Invalid revalidation type' }, { status: 400 });
+            }
+        }
+
+        // Handle legacy path/tag revalidation
         if (path) {
             revalidatePath(path)
         }
@@ -104,7 +136,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     } catch (error) {
         const response: RevalidateErrorResponse = {
             revalidated: false,
-            error: 'Error revalidating'
+            error: error instanceof Error ? error.message : 'Error revalidating'
         }
         return Response.json(response, { status: 500 })
     }

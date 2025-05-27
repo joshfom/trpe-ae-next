@@ -1,23 +1,22 @@
 import React from 'react';
 import {MapPin, MessageCircle, Phone} from "lucide-react";
-import Head from 'next/head';
+import Script from 'next/script';
 
 function ThankYouPage() {
     return (
         <div className={'bg-black'}>
-            <Head>
-                <script async src="https://www.googletagmanager.com/gtag/js?id=AW-11470392777"></script>
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            window.dataLayer = window.dataLayer || [];
-                            function gtag(){dataLayer.push(arguments);}
-                            gtag('js', new Date());
-                            gtag('config', 'AW-11470392777');
-                        `,
-                    }}
-                />
-            </Head>
+            <Script
+                src="https://www.googletagmanager.com/gtag/js?id=AW-11470392777"
+                strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+                {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', 'AW-11470392777');
+                `}
+            </Script>
 
             <div className="bg-black py-12 hidden lg:block"></div>
 

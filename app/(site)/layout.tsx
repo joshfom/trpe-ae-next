@@ -1,6 +1,7 @@
-// Server component that manages the layout
-import React from 'react';
+// Server component that manages the layout with SSR optimization
+import React, { Suspense } from 'react';
 import SiteLayoutClient from './site-layout-client';
+import { NavigationSkeleton, FooterSkeleton } from '@/components/ssr-skeletons';
 
 interface LayoutProps {
     children: React.ReactNode
@@ -8,11 +9,19 @@ interface LayoutProps {
 
 function Layout({children}: LayoutProps) {
     return (
-        <SiteLayoutClient>
-            <div className="">
-                {children}
+        <Suspense fallback={
+            <div className="min-h-screen bg-white">
+                <NavigationSkeleton />
+                <div className="flex-1">{children}</div>
+                <FooterSkeleton />
             </div>
-        </SiteLayoutClient>
+        }>
+            <SiteLayoutClient>
+                <div className="">
+                    {children}
+                </div>
+            </SiteLayoutClient>
+        </Suspense>
     );
 }
 
