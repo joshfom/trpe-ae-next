@@ -40,7 +40,7 @@ function TopNavigation() {
                                         </span>
                                     </Link>
                                     <Link
-                                        href={`dubai/properties/residential/for-sale/property-type-apartments`}
+                                        href={`/dubai/properties/residential/for-sale/property-type-apartments`}
                                         className="group flex items-center gap-2">
                                         <ArrowRight
                                             className="stroke-1 -translate-x-full text-white opacity-0 transition-all duration-300 ease-out hover:z-20 group-hover:translate-x-0 group-hover:text-slate-300 group-hover:opacity-100 md:size-10"/>
@@ -52,7 +52,7 @@ function TopNavigation() {
                                     </Link>
 
                                     <Link
-                                        href={`dubai/properties/residential/for-sale/property-type-villas`}
+                                        href={`/dubai/properties/residential/for-sale/property-type-villas`}
                                         className="group flex items-center gap-2">
                                         <ArrowRight
                                             className="stroke-1 -translate-x-full text-white opacity-0 transition-all duration-300 ease-out hover:z-20 group-hover:translate-x-0 group-hover:text-slate-300 group-hover:opacity-100 md:size-10"/>
@@ -63,7 +63,7 @@ function TopNavigation() {
                                         </span>
                                     </Link>
                                     <Link
-                                        href={`dubai/properties/residential/for-sale/property-type-townhouses`}
+                                        href={`/dubai/properties/residential/for-sale/property-type-townhouses`}
                                         className="group flex items-center gap-2">
                                         <ArrowRight
                                             className="stroke-1 -translate-x-full text-white opacity-0 transition-all duration-300 ease-out hover:z-20 group-hover:translate-x-0 group-hover:text-slate-300 group-hover:opacity-100 md:size-10"/>
@@ -74,7 +74,7 @@ function TopNavigation() {
                                         </span>
                                     </Link>
                                     <Link
-                                        href={`dubai/properties/commercial/for-sale/property-type-offices`}
+                                        href={`/dubai/properties/commercial/for-sale/property-type-offices`}
                                         className="group flex items-center gap-2">
                                         <ArrowRight
                                             className="stroke-1 -translate-x-full text-white opacity-0 transition-all duration-300 ease-out hover:z-20 group-hover:translate-x-0 group-hover:text-slate-300 group-hover:opacity-100 md:size-10"/>
@@ -85,7 +85,7 @@ function TopNavigation() {
                                         </span>
                                     </Link>
                                     <Link
-                                        href={`dubai/properties/commercial/for-sale/property-type-retails`}
+                                        href={`/dubai/properties/commercial/for-sale/property-type-retails`}
                                         className="group flex items-center gap-2">
                                         <ArrowRight
                                             className="stroke-1 -translate-x-full text-white opacity-0 transition-all duration-300 ease-out hover:z-20 group-hover:translate-x-0 group-hover:text-slate-300 group-hover:opacity-100 md:size-10"/>

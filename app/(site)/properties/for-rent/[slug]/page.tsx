@@ -1,4 +1,4 @@
-import React, { cache, Suspense } from 'react';
+import React, { cache } from 'react';
 import {Metadata, ResolvingMetadata} from "next";
 import {propertyTable} from "@/db/schema/property-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
@@ -6,7 +6,7 @@ import {db} from "@/db/drizzle";
 import {and, eq, ne} from "drizzle-orm";
 import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
-import SimilarProperties from "@/features/properties/components/SimilarProperties";
+import PropertyCardServer from "@/components/property-card-server";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
 import {unstable_cache} from "next/cache";
@@ -168,21 +168,22 @@ async function ListingViewPage(props: ListingViewPageProps) {
             
             <div className="hidden lg:block h-20 bg-black"></div>
 
-            <Suspense fallback={
-                <div className="flex justify-center items-center h-96">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                </div>
-            }>
-                <ListingDetailView property={property} />
-            </Suspense>
+            {/* Property Detail - Direct server rendering */}
+            <ListingDetailView property={property} />
             
-            <Suspense fallback={
-                <div className="flex justify-center items-center h-64">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-400"></div>
+            {/* Similar Properties - Server-side rendered */}
+            {similarProperties && similarProperties.length > 0 && (
+                <div className={'bg-black w-full'}>
+                    <div className={'max-w-7xl mx-auto pt-12 pb-0'}>
+                        <h2 className={'text-white text-3xl font-bold'}>Similar Properties</h2>
+                    </div>
+                    <div className="max-w-7xl mx-auto grid px-3 col-span-1 lg:grid-cols-3 py-12 gap-4">
+                        {similarProperties.map((property) => (
+                            <PropertyCardServer property={property} key={property.id} />
+                        ))}
+                    </div>
                 </div>
-            }>
-                <SimilarProperties properties={similarProperties} />
-            </Suspense>
+            )}
         </div>
     );
 }
