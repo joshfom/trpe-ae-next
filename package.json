@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev:turbo": "next dev --turbopack",
     "db:generate": "bunx drizzle-kit generate",
     "db:migrate": "bunx drizzle-kit migrate",
     "db:studio": "bunx drizzle-kit studio",
     "db:push": "bunx drizzle-kit push",
-    "build": "NEXT_TELEMETRY_DISABLED=1 NODE_ENV=production next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },

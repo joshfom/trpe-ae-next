@@ -47,7 +47,7 @@ function ListPropertyForm() {
                 <div>
                     <Label className={'ml-4'}  htmlFor={"type"}>Offering Type</Label>
                     <Select>
-                        <SelectTrigger className="w-[100%] border  rounded-3xl py-3">
+                        <SelectTrigger className="w-full border  rounded-3xl py-3">
                             <SelectValue placeholder="Property"/>
                         </SelectTrigger>
                         <SelectContent>
@@ -59,7 +59,7 @@ function ListPropertyForm() {
                 <div>
                     <Label className={'ml-4'} htmlFor={"last_name"}>Property Type</Label>
                     <Select>
-                        <SelectTrigger className="w-[100%] border  rounded-3xl py-3">
+                        <SelectTrigger className="w-full border  rounded-3xl py-3">
                             <SelectValue placeholder="Property"/>
                         </SelectTrigger>
                         <SelectContent>

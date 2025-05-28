@@ -89,7 +89,7 @@ const AuthorCard = memo<AuthorCardProps>(({ author, onAuthorUpdated }) => {
                     </div>
                     <h3 className="text-xl font-bold">{author.name || "Unnamed Author"}</h3>
                 </CardHeader>
-                <CardContent className="flex-grow">
+                <CardContent className="grow">
                     <p className="text-sm text-gray-600 line-clamp-3">{author.about || "No bio available"}</p>
                 </CardContent>
                 <CardFooter className="flex justify-between pt-4">

@@ -34,10 +34,7 @@ const nextConfig: NextConfig = {
     
     // Simplified webpack configuration (Turbopack compatible)
     webpack: (config, { dev, isServer }) => {
-        // Basic optimizations only
-        config.optimization.usedExports = true;
-        config.optimization.providedExports = true;
-        
+        // Remove optimization settings that conflict with Turbopack
         return config;
     },
     

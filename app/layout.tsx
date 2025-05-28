@@ -1,6 +1,6 @@
 import type {Metadata} from "next";
 import {Poppins} from "next/font/google";
-import "./globals.css";
+import "./base.css";
 
 import NextTopLoader from 'nextjs-toploader';
 import {EdgeStoreProvider} from "@/db/edgestore";

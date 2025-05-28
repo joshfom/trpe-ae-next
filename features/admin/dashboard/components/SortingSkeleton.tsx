@@ -23,7 +23,7 @@ const SortingSkeleton: React.FC<SortingSkeletonProps> = ({
             ? "bg-white rounded-lg shadow-sm p-4"
             : "bg-white rounded-lg shadow-sm p-4 flex items-center gap-4"
         }>
-          {layout === 'list' && <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />}
+          {layout === 'list' && <Skeleton className="h-12 w-12 rounded-full shrink-0" />}
           
           <div className={layout === 'list' ? "flex-1 space-y-2" : "space-y-3"}>
             <Skeleton className="h-5 w-4/5" />
@@ -36,7 +36,7 @@ const SortingSkeleton: React.FC<SortingSkeletonProps> = ({
             )}
           </div>
           
-          {layout === 'list' && <Skeleton className="h-8 w-24 flex-shrink-0" />}
+          {layout === 'list' && <Skeleton className="h-8 w-24 shrink-0" />}
         </div>
       ))}
     </div>

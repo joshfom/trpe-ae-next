@@ -63,7 +63,7 @@ function ListWithAgent({agent}: ListWithAgentProps) {
                         <div>
                             <Label className={'ml-4'} htmlFor={"type"}>Offering Type</Label>
                             <Select>
-                                <SelectTrigger className="w-[100%] rounded-3xl py-2.5">
+                                <SelectTrigger className="w-full rounded-3xl py-2.5">
                                     <SelectValue placeholder="Property"/>
                                 </SelectTrigger>
                                 <SelectContent>
@@ -75,7 +75,7 @@ function ListWithAgent({agent}: ListWithAgentProps) {
                         <div>
                             <Label className={'ml-4'} htmlFor={"last_name"}>Property Type</Label>
                             <Select>
-                                <SelectTrigger className="w-[100%] rounded-3xl py-3">
+                                <SelectTrigger className="w-full rounded-3xl py-3">
                                     <SelectValue placeholder="Property"/>
                                 </SelectTrigger>
                                 <SelectContent>

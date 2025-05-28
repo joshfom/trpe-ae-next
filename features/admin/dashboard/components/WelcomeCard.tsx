@@ -22,7 +22,7 @@ const WelcomeCard: React.FC<WelcomeCardProps> = ({
   }
   
   return (
-    <Card className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+    <Card className="mb-6 bg-linear-to-r from-blue-500 to-purple-600 text-white">
       <CardContent className="p-6">
         <div className="flex justify-between items-center">
           <div className="space-y-2">
