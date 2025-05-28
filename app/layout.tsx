@@ -41,9 +41,10 @@ export default function RootLayout({
     const projectId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID!;
     Clarity.init(projectId);
   return (
-      <html lang="en" className="no-js" suppressHydrationWarning>
+      <html lang="en" className="js" suppressHydrationWarning>
       <head>
         <meta name="google-site-verification" content="1PdN9Ng2af8MbSlor1keRIIXn_sM3nHkj2JPsWnyB1o"/>
+        <meta name="next-head-count" content="3"/>
         <style dangerouslySetInnerHTML={{ 
           __html: `
             /* JavaScript detection - essential CSS */
@@ -55,12 +56,6 @@ export default function RootLayout({
             html.no-js [data-js-required="true"] { display: none !important; }
           `
         }} />
-        <Script id="js-detection" strategy="beforeInteractive">{`
-          (function() {
-            document.documentElement.classList.remove('no-js');
-            document.documentElement.classList.add('js');
-          })();
-        `}</Script>
       </head>
       <body className={cn(poppins.className, 'bg-slate-100')}>
       <SpeedInsights/>

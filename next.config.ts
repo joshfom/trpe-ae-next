@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+    output: 'standalone', // Ensures better optimization for deployment
+    poweredByHeader: false, // Remove X-Powered-By header for security
+    reactStrictMode: true, // Helps catch bugs early
     images: {
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },
@@ -70,6 +73,11 @@ const nextConfig: NextConfig = {
                     {
                         key: 'Referrer-Policy',
                         value: 'origin-when-cross-origin',
+                    },
+                    // Ensure scripts can load properly
+                    {
+                        key: 'Content-Security-Policy',
+                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel.app vercel.app *.trpe.ae trpe.ae; style-src 'self' 'unsafe-inline'; img-src * data:; font-src 'self' data:; connect-src *;",
                     },
                 ],
             },
