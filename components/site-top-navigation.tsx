@@ -28,11 +28,14 @@ function SiteTopNavigation() {
 
     // Setup and cleanup the event listener
     useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
+        // Only add scroll listener if we're on the client side
+        if (typeof window !== 'undefined') {
+            window.addEventListener('scroll', handleScroll);
+            
+            return () => {
+                window.removeEventListener('scroll', handleScroll);
+            };
+        }
     }, [handleScroll])
 
    

@@ -4,7 +4,7 @@ import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
+import PropertyPageSearchFilterServer from '@/features/search/PropertyPageSearchFilterServer';
 import {TipTapView} from "@/components/TiptapView";
 import {communityTable} from "@/db/schema/community-table";
 

@@ -1,6 +1,72 @@
-@import 'tailwindcss';
+/* JavaScript detection CSS rules - these are critical for no-JS experience */
+.no-js .js-only {
+  display: none !important;
+}
+
+.js .no-js-only {
+  display: none !important;
+}
+
+/* Base styles that work without JavaScript */
+html.no-js button[aria-haspopup="true"],
+html.no-js [data-js-required="true"] {
+  display: none !important;
+}
+
+/* Navigation indicator styles */
+.navigating .navigation-sensitive {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+/* Enhanced page transition styles */
+.page-loaded .navigation-sensitive {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Loading indicator for navigation transitions */';
 
 @source '../node_modules/react-tailwindcss-select/dist/index.esm.js';
+
+/* JavaScript detection CSS rules */
+.no-js .js-only {
+  display: none !important;
+}
+
+.js .no-js-only {
+  display: none !important;
+}
+
+/* Navigation indicator styles */
+.navigating .navigation-sensitive {
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+/* Enhanced page transition styles */
+.page-loaded .navigation-sensitive {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Loading indicator for navigation transitions */
+.navigating .properties-content::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4f46e5, #8b5cf6);
+  animation: loadingBar 1.5s infinite ease-in-out;
+  z-index: 1000;
+}
+
+@keyframes loadingBar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
 
 @custom-variant dark (&:is(.dark *));
 
@@ -296,5 +362,22 @@
   @apply p-4;
   border-radius: 16px;
 
+}
+
+/* JavaScript detection classes */
+html.js .js-only {
+  display: block;
+}
+
+html.no-js .js-only {
+  display: none;
+}
+
+html.js noscript {
+  display: none;
+}
+
+html.no-js noscript {
+  display: block;
 }
 

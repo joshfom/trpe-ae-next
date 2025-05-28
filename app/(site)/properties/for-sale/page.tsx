@@ -18,6 +18,7 @@ import { Suspense } from 'react';
 import { createAdvancedCache } from "@/lib/advanced-cache";
 import { generateBreadcrumbStructuredData, generateOrganizationStructuredData, generateBreadcrumbSchema } from "@/lib/structured-data";
 import { WebVitalsReporter } from "@/lib/web-vitals";
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 
 // Advanced caching for page metadata and offering types
 const pageMetaCache = createAdvancedCache({
@@ -154,15 +155,7 @@ async function PropertyForSalePage({searchParams}: Props) {
 
             </div>
 
-            {/* Server-side search filter with client enhancement */}
-            <Suspense fallback={
-                <div className="w-full h-16 bg-white border-b animate-pulse" />
-            }>
-                <PropertyPageSearchFilterServer offeringType='for-sale'/>
-                <div className="hidden" suppressHydrationWarning>
-                    <PropertyPageSearchFilterOptimized offeringType='for-sale'/>
-                </div>
-            </Suspense>
+               <PropertyPageSearchFilter offeringType="for-sale" />
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">

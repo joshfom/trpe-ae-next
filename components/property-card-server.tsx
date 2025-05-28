@@ -1,5 +1,5 @@
-'use client'
-import React, { memo } from 'react';
+// Server component version of the property card
+import React from 'react';
 import { Dot } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -14,36 +14,40 @@ interface PropertyCardProps {
     offeringType?: string
 }
 
-const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
-        // Safety check for invalid property data (defensive programming)
+export default function PropertyCardServer({ property, offeringType }: PropertyCardProps) {
+    // Safety check for invalid property data
     if (!property || !property.id) {
         return null;
     }
 
-    // Calculate values directly without memoization
+    // Compute values (no useMemo needed for server components)
+    // Add defensive programming to handle missing data
     const size = property.size ? property.size / 100 : 0;
-    
     const firstImageUrl = property.images && property.images.length > 0 ? property.images[0].s3Url : null;
     
+    // Ensure all property links have fallbacks
     const propertyLinks = {
-        propertyDetail: property.offeringType && property.slug ? `/properties/${property.offeringType.slug}/${property.slug}` : "#",
-        typeDetail: property.offeringType && property.type ? `/property-types/${property.type.slug}/${property.offeringType.slug}` : "#",
-        offeringType: property.offeringType?.slug ? `/properties/${property.offeringType.slug}` : "#"
+        propertyDetail: property.offeringType && property.slug 
+            ? `/properties/${property.offeringType.slug}/${property.slug}` 
+            : "#",
+        typeDetail: property.offeringType && property.type && property.type.slug
+            ? `/property-types/${property.type.slug}/${property.offeringType.slug}` 
+            : "#",
+        offeringType: property.offeringType?.slug 
+            ? `/properties/${property.offeringType.slug}` 
+            : "#"
     };
 
-    // Display logic
+    // Display logic with defensive checks
     const showBedrooms = property.bedrooms > 0 && property.offeringType && 
         (property.offeringType.slug === 'for-sale' || property.offeringType.slug === 'for-rent');
     const showOfferingType = !(property.offeringType && offeringType && property.offeringType.slug === offeringType);
     
-    // Formatted values
-    const formattedValues = {
-        title: truncateText(property.title, 35),
-        description: prepareExcerpt(property.description, 90),
-        price: currencyConverter(parseInt(property.price)),
-        size: unitConverter(size)
-    };
-
+    // Formatted values with defensive checks
+    const title = truncateText(property.title || 'Property', 35);
+    const description = prepareExcerpt(property.description || 'No description available', 90);
+    const price = property.price ? currencyConverter(parseInt(property.price)) : 'Price on request';
+    const sizeFormatted = unitConverter(size || 0);
 
     return (
         <div className={'rounded-xl shadow-xs bg-white'}>
@@ -58,7 +62,6 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 className="pointer-events-none object-cover rounded-xl"
                                 priority={false}
-                                loading="lazy"
                             />
                         </div>
                     )}
@@ -73,13 +76,6 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         </Link>
                     )}
                 </div>
-                {property.community && (
-                    <div className="absolute top-2 left-2 z-10">
-                        <div className="text-white rounded-full text-xs px-4 bg-[#141414]/80 py-1">
-                            {property.community.name}
-                        </div>
-                    </div>
-                )}
             </div>
             <div className="p-3 pt-8 border-b border-x text-slate-700 rounded-b-xl border-white/20 relative">
                 <div className="flex flex-col space-y-2 text-lg justify-center">
@@ -87,7 +83,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         href={propertyLinks.propertyDetail}
                         className={'hover:underline'}
                     >
-                        {formattedValues.title}
+                        {title}
                     </Link>
                 </div>
                 <div className="py-2">
@@ -95,7 +91,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         href={propertyLinks.propertyDetail}
                         className={'text-sm '}
                     >
-                        {formattedValues.description}
+                        {description}
                     </Link>
                 </div>
                 <div className="absolute z-20 text-white -top-4 left-4">
@@ -135,7 +131,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         <Dot size={18}/>
                         <span className="">Size</span>
                         <p className="ml-2 ">
-                            {formattedValues.size}
+                            {sizeFormatted}
                         </p>
                     </div>
                 </div>
@@ -147,14 +143,10 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         View Property
                     </Link>
                     <p className={'text-lg font-semibold'}>
-                        {formattedValues.price}
+                        {price}
                     </p>
                 </div>
             </div>
         </div>
     );
-});
-
-PropertyCard.displayName = 'PropertyCard';
-
-export default PropertyCard;
+}

@@ -314,15 +314,27 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
             minSize: data.minSize ? parseFloat(data.minSize) : undefined,
             maxSize: data.maxSize ? parseFloat(data.maxSize) : undefined,
         };
-
-        const finalUrl = buildPropertySearchUrl({
-            searchType: data.offerType, // or 'sale'
-            selectedCommunities: selectedCommunities,
-            formData: transformedData
-        });
-
-        router.push(finalUrl);
-    }, [selectedCommunities, router]);
+        
+        // Check if this is a property-types route
+        const isPropertyTypesRoute = urlPath.startsWith('/property-types/');
+        
+        if (isPropertyTypesRoute && selectedCommunities.length > 0) {
+            // For property-types routes, add the community as a query parameter
+            const communitySlug = selectedCommunities[0].slug;
+            const segments = urlPath.split('?')[0]; // Get the base URL without any query params
+            const newUrl = `${segments}?community=${communitySlug}`;
+            router.push(newUrl);
+        } else {
+            // For other routes, use the standard URL builder
+            const finalUrl = buildPropertySearchUrl({
+                searchType: data.offerType,
+                selectedCommunities: selectedCommunities,
+                formData: transformedData
+            });
+            
+            router.push(finalUrl);
+        }
+    }, [selectedCommunities, router, urlPath]);
 
     /**
      * Handles community search input and updates the community results.
@@ -352,6 +364,20 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      */
     const getSearchedCommunities = () => {
         let communitySlugs = searchedParams.areas || [];
+        
+        // Check for community in URL query parameters for property-types route
+        if (urlPath.startsWith('/property-types/') && urlPath.includes('?')) {
+            try {
+                const url = new URL(window.location.href);
+                const communityParam = url.searchParams.get('community');
+                if (communityParam && !communitySlugs.includes(communityParam)) {
+                    communitySlugs.push(communityParam);
+                    console.log('Found community in query params:', communityParam);
+                }
+            } catch (error) {
+                console.error('Error extracting community from URL:', error);
+            }
+        }
 
         // Filter communities using community slugs if there is value
         const items = communities.filter((community) => {
