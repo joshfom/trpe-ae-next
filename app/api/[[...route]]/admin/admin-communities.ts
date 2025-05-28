@@ -143,7 +143,7 @@ const app = new Hono()
             try {
                 // Validate and extract request data
                 const {communityId} = c.req.valid('param');
-                const {name, about, image, metaTitle, metaDesc} = c.req.valid('json');
+                const {name, about, image, metaTitle, metaDesc, featured, displayOrder} = c.req.valid('json');
 
                 if (!communityId) {
                     return c.json({
@@ -172,6 +172,8 @@ const app = new Hono()
                         image,
                         metaTitle,
                         metaDesc,
+                        featured,
+                        displayOrder,
                         updatedAt: sql`now()`
                     })
                     .where(eq(communityTable.id, communityId!))

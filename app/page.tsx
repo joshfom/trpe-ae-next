@@ -86,9 +86,10 @@ const getCommunities = cache(async () => {
     return unstable_cache(
         async () => {
             try {
-                // Fetch communities
+                // Fetch featured communities only, ordered by displayOrder
                 const communities = await db.query.communityTable.findMany({
-                    orderBy: [asc(communityTable.name)],
+                    where: eq(communityTable.featured, true),
+                    orderBy: [asc(communityTable.displayOrder), asc(communityTable.name)],
                     limit: 10,
                     with: {
                         properties: {
@@ -112,10 +113,10 @@ const getCommunities = cache(async () => {
                 return [];
             }
         },
-        ['homepage-communities'],
+        ['homepage-featured-communities'],
         {
             revalidate: 3600, // Revalidate every hour
-            tags: ['communities', 'homepage']
+            tags: ['communities', 'homepage', 'featured']
         }
     )();
 });

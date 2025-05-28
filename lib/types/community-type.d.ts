@@ -12,4 +12,6 @@ type CommunityType = {
     properties?: PropertyType[];
     slug: string;
     createdAt: string;
+    featured?: boolean;
+    displayOrder?: number;
 }

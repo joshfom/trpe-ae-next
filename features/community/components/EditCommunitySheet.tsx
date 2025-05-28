@@ -12,9 +12,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { Edit2, X } from 'lucide-react';
 import { useForm } from "react-hook-form";
-import { Form, FormField, FormItem, FormLabel } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from "@/components/ui/switch";
 import { TipTapEditor } from "@/components/TiptapEditor";
 import { SingleImageDropzone } from "@/components/single-image-dropzone";
 import { useEdgeStore } from "@/db/edgestore";
@@ -43,7 +44,9 @@ export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) 
         about: community.about || '',
         metaTitle: community.metaTitle || '',
         metaDesc: community.metaDesc || '',
-    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc]);
+        featured: community.featured || false,
+        displayOrder: community.displayOrder || 0,
+    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder]);
 
     const form = useForm({
         mode: "onChange",
@@ -164,6 +167,55 @@ export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) 
                                                     placeholder="Meta Description"
                                                     className="input"
                                                 />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div>
+                                    <FormField
+                                        name="featured"
+                                        control={form.control}
+                                        render={({field}) => (
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-base">
+                                                        Featured Community
+                                                    </FormLabel>
+                                                    <div className="text-sm text-muted-foreground">
+                                                        Display this community on the homepage
+                                                    </div>
+                                                </div>
+                                                <FormControl>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={field.onChange}
+                                                    />
+                                                </FormControl>
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div>
+                                    <FormField
+                                        name="displayOrder"
+                                        control={form.control}
+                                        render={({field}) => (
+                                            <FormItem>
+                                                <FormLabel>Display Order</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        type="number"
+                                                        placeholder="0"
+                                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                                        value={field.value}
+                                                    />
+                                                </FormControl>
+                                                <div className="text-sm text-muted-foreground">
+                                                    Lower numbers appear first on the homepage
+                                                </div>
                                             </FormItem>
                                         )}
                                     />

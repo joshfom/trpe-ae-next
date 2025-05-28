@@ -6,4 +6,6 @@ export const CommunityFormSchema = z.object({
     about: z.string(),
     metaTitle: z.string(),
     metaDesc: z.string(),
+    featured: z.boolean().default(false),
+    displayOrder: z.number().default(0),
 })

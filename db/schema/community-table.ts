@@ -1,4 +1,4 @@
-import {boolean, jsonb, pgTable, text, timestamp, varchar} from "drizzle-orm/pg-core";
+import {boolean, integer, jsonb, pgTable, text, timestamp, varchar} from "drizzle-orm/pg-core";
 import {relations, sql} from "drizzle-orm";
 import {propertyTable} from "@/db/schema/property-table";
 import {createInsertSchema, createSelectSchema, createUpdateSchema} from "drizzle-zod";
@@ -42,6 +42,10 @@ export const communityTable = pgTable("communities", {
     shortName: text("short_name"),
     /** URL-friendly unique identifier */
     slug: text("slug").notNull().unique(),
+    /** Whether this community is featured on homepage */
+    featured: boolean("featured").default(false),
+    /** Display order for featured communities (lower numbers appear first) */
+    displayOrder: integer("display_order").default(0),
     /** Last update timestamp */
     updatedAt: timestamp("updated_at", {withTimezone: true, mode: 'string'}),
     /** Creation timestamp */

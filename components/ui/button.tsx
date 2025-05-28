@@ -80,6 +80,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       !loading && isDisabled && "opacity-50 cursor-not-allowed"
     )
     
+    // When asChild is true, we can't add loading spinner as it would break Slot's single child requirement
+    if (asChild) {
+      if (loading) {
+        console.warn("Loading state is not supported when asChild is true")
+      }
+      return (
+        <Comp
+          className={buttonClassName}
+          ref={ref}
+          disabled={isDisabled}
+          {...props}
+        >
+          {children}
+        </Comp>
+      )
+    }
+    
     return (
       <Comp
         className={buttonClassName}

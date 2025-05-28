@@ -4,6 +4,8 @@ export interface CommunityFilterType {
   slug: string;
   name: string | null;
   shortName: string | null;
+  featured?: boolean;
+  displayOrder?: number;
   propertyCount?: number;
   rentCount?: number;
   saleCount?: number;
@@ -21,6 +23,8 @@ export function toCommunityFilterType(apiCommunity: any): CommunityFilterType {
     slug: apiCommunity.slug,
     name: apiCommunity.name,
     shortName: apiCommunity.shortName || null,
+    featured: apiCommunity.featured || false,
+    displayOrder: apiCommunity.displayOrder || 0,
     propertyCount: apiCommunity.propertyCount || 0,
     rentCount: apiCommunity.rentCount || 0,
     saleCount: apiCommunity.saleCount || 0,

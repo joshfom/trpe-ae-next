@@ -32,12 +32,12 @@ async function LuxePropertyPage(
         <div className='bg-black'>
             
             <div className="max-w-7xl mx-auto lg:border-4  pb-12 broder-white">
-                    <img src="/media/home-landing.png" className={'mx-auto  hidden lg:block mt-32 h-full object-cover'}
+                    <img src="/media/home-landing.webp" className={'mx-auto  hidden lg:block mt-32 h-full object-cover'}
                          alt=""/>
                 </div>
 
                 {/* Mobile hero image */}
-                <img src="/media/magazine-home-mobile.png" className={'mx-auto lg:hidden -mt-8 object-contain h-full w-full'} alt=""/>
+                <img src="/media/magazine-home-mobile.webp" className={'mx-auto lg:hidden -mt-8 object-contain h-full w-full'} alt=""/>
 
                 <div className="absolute  inset-0">
                     <div className="flex flex-col h-full  justify-center items-center">
