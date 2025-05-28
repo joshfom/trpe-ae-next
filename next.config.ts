@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
         // Enable modern optimizations
         // optimizeCss: true,  // Disabled temporarily due to critters dependency issue
         // Note: typedRoutes removed due to Turbopack incompatibility
+        nodeMiddleware: true, // Enable nodejs support for middleware
     },
     // Move serverComponentsExternalPackages to root level as per Next.js 15
     serverExternalPackages: ['sharp', 'onnxruntime-node'],
