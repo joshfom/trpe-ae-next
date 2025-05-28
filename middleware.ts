@@ -31,5 +31,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon.ico|images/|fonts/|assets/|api/).*)' 
   ],
 };
-
-export const runtime = 'nodejs'; // Set runtime environment to Node.js
