@@ -5,7 +5,9 @@ const nextConfig: NextConfig = {
     output: 'standalone', // Ensures better optimization for deployment
     poweredByHeader: false, // Remove X-Powered-By header for security
     reactStrictMode: true, // Helps catch bugs early
+    crossOrigin: 'anonymous', // Set CORS headers
     images: {
+        unoptimized: false, // Ensure images are optimized
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },
             { protocol: 'https', hostname: "crm.trpeglobal.com" },
