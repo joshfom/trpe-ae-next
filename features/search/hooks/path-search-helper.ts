@@ -43,24 +43,7 @@ export const buildCommunitiesPath = (communities: CommunityFilterType[]): string
  * @returns {SearchedParams} - The extracted search parameters.
  */
 export const extractPathSearchParams = (url: string): SearchedParams => {
-    if (!url) {
-        console.log('Warning: extractPathSearchParams called with empty URL');
-        return {areas: []};
-    }
-    
-    // Normalize URL to handle potential edge cases
-    let normalizedUrl = url;
-    try {
-        // Try to parse as URL if it looks like a full URL
-        if (url.startsWith('http')) {
-            const urlObj = new URL(url);
-            normalizedUrl = urlObj.pathname;
-        }
-    } catch (error) {
-        console.error('Error parsing URL:', error);
-    }
-    
-    console.log('Extracting path search params from:', normalizedUrl);
+    if (!url) return {areas: []};
 
     let searchedParams: SearchedParams = {
         query: undefined,
@@ -80,75 +63,23 @@ export const extractPathSearchParams = (url: string): SearchedParams => {
         communityNames: undefined,
         areas: []
     }
-    
-    try {
-        // Try to detect property category and offering type from URL
-        const segments = url.split('/').filter(Boolean);
-        
-        // Detect offering type from URL segments (for-sale, for-rent, etc.)
-        if (url.includes('/for-sale/')) {
-            searchedParams.offerType = 'for-sale';
-        } else if (url.includes('/for-rent/')) {
-            searchedParams.offerType = 'for-rent';
-        } else if (url.includes('/commercial-sale/')) {
-            searchedParams.offerType = 'commercial-sale';
-        } else if (url.includes('/commercial-rent/')) {
-            searchedParams.offerType = 'commercial-rent';
-        }
-        
-        // Check for property type segment (e.g., property-type-office)
-        const unitTypeSegment = url
-            .split('/')
-            .find(segment => segment.includes('property-type'));
-        
-        // Check if this is a property-types route
-        const isPropertyTypesRoute = url.includes('/property-types/');
-        
-        // Check for area segment (e.g., area-business-bay)
-        const areaSegment = url
-            .split('/')
-            .find(segment => segment.includes('area-'));
+
+    const areaSegment = url
+        .split('/')
+        .find(segment => segment.includes('area-'));
+
+
+    const unitTypeSegment = url
+        .split('/')
+        .find(segment => segment.includes('property-type'));
+
 
     if (unitTypeSegment) {
+
         const propertyTypePath = unitTypeSegment.replace('property-type-', '');
-        // if contains property-types return null
+        //if containt property-types return null
         if (propertyTypePath.includes('property-types')) return searchedParams;
         searchedParams.unitType = propertyTypePath;
-        console.log('Found unit type in path:', searchedParams.unitType);
-    }
-    
-    // Special handling for /property-types/[propertyType]/[offeringType] route pattern
-    if (url.includes('/property-types/')) {
-        const segments = url.split('/').filter(Boolean);
-        const propertyTypesIndex = segments.indexOf('property-types');
-        
-        if (propertyTypesIndex >= 0 && segments.length > propertyTypesIndex + 1) {
-            const propertyType = segments[propertyTypesIndex + 1];
-            searchedParams.unitType = propertyType;
-            console.log('Found property type in property-types route:', propertyType);
-            
-            // If there's also an offering type
-            if (segments.length > propertyTypesIndex + 2) {
-                const offerType = segments[propertyTypesIndex + 2];
-                searchedParams.offerType = offerType;
-                console.log('Found offering type in property-types route:', offerType);
-                
-                // Check for query parameters that might contain community info
-                if (url.includes('?')) {
-                    try {
-                        const urlObj = new URL(url.startsWith('http') ? url : `http://example.com${url}`);
-                        const communityParam = urlObj.searchParams.get('community');
-                        if (communityParam) {
-                            searchedParams.areas = [communityParam];
-                            searchedParams.communityNames = communityParam;
-                            console.log('Found community in query params:', communityParam);
-                        }
-                    } catch (error) {
-                        console.error('Error parsing URL with query params:', error);
-                    }
-                }
-            }
-        }
     }
 
     if (areaSegment) {
@@ -159,18 +90,9 @@ export const extractPathSearchParams = (url: string): SearchedParams => {
         searchedParams.areas = areas;
         // Set communityNames as a comma-separated string of area names
         searchedParams.communityNames = areas.join(',');
-        console.log('Found areas in path from areaSegment:', areas);
     }
-    
-    console.log('Extracted search params:', JSON.stringify(searchedParams, null, 2));
-    
-    return searchedParams;
-    } catch (error) {
-        console.error('Error extracting search params from path:', error);
-        console.error('Problematic URL:', url);
-        // Return empty results to avoid breaking the application
-        return {areas: []};
-    }
+
+    return searchedParams
 }
 
 /**

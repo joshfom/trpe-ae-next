@@ -69,28 +69,6 @@ export async function getPropertiesServer({
                                              pathname,
                                              page = '1'
                                           }: GetPropertiesParams): Promise<PropertySearchResponse> {
-    // Debug log to understand what parameters we're receiving
-    console.log('getPropertiesServer called with:', {
-        offeringType,
-        propertyType,
-        searchParams: Object.fromEntries(searchParams.entries()),
-        pathname,
-        page
-    });
-    
-    // Validate pathname - crucial for server-side rendering without JS
-    if (!pathname || pathname === '') {
-        console.error('Error: getPropertiesServer called with empty pathname');
-        return {
-            properties: [],
-            totalCount: 0,
-            pages: [],
-            metaLinks: null,
-            error: 'Invalid pathname',
-            notFound: false
-        };
-    }
-    
     // Validate that only the "page" parameter exists and has a valid numeric value
     // Get all parameter keys from the URL
     const paramKeys = Array.from(searchParams.keys());
@@ -101,11 +79,6 @@ export async function getPropertiesServer({
     // If there are invalid parameters or the page value is not numeric
     const pageValue = searchParams.get('page');
     if (hasInvalidParams || (pageValue && (!pageValue.match(/^\d+$/) || parseInt(pageValue, 10) < 1))) {
-        console.log('Invalid parameters detected:', {
-            paramKeys,
-            pageValue,
-            hasInvalidParams
-        });
         return {
             properties: [],
             totalCount: 0,
@@ -126,7 +99,6 @@ export async function getPropertiesServer({
     const minPrice = searchParams.get('min-price') ? Number(searchParams.get('min-price')) : undefined;
     const sortBy = searchParams.get('sort-by') || undefined;
     const typeSlug = (searchParams.get('property-type') || '').replace(/"/g, '');
-    const communitySlug = searchParams.get('community') || undefined;
 
     // Convert page to number and validate it
     let pageNumber = parseInt(page, 10);
@@ -137,26 +109,11 @@ export async function getPropertiesServer({
     }
     
     const pageSize = 12;
-    let offset = (pageNumber - 1) * pageSize;        // Extract search parameters from the pathname
+    let offset = (pageNumber - 1) * pageSize;
+
     const searchedParams = extractPathSearchParams(pathname);
-    
-    // Debug log the extracted parameters
-    console.log('Extracted search params for properties:', JSON.stringify(searchedParams, null, 2));
-    console.log('Direct propertyType param:', propertyType);
-    
-    // Get areas from search params or add community slug if specified
-    let areas = searchedParams.areas || [];
-    
-    // If we have a specific community parameter, add it to the areas array
-    if (communitySlug && !areas.includes(communitySlug)) {
-        areas.push(communitySlug);
-        console.log(`Added community slug to areas: ${communitySlug}`);
-    }
-    
-    // Check if this is a property-types route
-    const isPropertyTypesRoute = pathname.startsWith('/property-types/');
-    // For property-types routes, prefer the direct propertyType parameter
-    const unitType = isPropertyTypesRoute ? propertyType : (searchedParams.unitType || propertyType);
+    const areas = searchedParams.areas;
+    const unitType = searchedParams.unitType || propertyType;
 
     try {
         // First, let's fetch the necessary IDs based on slugs
@@ -176,17 +133,12 @@ export async function getPropertiesServer({
 
         // Get community IDs if we have area slugs
         if (areas && areas.length > 0) {
-            console.log('Searching for communities with slugs:', areas);
-            
             const communityResults = await db
-                .select({ id: communityTable.id, slug: communityTable.slug })
+                .select({ id: communityTable.id })
                 .from(communityTable)
                 .where(inArray(communityTable.slug, areas));
-            
-            console.log('Found community results:', communityResults);
 
             communityIds = communityResults.map(c => c.id);
-            console.log('Community IDs for filtering:', communityIds);
         }
 
         // Get offering type IDs if we have an offering type
@@ -215,19 +167,14 @@ export async function getPropertiesServer({
         }
 
         // Filter by property type
-        if (typeSlug || propertyType) {
-            const propertyTypeSlug = typeSlug || propertyType;
-            
-            // Make sure propertyTypeSlug is defined before using it in the query
-            if (propertyTypeSlug) {
-                const propertyTypeResult = await db
-                    .select({ id: propertyTypeTable.id })
-                    .from(propertyTypeTable)
-                    .where(eq(propertyTypeTable.slug, propertyTypeSlug));
+        if (typeSlug) {
+            const propertyTypeResult = await db
+                .select({ id: propertyTypeTable.id })
+                .from(propertyTypeTable)
+                .where(eq(propertyTypeTable.slug, typeSlug));
 
-                if (propertyTypeResult.length > 0) {
-                    whereConditions.push(eq(propertyTable.typeId, propertyTypeResult[0].id));
-                }
+            if (propertyTypeResult.length > 0) {
+                whereConditions.push(eq(propertyTable.typeId, propertyTypeResult[0].id));
             }
         }
 

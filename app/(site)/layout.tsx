@@ -2,16 +2,12 @@
 import React, { Suspense } from 'react';
 import SiteLayoutClient from './site-layout-client';
 import { NavigationSkeleton, FooterSkeleton } from '@/components/ssr-skeletons';
-import { getFooterCommunities } from '@/actions/get-footer-communities-action';
 
 interface LayoutProps {
     children: React.ReactNode
 }
 
-async function Layout({children}: LayoutProps) {
-    // Fetch communities data on the server side
-    const communities = await getFooterCommunities();
-    
+function Layout({children}: LayoutProps) {
     return (
         <Suspense fallback={
             <div className="min-h-screen bg-white">
@@ -20,7 +16,7 @@ async function Layout({children}: LayoutProps) {
                 <FooterSkeleton />
             </div>
         }>
-            <SiteLayoutClient communities={communities}>
+            <SiteLayoutClient>
                 <div className="">
                     {children}
                 </div>

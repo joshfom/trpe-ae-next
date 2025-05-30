@@ -6,7 +6,7 @@ import {db} from "@/db/drizzle";
 import {and, eq, ne} from "drizzle-orm";
 import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
-import PropertyCardServer from "@/components/property-card-server";
+import PropertyCard from "@/components/property-card";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
 import {unstable_cache} from "next/cache";
@@ -209,7 +209,7 @@ async function ListingViewPage(props: ListingViewPageProps) {
                     </div>
                     <div className="max-w-7xl mx-auto grid px-3 col-span-1 lg:grid-cols-3 py-12 gap-4">
                         {similarProperties.map((property) => (
-                            <PropertyCardServer property={property} key={property.id} />
+                            <PropertyCard property={property} key={property.id} />
                         ))}
                     </div>
                 </div>

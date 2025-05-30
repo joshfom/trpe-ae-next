@@ -106,17 +106,6 @@ async function PropertyForRentPage(props: PropertyTypePage) {
         return notFound()
     }
 
-    let about = ''
-
-    if (slug === 'for-rent') {
-        about = unitType.rentContent as string
-    }
-
-    if (slug === 'for-sale') {
-        about = unitType.saleContent as string,
-            about = unitType.saleContent as string
-    }
-
     return (
         <div className={'bg-black lg:pt-20'}>
             <Listings

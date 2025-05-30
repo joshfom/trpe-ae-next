@@ -4,7 +4,6 @@ import {Metadata, ResolvingMetadata} from "next";
 import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {eq, and, sql} from "drizzle-orm";
-import { headers } from "next/headers";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import {communityTable} from "@/db/schema/community-table";
 import {propertyTypeTable} from "@/db/schema/property-type-table";
@@ -160,44 +159,22 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 async function PropertySearchPage({ searchParams, params }: Props) {
-    const awaitedSearchParams = await searchParams;
-    const page = awaitedSearchParams.page;
+    const page = (await searchParams).page
     const awaitedParams = await params;
     const slug = awaitedParams.search;
     const subSlug = awaitedParams.searchLevel2;
-        
-    // Get pathname from headers (set by middleware) for consistency
-    // This is critical for server-side rendering when JavaScript is disabled
-    const headersList = await headers();
-    const pathnameFromHeader = headersList.get("x-pathname");
+
+        // Construct pathname directly from URL parameters
+        const pathname = `/dubai/properties/commercial/for-sale/${slug}/${subSlug}`;
     
-    // Always construct a complete path (make sure it's absolute and not relative)
-    const constructedPath = `/dubai/properties/commercial/for-sale/${slug}/${subSlug}`;
-    
-    // Use the pathname from headers if available, otherwise use constructed path
-    // For consistency with client navigation and SSR
-    const pathname = pathnameFromHeader || constructedPath;
-    
-    console.log('Page component using pathname:', pathname);
-    console.log('Pathname source:', pathnameFromHeader ? 'header' : 'constructed');
-    
-    // Log warning if the pathname is not available from headers
-    if (!pathnameFromHeader) {
-        console.warn('x-pathname header is missing, using constructed path. Check middleware configuration.');
-    }
-    const pageMeta = await db.query.pageMetaTable.findFirst({
-        where: eq(pageMetaTable.path, pathname)
-    }) as unknown as PageMetaType;
+        const pageMeta = await db.query.pageMetaTable.findFirst({
+            where: eq(pageMetaTable.path, pathname)
+        }) as unknown as PageMetaType;
 
           const { user } = await validateRequest();
 
-    // Check if this is a property type search
     const isUnitType = slug.includes('property-type-');
-    
-    // Extract the unit type slug, removing 'property-type-' prefix
     const unitTypeSlug = slug.replace('property-type-', '');
-    
-    // For database queries we need the plural form
     const unitTypeSlugPlural = unitTypeSlug.endsWith('s') ? unitTypeSlug : unitTypeSlug + 's';
 
     const areas = subSlug.split('--')
@@ -265,13 +242,7 @@ async function PropertySearchPage({ searchParams, params }: Props) {
 
             <Listings 
                 offeringType="commercial-sale"
-                propertyType={isUnitType ? unitTypeSlug : undefined}
-                searchParams={awaitedSearchParams}
                 page={page}
-                isLandingPage={false}
-                // Pass the pathname explicitly to ensure consistent server-side rendering
-                pathname={pathname}
-                key={pathname} /* Add a key to force re-render on navigation */
             />
 
                {pageMeta?.content && (

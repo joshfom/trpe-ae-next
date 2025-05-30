@@ -14,7 +14,6 @@ import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageM
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import { unstable_cache } from 'next/cache';
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 
 // Enhanced cached database queries with aggressive caching for content that doesn't change often
 const getPageMeta = cache(async (pathname: string): Promise<PageMetaType | null> => {
@@ -126,7 +125,15 @@ async function PropertyForRentPage({searchParams} : Props) {
 
             </div>
 
-               <PropertyPageSearchFilter offeringType="for-rent" />
+            {/* Server-side search filter with client enhancement */}
+            <Suspense fallback={
+                <div className="w-full h-16 bg-white border-b animate-pulse" />
+            }>
+                <PropertyPageSearchFilterServer offeringType='for-rent'/>
+                <div className="hidden" suppressHydrationWarning>
+                    <PropertyPageSearchFilterOptimized offeringType='for-rent'/>
+                </div>
+            </Suspense>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">

@@ -18,7 +18,6 @@ import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
-import { getFooterCommunities } from '@/actions/get-footer-communities-action';
 
 // Dynamic imports for better code splitting - SSR compatible
 const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
@@ -133,11 +132,10 @@ export default async function Home() {
     }
 
     // Fetch listings in parallel for better performance
-    const [rentalListings, saleListings, communities, footerCommunities] = await Promise.all([
+    const [rentalListings, saleListings, communities] = await Promise.all([
         getListings(rentalType.id, 3),
         getListings(saleType.id, 3),
-        getCommunities(),
-        getFooterCommunities()
+        getCommunities()
     ]);
 
     const webpageJsonLD = {
@@ -351,7 +349,7 @@ export default async function Home() {
                 </section>
 
 
-                <SiteFooter communities={footerCommunities}/>
+                <SiteFooter/>
 
 
             </main>

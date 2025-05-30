@@ -7,7 +7,6 @@ import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
 import {notFound} from "next/navigation";
 import {propertyTypeTable} from "@/db/schema/property-type-table";
-import {communityTable} from "@/db/schema/community-table";
 import PropertyPageSearchFilter from "@/features/search/PropertyPageSearchFilter";
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
@@ -99,21 +98,10 @@ interface PropertyTypeOfferingPageProps {
 
 async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
     const params = await props.params;
-    const searchParams = await props.searchParams;
     const { user } = await validateRequest();
-    
-    // Get community parameter if present
-    const communityParam = searchParams.community;
     
     // Construct pathname directly from URL parameters
     const pathname = `/property-types/${params.propertyType}/${params.offeringType}`;
-    
-    // Add community to pathname for debugging purposes
-    const fullPathname = communityParam 
-        ? `${pathname}?community=${communityParam}` 
-        : pathname;
-    
-    console.log(`Loading PropertyTypeOfferingPage with pathname: ${fullPathname}`);
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
@@ -140,29 +128,17 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
 
     let pageTitle = ''
     let about = '' as string | null;
-    
-    // Fetch community data if we have a community parameter
-    let community = null;
-    if (communityParam) {
-        community = await db.query.communityTable.findFirst({
-            where: eq(communityTable.slug, communityParam)
-        });
-        console.log(`Found community for ${communityParam}:`, community?.name);
-    }
 
-    if (offeringType?.slug === 'for-sale') {
+
+   if (offeringType?.slug === 'for-sale') {
        about = unitType.saleContent as string | null;
-       pageTitle = unitType.saleH1 as string || `${unitType?.name ? unitType.name : "Properties"} for Sale`;
-    }
+         pageTitle = unitType.saleH1 as string || `${unitType?.name ? unitType.name : "Properties"} for Sale`;
+   }
+
 
     if (offeringType?.slug === 'for-rent') {
-        about = unitType.rentContent as string | null;
-        pageTitle = unitType.rentH1 as string || `${unitType?.name ? unitType.name : "Properties"} for Rent`;
-    }
-    
-    // Add community to the page title if we have one
-    if (community) {
-        pageTitle = `${pageTitle} in ${community.name}`;
+         about = unitType.rentContent as string | null;
+            pageTitle = unitType.rentH1 as string || `${unitType?.name ? unitType.name : "Properties"} for Rent`;
     }
 
 
@@ -199,10 +175,6 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
                     offeringType={params?.offeringType}
                     propertyType={params.propertyType}
                     page={page}
-                    pathname={pathname}
-                    searchParams={{
-                        community: (await props.searchParams).community
-                    }}
                 />
             </ListingsWrapper>
 

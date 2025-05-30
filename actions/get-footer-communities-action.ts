@@ -16,16 +16,12 @@ interface Community {
   commercialSaleCount?: number;
 }
 
-// Cache the result of the community fetch for 1 hour during debugging
+// Cache the result of the community fetch for 48 hours (172800 seconds)
 export const getFooterCommunities = unstable_cache(
   async (): Promise<Community[]> => {
     try {
       console.log("Fetching footer communities from server action");
-      const response = await client.api.communities.list.$get({
-        query: {
-          limit: 50 // Increase limit to ensure we get enough communities
-        }
-      });
+      const response = await client.api.communities.list.$get();
       
       if (!response.ok) {
         console.error("Failed to fetch footer communities:", response.status);
@@ -34,8 +30,8 @@ export const getFooterCommunities = unstable_cache(
       
       const data = await response.json();
       
-      // Log the full response to debug any issues
-      console.log("API full response data:", JSON.stringify(data));
+      // Log the raw data to see what's coming back
+      console.log("API response data:", JSON.stringify(data).substring(0, 200) + "...");
       
       // The API returns data in 'communities' array
       const communities: Community[] = data.communities || [];
@@ -48,17 +44,8 @@ export const getFooterCommunities = unstable_cache(
       
       console.log(`Found ${withProperties.length} communities with properties out of ${communities.length} total`);
       
-      // Return up to 16 communities with properties - use a more lenient filter if needed
-      let result = withProperties.slice(0, 16);
-      
-      // If no communities with properties are found, return all communities as a fallback
-      if (result.length === 0 && communities.length > 0) {
-        console.log("No communities with properties found, using all communities as fallback");
-        result = communities.filter(c => c.name !== null).slice(0, 16);
-      }
-      
-      console.log(`Returning ${result.length} communities for footer display`);
-      return result;
+      // Return up to 16 communities with properties
+      return withProperties.slice(0, 16);
     } catch (error) {
       console.error("Error fetching footer communities:", error);
       return [];

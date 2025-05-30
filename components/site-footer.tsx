@@ -24,28 +24,19 @@ const MobileSearch = dynamic(
     }
 );
 
-// Import server component directly for SSR support
-// import FooterCommunities from "@/features/site/components/FooterCommunities";
-
-// Define Community interface to match the API response format
-interface Community {
-  id?: string;
-  name: string | null;
-  slug: string;
-  shortName?: string | null;
-  propertyCount?: number;
-  rentCount?: number;
-  saleCount?: number;
-  commercialRentCount?: number;
-  commercialSaleCount?: number;
-}
+const FooterCommunitiesClient = dynamic(
+    () => import("@/features/site/components/FooterCommunitiesClient"), 
+    { 
+        ssr: true, // Enable SSR for footer communities
+        loading: () => <div className="animate-pulse bg-gray-100 h-20 rounded" aria-label="Loading communities..." />
+    }
+);
 
 interface SiteFooterProps {
     showAbout?: boolean;
-    communities?: Community[];
 }
 
-function SiteFooter({showAbout = true, communities = []}: SiteFooterProps) {
+function SiteFooter({showAbout = true}: SiteFooterProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [openSearch, setOpenSearch] = useState(false)
     const [openLocation, setOpenLocation] = useState(false)
@@ -226,25 +217,7 @@ function SiteFooter({showAbout = true, communities = []}: SiteFooterProps) {
                             <p className="text-xl px-4">
                                 Neighbourhoods
                             </p>
-                            {communities && communities.length > 0 ? (
-                                <div className="pt-2 flex text-sm flex-col">
-                                    {communities.map((community) => (
-                                        <Link
-                                            key={community.slug}
-                                            className={
-                                                "px-4 py-2 border-b border-transparent hover:bg-zinc-900 text-slate-300 hover:text-white hover:border-white"
-                                            }
-                                            href={`/communities/${community.slug}`}
-                                        >
-                                            {community.shortName || community.name}
-                                        </Link>
-                                    ))}
-                                </div>
-                            ) : (
-                                <div className="pt-2 px-4 text-sm text-slate-400">
-                                    No communities available
-                                </div>
-                            )}
+                            <FooterCommunitiesClient/>
                         </div>
                         <div>
                             <div>

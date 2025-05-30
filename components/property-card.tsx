@@ -1,5 +1,5 @@
 'use client'
-import React, { memo } from 'react';
+import React, { useEffect, memo, useMemo } from 'react';
 import { Dot } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,34 +15,35 @@ interface PropertyCardProps {
 }
 
 const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
-        // Safety check for invalid property data (defensive programming)
-    if (!property || !property.id) {
-        return null;
-    }
-
-    // Calculate values directly without memoization
-    const size = property.size ? property.size / 100 : 0;
+    // Memoize computed values
+    const size = useMemo(() => property.size / 100, [property.size]);
+    const firstImageUrl = useMemo(() => 
+        property.images && property.images.length > 0 ? property.images[0].s3Url : null, 
+        [property.images]
+    );
     
-    const firstImageUrl = property.images && property.images.length > 0 ? property.images[0].s3Url : null;
-    
-    const propertyLinks = {
-        propertyDetail: property.offeringType && property.slug ? `/properties/${property.offeringType.slug}/${property.slug}` : "#",
+    const propertyLinks = useMemo(() => ({
+        propertyDetail: property.offeringType ? `/properties/${property.offeringType.slug}/${property.slug}` : "#",
         typeDetail: property.offeringType && property.type ? `/property-types/${property.type.slug}/${property.offeringType.slug}` : "#",
         offeringType: property.offeringType?.slug ? `/properties/${property.offeringType.slug}` : "#"
-    };
+    }), [property.offeringType, property.slug, property.type]);
 
-    // Display logic
-    const showBedrooms = property.bedrooms > 0 && property.offeringType && 
-        (property.offeringType.slug === 'for-sale' || property.offeringType.slug === 'for-rent');
-    const showOfferingType = !(property.offeringType && offeringType && property.offeringType.slug === offeringType);
-    
-    // Formatted values
-    const formattedValues = {
+    // Memoize display logic
+    const displayLogic = useMemo(() => {
+        const showBedrooms = property.bedrooms > 0 && property.offeringType && 
+            (property.offeringType.slug === 'for-sale' || property.offeringType.slug === 'for-rent');
+        const showOfferingType = !(property.offeringType && offeringType && property.offeringType.slug === offeringType);
+        
+        return { showBedrooms, showOfferingType };
+    }, [property.bedrooms, property.offeringType, offeringType]);
+
+    // Memoize formatted values
+    const formattedValues = useMemo(() => ({
         title: truncateText(property.title, 35),
         description: prepareExcerpt(property.description, 90),
         price: currencyConverter(parseInt(property.price)),
         size: unitConverter(size)
-    };
+    }), [property.title, property.description, property.price, size]);
 
 
     return (
@@ -73,13 +74,6 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                         </Link>
                     )}
                 </div>
-                {property.community && (
-                    <div className="absolute top-2 left-2 z-10">
-                        <div className="text-white rounded-full text-xs px-4 bg-[#141414]/80 py-1">
-                            {property.community.name}
-                        </div>
-                    </div>
-                )}
             </div>
             <div className="p-3 pt-8 border-b border-x text-slate-700 rounded-b-xl border-white/20 relative">
                 <div className="flex flex-col space-y-2 text-lg justify-center">
@@ -99,7 +93,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                     </Link>
                 </div>
                 <div className="absolute z-20 text-white -top-4 left-4">
-                    {showOfferingType && property.offeringType && (
+                    {displayLogic.showOfferingType && property.offeringType && (
                         <Link 
                             href={propertyLinks.offeringType}
                             className={'rounded-full bg-[#141414] border-b py-1 px-3 text-center border-t border-white border-x text-white text-sm'}
@@ -110,7 +104,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                     )}
                 </div>
                 <div className="py-3 flex flex-wrap gap-4 justify-start">
-                    {showBedrooms && (
+                    {displayLogic.showBedrooms && (
                         <div className="flex justify-center items-center">
                             <Dot size={18}/>
                             {property.bedrooms < 1 ? 'Studio' : (

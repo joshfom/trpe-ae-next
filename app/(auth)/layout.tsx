@@ -4,7 +4,6 @@ import {redirect} from "next/navigation";
 import SiteTopNavigation from "@/components/site-top-navigation";
 import FooterMenuSection from "@/features/site/components/FooterMenuSection";
 import SiteFooter from "@/components/site-footer";
-import { getFooterCommunities } from '@/actions/get-footer-communities-action';
 
 // Force dynamic rendering for auth routes since they check authentication status
 export const dynamic = 'force-dynamic';
@@ -24,9 +23,6 @@ async function GuestLayout(
         return redirect('/admin')
     }
 
-    // Fetch footer communities for SSR
-    const footerCommunities = await getFooterCommunities();
-
     return (
         <div>
 
@@ -41,7 +37,7 @@ async function GuestLayout(
 
             <FooterMenuSection/>
 
-            <SiteFooter communities={footerCommunities}/>
+            <SiteFooter/>
         </div>
     );
 }
