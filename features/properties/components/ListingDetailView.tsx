@@ -8,7 +8,7 @@ import 'swiper/css/pagination';
 import currencyConverter from "@/lib/currency-converter";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {ShareSocial} from "react-share-social";
-import {usePathname, useSearchParams} from 'next/navigation'
+import {usePathname} from 'next/navigation'
 import unitConverter from "@/lib/unit-converter";
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import Lightbox from "yet-another-react-lightbox";
@@ -29,7 +29,6 @@ interface ListingDetailViewProps {
 function ListingDetailView({property}: ListingDetailViewProps) {
     const [viewGallery, setViewGallery] = React.useState(false)
     const pathname = usePathname()
-    const searchParams = useSearchParams()
     const [animationDuration, setAnimationDuration] = React.useState(500);
     const [maxZoomPixelRatio, setMaxZoomPixelRatio] = React.useState(1);
     const [zoomInMultiplier, setZoomInMultiplier] = React.useState(2);
@@ -90,7 +89,7 @@ function ListingDetailView({property}: ListingDetailViewProps) {
         if (typeof window !== 'undefined') {
             setCurrentUrl(window.location.href)
         }
-    }, [pathname, searchParams])
+    }, [pathname])
 
 
     useEffect(() => {
