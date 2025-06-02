@@ -4,9 +4,9 @@ export default function myImageLoader({ src, width, quality }) {
     const isLocal = !src.startsWith('http');
     const query = new URLSearchParams();
 
-    const imageOptimizationApi = '<image-optimization-domain>';
+    const imageOptimizationApi = 'images.trpe.ae';
     // Your NextJS application URL
-    const baseUrl = '<your-nextjs-app-domain>';
+    const baseUrl = 'images.trpe.ae';
 
     const fullSrc = `${baseUrl}${src}`;
 
