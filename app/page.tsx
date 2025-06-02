@@ -234,7 +234,7 @@ export default async function Home() {
                                     return (
                                         <div key={index}
                                              className="relative h-[400px] w-full bg-white rounded-2xl overflow-hidden">
-                                            <Image fill={true} className={'object-cover'}
+                                            <img className={'object-cover absolute w-full h-full'}
                                                    src={community.image || 'https://trpe.ae/wp-content/uploads/2024/03/downtown-dxb_result.webp'}
                                                    alt={community.label}/>
                                             <div
@@ -304,21 +304,17 @@ export default async function Home() {
                             <div className={'space-y-3 lg:space-y-8'}>
 
                                 <div className="relative h-72 w-72">
-                                    <Image 
-                                        className={'object-cover rounded-2xl broder border-white'}
+                                    <img 
+                                        className="object-cover rounded-2xl broder border-white absolute w-full h-full"
                                         src="/images/emirate-towers.webp"
                                         alt="invest"
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 288px"
                                     />
                                 </div>
                                 <div className="relative h-72 w-72">
-                                    <Image 
-                                        className={'object-cover rounded-2xl broder border-white'}
+                                    <img 
+                                        className="object-cover rounded-2xl broder border-white absolute w-full h-full"
                                         src="/images/burj-arab.webp"
                                         alt="invest"
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 288px"
                                     />
                                 </div>
 
@@ -326,21 +322,17 @@ export default async function Home() {
                             <div className={' space-y-3 lg:space-y-8 -mt-24'}>
 
                                 <div className="relative h-72 w-72">
-                                    <Image 
-                                        className={'object-cover rounded-2xl broder border-white'}
+                                    <img 
+                                        className="object-cover rounded-2xl broder border-white absolute w-full h-full"
                                         src="/images/home-3.jpg"
                                         alt="invest"
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 288px"
                                     />
                                 </div>
                                 <div className="relative h-72 w-72">
-                                    <Image 
-                                        className={'object-cover rounded-2xl broder border-white'}
+                                    <img 
+                                        className="object-cover rounded-2xl broder border-white absolute w-full h-full"
                                         src="/images/bur-khalifa.webp"
                                         alt="invest"
-                                        fill
-                                        sizes="(max-width: 768px) 100vw, 288px"
                                     />
                                 </div>
 
