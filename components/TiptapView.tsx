@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
+import '../app/empty-para.css';
 
 interface TipTapViewProps {
     content: string;
@@ -12,6 +13,44 @@ export const TipTapView = ({ content, processedContent }: TipTapViewProps) => {
 
     // Use the pre-processed content if available, otherwise use original content
     const finalContent = processedContent || content;
+    
+    // Enhanced effect to ensure proper spacing for empty paragraphs
+    useEffect(() => {
+        if (contentRef.current) {
+            // Process all paragraphs
+            const allParagraphs = contentRef.current.querySelectorAll('p');
+            
+            allParagraphs.forEach((p) => {
+                // Check for truly empty paragraphs or paragraphs with only whitespace/&nbsp;
+                const isEmpty = 
+                    p.innerHTML.trim() === '' || 
+                    p.innerHTML === '&nbsp;' || 
+                    p.textContent?.trim() === '' ||
+                    p.innerHTML.includes('ProseMirror-trailingBreak') ||
+                    (p.childNodes.length === 1 && p.firstChild?.nodeName === 'BR');
+                
+                if (isEmpty) {
+                    // Add our custom class for empty paragraphs
+                    p.classList.add('empty-paragraph');
+                    
+                    // Make sure there's sufficient content for spacing
+                    if (p.innerHTML.trim() === '') {
+                        p.innerHTML = '&nbsp;';
+                    }
+                }
+                
+                // Special case: Check for paragraphs that might be adjacent to each other
+                // If this paragraph and the next one are both empty, add extra margin
+                const nextSibling = p.nextElementSibling;
+                if (isEmpty && nextSibling?.tagName === 'P' && 
+                    (nextSibling.innerHTML.trim() === '' || 
+                     nextSibling.innerHTML === '&nbsp;' || 
+                     nextSibling.textContent?.trim() === '')) {
+                    p.style.marginBottom = '1.5rem';
+                }
+            });
+        }
+    }, [finalContent]);
 
     return (
         <div className="rounded-lg overflow-hidden bg-background">

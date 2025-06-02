@@ -1,0 +1,20 @@
+.emptyParagraph {
+  display: block !important;
+  min-height: 1.5rem !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  position: relative !important;
+}
+
+/* Fix for empty paragraphs in TipTap content */
+.tiptapContainer p:empty {
+  display: block !important;
+  min-height: 1.5rem !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+.tiptapContainer p:empty::after {
+  content: '\00a0'; /* Non-breaking space */
+  display: inline-block;
+}

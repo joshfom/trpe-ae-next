@@ -9,9 +9,15 @@ export async function processHtmlContent(htmlContent: string): Promise<string> {
   if (!htmlContent) return '';
   
   try {
-    // Simple regex-based approach for processing HTML content
-    // Add <br> elements to empty paragraphs
-    htmlContent = htmlContent.replace(/<p><\/p>/g, '<p><br class="ProseMirror-trailingBreak"></p>');
+    // Enhanced empty paragraph handling for better spacing
+    // 1. Handle completely empty paragraphs
+    htmlContent = htmlContent.replace(/<p><\/p>/g, '<p class="empty-paragraph"><br class="ProseMirror-trailingBreak"></p>');
+    
+    // 2. Handle paragraphs with just &nbsp;
+    htmlContent = htmlContent.replace(/<p>&nbsp;<\/p>/g, '<p class="empty-paragraph">&nbsp;</p>');
+    
+    // 3. Handle paragraphs with just spaces or newlines
+    htmlContent = htmlContent.replace(/<p>\s*<\/p>/g, '<p class="empty-paragraph"><br class="ProseMirror-trailingBreak"></p>');
     
     // Process links using regex - more robust approach
     return htmlContent.replace(/<a\s+([^>]*?)href=(['"])([^'"]*?)(['"])([^>]*?)>/g, (match, before, quoteStart, href, quoteEnd, after) => {

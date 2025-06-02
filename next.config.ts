@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     reactStrictMode: true, // Helps catch bugs early
     crossOrigin: 'anonymous', // Set CORS headers
     images: {
+         loader: 'custom',
+    loaderFile: './loader.js',
         unoptimized: false, // Ensure images are optimized
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },

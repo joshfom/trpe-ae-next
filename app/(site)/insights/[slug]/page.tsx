@@ -9,30 +9,7 @@ import SimilarInsights from "@/features/insights/components/SimilarInsights";
 import {ServerProcessedTiptap} from "@/components/ServerProcessedTiptap";
 import {validateRequest} from "@/actions/auth-session";
 import {EditInsightSheet} from "@/features/insights/components/EditInsightSheet";
-
-// Define the InsightType based on the schema
-interface InsightType {
-    id: string;
-    title?: string;
-    coverUrl?: string;
-    authorId?: string;
-    aboutAuthor?: string;
-    communityId?: string;
-    subCommunityId?: string;
-    altText?: string;
-    metaDescription?: string;
-    metaTitle?: string;
-    cityId?: string;
-    developerId?: string;
-    content?: string;
-    developmentId?: string;
-    isPublished?: string;
-    publishedAt?: string;
-    agentId?: string;
-    slug: string;
-    updatedAt?: string;
-    createdAt: string;
-}
+import type { InsightType } from '@/types/insights';
 
 
 type Props = {
@@ -70,11 +47,11 @@ export async function generateMetadata(
     return {
         title: `${post?.metaTitle || post?.title}`,
         openGraph: {
-            images: [post.coverUrl, ...previousImages],
+            images: post.coverUrl ? [post.coverUrl, ...previousImages] : previousImages,
             type: 'article',
             url: `${process.env.NEXT_PUBLIC_URL}/insights/${post?.slug}`
         },
-        description: `${post.metaDescription || truncateText(post.content, 150)}`,
+        description: `${post.metaDescription || truncateText(post.content || '', 150)}`,
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_URL}/insights/${post.slug}`,
         },
@@ -163,7 +140,7 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
 
            <div className="max-w-7xl mx-auto p-3 bg-white rounded-xl">
            <ServerProcessedTiptap
-                content={post.content}
+                content={post.content || ''}
             />
            </div>
 

@@ -2,7 +2,7 @@ import { processHtmlContent } from '../actions/process-html-content';
 import { TipTapView } from './TiptapView';
 
 interface ServerProcessedTiptapProps {
-    content: string;
+    content?: string;
 }
 
 /**
@@ -10,7 +10,7 @@ interface ServerProcessedTiptapProps {
  * This handles adding rel="follow" to internal links and rel="nofollow" to external links
  * as well as other HTML processing that should happen on the server
  */
-export async function ServerProcessedTiptap({ content }: ServerProcessedTiptapProps) {
+export async function ServerProcessedTiptap({ content = '' }: ServerProcessedTiptapProps) {
   try {
     // Process the HTML content on the server
     const processedContent = await processHtmlContent(content);

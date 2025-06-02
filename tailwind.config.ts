@@ -73,6 +73,7 @@ const config: Config = {
       },
     },
   },
+  // Using Tailwind CSS v3.4
   plugins: [require("tailwindcss-animate")],
 };
 

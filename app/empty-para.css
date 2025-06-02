@@ -1,0 +1,33 @@
+.empty-paragraph {
+  display: block !important;
+  min-height: 1.5rem !important;
+  height: 1.5rem !important; 
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  position: relative;
+}
+
+/* Style for completely empty paragraphs */
+p:empty {
+  display: block !important;
+  min-height: 1.5rem !important;
+  height: 1.5rem !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Style for paragraphs with just a <br> element */
+p:has(br:only-child) {
+  display: block !important;
+  min-height: 1.5rem !important;
+  height: 1.5rem !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
+/* Add some visibility to empty paragraphs in tip-tap containers */
+#tip-tap .empty-paragraph::after {
+  content: "";
+  display: block;
+  min-height: 1.5rem;
+}

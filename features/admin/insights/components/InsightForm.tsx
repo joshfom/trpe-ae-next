@@ -22,6 +22,7 @@ import {Calendar} from '@/components/ui/calendar';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
 import {useGetAdminAuthors} from "@/features/admin/author/api/use-get-admin-authors";
 import {TipTapEditor} from "@/components/TiptapEditor";
+import type { InsightType } from '@/types/insights';
 
 
 type formValues = z.infer<typeof insightFormSchema>

@@ -1,0 +1,19 @@
+/* TipTap Empty Paragraph Styles */
+#tip-tap p:empty {
+  display: block;
+  min-height: 1.5rem;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+  position: relative;
+}
+
+/* Add a visual indicator for empty paragraphs */
+#tip-tap p:empty::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background-color: transparent;
+}
