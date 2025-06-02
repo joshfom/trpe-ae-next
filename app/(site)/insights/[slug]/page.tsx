@@ -6,9 +6,33 @@ import {insightTable} from "@/db/schema/insight-table";
 import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import SimilarInsights from "@/features/insights/components/SimilarInsights";
-import {TipTapView} from "@/components/TiptapView";
+import {ServerProcessedTiptap} from "@/components/ServerProcessedTiptap";
 import {validateRequest} from "@/actions/auth-session";
 import {EditInsightSheet} from "@/features/insights/components/EditInsightSheet";
+
+// Define the InsightType based on the schema
+interface InsightType {
+    id: string;
+    title?: string;
+    coverUrl?: string;
+    authorId?: string;
+    aboutAuthor?: string;
+    communityId?: string;
+    subCommunityId?: string;
+    altText?: string;
+    metaDescription?: string;
+    metaTitle?: string;
+    cityId?: string;
+    developerId?: string;
+    content?: string;
+    developmentId?: string;
+    isPublished?: string;
+    publishedAt?: string;
+    agentId?: string;
+    slug: string;
+    updatedAt?: string;
+    createdAt: string;
+}
 
 
 type Props = {
@@ -138,7 +162,7 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
             </div>
 
            <div className="max-w-7xl mx-auto p-3 bg-white rounded-xl">
-           <TipTapView
+           <ServerProcessedTiptap
                 content={post.content}
             />
            </div>

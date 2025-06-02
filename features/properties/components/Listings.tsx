@@ -1,5 +1,5 @@
 import React, { cache } from 'react';
-import PropertyCard from "@/components/property-card";
+import PropertyCardServer from "@/components/property-card-server";
 import Pagination from "@/components/Pagination";
 import { getPropertiesServer } from "@/features/properties/api/get-properties-server";
 import { headers } from "next/headers";
@@ -132,7 +132,7 @@ async function Listings({offeringType, propertyType, searchParams = {}, isLandin
                 {listings && listings.length > 0 ? (
                     <div className={'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
                         {listings.map((listing) => (
-                            <PropertyCard key={listing.id} property={listing} />
+                            <PropertyCardServer key={listing.id} property={listing} />
                         ))}
                     </div>
                 ) : null}

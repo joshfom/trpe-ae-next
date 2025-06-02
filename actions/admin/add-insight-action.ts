@@ -3,6 +3,7 @@
 import { client } from "@/lib/hono";
 import { InferRequestType, InferResponseType } from "hono";
 import { revalidateTag } from "next/cache";
+import { processHtmlForStorage } from "@/lib/process-html-for-storage";
 
 type ResponseType = InferResponseType<typeof client.api.admin.insights.$post>
 type RequestType = InferRequestType<typeof client.api.admin.insights.$post>["json"]
@@ -14,6 +15,11 @@ type RequestType = InferRequestType<typeof client.api.admin.insights.$post>["jso
  */
 export async function addInsight(data: RequestType) {
   try {
+    // Pre-process HTML content before storing
+    if (data.content) {
+      data.content = await processHtmlForStorage(data.content);
+    }
+    
     const response = await client.api.admin.insights.$post({ json: data });
     
     if (!response.ok) {

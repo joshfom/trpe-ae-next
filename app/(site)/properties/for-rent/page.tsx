@@ -4,8 +4,7 @@ import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilterOptimized from '@/features/search/PropertyPageSearchFilterOptimized';
-import PropertyPageSearchFilterServer from '@/features/search/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilterProgressive from '@/features/search/PropertyPageSearchFilterProgressive';
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
@@ -99,7 +98,8 @@ type Props = {
 
 async function PropertyForRentPage({searchParams} : Props) {
 
-    const page = (await searchParams).page
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page
     const { user } = await validateRequest();
     const offering = 'for-rent';
     
@@ -125,14 +125,22 @@ async function PropertyForRentPage({searchParams} : Props) {
 
             </div>
 
-            {/* Server-side search filter with client enhancement */}
+            {/* Progressive search filter that works with and without JavaScript */}
             <Suspense fallback={
                 <div className="w-full h-16 bg-white border-b animate-pulse" />
             }>
-                <PropertyPageSearchFilterServer offeringType='for-rent'/>
-                <div className="hidden" suppressHydrationWarning>
-                    <PropertyPageSearchFilterOptimized offeringType='for-rent'/>
-                </div>
+                <PropertyPageSearchFilterProgressive 
+                    offeringType='for-rent'
+                    searchParams={{
+                        search: resolvedSearchParams.search,
+                        community: resolvedSearchParams.community,
+                        propertyType: resolvedSearchParams.propertyType,
+                        minPrice: resolvedSearchParams.minPrice,
+                        maxPrice: resolvedSearchParams.maxPrice,
+                        bedrooms: resolvedSearchParams.bedrooms,
+                        bathrooms: resolvedSearchParams.bathrooms,
+                    }}
+                />
             </Suspense>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
