@@ -7,7 +7,6 @@ const TopNavigation = dynamic(() => import("@/components/top-navigation"), {
     loading: () => <div className="h-16 bg-black animate-pulse" aria-label="Loading navigation" />
 });
 import Link from "next/link";
-import Image from "next/image";
 import {usePathname} from 'next/navigation'
 import {Phone} from 'lucide-react';
 
@@ -63,12 +62,12 @@ function SiteTopNavigation() {
 
                             <div className="flex-1 flex justify-center">
                                 <Link className={''} href={'/'}>
-                                    <Image
+                                    <img
                                         src={'/trpe-logo.webp'} 
                                         alt="TRPE Logo" 
                                         width={213} 
                                         height={40}
-                                        priority
+                                        loading="eager"
                                     />
                                 </Link>
                             </div>

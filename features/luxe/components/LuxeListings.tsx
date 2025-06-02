@@ -67,12 +67,11 @@ async function LuxeListings({ unitType, offeringType, searchParams = {}, page = 
                     <div className="relative">
                         {property.images && property.images.length > 0 && (
                             <div className="h-96 relative">
-                                <Image
+                                <img
                                     src={property.images[0]?.s3Url || ''}
                                     alt={property.title || 'Luxury property'}
-                                    className="object-cover rounded-t-xl"
-                                    fill
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    className="object-cover rounded-t-xl w-full h-full"
+                                    loading="lazy"
                                 />
                             </div>
                         )}

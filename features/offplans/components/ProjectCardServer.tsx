@@ -23,15 +23,11 @@ const ProjectCardServer = React.memo<ProjectCardServerProps>(({project}) => {
                 <div className="relative">
                     {primaryImage && (
                         <div className="h-96 relative">
-                            <Image 
+                            <img 
                                 src={primaryImage} 
                                 alt={project.name}
-                                fill
-                                className="object-cover rounded-t-xl"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="absolute inset-0 w-full h-full object-cover rounded-t-xl"
                                 loading="lazy"
-                                placeholder="blur"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                             />
                         </div>
                     )}
@@ -64,12 +60,11 @@ const ProjectCardServer = React.memo<ProjectCardServerProps>(({project}) => {
                         <Link href={`/developers/${project.developer?.slug}`}>
                             <div className="p-3 text-center">
                                 <div className="h-24 w-full flex justify-center items-center relative">
-                                    <Image 
+                                    <img 
                                         src={project.developer?.logoUrl || ''} 
                                         alt={project.developer?.name || "Developer logo"}
-                                        width={96}
-                                        height={96}
                                         className="h-24 object-contain"
+                                        loading="lazy"
                                     />
                                 </div>
                             </div>
