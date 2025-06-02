@@ -2,7 +2,6 @@
 import React, { useEffect, memo, useMemo } from 'react';
 import { Dot } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import unitConverter from "@/lib/unit-converter";
@@ -52,13 +51,10 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
                 <div className="relative">
                     {firstImageUrl && (
                         <div className="h-96 relative">
-                            <Image
+                            <img
                                 src={firstImageUrl}
                                 alt={property.name || 'Property Image'}
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                className="pointer-events-none object-cover rounded-xl"
-                                priority={false}
+                                className="pointer-events-none object-cover rounded-xl absolute inset-0 w-full h-full"
                                 loading="lazy"
                             />
                         </div>
