@@ -172,8 +172,11 @@ export default async function Home() {
             <main className="flex min-h-screen flex-col items-center relative">
                 <section className={'relative w-full h-[350px] lg:h-screen '}>
                     <div className="relative w-full h-[350px] lg:h-screen">
-                        <Image fill={true} className={'object-cover'} src={'/dubai-real-estate-agents-hero_result.webp'}
-                               alt={'TRPE Home Image'}/>
+                        <img 
+                            className="object-cover absolute inset-0 w-full h-full" 
+                            src="/dubai-real-estate-agents-hero_result.webp" 
+                            alt="TRPE Home Image"
+                        />
                     </div>
                     <div className={'absolute z-0 inset-0 bg-black/30'}>
                         <div className={'max-w-7xl mx-auto h-full flex flex-col justify-center items-center'}>

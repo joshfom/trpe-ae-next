@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import Link from "next/link";
-import Image from "next/image";
 import {truncateText} from "@/lib/truncate-text";
 import {db} from "@/db/drizzle";
 import {desc, isNotNull, sql} from "drizzle-orm";
@@ -134,15 +133,11 @@ async function InsightList({ currentPage = 1 }: InsightListProps) {
                     <article key={insight.id} className="flex flex-col pb-3 items-center space-y-4">
                         <Link className={'w-full overflow-hidden rounded-xl'} href={`/insights/${insight.slug}`}>
                             <span className="sr-only">View insight</span>
-                            <Image
+                            <img
                                 src={insight.coverUrl!}
                                 alt={insight.title!}
-                                width={400}
-                                height={300}
                                 className="h-60 w-full object-cover transition-all hover:scale-105 aspect-3/4 rounded-xl"
                                 loading="lazy"
-                                placeholder="blur"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
                             />
                         </Link>
                         <h2 className="mt-2 hover:underline">

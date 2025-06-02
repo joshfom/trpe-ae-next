@@ -1,7 +1,6 @@
 import React, { Suspense, cache, memo } from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
-import Image from "next/image";
 import type {Metadata} from "next";
 import { sql } from "drizzle-orm";
 import { communityTable, type CommunitySelect } from "@/db/schema/community-table";
@@ -43,15 +42,11 @@ const getCommunities = cache(async (): Promise<(CommunitySelect & { properties: 
 const CommunityCard = memo(({ community }: { community: CommunitySelect & { properties: any[] } }) => (
     <article className={'bg-white'}>
         <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
-            <Image
-                className={'object-cover rounded-lg'}
+            <img
+                className={'object-cover rounded-lg w-full h-full'}
                 src={community.image || '/images/communities-default.webp'}
                 alt={community.label || 'Community'}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 loading="lazy"
-                placeholder="blur"
-                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
             />
         </div>
         <div className={'px-4 text-center py-2'}>

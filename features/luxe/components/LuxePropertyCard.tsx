@@ -10,7 +10,6 @@ import 'swiper/css/pagination';
 import 'swiper/css';
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
-import Image from "next/image";
 import { PropertyType } from "@/types/property";
 
 interface LuxePropertyCardProps {
@@ -55,13 +54,11 @@ const LuxePropertyCard = memo<LuxePropertyCardProps>(({property}) => {
             <div className="relative">
                 <div className="relative">
                     {firstImageUrl && (
-                        <div className="h-96">
-                            <Image
+                        <div className="h-96 relative">
+                            <img
                                 src={firstImageUrl}
                                 alt={property.name || 'Property Image'}
-                                className="pointer-events-none h-full w-full object-cover"
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                className="pointer-events-none object-cover absolute inset-0 w-full h-full"
                                 loading="lazy"
                             />
                         </div>
