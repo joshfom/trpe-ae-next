@@ -4,25 +4,43 @@ import { eq } from 'drizzle-orm';
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  // Initialize empty arrays as fallbacks
+  let properties: any[] = [];
+  let articles: any[] = [];
+  let propertyTypes: any[] = [];
+  let developers: any[] = [];
+  let communities: any[] = [];
+  let offplans: any[] = [];
+  let pages: any[] = [];
 
-  const properties = await db.query.propertyTable.findMany({
-    with: {
-      offeringType: true,
+  // Try to fetch data from database with error handling
+  try {
+    // Check if we're in a build environment without database access
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not available, generating basic sitemap');
+    } else {
+      properties = await db.query.propertyTable.findMany({
+        with: {
+          offeringType: true,
+        }
+      });
+      articles = await db.query.insightTable.findMany();
+      propertyTypes = await db.query.propertyTypeTable.findMany();
+      developers = await db.query.developerTable.findMany();
+      communities = await db.query.communityTable.findMany();
+      offplans = await db.query.offplanTable.findMany();
+      pages = await db.query.pageMetaTable.findMany({
+        where: (eq(pageMetaTable.includeInSitemap, true))
+      });
     }
-  });
-  const articles = await db.query.insightTable.findMany();
-
-  const propertyTypes = await db.query.propertyTypeTable.findMany();
-  const developers = await db.query.developerTable.findMany();
-  const communities = await db.query.communityTable.findMany();
-  const offplans = await db.query.offplanTable.findMany();
-  const pages = await db.query.pageMetaTable.findMany({
-    where: (eq(pageMetaTable.includeInSitemap, true))
-  })
+  } catch (error) {
+    console.warn('Failed to fetch data for sitemap, using static fallback:', error);
+    // Arrays remain empty, will generate basic sitemap
+  }
 
   const propertyUrls = properties.map(property => ({
-    url: `${process.env.NEXT_PUBLIC_URL}/properties/${property.offeringType?.slug}/${property.slug}`,
-    lastModified: new Date(property.createdAt),
+    url: `${process.env.NEXT_PUBLIC_URL}/properties/${property.offeringType?.slug || 'property'}/${property.slug}`,
+    lastModified: new Date(property.createdAt || new Date()),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
@@ -30,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const articleUrls = articles.map(article => ({
     url: `${process.env.NEXT_PUBLIC_URL}/insights/${article.slug}`,
-    lastModified: new Date(article.createdAt),
+    lastModified: new Date(article.createdAt || new Date()),
     changeFrequency: 'daily' as const,
     priority: 0.8,
   }));
@@ -38,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const developerUrls = developers.map(developer => ({
     url: `${process.env.NEXT_PUBLIC_URL}/developers/${developer.slug}`,
-    lastModified: new Date(developer.createdAt),
+    lastModified: new Date(developer.createdAt || new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
@@ -46,28 +64,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const communitiesUrl = communities.map(community => ({
     url: `${process.env.NEXT_PUBLIC_URL}/communities/${community.slug}`,
-    lastModified: new Date(community.createdAt),
+    lastModified: new Date(community.createdAt || new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
 
   const propertyTypeUrls = propertyTypes.map(propertyType => ({
     url: `${process.env.NEXT_PUBLIC_URL}/property-types/${propertyType.slug}`,
-    lastModified: new Date(propertyType.createdAt),
+    lastModified: new Date(propertyType.createdAt || new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.6,
   }));
 
   const offplanUrls = offplans.map(offplan => ({
     url: `${process.env.NEXT_PUBLIC_URL}/off-plans/${offplan.slug}`,
-    lastModified: new Date(offplan.createdAt),
+    lastModified: new Date(offplan.createdAt || new Date()),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }));
 
     const pageUrls = pages.map(page => ({
         url: `${process.env.NEXT_PUBLIC_URL}/${page.path}`,
-        lastModified: new Date(page.createdAt),
+        lastModified: new Date(page.createdAt || new Date()),
         changeFrequency: 'weekly' as const,
         priority: 0.6,
     }));
@@ -362,5 +380,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...propertyTypeUrls, // Add property type URLs to
     ...communitiesUrl, // Add community URLs to the sitemap
     ...offplanUrls, // Add offplan URLs to the sitemap
+    ...pageUrls, // Add page URLs to the sitemap
   ];
 }
