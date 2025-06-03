@@ -7,6 +7,7 @@ import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
 import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
+import {PropertyType} from "@/lib/types/property-type";
 
 
 type Props = {

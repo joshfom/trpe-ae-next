@@ -18,16 +18,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {cn} from "@/lib/utils";
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
-
-interface CommunityFilterType {
-    slug: string;
-    name: string | null;
-    propertyCount: number;
-    rentCount: number;
-    saleCount: number;
-    commercialRentCount: number;
-    commercialSaleCount: number;
-}
+import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -171,7 +162,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      * Extracts the community data from the query or initializes it as an empty array.
      * @type {CommunityFilterType[]}
      */
-    const communities = (communityQuery.data || []) as CommunityFilterType[];
+    const communities = (communityQuery.data || []).map(toCommunityFilterType);
 
     /**
      * Indicates whether the community data is still loading.
