@@ -1,6 +1,6 @@
 "use client"
 
-import React, {useEffect, useState, memo, useCallback, useMemo} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Search, X} from "lucide-react";
 import {Input} from "@/components/ui/input";
 import {useForm} from "react-hook-form";
@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import {getClientCommunities} from '../community/api/get-client-communities';
+import {useGetCommunities} from '../community/api/use-get-communities';
 import Fuse from 'fuse.js';
 import {buildPropertySearchUrl, extractPathSearchParams, formatCommunityNames} from './hooks/path-search-helper';
 import {useGetUnitType} from "@/features/search/hooks/use-get-unit-type";
@@ -18,7 +18,16 @@ import {Skeleton} from "@/components/ui/skeleton";
 import {cn} from "@/lib/utils";
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
-import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
+
+interface CommunityFilterType {
+    slug: string;
+    name: string | null;
+    propertyCount: number;
+    rentCount: number;
+    saleCount: number;
+    commercialRentCount: number;
+    commercialSaleCount: number;
+}
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -59,7 +68,7 @@ interface FormValues {
     currency: string;
 }
 
-export const CommunityItem: React.FC<CommunityItemProps> = memo(({
+export const CommunityItem: React.FC<CommunityItemProps> = ({
                                                                 community,
                                                                 selectedCommunities,
                                                                 setSelectedCommunities,
@@ -69,7 +78,7 @@ export const CommunityItem: React.FC<CommunityItemProps> = memo(({
                                                                 offeringType,
                                                                 closeDropdown
                                                             }) => {
-    const propertyCount = useMemo(() => {
+    const propertyCount = (() => {
         switch (offeringType) {
             case 'for-rent':
                 return community.rentCount;
@@ -84,24 +93,18 @@ export const CommunityItem: React.FC<CommunityItemProps> = memo(({
             default:
                 return community.propertyCount;
         }
-    }, [offeringType, community]);
+    })();
 
-    const handleCommunityClick = useCallback(() => {
-        setSelectedCommunities([...selectedCommunities, community]);
-        setSearchInput('');
-        isMobile && closeDropdown && closeDropdown();
-    }, [selectedCommunities, community, setSelectedCommunities, setSearchInput, isMobile, closeDropdown]);
-
-    const isDisabled = useMemo(() => 
-        selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0),
-        [selectedCommunities, community.slug, propertyCount]
-    );
 
     return (
         <button
             type="button"
-            disabled={isDisabled}
-            onClick={handleCommunityClick}
+            disabled={selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0)}
+            onClick={() => {
+                setSelectedCommunities([...selectedCommunities, community]);
+                setSearchInput('');
+                isMobile && closeDropdown && closeDropdown();
+            }}
             key={index}
             className="flex hover:bg-slate-50 px-4 py-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -111,9 +114,7 @@ export const CommunityItem: React.FC<CommunityItemProps> = memo(({
             </div>
         </button>
     );
-});
-
-CommunityItem.displayName = 'CommunityItem';
+};
 
 const OFFERING_TYPES = [
     {
@@ -134,65 +135,49 @@ const OFFERING_TYPES = [
     }
 ]
 
-const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = memo(({
+const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = ({
                                                                              selectedCommunities,
                                                                              setSelectedCommunities,
                                                                              classNames
-                                                                         }) => {
-    const handleRemoveCommunity = useCallback((communitySlug: string) => {
-        setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== communitySlug));
-    }, [selectedCommunities, setSelectedCommunities]);
-
-    return (
-        <div
-            className={`${cn('w-full rounded-full px-3 py-2 bg-white shadow-sm border mb-2 flex flex-wrap gap-4 overflow-y-auto', classNames)}`}>
-            {
-                selectedCommunities.map((community, index) => (
-                    <button
-                        type={'button'}
-                        onClick={() => handleRemoveCommunity(community.slug)}
-                        key={index}
-                        className="flex group items-center border rounded-full hover:text-red-600 hover:border-red-600 px-4 py-1"
-                    >
-                        <span className="text-sm">{community.name}</span>
-                        <X className="h-4 w-4 ml-2 stroke-1 group:hover-text-red-500"/>
-                    </button>
-                ))
-            }
-        </div>
-    );
-});
-
-SelectedCommunitiesList.displayName = 'SelectedCommunitiesList';
+                                                                         }) => (
+    <div
+        className={`${cn('w-full rounded-full px-3 py-2 bg-white shadow-sm border mb-2 flex flex-wrap gap-4 overflow-y-auto', classNames)}`}>
+        {
+            selectedCommunities.map((community, index) => (
+                <button
+                    type={'button'}
+                    onClick={() => {
+                        setSelectedCommunities(selectedCommunities.filter((item) => item.slug !== community.slug))
+                    }}
+                    key={index}
+                    className="flex group items-center border rounded-full hover:text-red-600 hover:border-red-600 px-4 py-1"
+                >
+                    <span className="text-sm">{community.name}</span>
+                    <X className="h-4 w-4 ml-2 stroke-1 group:hover-text-red-500"/>
+                </button>
+            ))
+        }
+    </div>
+);
 
 function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSearchFilterProps) {
 
     /**
-     * State to store community data and loading state
+     * Fetches the list of communities using the `useGetCommunities` hook.
      */
-    const [communities, setCommunities] = useState<CommunityFilterType[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const communityQuery = useGetCommunities();
 
     /**
-     * Fetch communities on component mount
+     * Extracts the community data from the query or initializes it as an empty array.
+     * @type {CommunityFilterType[]}
      */
-    useEffect(() => {
-        const fetchCommunities = async () => {
-            setIsLoading(true);
-            try {
-                const communitiesData = await getClientCommunities();
-                // Convert API data to our CommunityFilterType using the utility function
-                const processedCommunities = (communitiesData || []).map(toCommunityFilterType);
-                setCommunities(processedCommunities);
-            } catch (error) {
-                console.error('Error fetching communities:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        
-        fetchCommunities();
-    }, []);
+    const communities = (communityQuery.data || []) as CommunityFilterType[];
+
+    /**
+     * Indicates whether the community data is still loading.
+     * @type {boolean}
+     */
+    const isLoading = communityQuery.isLoading;
 
     /**
      * Retrieves the URL parameters using the `useParams` hook.
@@ -304,7 +289,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      * Handles form submission and navigates to the search results page.
      * @param {FormValues} data - The form data.
      */
-    const onSubmit = useCallback((data: FormValues) => {
+    const onSubmit = (data: FormValues) => {
         // Create a transformed version of the data with proper types
         const transformedData = {
             ...data,
@@ -322,13 +307,13 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         });
 
         router.push(finalUrl);
-    }, [selectedCommunities, router]);
+    };
 
     /**
      * Handles community search input and updates the community results.
      * @param {string} value - The search input value.
      */
-    const handleCommunitySearch = useCallback((value: string) => {
+    const handleCommunitySearch = (value: string) => {
         if (value.length === 0) {
             setCommunityResults(communities);
             return;
@@ -341,11 +326,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         const results = fuse.search(value);
         const items = results.map((result) => result.item);
         setCommunityResults(items);
-    }, [communities]);
-
-    const handleOpenMobileSearch = useCallback(() => {
-        setIsOpen(true);
-    }, []);
+    };
 
     /**
      * Filters and sets the searched communities based on the search parameters.
@@ -377,7 +358,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      */
     useEffect(() => {
         handleCommunitySearch(searchInput);
-    }, [searchInput, handleCommunitySearch]);
+    }, [searchInput]);
 
     /**
      * Effect hook to set the search mode based on the search type.
@@ -587,7 +568,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                             {/*MOBILE SEARCH*/}
 
                             <div className={'lg:hidden'}>
-                                <div onClick={handleOpenMobileSearch}
+                                <div onClick={() => setIsOpen(true)}
                                      className="flex flex-col justify-center items-center">
                                     <div className="relative w-full">
                                         <Input className={'w-full rounded-full px-8 py-3'}
@@ -631,7 +612,4 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
     );
 }
 
-const PropertyPageSearchFilterMemo = memo(PropertyPageSearchFilter);
-PropertyPageSearchFilterMemo.displayName = 'PropertyPageSearchFilter';
-
-export default PropertyPageSearchFilterMemo;
+export default PropertyPageSearchFilter;

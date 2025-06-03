@@ -1,6 +1,5 @@
 import React, {Suspense} from 'react';
 import Listings from "@/features/properties/components/Listings";
-import ListingsWrapper from "@/features/properties/components/ListingsWrapper";
 import {Metadata, ResolvingMetadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
@@ -12,6 +11,7 @@ import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -28,8 +28,9 @@ export async function generateMetadata(
     // read route params
     const slug = (await params).propertyType
     
-    // Construct pathname directly from URL parameters
-    const pathname = `/property-types/${slug}/${(await params).offeringType}`;
+    // Get pathname from headers for pageMeta
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -100,8 +101,9 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
     const params = await props.params;
     const { user } = await validateRequest();
     
-    // Construct pathname directly from URL parameters
-    const pathname = `/property-types/${params.propertyType}/${params.offeringType}`;
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
@@ -170,13 +172,11 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
                 )}
             </div>
 
-            <ListingsWrapper>
-                <Listings
-                    offeringType={params?.offeringType}
-                    propertyType={params.propertyType}
-                    page={page}
-                />
-            </ListingsWrapper>
+            <Listings
+                offeringType={params?.offeringType}
+                propertyType={params.propertyType}
+                page={page}
+            />
 
 
 

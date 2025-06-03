@@ -1,69 +1,27 @@
-import React, {Suspense, cache} from 'react';
+import React, {Suspense} from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilterProgressive from '@/features/search/PropertyPageSearchFilterProgressive';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
-import { unstable_cache } from 'next/cache';
-
-// Enhanced cached database queries with aggressive caching for content that doesn't change often
-const getPageMeta = cache(async (pathname: string): Promise<PageMetaType | null> => {
-    return unstable_cache(
-        async (pathname: string) => {
-            try {
-                return await db.query.pageMetaTable.findFirst({
-                    where: eq(pageMetaTable.path, pathname)
-                }) as unknown as PageMetaType;
-            } catch (error) {
-                console.error('Error fetching page meta:', error);
-                return null;
-            }
-        },
-        [`page-meta-${pathname}`],
-        {
-            revalidate: 7200, // 2 hours - page meta changes infrequently
-            tags: ['page-meta', `page-meta-${pathname}`, 'properties-pages']
-        }
-    )(pathname);
-});
-
-const getOfferingType = cache(async (offering: string) => {
-    return unstable_cache(
-        async (offering: string) => {
-            try {
-                return await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, offering),
-                });
-            } catch (error) {
-                console.error('Error fetching offering type:', error);
-                return null;
-            }
-        },
-        [`offering-type-${offering}`],
-        {
-            revalidate: 14400, // 4 hours - offering types rarely change
-            tags: ['offering-types', `offering-type-${offering}`, 'properties-config']
-        }
-    )(offering);
-});
-
-// Enable static generation with revalidation for better performance
-export const revalidate = 3600; // Revalidate every hour
 
 export async function generateMetadata(): Promise<Metadata> {
-    // Define the static pathname
-    const pathname = "/properties/for-rent";
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
-    // Check for pageMeta first using cached function
-    const pageMeta = await getPageMeta(pathname);
+    // Check for pageMeta first
+    const pageMeta = await db.query.pageMetaTable.findFirst({
+        where: eq(pageMetaTable.path, pathname)
+    }) as unknown as PageMetaType | null;
     
     // Default metadata
     let title = "Properties for Rent in Dubai | Find Your Next Home";
@@ -84,10 +42,6 @@ export async function generateMetadata(): Promise<Metadata> {
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_URL}/properties/for-rent`,
         },
-        robots: {
-            index: pageMeta?.noIndex === true ? false : undefined,
-            follow: pageMeta?.noFollow === true ? false : undefined,
-        },
     };
 }
 
@@ -98,24 +52,30 @@ type Props = {
 
 async function PropertyForRentPage({searchParams} : Props) {
 
-    const resolvedSearchParams = await searchParams;
-    const page = resolvedSearchParams.page
+    const page = (await searchParams).page
     const { user } = await validateRequest();
     const offering = 'for-rent';
     
-    // Define the static pathname
-    const pathname = "/properties/for-rent";
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
-    const pageMeta = await getPageMeta(pathname);
-    const offeringType = await getOfferingType(offering);
+    const pageMeta = await db.query.pageMetaTable.findFirst({
+        where: eq(pageMetaTable.path, pathname)
+    }) as unknown as PageMetaType;
 
-    if (!offeringType) {
-        return notFound();
-    }
-    
+    const offeringType = await db.query.offeringTypeTable.findFirst({
+        where: eq(offeringTypeTable.slug, offering),
+    })
+
     let pageTitle = "Properties for Rent in Dubai";
 
-    if (offeringType.pageTitle) {
+    if(!offeringType) {
+       return  notFound();
+    }
+
+
+    if(offeringType.pageTitle) {
         pageTitle = offeringType.pageTitle;
     }
 
@@ -125,23 +85,7 @@ async function PropertyForRentPage({searchParams} : Props) {
 
             </div>
 
-            {/* Progressive search filter that works with and without JavaScript */}
-            <Suspense fallback={
-                <div className="w-full h-16 bg-white border-b animate-pulse" />
-            }>
-                <PropertyPageSearchFilterProgressive 
-                    offeringType='for-rent'
-                    searchParams={{
-                        search: resolvedSearchParams.search,
-                        community: resolvedSearchParams.community,
-                        propertyType: resolvedSearchParams.propertyType,
-                        minPrice: resolvedSearchParams.minPrice,
-                        maxPrice: resolvedSearchParams.maxPrice,
-                        bedrooms: resolvedSearchParams.bedrooms,
-                        bathrooms: resolvedSearchParams.bathrooms,
-                    }}
-                />
-            </Suspense>
+            <PropertyPageSearchFilter offeringType='for-rent'/>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">
@@ -153,34 +97,23 @@ async function PropertyForRentPage({searchParams} : Props) {
                 {user && (
                     <div className="flex justify-end mt-4 px-6">
                         <EditPageMetaSheet
-                            pageMeta={pageMeta || undefined}
+                            pageMeta={pageMeta}
                             pathname={pathname}
                         />
                     </div>
                 )}
             </div>
             
-            {/* Server-side listings with enhanced caching */}
-            <Suspense fallback={
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[...Array(9)].map((_, i) => (
-                            <div key={i} className="h-64 bg-gray-200 animate-pulse rounded"></div>
-                        ))}
-                    </div>
-                </div>
-            }>
-                <Listings
-                    offeringType={'for-rent'}
-                    page={page}
-                />
-            </Suspense>
+            <Listings
+                offeringType={'for-rent'}
+                page={page}
+            />
 
-            {pageMeta?.content && (
+            {
                 <div className="max-w-7xl bg-white mx-auto px-4 py-8">
-                    <TipTapView content={pageMeta.content}/>
+                    <TipTapView content={pageMeta?.content}/>
                 </div>
-            )}
+            }
         </div>
     );
 }

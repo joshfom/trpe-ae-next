@@ -1,74 +1,27 @@
-import React, { cache } from 'react';
+import React from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilterProgressive from '@/features/search/PropertyPageSearchFilterProgressive';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
-import { unstable_cache } from 'next/cache';
-import { Suspense } from 'react';
-import { createAdvancedCache } from "@/lib/advanced-cache";
-import { generateBreadcrumbStructuredData, generateOrganizationStructuredData, generateBreadcrumbSchema } from "@/lib/structured-data";
-import { WebVitalsReporter } from "@/lib/web-vitals";
-
-// Advanced caching for page metadata and offering types
-const pageMetaCache = createAdvancedCache({
-  keyPrefix: 'page-meta',
-  memoryTTL: 1800000, // 30 minutes in memory
-  diskTTL: 7200000,   // 2 hours on disk
-  namespace: 'page-metadata'
-});
-
-const offeringTypeCache = createAdvancedCache({
-  keyPrefix: 'offering-type',
-  memoryTTL: 3600000, // 1 hour in memory
-  diskTTL: 14400000,  // 4 hours on disk
-  namespace: 'offering-types'
-});
-
-// Enhanced cached database queries with advanced caching layers
-const getPageMeta = async (pathname: string): Promise<PageMetaType | null> => {
-    return pageMetaCache.get(pathname, async () => {
-        try {
-            return await db.query.pageMetaTable.findFirst({
-                where: eq(pageMetaTable.path, pathname)
-            }) as unknown as PageMetaType;
-        } catch (error) {
-            console.error('Error fetching page meta:', error);
-            return null;
-        }
-    });
-};
-
-const getOfferingType = async (offering: string) => {
-    return offeringTypeCache.get(offering, async () => {
-        try {
-            return await db.query.offeringTypeTable.findFirst({
-                where: eq(offeringTypeTable.slug, offering),
-            });
-        } catch (error) {
-            console.error('Error fetching offering type:', error);
-            return null;
-        }
-    });
-};
-
-// Enable static generation with revalidation for better performance
-export const revalidate = 3600; // Revalidate every hour
 
 export async function generateMetadata(): Promise<Metadata> {
-    // Define the static pathname
-    const pathname = "/properties/for-sale";
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
-    // Check for pageMeta first using cached function
-    const pageMeta = await getPageMeta(pathname);
+    // Check for pageMeta first
+    const pageMeta = await db.query.pageMetaTable.findFirst({
+        where: eq(pageMetaTable.path, pathname)
+    }) as unknown as PageMetaType | null;
     
     // Default metadata
     let title = "Properties for Sale in Dubai | Find Your Next Home";
@@ -103,16 +56,21 @@ type Props = {
 
 async function PropertyForSalePage({searchParams}: Props) {
 
-    const resolvedSearchParams = await searchParams;
-    const page = resolvedSearchParams.page
+    const page = (await searchParams).page
     const { user } = await validateRequest();
     const offering = 'for-sale';
     
-    // Define the static pathname
-    const pathname = "/properties/for-sale";
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
-    const pageMeta = await getPageMeta(pathname);
-    const offeringType = await getOfferingType(offering);
+    const pageMeta = await db.query.pageMetaTable.findFirst({
+        where: eq(pageMetaTable.path, pathname)
+    }) as unknown as PageMetaType;
+
+    const offeringType = await db.query.offeringTypeTable.findFirst({
+        where: eq(offeringTypeTable.slug, offering),
+    })
 
     if (!offeringType) {
         return notFound();
@@ -124,53 +82,13 @@ async function PropertyForSalePage({searchParams}: Props) {
         pageTitle = offeringType.pageTitle;
     }
 
-    // Generate structured data
-    const breadcrumbSchema = generateBreadcrumbSchema([
-        { name: 'Home', url: process.env.NEXT_PUBLIC_URL || '' },
-        { name: 'Properties', url: `${process.env.NEXT_PUBLIC_URL}/properties` },
-        { name: 'For Sale', url: `${process.env.NEXT_PUBLIC_URL}/properties/for-sale` }
-    ]);
-
-    const organizationSchema = generateOrganizationStructuredData();
-
-    const structuredData = {
-        "@context": "https://schema.org",
-        "@graph": [breadcrumbSchema, organizationSchema]
-    };
-
     return (
-        <>
-            {/* Web Vitals Monitoring */}
-            <WebVitalsReporter />
-            
-            {/* Structured Data */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-            />
-            
-            <div className={' bg-slate-100'}>
+        <div className={' bg-slate-100'}>
             <div className="hidden lg:block py-12 bg-black">
 
             </div>
 
-            {/* Progressive search filter that works with and without JavaScript */}
-            <Suspense fallback={
-                <div className="w-full h-16 bg-white border-b animate-pulse" />
-            }>
-                <PropertyPageSearchFilterProgressive 
-                    offeringType='for-sale'
-                    searchParams={{
-                        search: resolvedSearchParams.search,
-                        community: resolvedSearchParams.community,
-                        propertyType: resolvedSearchParams.propertyType,
-                        minPrice: resolvedSearchParams.minPrice,
-                        maxPrice: resolvedSearchParams.maxPrice,
-                        bedrooms: resolvedSearchParams.bedrooms,
-                        bathrooms: resolvedSearchParams.bathrooms,
-                    }}
-                />
-            </Suspense>
+            <PropertyPageSearchFilter offeringType='for-sale'/>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">
@@ -182,36 +100,24 @@ async function PropertyForSalePage({searchParams}: Props) {
                 {user && (
                     <div className="flex justify-end mt-4 px-6">
                         <EditPageMetaSheet
-                            pageMeta={pageMeta || undefined}
+                            pageMeta={pageMeta}
                             pathname={pathname}
                         />
                     </div>
                 )}
             </div>
             
-            {/* Server-side listings with enhanced caching */}
-            <Suspense fallback={
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {[...Array(9)].map((_, i) => (
-                            <div key={i} className="h-64 bg-gray-200 animate-pulse rounded"></div>
-                        ))}
-                    </div>
-                </div>
-            }>
-                <Listings
-                    offeringType={'for-sale'}
-                    page={page}
-                />
-            </Suspense>
+            <Listings
+                offeringType={'for-sale'}
+                page={page}
+            />
 
-            {pageMeta?.content && (
+            {
                 <div className="max-w-7xl bg-white mx-auto px-4 py-8">
-                    <TipTapView content={pageMeta.content}/>
+                    <TipTapView content={pageMeta?.content}/>
                 </div>
-            )}
+            }
         </div>
-        </>
     );
 }
 

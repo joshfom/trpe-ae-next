@@ -1,95 +1,13 @@
-import React, { cache } from 'react';
+import React from 'react';
 import {Metadata, ResolvingMetadata} from "next";
 import {propertyTable} from "@/db/schema/property-table";
-import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {db} from "@/db/drizzle";
 import {and, eq, ne} from "drizzle-orm";
 import {notFound} from "next/navigation";
 import ListingDetailView from "@/features/properties/components/ListingDetailView";
-import PropertyCard from "@/components/property-card";
+import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
-import { PropertyType } from "@/types/property";
-import {unstable_cache} from "next/cache";
-import { createAdvancedCache } from "@/lib/advanced-cache";
-import { generatePropertyStructuredData, generateBreadcrumbStructuredData } from "@/lib/structured-data";
-import { WebVitalsReporter } from "@/lib/web-vitals";
 
-// Enable ISR with aggressive caching for property details
-export const revalidate = 7200; // 2 hours static regeneration
-
-// Advanced caching with memory + disk layers for property data
-const propertyCache = createAdvancedCache({
-  keyPrefix: 'property',
-  memoryTTL: 600000, // 10 minutes in memory
-  diskTTL: 3600000,  // 1 hour on disk
-  namespace: 'property-details'
-});
-
-const similarPropertiesCache = createAdvancedCache({
-  keyPrefix: 'similar',
-  memoryTTL: 300000, // 5 minutes in memory
-  diskTTL: 1800000,  // 30 minutes on disk
-  namespace: 'similar-properties'
-});
-
-// Enhanced cached database queries with advanced caching layers
-const getProperty = async (slug: string): Promise<PropertyType | null> => {
-    return propertyCache.get(slug, async () => {
-        try {
-            const property = await db.query.propertyTable.findFirst({
-                where: eq(propertyTable.slug, slug),
-                with: {
-                    offeringType: true,
-                    images: true,
-                    agent: true,
-                    community: true,
-                    city: true,
-                    subCommunity: true,
-                    type: true,
-                }
-            }) as unknown as PropertyType;
-            return property;
-        } catch (error) {
-            console.error('Error fetching property:', error);
-            return null;
-        }
-    });
-};
-
-const getSimilarProperties = async (propertyId: string, communityId: string, offeringTypeId: string): Promise<PropertyType[]> => {
-    const cacheKey = `${propertyId}-${communityId}-${offeringTypeId}`;
-    return similarPropertiesCache.get(cacheKey, async () => {
-        try {
-            return await db.query.propertyTable.findMany({
-                where: and(
-                    ne(propertyTable.id, propertyId),
-                    eq(propertyTable.communityId, communityId),
-                    eq(propertyTable.offeringTypeId, offeringTypeId)
-                ),
-                limit: 6,
-                with: {
-                    images: true,
-                    agent: true,
-                    community: true,
-                    offeringType: true,
-                    city: true,
-                    subCommunity: true,
-                    type: true,
-                }
-            }) as unknown as PropertyType[];
-        } catch (error) {
-            console.error('Error fetching similar properties:', error);
-            return [];
-        }
-    });
-};
-
-// Generate static params for most popular properties
-export async function generateStaticParams() {
-  // Disable static generation for individual properties to prevent database connection exhaustion
-  // Properties will be generated on-demand with ISR caching
-  return [];
-}
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -103,7 +21,13 @@ export async function generateMetadata(
     // read route params
     const slug = (await params).slug
 
-    const property = await getProperty(slug);
+    const property = await db.query.propertyTable.findFirst({
+        where: eq(propertyTable.slug, slug),
+        with: {
+            offeringType: true,
+            images: true,
+        }
+    }) as unknown as PropertyType;
 
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
@@ -119,6 +43,7 @@ export async function generateMetadata(
 
     return {
         title: `${property?.title}  | ${property?.referenceNumber}`,
+
         openGraph: {
             images: [property?.images[0]?.crmUrl, ...previousImages],
             type: 'website',
@@ -127,26 +52,6 @@ export async function generateMetadata(
         description: `${prepareExcerpt(property?.description, 150)} - ${property?.referenceNumber}`,
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_URL}/properties/${property?.offeringType?.slug}/${property?.slug}`,
-        },
-        keywords: [
-            property?.type?.name,
-            property?.offeringType?.name,
-            property?.community?.name,
-            property?.city?.name,
-            'Dubai Real Estate',
-            'Property for Sale'
-        ].filter(Boolean).join(', '),
-        authors: [{ name: property?.agent ? `${property.agent.firstName} ${property.agent.lastName}` : 'TRPE Real Estate' }],
-        robots: {
-            index: true,
-            follow: true,
-            googleBot: {
-                index: true,
-                follow: true,
-                'max-video-preview': -1,
-                'max-image-preview': 'large',
-                'max-snippet': -1,
-            },
         },
     }
 }
@@ -160,61 +65,56 @@ interface ListingViewPageProps {
 async function ListingViewPage(props: ListingViewPageProps) {
     const params = await props.params;
 
-    const property = await getProperty(params.slug);
+    const property = await db.query.propertyTable.findFirst({
+        where: eq(propertyTable.slug, params.slug),
+        with: {
+            agent: true,
+            community: true,
+            city: true,
+            offeringType: true,
+            images: true,
+            subCommunity: true,
+        }
+    }) as unknown as PropertyType;
 
     if (!property) {
         return notFound()
     }
 
-    const similarProperties = await getSimilarProperties(
-        property.id, 
-        property.communityId || '', 
-        property.offeringTypeId
-    );
+    const similarProperties = await db.query.propertyTable.findMany({
+        where: and(
+            eq(propertyTable.communityId, property?.communityId!),
+            eq(propertyTable.offeringTypeId, property?.offeringTypeId),
+            ne(propertyTable.id, property.id),
+        ),
+        with: {
+            community: true,
+            subCommunity: true,
+            agent: true,
+            city: true,
+            offeringType: true,
+            images: true,
+            type: true,
+        },
+        limit: 3,
+    }) as unknown as PropertyType[];
 
-    // Generate comprehensive structured data
-    const propertySchema = generatePropertyStructuredData(property);
 
-    const breadcrumbSchema = generateBreadcrumbStructuredData(property);
+    if(!property) {
+        notFound()
+    }
 
-    // Combine all structured data
-    const combinedStructuredData = {
-        "@context": "https://schema.org",
-        "@graph": [
-            propertySchema,
-            breadcrumbSchema
-        ]
-    };
 
     return (
-        <>
-            {/* Web Vitals Monitoring */}
-            <WebVitalsReporter />
-            
-            {/* Enhanced Structured Data */}
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(combinedStructuredData) }}
-            />            
-            <div className="hidden lg:block h-20 bg-black"></div>
-            
-            {/* Property Detail - Direct server rendering */}
+        <div>
+            <div className="hidden lg:block h-20 bg-black">
+
+            </div>
+
             <ListingDetailView property={property} />
-            
-            {/* Similar Properties - Server-side rendered */}
-            {similarProperties && similarProperties.length > 0 && (
-                <div className={'bg-black w-full'}>
-                    <div className={'max-w-7xl mx-auto pt-12 pb-0'}>
-                        <h2 className={'text-white text-3xl font-bold'}>Similar Properties</h2>
-                    </div>
-                    <div className="max-w-7xl mx-auto grid px-3 col-span-1 lg:grid-cols-3 py-12 gap-4">
-                        {similarProperties.map((property) => (
-                            <PropertyCard property={property} key={property.id} />
-                        ))}
-                    </div>
-                </div>
-            )}
-        </>
+            <SimilarProperties properties={similarProperties} />
+        </div>
+
     );
 }
 

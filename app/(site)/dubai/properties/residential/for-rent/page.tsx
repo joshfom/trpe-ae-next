@@ -9,13 +9,14 @@ import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
 export async function generateMetadata(): Promise<Metadata> {
-    // Define the static pathname
-    const pathname = "/dubai/properties/residential/for-rent";
-    
+    const headersList =  await headers();
+    const pathname = headersList.get("x-pathname") || "";
+
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
     }) as unknown as PageMetaType | null;
@@ -54,9 +55,10 @@ async function PropertySearchPage({ searchParams }: Props) {
     const page = (await searchParams).page;
     const offering = 'for-rent';
     const { user } = await validateRequest();
-    // Define the static pathname
-    const pathname = "/dubai/properties/residential/for-rent";
-    
+    // Get pathname from headers - this is the approach set in your middleware.ts
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
+
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
     }) as unknown as PageMetaType;

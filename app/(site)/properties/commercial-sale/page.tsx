@@ -1,70 +1,28 @@
-import React, {Suspense, cache} from 'react';
+import React, {Suspense} from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import PropertyPageSearchFilterOptimized from "@/features/search/PropertyPageSearchFilterOptimized";
-import PropertyPageSearchFilterServer from '@/features/search/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilter from "@/features/search/PropertyPageSearchFilter";
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {notFound} from "next/navigation";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
-import { unstable_cache } from 'next/cache';
 
-// Enhanced cached database queries with aggressive caching for content that doesn't change often
-const getPageMeta = cache(async (pathname: string): Promise<PageMetaType | null> => {
-    return unstable_cache(
-        async (pathname: string) => {
-            try {
-                return await db.query.pageMetaTable.findFirst({
-                    where: eq(pageMetaTable.path, pathname)
-                }) as unknown as PageMetaType;
-            } catch (error) {
-                console.error('Error fetching page meta:', error);
-                return null;
-            }
-        },
-        [`page-meta-${pathname}`],
-        {
-            revalidate: 7200, // 2 hours - page meta changes infrequently
-            tags: ['page-meta', `page-meta-${pathname}`, 'properties-pages']
-        }
-    )(pathname);
-});
-
-const getOfferingType = cache(async (offering: string) => {
-    return unstable_cache(
-        async (offering: string) => {
-            try {
-                return await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, offering),
-                });
-            } catch (error) {
-                console.error('Error fetching offering type:', error);
-                return null;
-            }
-        },
-        [`offering-type-${offering}`],
-        {
-            revalidate: 14400, // 4 hours - offering types rarely change
-            tags: ['offering-types', `offering-type-${offering}`, 'properties-config']
-        }
-    )(offering);
-});
-
-// Enable static generation with revalidation for better performance
-export const revalidate = 3600; // Revalidate every hour
 
 export async function generateMetadata(): Promise<Metadata> {
-    // Define the static pathname
-    const pathname = "/properties/commercial-sale";
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
-    // Check for pageMeta first using cached function
-    const pageMeta = await getPageMeta(pathname);
+    // Check for pageMeta first
+    const pageMeta = await db.query.pageMetaTable.findFirst({
+        where: eq(pageMetaTable.path, pathname)
+    }) as unknown as PageMetaType | null;
     
     // Default metadata
     let title = "Commercial properties for sale in Dubai | Find Your Next Home";
@@ -106,8 +64,9 @@ async function CommercialSalePage({searchParams}: Props) {
     const { user } = await validateRequest();
     const offering = 'commercial-sale';
     
-    // Define the static pathname
-    const pathname = "/properties/commercial-sale";
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
@@ -133,7 +92,7 @@ async function CommercialSalePage({searchParams}: Props) {
 
             </div>
 
-            <PropertyPageSearchFilterOptimized offeringType='commercial-sale' />
+            <PropertyPageSearchFilter offeringType='commercial-sale' />
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
                 <div className="flex space-x-2 items-center ">

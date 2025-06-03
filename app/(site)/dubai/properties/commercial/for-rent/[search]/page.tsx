@@ -10,6 +10,7 @@ import {propertyTypeTable} from "@/db/schema/property-type-table";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import {TipTapView} from "@/components/TiptapView";
@@ -35,8 +36,9 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
     const params = await props.params;
     const slug = params.search;
     
-    // Construct pathname directly from URL parameters
-    const pathname = `/dubai/properties/commercial/for-rent/${slug}`;
+    // Get pathname from headers for pageMeta
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -129,8 +131,9 @@ async function PropertySearchPage(props: Props) {
     const slug = params.search;
     const { user } = await validateRequest();
     
-    // Construct pathname directly from URL parameters
-    const pathname = `/dubai/properties/commercial/for-rent/${slug}`;
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)

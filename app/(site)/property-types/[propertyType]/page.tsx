@@ -9,6 +9,7 @@ import {notFound} from "next/navigation";
 import {TipTapView} from "@/components/TiptapView";
 import {validateRequest} from "@/actions/auth-session";
 import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
@@ -27,10 +28,11 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const propertyTypeSlug = (await params).propertyType
+    const slug = (await params).offeringType
 
-    // Construct pathname directly from URL parameters
-    const pathname = `/property-types/${propertyTypeSlug}`;
+    // Get pathname from headers for pageMeta
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
     
     // Check for pageMeta first
     const pageMeta = await db.query.pageMetaTable.findFirst({
@@ -46,13 +48,13 @@ export async function generateMetadata(
             title: pageMeta.metaTitle,
             description: pageMeta?.metaDescription || description,
             alternates: {
-                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${(await params).propertyType}`,
+                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${(await params).propertyType}/${slug}`,
             },
         };
     }
 
     const offeringType = await db.query.offeringTypeTable.findFirst({
-        where: eq(offeringTypeTable.slug, propertyTypeSlug)
+        where: eq(offeringTypeTable.slug, slug)
     }) as unknown as OfferingType;
 
 
@@ -87,8 +89,9 @@ async function PropertyForRentPage(props: PropertyTypePage) {
     const params = await props.params;
     const { user } = await validateRequest();
     
-    // Construct pathname directly from URL parameters
-    const pathname = `/property-types/${params.propertyType}`;
+    // Get pathname from headers
+    const headersList = await headers();
+    const pathname = headersList.get("x-pathname") || "";
 
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
@@ -104,6 +107,17 @@ async function PropertyForRentPage(props: PropertyTypePage) {
 
     if (!unitType) {
         return notFound()
+    }
+
+    let about = ''
+
+    if (slug === 'for-rent') {
+        about = unitType.rentContent as string
+    }
+
+    if (slug === 'for-sale') {
+        about = unitType.saleContent as string,
+            about = unitType.saleContent as string
     }
 
     return (

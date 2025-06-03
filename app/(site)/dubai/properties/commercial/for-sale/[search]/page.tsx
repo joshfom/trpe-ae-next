@@ -13,6 +13,7 @@ import {validateRequest} from "@/actions/auth-session";
 import {TipTapView} from "@/components/TiptapView";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
+import {headers} from "next/headers";
 
 type CommunityType = {
     name: string;
@@ -33,9 +34,9 @@ type Props = {
 
 export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
     const params = await props.params;
+    const headersList = await headers();
     const slug = params.search;
-    // Construct pathname directly from URL parameters
-    const pathname = `/dubai/properties/commercial/for-sale/${slug}`;
+    const pathname = headersList.get("x-pathname") || "";
 
     const isUnitType = slug.includes('property-type-');
     const unitTypeSlug = slug.replace('property-type-', '');
@@ -107,13 +108,12 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 async function PropertySearchPage({ searchParams, params }: Props) {
     const page = (await searchParams).page;
     const slug = (await params).search || '';
-    const { user } = await validateRequest();
+    const headersList = await headers();
 
     const isUnitType = slug.includes('property-type-');
     const unitTypeSlug = slug.replace('property-type-', '');
     const unitTypeSlugPlural = unitTypeSlug.endsWith('s') ? unitTypeSlug : unitTypeSlug + 's';
-    // Construct pathname directly from URL parameters
-    const pathname = `/dubai/properties/commercial/for-sale/${slug}`;
+    const pathname = headersList.get("x-pathname") || "";
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
     }) as unknown as PageMetaType;
@@ -122,6 +122,7 @@ async function PropertySearchPage({ searchParams, params }: Props) {
         .map(area => area.replace('area-', '').trim())
         .filter(Boolean);
     const communitySlug = areas[0];
+    const { user } = await validateRequest();
 
     let community: CommunityType | null = null;
     let unitType: PropertyType | null = null;
