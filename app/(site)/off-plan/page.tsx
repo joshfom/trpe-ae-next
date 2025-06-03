@@ -30,7 +30,15 @@ const getProjects = cache(async (): Promise<ProjectType[]> => {
         const response = await client.api.projects.$get();
         if (response.ok) {
             const { data } = await response.json();
-            return data as unknown as ProjectType[];
+            // Ensure data is an array and each project has required properties
+            if (Array.isArray(data)) {
+                return data.map(project => ({
+                    ...project,
+                    images: project.images || [], // Ensure images is always an array
+                    developer: project.developer || {},
+                    community: project.community || {},
+                })) as unknown as ProjectType[];
+            }
         }
         return [];
     } catch (error) {
@@ -50,6 +58,9 @@ export const metadata: Metadata = {
 async function NewProjectsPage() {
     // Fetch projects using cached function
     const listings = await getProjects();
+
+    // Ensure listings is always an array
+    const safeListings = Array.isArray(listings) ? listings : [];
 
     return (
         <div>
@@ -85,11 +96,11 @@ async function NewProjectsPage() {
                         </div>
                     }>
                         <div className={'grid grid-cols-1 lg:grid-cols-2 gap-8'}>
-                            {listings.map((listing) => (
+                            {safeListings.length > 0 && safeListings.map((listing) => (
                                 <ProjectCardServer key={listing.id} project={listing} />
                             ))}
                             
-                            {listings.length === 0 && (
+                            {safeListings.length === 0 && (
                                 <div className="col-span-2 text-center py-12">
                                     <p className="text-xl">No projects available at the moment.</p>
                                 </div>
