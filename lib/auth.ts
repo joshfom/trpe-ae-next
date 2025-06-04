@@ -5,7 +5,7 @@ import {emailOTP, magicLink, oneTap, phoneNumber, twoFactor, username} from "bet
 import { headers } from "next/headers";
 
 export const auth = betterAuth({
-    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_BASE_URL || 'https://trpe.ae',
     apiUrl: '/api/auth',
 
     database: drizzleAdapter(db, {
