@@ -75,7 +75,7 @@ export default function RootLayout({
 
       <GoogleTag GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GOOGLE_TAG!}/>
       <GoogleAnalytics
-          gaId="G-NQ5VN37Z0Y"
+          gaId="452930362"
       />
       <Script
           id="facebook-pixel"
