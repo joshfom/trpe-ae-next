@@ -4,7 +4,6 @@ import { UploadCloudIcon, X } from 'lucide-react';
 import * as React from 'react';
 import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { twMerge } from 'tailwind-merge';
-import Image from 'next/image';
 
 const variants = {
     base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[70px] w-full border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
@@ -48,30 +47,40 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         { dropzoneOptions, previewUrl, width, height, value, className, disabled, onChange },
         ref,
     ) => {
-        const imageUrl = React.useMemo(() => {
-            if (value instanceof File) {
-                // For new file uploads
-                return URL.createObjectURL(value);
-            }
-            if (previewUrl) {
-                // For existing images
-                return previewUrl;
-            }
-            if (typeof value === 'string' && value.startsWith('http')) {
-                // For URL strings
-                return value;
-            }
-            return null;
-        }, [value, previewUrl]);
+        const [imageUrl, setImageUrl] = React.useState<string | null>(null);
+        const urlRef = React.useRef<string | null>(null);
 
-        // Cleanup URL.createObjectURL when component unmounts
+        // Handle image URL creation and cleanup
         React.useEffect(() => {
+            // Clean up previous URL if it exists
+            if (urlRef.current) {
+                URL.revokeObjectURL(urlRef.current);
+                urlRef.current = null;
+            }
+
+            if (value instanceof File) {
+                // For new file uploads - create blob URL
+                const url = URL.createObjectURL(value);
+                urlRef.current = url;
+                setImageUrl(url);
+            } else if (previewUrl) {
+                // For existing images (from server)
+                setImageUrl(previewUrl);
+            } else if (typeof value === 'string' && value.startsWith('http')) {
+                // For URL strings
+                setImageUrl(value);
+            } else {
+                setImageUrl(null);
+            }
+
+            // Cleanup function - only runs when effect is cleaned up
             return () => {
-                if (value instanceof File && imageUrl) {
-                    URL.revokeObjectURL(imageUrl);
+                if (urlRef.current) {
+                    URL.revokeObjectURL(urlRef.current);
+                    urlRef.current = null;
                 }
             };
-        }, [value, imageUrl]);
+        }, [value, previewUrl]);
 
 
         // dropzone configuration
@@ -153,12 +162,10 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     {imageUrl ? (
                         // Image Preview
                         <div className="relative h-full w-full">
-                            <Image
+                            <img
                                 src={imageUrl}
-                                alt={acceptedFiles[0]?.name}
+                                alt={acceptedFiles[0]?.name || "Uploaded image"}
                                 className="h-full w-full rounded-md object-cover"
-                                fill
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             />
                         </div>
                     ) : (

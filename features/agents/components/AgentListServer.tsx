@@ -1,9 +1,8 @@
-"use client"
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import Link from "next/link";
 import Image from "next/image";
+import { getAgentsAction } from "@/actions/agents/get-agents-action";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useGetAgents } from "@/features/agents/api/use-get-agents";
 
 // Define Agent interface
 interface Agent {
@@ -14,8 +13,8 @@ interface Agent {
     avatarUrl?: string;
 }
 
-// Memoized skeleton component for loading state
-const AgentListSkeleton = memo(() => (
+// Skeleton component for loading state (can be used by client components)
+export const AgentListSkeleton = () => (
     <div className="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         {Array.from({ length: 8 }).map((_, index) => (
             <div key={index} className="space-y-4">
@@ -26,16 +25,13 @@ const AgentListSkeleton = memo(() => (
             </div>
         ))}
     </div>
-));
+);
 
-AgentListSkeleton.displayName = 'AgentListSkeleton';
-
-// Memoized agent card component
-const AgentCard = memo<{ agent: Agent }>(({ agent }) => {
-    // Memoize computed values
-    const agentUrl = useMemo(() => `/our-team/${agent.slug}`, [agent.slug]);
-    const agentName = useMemo(() => `${agent.firstName} ${agent.lastName}`, [agent.firstName, agent.lastName]);
-    const avatarSrc = useMemo(() => agent.avatarUrl || '/images/defaults/agent.jpg', [agent.avatarUrl]);
+// Agent card component
+const AgentCard = ({ agent }: { agent: Agent }) => {
+    const agentUrl = `/our-team/${agent.slug}`;
+    const agentName = `${agent.firstName} ${agent.lastName}`;
+    const avatarSrc = agent.avatarUrl || '/images/defaults/agent.jpg';
 
     return (
         <article className="flex flex-col pb-3 bg-white items-center">
@@ -60,63 +56,52 @@ const AgentCard = memo<{ agent: Agent }>(({ agent }) => {
             </h2>
         </article>
     );
-});
+};
 
-AgentCard.displayName = 'AgentCard';
+// Server component for AgentList
+export default async function AgentListServer() {
+    try {
+        // Fetch agents on the server
+        const result = await getAgentsAction();
 
-const AgentList = memo(() => {
-    const { data, isLoading, isError, error } = useGetAgents();
+        if (!result.success) {
+            return (
+                <div className="py-6 text-center">
+                    <p className="text-red-500">Error loading agents: {result.error}</p>
+                </div>
+            );
+        }
 
-    // Memoize processed agents data
-    const processedAgents = useMemo(() => {
-        if (!data) return [];
-        
-        return data.map((agent: any): Agent => ({
+        // Process agents data
+        const agents: Agent[] = (result.data || []).map((agent: any) => ({
             id: agent.id,
             firstName: agent.firstName || '',
             lastName: agent.lastName || '',
             slug: agent.slug,
             avatarUrl: agent.avatarUrl
         }));
-    }, [data]);
 
-    if (isLoading) {
-        return <AgentListSkeleton />;
-    }
+        if (agents.length === 0) {
+            return (
+                <div className="py-6 text-center">
+                    <p className="text-gray-500">No agents found</p>
+                </div>
+            );
+        }
 
-    if (isError) {
+        return (
+            <div className="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {agents.map((agent) => (
+                    <AgentCard key={agent.id} agent={agent} />
+                ))}
+            </div>
+        );
+    } catch (error) {
+        console.error('Error in AgentListServer:', error);
         return (
             <div className="py-6 text-center">
-                <p className="text-red-500">Error loading agents: {error?.message}</p>
+                <p className="text-red-500">Error loading agents</p>
             </div>
         );
     }
-
-    if (!processedAgents || processedAgents.length === 0) {
-        return (
-            <div className="py-6 text-center">
-                <p className="text-gray-500">No agents found</p>
-            </div>
-        );
-    }
-
-    return (
-        <div className="py-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {processedAgents.map((agent: Agent) => (
-                <AgentCard key={agent.id} agent={agent} />
-            ))}
-        </div>
-    );
-});
-
-AgentList.displayName = 'AgentList';
-
-// Create a compound component with proper typing
-const AgentListWithSkeleton = AgentList as typeof AgentList & {
-    Skeleton: typeof AgentListSkeleton;
-};
-
-// Attach skeleton as static property
-AgentListWithSkeleton.Skeleton = AgentListSkeleton;
-
-export default AgentListWithSkeleton;
+}

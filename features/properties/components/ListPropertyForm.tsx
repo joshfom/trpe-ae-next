@@ -1,12 +1,17 @@
 "use client";
 import React, {useState} from 'react';
 import {Input} from "@/components/ui/input";
-import { PhoneInput } from 'react-international-phone';
-import 'react-international-phone/style.css';
+import dynamic from 'next/dynamic';
 import {Label} from "@/components/ui/label";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
+
+// Dynamically import PhoneInput to avoid SSR issues
+const PhoneInput = dynamic(() => import('react-international-phone').then(mod => mod.PhoneInput), {
+    ssr: false,
+    loading: () => <Input placeholder="Loading phone input..." disabled />
+});
 
 function ListPropertyForm() {
     const [value, setValue] = useState()

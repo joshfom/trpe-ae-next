@@ -23,11 +23,12 @@ export const useAddInsight = () => {
     const mutate = async (insightData: RequestType, options?: { 
         onSuccess?: (data: any) => void,
         onError?: (error: Error) => void 
-    }) => {
+    }): Promise<void> => {
         try {
             setIsPending(true);
             setIsError(false);
             setIsSuccess(false);
+            setError(null);
             
             const result = await addInsight(insightData);
             
@@ -46,7 +47,7 @@ export const useAddInsight = () => {
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
             setError(errorObj);
             setIsError(true);
-            toast.error('An error occurred while updating Insight');
+            toast.error('An error occurred while adding Insight');
             
             if (options?.onError) {
                 options.onError(errorObj);

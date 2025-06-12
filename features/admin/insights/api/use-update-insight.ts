@@ -23,7 +23,7 @@ export const useUpdateInsight = (insightSlug?: string) => {
     const mutate = async (insightData: RequestType, options?: { 
         onSuccess?: (data: any) => void,
         onError?: (error: Error) => void 
-    }) => {
+    }): Promise<void> => {
         if (!insightSlug) {
             const errorObj = new Error("Insight slug is required");
             setError(errorObj);

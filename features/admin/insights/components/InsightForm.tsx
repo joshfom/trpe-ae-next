@@ -77,14 +77,18 @@ function InsightForm({insight}: AddInsightFormProps) {
                 },
             });
             setFile(file);
-            form.setValue('coverUrl', res.url)
+            form.setValue('coverUrl', res.url);
+        } else {
+            // Handle remove case
+            setFile(undefined);
+            form.setValue('coverUrl', '');
         }
     }
 
 
     const onSubmit = (values: formValues) => {
-        if (isEditing) {
-            return updateMutation.mutate(values, {
+        if (isEditing && insight?.slug) {
+            updateMutation.mutate(values, {
                 onSuccess: () => {
                     form.reset();
                     setFile(undefined);
@@ -96,7 +100,7 @@ function InsightForm({insight}: AddInsightFormProps) {
                 onSuccess: () => {
                     form.reset();
                     setFile(undefined);
-                    router.push('/crm/insights');
+                    router.push('/admin/insights');
                 }
             });
         }

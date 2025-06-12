@@ -1,6 +1,5 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import { getCommunitiesAction } from '@/actions/get-communities-action';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -15,8 +14,13 @@ const Communities = ({ classNames = "" }: CommunitiesProps) => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        const data = await getCommunitiesAction();
-        setCommunities(data || []);
+        const response = await fetch('/api/communities/list');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const responseData = await response.json();
+        const data = responseData.communities || responseData || [];
+        setCommunities(data);
       } catch (error) {
         console.error('Error fetching communities:', error);
       } finally {
