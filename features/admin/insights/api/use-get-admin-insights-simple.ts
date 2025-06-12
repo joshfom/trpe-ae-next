@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { getAdminInsightsSimple } from "@/actions/admin/get-admin-insights-simple";
+// import { getAdminInsightsSimple } from "@/actions/admin/get-admin-insights-simple";
+import { getAdminInsights } from "@/actions/admin/get-admin-insights-action";
 
 /**
  * Simple React hook to test server actions
@@ -24,8 +25,8 @@ export const useGetAdminInsightsSimple = () => {
             setIsError(false);
             setError(null);
             
-            console.log('Calling getAdminInsightsSimple...');
-            const result = await getAdminInsightsSimple();
+            console.log('Calling getAdminInsights...');
+            const result = await getAdminInsights({});
             console.log('Result received:', result);
             
             if (!isMountedRef.current) return;

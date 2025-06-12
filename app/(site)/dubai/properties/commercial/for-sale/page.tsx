@@ -58,7 +58,8 @@ export async function generateMetadata(props: {
 }
 
 async function PropertySearchPage({ searchParams }: Props) {
-    const page = (await searchParams).page
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page;
     const { user } = await validateRequest();
     // Get pathname from headers - this is the approach set in your middleware.ts
     const headersList = await headers();
@@ -105,6 +106,7 @@ async function PropertySearchPage({ searchParams }: Props) {
             
             <Listings 
                 offeringType={'commercial-sale'}
+                searchParams={resolvedSearchParams}
                 page={page}
             />
 

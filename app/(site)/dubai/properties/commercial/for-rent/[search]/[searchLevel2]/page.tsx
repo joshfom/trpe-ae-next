@@ -246,6 +246,7 @@ async function PropertySearchPage(props: Props) {
             
             <Listings
                 offeringType={'commercial-rent'}
+                searchParams={searchParams}
                 page={page}
             />
             

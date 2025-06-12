@@ -13,6 +13,7 @@ import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageM
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
+import FilterSummary from "@/features/search/components/FilterSummary";
 import {TipTapView} from "@/components/TiptapView";
 
 type CommunityType = {
@@ -190,6 +191,12 @@ async function PropertySearchPage(props: Props) {
             </div>
             <PropertyPageSearchFilter offeringType='commercial-rent' />
             
+            {/* Filter Summary */}
+            <FilterSummary 
+                selectedCommunities={[]} 
+                searchParams={new URLSearchParams(Object.entries(searchParams).map(([key, value]) => [key, String(value)]))} 
+            />
+            
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
                 <div className="flex space-x-2 items-center">
                     <SearchPageH1Heading
@@ -209,6 +216,7 @@ async function PropertySearchPage(props: Props) {
             
             <Listings
                 offeringType={'commercial-rent'}
+                searchParams={searchParams}
                 page={page}
             />
             

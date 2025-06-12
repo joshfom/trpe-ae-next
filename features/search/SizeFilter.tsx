@@ -29,15 +29,23 @@ const sizeFilter = [
 
 interface SizeFilterProps {
     form: UseFormReturn<SearchFormData>;
+    badgeCount?: number;
 }
 
-const SizeFilter = ({ form } : SizeFilterProps ) => {
+const SizeFilter = ({ form, badgeCount = 0 } : SizeFilterProps ) => {
     const minSize = form.watch('minSize');
     const maxSize = form.watch('maxSize');
 
     return (
         <div>
-            <h3 className="text-sm lg:text-lg">Size</h3>
+            <h3 className="text-sm lg:text-lg flex items-center">
+                Size
+                {badgeCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                        {badgeCount}
+                    </span>
+                )}
+            </h3>
             <div className="flex flex-col lg:flex-row items-center gap-1 lg:gap-8 py-3">
                 <FormField
                     name="minSize"

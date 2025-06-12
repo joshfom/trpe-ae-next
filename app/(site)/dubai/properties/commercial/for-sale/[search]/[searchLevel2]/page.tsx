@@ -161,7 +161,8 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 async function PropertySearchPage({ searchParams, params }: Props) {
-    const page = (await searchParams).page
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page;
     const awaitedParams = await params;
     const slug = awaitedParams.search;
     const subSlug = awaitedParams.searchLevel2;
@@ -245,6 +246,7 @@ async function PropertySearchPage({ searchParams, params }: Props) {
 
             <Listings 
                 offeringType="commercial-sale"
+                searchParams={resolvedSearchParams}
                 page={page}
             />
 

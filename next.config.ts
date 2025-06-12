@@ -6,6 +6,16 @@ const nextConfig: NextConfig = {
     poweredByHeader: false, // Remove X-Powered-By header for security
     reactStrictMode: true, // Helps catch bugs early
     crossOrigin: 'anonymous', // Set CORS headers
+    
+    // Add worker process limits to prevent runaway processes
+    experimental: {
+        optimizePackageImports: ['lucide-react', '@radix-ui/react-*', '@tiptap/react'],
+        // Limit worker processes to prevent infinite loops
+        workerThreads: false,
+        cpus: Math.min(4, require('os').cpus().length), // Limit CPU usage
+    },
+    
+    // Note: NODE_OPTIONS should be set in package.json scripts instead
     images: {
          loader: 'custom',
     loaderFile: './loader.js',
@@ -22,12 +32,6 @@ const nextConfig: NextConfig = {
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
         minimumCacheTTL: 31536000, // 1 year cache for images
-    },
-    experimental: {
-        optimizePackageImports: ['lucide-react', '@radix-ui/react-*', '@tiptap/react'],
-        // Enable modern optimizations
-        // optimizeCss: true,  // Disabled temporarily due to critters dependency issue
-        // Note: typedRoutes removed due to Turbopack incompatibility
     },
     // Move serverComponentsExternalPackages to root level as per Next.js 15
     serverExternalPackages: ['sharp', 'onnxruntime-node'],

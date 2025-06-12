@@ -19,6 +19,7 @@ import {cn} from "@/lib/utils";
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
+import { countActiveFilters } from "@/features/search/utils/filter-utils";
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -553,7 +554,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                                     selectedCommunities={selectedCommunities}
                                     setSelectedCommunities={setSelectedCommunities}
                                     onSubmit={onSubmit}
-                                    filtersCount={0}/>
+                                    filtersCount={countActiveFilters(form, selectedCommunities).total}/>
                             </div>
 
                             {/*MOBILE SEARCH*/}

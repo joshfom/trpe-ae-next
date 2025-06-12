@@ -9,19 +9,11 @@ interface LayoutProps {
 
 function Layout({children}: LayoutProps) {
     return (
-        <Suspense fallback={
-            <div className="min-h-screen bg-white">
-                <NavigationSkeleton />
-                <div className="flex-1">{children}</div>
-                <FooterSkeleton />
-            </div>
-        }>
-            <SiteLayoutClient>
+       <SiteLayoutClient>
                 <div className="">
                     {children}
                 </div>
             </SiteLayoutClient>
-        </Suspense>
     );
 }
 

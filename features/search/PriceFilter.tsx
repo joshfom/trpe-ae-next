@@ -41,15 +41,23 @@ const priceFilter = [
 
 interface PriceFilterProps {
     form: UseFormReturn<SearchFormData>;
+    badgeCount?: number;
 }
 
-const PriceFilter = ({ form } : PriceFilterProps) => {
+const PriceFilter = ({ form, badgeCount = 0 } : PriceFilterProps) => {
     const minPrice = form.watch('minPrice');
     const maxPrice = form.watch('maxPrice');
 
     return (
         <div>
-            <h3 className="text-sm lg:text-lg">Price</h3>
+            <h3 className="text-sm lg:text-lg flex items-center">
+                Price
+                {badgeCount > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                        {badgeCount}
+                    </span>
+                )}
+            </h3>
             <div className="flex flex-col lg:flex-row gap-1 lg:gap-8 py-3">
                 <FormField
                     name="minPrice"

@@ -9,6 +9,8 @@ import PriceFilter from "@/features/search/PriceFilter";
 import {UseFormReturn} from "react-hook-form";
 import {SearchFormData} from "@/features/search/types/property-search.types";
 import SelectedCommunitiesList from "@/features/search/components/communities/SelectedCommunitiesList";
+import { getFilterBadgeCount } from "@/features/search/utils/filter-utils";
+import { CommunityFilterType } from "@/types/community";
 
 interface PropertyFilterSlideOverProps {
     form: UseFormReturn<SearchFormData>;
@@ -16,8 +18,8 @@ interface PropertyFilterSlideOverProps {
     showFilters?: boolean;
     setShowFilters?: (value: boolean) => void;
     filtersCount?: number;
-    selectedCommunities?: any[];
-    setSelectedCommunities?: (communities: any[]) => void;
+    selectedCommunities?: CommunityFilterType[];
+    setSelectedCommunities?: (communities: CommunityFilterType[]) => void;
     
     // New props for compatibility with server-action version
     open?: boolean;
@@ -42,6 +44,25 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
     // Handle both prop styles (original and server-action version)
     const isOpen = open !== undefined ? open : showFilters;
     const setIsOpen = setOpen || setShowFilters || (() => {});
+
+    // Calculate individual filter badge counts
+    const priceBadgeCount = getFilterBadgeCount('price', form, selectedCommunities);
+    const bedroomBadgeCount = getFilterBadgeCount('bedrooms', form, selectedCommunities);
+    const bathroomBadgeCount = getFilterBadgeCount('bathrooms', form, selectedCommunities);
+    const sizeBadgeCount = getFilterBadgeCount('size', form, selectedCommunities);
+    const propertyTypeBadgeCount = getFilterBadgeCount('propertyType', form, selectedCommunities);
+    const furnishingBadgeCount = getFilterBadgeCount('furnishing', form, selectedCommunities);
+    const statusBadgeCount = getFilterBadgeCount('status', form, selectedCommunities);
+
+    // Component for filter badge
+    const FilterBadge = ({ count }: { count: number }) => {
+        if (count === 0) return null;
+        return (
+            <span className="ml-2 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                {count}
+            </span>
+        );
+    };
 
     // Memoized callback functions for form value setters
     const handleFurnishingReset = useCallback(() => {
@@ -128,20 +149,15 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
                         className={'flex items-center'}
                     >
                          <SlidersVertical className="h-6 w-6  stroke-1 mr-2"/>
-                        Moreœ
+                        More
 
                     </span>
                     {
                         filtersCount > 0 &&
-                        <div className={'absolute -right-4 -top-4'}>
-                            <button
-                                type={'button'}
-                                onClick={handleOpenFilter}
-                                className="flex items-center bg-black text-white justify-center border px-3 rounded-full  py-1">
-                                {
-                                    filtersCount
-                                }
-                            </button>
+                        <div className={'absolute -left-2 -top-2'}>
+                            <div className="flex items-center bg-black text-white justify-center border-2 border-white w-6 h-6 rounded-full text-xs font-medium shadow-sm">
+                                {filtersCount}
+                            </div>
                         </div>
                     }
                 </SheetTrigger>
@@ -173,8 +189,9 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
 
                         {/*FURNISHING */}
                         <div>
-                            <h3 className="text-lg ">
+                            <h3 className="text-lg flex items-center">
                                 Furnishing
+                                <FilterBadge count={furnishingBadgeCount} />
                             </h3>
 
                             <div className="flex py-3 gap-2 lg:gap-4">
@@ -200,8 +217,9 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
 
                         {/*COMPLETION STATUS*/}
                         <div>
-                            <h3 className="text-lg ">
+                            <h3 className="text-lg flex items-center">
                                 Completion
+                                <FilterBadge count={statusBadgeCount} />
                             </h3>
 
                             <div className="flex py-3 gap-2 lg:gap-4">
@@ -225,11 +243,12 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
                         </div>
 
                         {/*PROPERTY SIZES*/}
-                        <SizeFilter form={form}/>
+                        <SizeFilter form={form} badgeCount={sizeBadgeCount} />
 
                         <div>
-                            <h3 className="text-lg pb-4">
+                            <h3 className="text-lg pb-4 flex items-center">
                                 Unit Type
+                                <FilterBadge count={propertyTypeBadgeCount} />
                             </h3>
                             <FormField
                                 name={'unitType'}
@@ -261,12 +280,13 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
                             />
                         </div>
 
-                        <PriceFilter form={form}/>
+                        <PriceFilter form={form} badgeCount={priceBadgeCount} />
 
 
                         <div>
-                            <h3 className="text-lg ">
+                            <h3 className="text-lg flex items-center">
                                 Bedrooms
+                                <FilterBadge count={bedroomBadgeCount} />
                             </h3>
 
                             <div className="flex py-3 gap-3 flex-wrap">

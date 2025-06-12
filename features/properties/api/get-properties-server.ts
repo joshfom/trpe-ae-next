@@ -75,11 +75,12 @@ export async function getPropertiesServer({
     pathname,
     page = '1'
 }: GetPropertiesParams): Promise<PropertySearchResponse> {
-    // Validate that only the "page" parameter exists and has a valid numeric value
+    // Define valid parameter keys
+    const validParams = ['page', 'q', 'bed', 'bedrooms', 'bathrooms', 'min-area', 'max-area', 'max-price', 'min-price', 'sort-by', 'property-type'];
     const paramKeys = Array.from(searchParams.keys());
     
-    // Check if there are any parameters other than "page" or if "page" is misspelled
-    const hasInvalidParams = paramKeys.some(key => key !== 'page');
+    // Check if there are any invalid parameters
+    const hasInvalidParams = paramKeys.some(key => !validParams.includes(key));
     
     // If there are invalid parameters or the page value is not numeric
     const pageValue = searchParams.get('page');
@@ -96,7 +97,8 @@ export async function getPropertiesServer({
     
     // Extract all search parameters
     const q = searchParams.get('q') || undefined;
-    const bed = searchParams.get('bed') ? Number(searchParams.get('bed')) : undefined;
+    const bed = searchParams.get('bed') ? Number(searchParams.get('bed')) : 
+               searchParams.get('bedrooms') ? Number(searchParams.get('bedrooms')) : undefined;
     const bathrooms = searchParams.get('bathrooms') ? Number(searchParams.get('bathrooms')) : undefined;
     const minArea = searchParams.get('min-area') ? Number(searchParams.get('min-area')) : undefined;
     const maxArea = searchParams.get('max-area') ? Number(searchParams.get('max-area')) : undefined;

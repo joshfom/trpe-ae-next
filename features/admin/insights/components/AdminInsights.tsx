@@ -13,8 +13,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Pagination } from "@/components/ui/pagination";
 import { client } from "@/lib/hono";
 import { AuthStatus } from "@/components/auth-status";
-import { AdminDebugPanel } from "@/components/admin-debug-panel";
-import { ServerActionTest } from "@/components/server-action-test";
+// import { AdminDebugPanel } from "@/components/admin-debug-panel";
+// import { ServerActionTest } from "@/components/server-action-test";
 import { 
     AlertDialog,
     AlertDialogAction,
@@ -233,7 +233,7 @@ function AdminInsights() {
             {/* Debug Panel - for development */}
             {typeof window !== 'undefined' && process.env.NODE_ENV === 'development' && (
                 <>
-                    <AdminDebugPanel />
+                    {/* <AdminDebugPanel /> */}
                     {/* <ServerActionTest /> - Temporarily disabled */}
                 </>
             )}

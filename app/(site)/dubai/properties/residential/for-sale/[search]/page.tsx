@@ -14,6 +14,7 @@ import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import {TipTapView} from "@/components/TiptapView";
+import FilterSummary from "@/features/search/components/FilterSummary";
 
 type CommunityType = {
     name: string;
@@ -127,7 +128,8 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 async function PropertySearchPage({ searchParams, params }: Props) {
-    const page = (await searchParams).page;
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page;
     const paramsData = await params;
     const slug = paramsData.search || '';
     const { user } = await validateRequest();
@@ -189,6 +191,12 @@ async function PropertySearchPage({ searchParams, params }: Props) {
             </div>
             <PropertyPageSearchFilter offeringType='for-sale' />
             
+            {/* Filter Summary */}
+            <FilterSummary 
+                selectedCommunities={[]} 
+                searchParams={new URLSearchParams(Object.entries(resolvedSearchParams).map(([key, value]) => [key, String(value)]))} 
+            />
+            
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
                 <div className="flex space-x-2 items-center">
                     <SearchPageH1Heading
@@ -208,6 +216,7 @@ async function PropertySearchPage({ searchParams, params }: Props) {
             
             <Listings 
                 offeringType={'for-sale'}
+                searchParams={resolvedSearchParams}
                 page={page}
             />
 

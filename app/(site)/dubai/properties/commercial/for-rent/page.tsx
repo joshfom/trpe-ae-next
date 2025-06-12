@@ -61,7 +61,8 @@ type Props = {
 };
 
 async function PropertySearchPage({searchParams}: Props) {
-    const page = (await searchParams).page;
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page;
     const { user } = await validateRequest();
     
     // Get pathname from headers
@@ -114,6 +115,7 @@ async function PropertySearchPage({searchParams}: Props) {
             
             <Listings
                 offeringType={'commercial-rent'}
+                searchParams={resolvedSearchParams}
                 page={page}
             />
 

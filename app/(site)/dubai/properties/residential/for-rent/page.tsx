@@ -52,7 +52,8 @@ type Props = {
 };
 
 async function PropertySearchPage({ searchParams }: Props) {
-    const page = (await searchParams).page;
+    const resolvedSearchParams = await searchParams;
+    const page = resolvedSearchParams.page;
     const offering = 'for-rent';
     const { user } = await validateRequest();
     // Get pathname from headers - this is the approach set in your middleware.ts
