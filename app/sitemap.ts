@@ -4,28 +4,29 @@ import { eq } from 'drizzle-orm';
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  
+  try {
+    const properties = await db.query.propertyTable.findMany({
+      with: {
+        offeringType: true,
+      }
+    });
+    const articles = await db.query.insightTable.findMany();
 
-  const properties = await db.query.propertyTable.findMany({
-    with: {
-      offeringType: true,
-    }
-  });
-  const articles = await db.query.insightTable.findMany();
+    const propertyTypes = await db.query.propertyTypeTable.findMany();
+    const developers = await db.query.developerTable.findMany();
+    const communities = await db.query.communityTable.findMany();
+    const offplans = await db.query.offplanTable.findMany();
+    const pages = await db.query.pageMetaTable.findMany({
+      where: (eq(pageMetaTable.includeInSitemap, true))
+    })
 
-  const propertyTypes = await db.query.propertyTypeTable.findMany();
-  const developers = await db.query.developerTable.findMany();
-  const communities = await db.query.communityTable.findMany();
-  const offplans = await db.query.offplanTable.findMany();
-  const pages = await db.query.pageMetaTable.findMany({
-    where: (eq(pageMetaTable.includeInSitemap, true))
-  })
-
-  const propertyUrls = properties.map(property => ({
-    url: `${process.env.NEXT_PUBLIC_URL}/properties/${property.offeringType?.slug}/${property.slug}`,
-    lastModified: new Date(property.createdAt),
-    changeFrequency: 'daily' as const,
-    priority: 0.8,
-  }));
+    const propertyUrls = properties.map(property => ({
+      url: `${process.env.NEXT_PUBLIC_URL}/properties/${property.offeringType?.slug}/${property.slug}`,
+      lastModified: new Date(property.createdAt),
+      changeFrequency: 'daily' as const,
+      priority: 0.8,
+    }));
 
 
   const articleUrls = articles.map(article => ({
@@ -363,4 +364,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...communitiesUrl, // Add community URLs to the sitemap
     ...offplanUrls, // Add offplan URLs to the sitemap
   ];
+  } catch (error) {
+    console.warn('Database unavailable during sitemap generation, returning basic sitemap:', error);
+    // Return a basic sitemap when database is unavailable (e.g., during build)
+    return [
+      {
+        url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 1,
+      },
+      {
+        url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/about-us`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      },
+      {
+        url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/contact-us`,
+        lastModified: new Date(),
+        changeFrequency: 'monthly' as const,
+        priority: 0.8,
+      },
+    ];
+  }
 }

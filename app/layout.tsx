@@ -1,5 +1,5 @@
 import type {Metadata} from "next";
-import {Poppins} from "next/font/google";
+import {Poppins, Playfair_Display} from "next/font/google";
 import "./globals.css";
 import "./empty-para.css";
 import "./tiptap-spacing.css";
@@ -19,6 +19,13 @@ const poppins = Poppins({
   weight: ['400', '500', '600'],
   style: ['normal', 'italic'],
   subsets: ['latin'],
+});
+
+const playfairDisplay = Playfair_Display({
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-playfair-display',
 });
 
 export const metadata: Metadata = {
@@ -59,7 +66,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={cn(poppins.className, 'bg-slate-100')}>
+      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100')}>
       <SpeedInsights/>
       <Analytics/>
       <NextTopLoader
