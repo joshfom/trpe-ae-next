@@ -65,91 +65,128 @@ export default async function LuxeHome() {
                 <LuxeHero />
 
                 <LuxeMainSearch />
-
-                <section className='w-full relative py-12'>
-                    <div className='w-1/2'>
-                        <img src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+                <section className='w-full relative py-8 sm:py-12'>
+                    {/* Mobile: Image container */}
+                    <div className='w-full lg:w-1/2 lg:hidden'>
+                        <img 
+                            src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="Luxury Property" 
+                            className="w-full h-64 sm:h-80 object-cover"
+                        />
                     </div>
-                   <div className="absolute inset-0">
-                     <div className='max-w-7xl py-12 mx-auto flex flex-col lg:flex-row min-h-[600px]'>
-                        {/* Left side - Full width image */}
-                        <div className='relative w-1/2 h-full min-h-[400px] lg:min-h-[600px]'>
-                          
+                    
+                    {/* Desktop: Image container */}
+                    <div className='w-full lg:w-1/2 hidden lg:block'>
+                        <img 
+                            src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="Luxury Property" 
+                            className="w-full h-auto object-cover"
+                        />
+                    </div>
+                    
+                    {/* Mobile: Content below image */}
+                    <div className='lg:hidden px-4 sm:px-6 py-8'>
+                        <div className='text-center'>
+                            <h2 className='font-playfair text-2xl sm:text-3xl font-bold mb-4 sm:mb-6'>
+                                Your Heading Here
+                            </h2>
+                            <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                Your content goes here. This section maintains the max-width-7xl alignment 
+                                on the right side while the left image extends to the edge.
+                            </p>
+                            <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                Your content goes here. This section maintains the max-width-7xl alignment 
+                                on the right side while the left image extends to the edge.
+                            </p>
+                            <div>
+                                <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                                    Explore Properties
+                                </Link>
+                            </div>
                         </div>
-                        
-                        {/* Right side - Content with max-width constraint */}
-                        <div className='w-1/2 flex flex-col'>
-                            <div className='flex-grow flex flex-col justify-center'>
-                                <div className='lg:pl-12 flex flex-col gap-1'>
-                                    <h2 className='font-playfair text-3xl lg:text-4xl font-bold mb-6'>
-                                        Your Heading Here
-                                    </h2>
-                                    <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the right side while the left image extends to the edge.
-                                    </p>
-                                     <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the right side while the left image extends to the edge.
-                                    </p>
-                                   <div>
-                                     <Link href="/properties" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border:transparent transition-colors'>
-                                        Explore Properties
-                                    </Link>
-                                   </div>
+                    </div>
+                    
+                    {/* Desktop: Absolute positioned content over image */}
+                    <div className="absolute inset-0 hidden lg:block">
+                        <div className='max-w-7xl py-8 sm:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]'>
+                            {/* Left side - Full width image on desktop, hidden on mobile */}
+                            <div className='relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px]'>
+                              
+                            </div>
+                            
+                            {/* Right side - Content */}
+                            <div className='w-full lg:w-1/2 flex flex-col'>
+                                <div className='flex-grow flex flex-col justify-center'>
+                                    <div className='lg:pl-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
+                                        <h2 className='font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-black'>
+                                            Your Heading Here
+                                        </h2>
+                                        <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                            Your content goes here. This section maintains the max-width-7xl alignment 
+                                            on the right side while the left image extends to the edge.
+                                        </p>
+                                        <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                            Your content goes here. This section maintains the max-width-7xl alignment 
+                                            on the right side while the left image extends to the edge.
+                                        </p>
+                                        <div>
+                                            <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                                                Explore Properties
+                                            </Link>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+
+
+                <section className='w-full relative py-8 sm:py-12 bg-white'>
+                    <div className='w-full max-h-[400px] sm:max-h-[500px] lg:max-h-[700px] overflow-hidden'>
+                        <img 
+                            src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="Luxury Development" 
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <div className="absolute inset-0 my-4 sm:my-6 bg-white bg-opacity-60 backdrop-blur-sm"></div>
+                   <div className="absolute inset-0">
+                     <div className='max-w-7xl py-8 sm:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]'>
+                        {/* Left side - Content */}
+                        <div className='w-full lg:w-1/2 flex flex-col'>
+                            <div className='flex-grow flex flex-col justify-center'>
+                                <div className='lg:pr-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
+                                    <h2 className='font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6'>
+                                        Your Heading Here
+                                    </h2>
+                                    <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                        Your content goes here. This section maintains the max-width-7xl alignment 
+                                        on the right side while the left image extends to the edge.
+                                    </p>
+                                     <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                        Your content goes here. This section maintains the max-width-7xl alignment 
+                                        on the right side while the left image extends to the edge.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Right side - Image placeholder (hidden on mobile) */}
+                        <div className='relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] lg:block hidden'>
+                          
                         </div>
                     </div>
                    </div>
                 </section>
 
 
-
-                <section className='w-full relative py-6 bg-white'>
-                    <div className='w-full max-h-[700px] overflow-hidden    '>
-                        <img src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
-                    </div>
-                    <div className="absolute inset-0 my-6 bg-white bg-opacity-60 backdrop:blur-sm"></div>
-                   <div className="absolute inset-0">
-                     <div className='max-w-7xl py-12 mx-auto flex flex-col lg:flex-row min-h-[600px]'>
-
-                             
-                        {/* Right side - Content with max-width constraint */}
-                        <div className='w-1/2 flex flex-col'>
-                            <div className='flex-grow flex flex-col justify-center'>
-                                <div className='lg:pr-12 flex flex-col gap-1'>
-                                    <h2 className='font-playfair text-3xl lg:text-4xl font-bold mb-6'>
-                                        Your Heading Here
-                                    </h2>
-                                    <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the right side while the left image extends to the edge.
-                                    </p>
-                                     <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the right side while the left image extends to the edge.
-                                    </p>
-                                   
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Left side - Full width image */}
-                        <div className='relative w-1/2 h-full min-h-[400px] lg:min-h-[600px]'>
-                          
-                        </div>
-                   
-                    </div>
-                   </div>
-                </section>
-
-
-                <section className='w-full py-12 bg-white'>
-                    <div className='max-w-7xl mx-auto px-4'>
-                        <h2 className='text-3xl font-playfair mb-6'>Featured Listings</h2>
+                <section className='w-full py-8 sm:py-12 bg-white'>
+                    <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+                        <h2 className='text-2xl sm:text-3xl font-playfair mb-4 sm:mb-6 text-center lg:text-left'>Featured Listings</h2>
                         
-                        <div className='grid grid-cols-1 md:grid-cols-2 pt-8 lg:grid-cols-3 gap-8'>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 pt-6 sm:pt-8'>
                             <LuxePropCard 
                                 title="West Square Villa"
                                 location="Jumeirah Village Triangle"
@@ -188,61 +225,97 @@ export default async function LuxeHome() {
                 </section>
 
 
-                
-                <section className='w-full relative py-12'>
-                    <div className='w-1/2 ml-auto'>
-                        <img src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="" />
+                <section className='w-full relative py-8 sm:py-12'>
+                    {/* Mobile: Image container */}
+                    <div className='w-full lg:w-1/2 lg:ml-auto lg:hidden'>
+                        <img 
+                            src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="Luxury Property" 
+                            className="w-full h-64 sm:h-80 object-cover"
+                        />
                     </div>
-                   <div className="absolute inset-0">
-                     <div className='max-w-7xl py-12 mx-auto flex flex-col lg:flex-row min-h-[600px]'>
-                        {/* Left side - Content with max-width constraint */}
-                        <div className='w-1/2 flex flex-col'>
-                            <div className='flex-grow flex flex-col justify-center'>
-                                <div className='lg:pr-12 flex flex-col gap-1'>
-                                    <h2 className='font-playfair text-3xl lg:text-4xl font-bold mb-6'>
-                                        Your Heading Here
-                                    </h2>
-                                    <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the left side while the right image extends to the edge.
-                                    </p>
-                                     <p className='text-lg text-gray-600 mb-8'>
-                                        Your content goes here. This section maintains the max-width-7xl alignment 
-                                        on the left side while the right image extends to the edge.
-                                    </p>
-                                   <div>
-                                     <Link href="/properties" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border:transparent transition-colors'>
-                                        Explore Properties
-                                    </Link>
-                                   </div>
-                                </div>
+                    
+                    {/* Desktop: Image container */}
+                    <div className='w-full lg:w-1/2 ml-auto hidden lg:block'>
+                        <img 
+                            src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+                            alt="Luxury Property" 
+                            className="w-full h-auto object-cover"
+                        />
+                    </div>
+                    
+                    {/* Mobile: Content below image */}
+                    <div className='lg:hidden px-4 sm:px-6 py-8'>
+                        <div className='text-center'>
+                            <h2 className='font-playfair text-2xl sm:text-3xl font-bold mb-4 sm:mb-6'>
+                                Your Heading Here
+                            </h2>
+                            <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                Your content goes here. This section maintains the max-width-7xl alignment 
+                                on the left side while the right image extends to the edge.
+                            </p>
+                            <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                Your content goes here. This section maintains the max-width-7xl alignment 
+                                on the left side while the right image extends to the edge.
+                            </p>
+                            <div>
+                                <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                                    Explore Properties
+                                </Link>
                             </div>
                         </div>
-                        
-                        {/* Right side - Full width image */}
-                        <div className='relative w-1/2 h-full min-h-[400px] lg:min-h-[600px]'>
-                          
+                    </div>
+                    
+                    {/* Desktop: Absolute positioned content over image */}
+                    <div className="absolute inset-0 hidden lg:block">
+                        <div className='max-w-7xl py-8 sm:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]'>
+                            {/* Left side - Content */}
+                            <div className='w-full lg:w-1/2 flex flex-col'>
+                                <div className='flex-grow flex flex-col justify-center'>
+                                    <div className='lg:pr-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
+                                        <h2 className='font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-black'>
+                                            Your Heading Here
+                                        </h2>
+                                        <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                            Your content goes here. This section maintains the max-width-7xl alignment 
+                                            on the left side while the right image extends to the edge.
+                                        </p>
+                                        <p className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'>
+                                            Your content goes here. This section maintains the max-width-7xl alignment 
+                                            on the left side while the right image extends to the edge.
+                                        </p>
+                                        <div>
+                                            <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-full hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                                                Explore Properties
+                                            </Link>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* Right side - Image placeholder (hidden on mobile) */}
+                            <div className='relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px]'>
+                              
+                            </div>
                         </div>
                     </div>
-                   </div>
                 </section>
 
-
             {/* Dark Section with Centered Content */}
-            <section className='w-full py-20 bg-slate-900'>
-                <div className='max-w-4xl mx-auto px-4 text-center'>
+            <section className='w-full py-12 sm:py-16 lg:py-20 bg-slate-900'>
+                <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
                     {/* H2 Title */}
-                    <p className='text-gray-400 text-sm uppercase tracking-wider mb-4'>
+                    <p className='text-gray-400 text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4'>
                         H2 Title
                     </p>
                     
                     {/* Main Title */}
-                    <h2 className='text-white text-4xl lg:text-6xl font-playfair font-light mb-8'>
+                    <h2 className='text-white text-2xl sm:text-4xl lg:text-6xl font-playfair font-light mb-6 sm:mb-8 leading-tight'>
                         Main Title
                     </h2>
                     
                     {/* Description */}
-                    <p className='text-gray-300 text-lg leading-relaxed max-w-3xl mx-auto'>
+                    <p className='text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto'>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna 
                         aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
                     </p>

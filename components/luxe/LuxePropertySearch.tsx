@@ -154,24 +154,24 @@ export default function LuxePropertySearch({
       </div>
 
       {/* Results Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 mb-6">
         <div className="flex items-center space-x-4">
           <span className="text-lg font-medium text-gray-800">
-            {resultsCount} Property found
+        {resultsCount} Property found
           </span>
           <span className="text-gray-500">•</span>
           <span className="text-gray-600">
-            Community: {communityFilter}
+        Community: {communityFilter}
           </span>
         </div>
 
         {hasActiveFilters && (
           <button
-            onClick={handleClearFilters}
-            className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors"
+        onClick={handleClearFilters}
+        className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition-colors w-fit"
           >
-            <X className="w-4 h-4" />
-            <span>Clear Filters</span>
+        <X className="w-4 h-4" />
+        <span>Clear Filters</span>
           </button>
         )}
       </div>

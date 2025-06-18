@@ -33,17 +33,17 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
   }
 
   return (
-    <div className={cn("w-full py-12", className)}>
-      <div className="max-w-4xl mx-auto px-4">
+    <div className={cn("w-full py-8 sm:py-12", className)}>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Search Mode Toggle */}
-        <div className="flex items-center gap-4 justify-center mb-6">
-          <div className="flex items-center space-x-8">
+        <div className="flex items-center justify-center mb-6 sm:mb-8">
+          <div className="flex items-center space-x-4 sm:space-x-8 overflow-x-auto">
             {searchModes.map((mode) => (
               <button
                 key={mode}
                 onClick={() => setSearchMode(mode)}
                 className={cn(
-                  "relative pb-2 text-lg transition-colors duration-200",
+                  "relative pb-2 text-base sm:text-lg transition-colors duration-200 whitespace-nowrap",
                   searchMode === mode
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
@@ -60,22 +60,20 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
 
         {/* Search Bar */}
         <div className="relative">
-            <div className="flex items-center focus-within:border-slate-500 bg-background border border-border rounded-full overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center focus-within:border-slate-500 bg-background border border-border rounded-2xl sm:rounded-full overflow-hidden">
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Search for properties, locations, or keywords..."
-              className="outline-none flex-1 border-0 focus:ring-white text-lg focus:outline-none focus:outline-hidden  py-6 px-4 shadow-none"
+              className="outline-none flex-1 border-0 focus:ring-white text-base sm:text-lg focus:outline-none focus:outline-hidden py-4 sm:py-6 px-4 sm:px-6 shadow-none rounded-none"
               autoComplete="off"
               autoCorrect="off"
               spellCheck="false"
             />
             
             {/* Separator and Actions */}
-            <div className="flex items-center pr-4">
-              <div className="h-6 w-px bg-border mx-3" />
-              
+            <div className="flex items-center justify-between sm:justify-end px-4 sm:pr-4 py-3 sm:py-0 border-t sm:border-t-0 sm:border-l border-border">
               {/* Filter Button */}
               <Popover open={isFilterOpen} onOpenChange={setIsFilterOpen}>
               <PopoverTrigger asChild>
@@ -84,11 +82,11 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
                 size="sm"
                 className="flex items-center space-x-2 text-muted-foreground hover:text-foreground px-3 py-2"
                 >
-                <Filter className=" stroke-1 size-5" />
-                <span>Filter</span>
+                <Filter className="stroke-1 size-4 sm:size-5" />
+                <span className="text-sm sm:text-base">Filter</span>
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-96 pt-3" align="end">
+              <PopoverContent className="w-80 sm:w-96 pt-3" align="end">
                 <div className="bg-white p-4 rounded-lg border">
                   <div className="space-y-4">
                 <h4 className="font-medium leading-none">Filters</h4>

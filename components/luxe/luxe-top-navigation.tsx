@@ -8,11 +8,12 @@ const TopNavigation = dynamic(() => import("@/components/top-navigation"), {
 });
 import Link from "next/link";
 import {usePathname} from 'next/navigation'
-import {Phone, User} from 'lucide-react';
+import {Phone, User, Menu, X} from 'lucide-react';
 
 function LuxeTopNavigation() {
     const [scroll, setScroll] = useState(0)
     const [isHomePage, setIsHomePage] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const pathname = usePathname()
 
     // Memoize the check for homepage
@@ -34,19 +35,46 @@ function LuxeTopNavigation() {
         };
     }, [handleScroll])
 
-   
+    // Close mobile menu when route changes
+    useEffect(() => {
+        setIsMobileMenuOpen(false)
+    }, [pathname])
+
+    // Prevent body scroll when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden'
+        } else {
+            document.body.style.overflow = 'unset'
+        }
+        
+        return () => {
+            document.body.style.overflow = 'unset'
+        }
+    }, [isMobileMenuOpen])
+
+    const toggleMobileMenu = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen)
+    }
+
+    const navigationLinks = [
+        { href: '/luxe', label: 'Home' },
+        { href: '/luxe/properties', label: 'Properties' },
+        { href: '/luxe/our-team', label: 'Agents' },
+        { href: '/luxe/pages', label: 'Pages' },
+        { href: '/luxe/contact', label: 'Contact' },
+    ]
 
     return (
         <>
-       
-<div className={`z-30 py-4 px-6  w-full lg:fixed ${scroll || !isHomePage ? 'bg-black shadow-lg' : 'bg-black lg:bg-transparent'} `}>
-                <div className={'max-w-7xl px-6 mx-auto'}>
-                    <div className={'max-w-7xl relative mx-auto flex justify-between items-center'}>
-                        <div className={'hidden lg:flex space-x-8'}>
+            <div className={`z-50 py-4 px-4 sm:px-6 w-full fixed transition-all duration-300 ${scroll || !isHomePage ? 'bg-black shadow-lg' : 'bg-black lg:bg-transparent'}`}>
+                <div className={'max-w-7xl mx-auto'}>
+                    <div className={'relative flex justify-between items-center'}>
+                        
+                        {/* Desktop Logo */}
+                        <div className={'hidden lg:flex'}>
                             <Link href={'/'} aria-label={'TRPE Home'}>
-                                <span className="sr-only">
-                                    TRPE Home
-                                </span>
+                                <span className="sr-only">TRPE Home</span>
                                 <svg width="38" height="64" viewBox="0 0 38 64" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -54,58 +82,135 @@ function LuxeTopNavigation() {
                                         fill="white"></path>
                                 </svg>
                             </Link>
-
                         </div>
-                         <div className="flex-grow flex items-center justify-center">
+
+                        {/* Mobile Logo */}
+                        <div className="lg:hidden flex-1 flex justify-center">
+                            <Link href={'/'} aria-label={'TRPE Home'}>
+                                <img
+                                    src={'/trpe-logo.webp'} 
+                                    alt="TRPE Logo" 
+                                    width={180} 
+                                    height={32}
+                                    className="h-8 w-auto"
+                                    loading="eager"
+                                />
+                            </Link>
+                        </div>
+
+                        {/* Desktop Navigation */}
+                        <div className="hidden lg:flex flex-grow items-center justify-center">
                             <nav className={'flex space-x-8 items-center'}> 
-                                <Link href={'/luxe'} className={'text-white hover:text-gray-300'}>
-                                    Home
-                                </Link>
-                                <Link href={'/luxe/properties'} className={'text-white hover:text-gray-300'}>
-                                   Properties
-                                </Link>
-                                <Link href={'/luxe/our-team'} className={'text-white hover:text-gray-300'}>
-                                    Agents
-                                </Link>
-                                <Link href={'/luxe/pages'} className={'text-white hover:text-gray-300'}>
-                                    Pages
-                                </Link>
-                                <Link href={'/luxe/contact'} className={'text-white hover:text-gray-300'}>
-                                    Contact
-                                </Link>
+                                {navigationLinks.map((link) => (
+                                    <Link 
+                                        key={link.href}
+                                        href={link.href} 
+                                        className={`text-white hover:text-amber-400 transition-colors duration-200 font-medium ${
+                                            pathname === link.href ? 'text-amber-400' : ''
+                                        }`}
+                                    >
+                                        {link.label}
+                                    </Link>
+                                ))}
                             </nav>
-                         </div>
-                        <div className={'lg:hidden bg-black flex items-center p-2 grow justify-between'}>
-
-                            <div className="flex-1 flex justify-center">
-                                <Link className={''} href={'/'}>
-                                    <img
-                                        src={'/trpe-logo.webp'} 
-                                        alt="TRPE Logo" 
-                                        width={213} 
-                                        height={40}
-                                        loading="eager"
-                                    />
-                                </Link>
-                            </div>
                         </div>
 
-                        <div className="hidden lg:flex space-x-6 items-center">
+                        {/* Desktop Profile Button */}
+                        <div className="hidden lg:flex items-center">
                             <Link href={'/contact-us'}
                                   aria-label={'Contact Us'}
-                                  className="text-white flex items-center rounded-3xl border border-white px-6 py-2 hover:text-black hover:bg-white">
-                                <User size={24} className='stroke-1 mr-2' />
-                                <span className="text-slate-300">Profile</span>
+                                  className="text-white flex items-center rounded-full border border-white px-6 py-2 hover:text-black hover:bg-white transition-all duration-200">
+                                <User size={20} className='stroke-1 mr-2' />
+                                <span className="text-slate-300 hover:text-black">Profile</span>
                             </Link>
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <div className="lg:hidden">
+                            <button
+                                onClick={toggleMobileMenu}
+                                className="text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
+                                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                            >
+                                {isMobileMenuOpen ? (
+                                    <X size={24} />
+                                ) : (
+                                    <Menu size={24} />
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* Mobile Menu Overlay */}
+            {isMobileMenuOpen && (
+                <div 
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    onClick={toggleMobileMenu}
+                />
+            )}
 
+            {/* Mobile Menu Drawer */}
+            <div className={`fixed top-0 right-0 h-full w-80 bg-black z-50 transform transition-transform duration-300 ease-in-out lg:hidden ${
+                isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}>
+                <div className="flex flex-col h-full">
+                    {/* Mobile Menu Header */}
+                    <div className="flex items-center justify-between p-6 border-b border-gray-800">
+                        <Link href={'/'} onClick={toggleMobileMenu}>
+                            <img
+                                src={'/trpe-logo.webp'} 
+                                alt="TRPE Logo" 
+                                width={160} 
+                                height={30}
+                                className="h-7 w-auto"
+                            />
+                        </Link>
+                        <button
+                            onClick={toggleMobileMenu}
+                            className="text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
+                            aria-label="Close menu"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
+
+                    {/* Mobile Navigation Links */}
+                    <nav className="flex-1 py-6">
+                        <div className="space-y-1">
+                            {navigationLinks.map((link) => (
+                                <Link
+                                    key={link.href}
+                                    href={link.href}
+                                    onClick={toggleMobileMenu}
+                                    className={`block px-6 py-4 text-lg font-medium transition-colors duration-200 ${
+                                        pathname === link.href 
+                                            ? 'text-amber-400 bg-amber-400/10 border-r-2 border-amber-400' 
+                                            : 'text-white hover:text-amber-400 hover:bg-white/5'
+                                    }`}
+                                >
+                                    {link.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </nav>
+
+                    {/* Mobile Menu Footer */}
+                    <div className="p-6 border-t border-gray-800">
+                        <Link 
+                            href={'/contact-us'}
+                            onClick={toggleMobileMenu}
+                            className="flex items-center justify-center w-full rounded-full border border-white px-6 py-3 text-white hover:text-black hover:bg-white transition-all duration-200"
+                        >
+                            <User size={20} className='stroke-1 mr-2' />
+                            <span>Profile</span>
+                        </Link>
+                    </div>
+                </div>
+            </div>
         </>
-    )
-        ;
+    );
 }
 
 // Memoize the entire component to prevent unnecessary re-renders

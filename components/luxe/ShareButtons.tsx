@@ -1,4 +1,6 @@
-import { Facebook, Share2, MessageCircle, Twitter } from 'lucide-react';
+'use client';
+
+import { Facebook, Share2, MessageCircle, Twitter, Copy } from 'lucide-react';
 import { Insight } from '@/types/insight';
 
 interface ShareButtonsProps {
@@ -42,7 +44,22 @@ export function ShareButtons({ insight }: ShareButtonsProps) {
 
   return (
     <div className="flex flex-wrap gap-2 sm:gap-3">
+
+      {/* Copuy */}
+      <button
+        onClick={() => {
+          navigator.clipboard?.writeText(currentUrl);
+          alert('Link copied to clipboard!');
+        }}
+        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 text-white rounded-full hover:bg-gray-900 transition-colors"
+        aria-label="Copy Link"
+      >
+        <Copy size={16} className="sm:w-[18px] sm:h-[18px]" />
+      </button>
+
       {/* Facebook */}
+
+      
       <button
         onClick={() => handleShare('facebook')}
         className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"

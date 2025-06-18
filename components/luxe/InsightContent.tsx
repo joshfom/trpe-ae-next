@@ -11,10 +11,6 @@ export function InsightContent({ insight }: InsightContentProps) {
   
   return (
     <article className="prose prose-lg max-w-none">
-      {/* Article Title - Hidden on mobile since it's in the header */}
-      <h1 className="hidden lg:block text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-8 leading-tight">
-        {insight.title}
-      </h1>
 
       {/* Mobile Title */}
       <h1 className="block lg:hidden text-2xl sm:text-3xl font-light text-gray-900 mb-6 leading-tight">
@@ -32,12 +28,12 @@ export function InsightContent({ insight }: InsightContentProps) {
 
         {/* Content Image */}
         <div className="relative w-full h-48 sm:h-64 lg:h-80 xl:h-96 rounded-lg overflow-hidden my-6 sm:my-8">
-          <Image
+          <img
             src={insight.imageUrl}
             alt={insight.title}
-            fill
-            className="object-cover"
+            className="w-full h-full object-cover"
           />
+
         </div>
 
         {/* Section Title */}

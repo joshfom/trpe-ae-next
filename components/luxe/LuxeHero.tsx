@@ -2,7 +2,7 @@ import React from 'react';
 
 const LuxeHero: React.FC = () => {
   return (
-    <div className="relative w-full overflow-hidden" style={{ height: 'calc(100vh - 220px)' }}>
+    <div className="relative w-full overflow-hidden h-[50vh] sm:h-[60vh] md:h-[70vh] lg:h-[80vh] xl:h-[calc(100vh-220px)]">
       {/* Background Image */}
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -12,13 +12,13 @@ const LuxeHero: React.FC = () => {
       />
       
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" />
+      <div className="absolute inset-0 bg-black bg-opacity-40 sm:bg-opacity-50" />
       
       {/* Content */}
-      <div className="relative z-10 flex h-full items-center justify-center">
-        <h1 className="text-center text-6xl md:text-8xl lg:text-9xl font-bold text-white leading-tight tracking-wide font-playfair">
-          Let Your<br />
-          Dream Fine
+      <div className="relative z-10 flex h-full items-center justify-center px-4 sm:px-6 lg:px-8">
+        <h1 className="text-center text-3xl sm:text-4xl md:text-6xl lg:text-8xl xl:text-9xl font-bold text-white leading-tight tracking-wide font-playfair">
+          <span className="block">Let Your</span>
+          <span className="block">Dream Fine</span>
         </h1>
       </div>
     </div>

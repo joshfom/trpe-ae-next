@@ -45,7 +45,7 @@ export default function LuxePropCard({
   return (
     <div className={cn("bg-white overflow-hidden transition-transform transform hover:scale-105", className)}>
       {/* Property Image */}
-    <div className="relative h-80 w-full overflow-hidden">
+    <div className="relative h-48 sm:h-64 lg:h-80 w-full overflow-hidden">
       <img
         src={imageUrl}
         alt={title}
@@ -54,25 +54,25 @@ export default function LuxePropCard({
     </div>
 
       {/* Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Title and Location */}
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold text-gray-900 mb-1">
+        <div className="mb-3 sm:mb-4">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-1 line-clamp-2">
             {title}
           </h3>
-          <p className="text-gray-600 text-sm">
+          <p className="text-gray-600 text-sm line-clamp-1">
             {location}
           </p>
         </div>
 
         {/* Rating and Price Row */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           {/* Rating Stars */}
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, index) => (
               <Star
                 key={index}
-                className={`w-4 h-4 ${
+                className={`w-3 h-3 sm:w-4 sm:h-4 ${
                   index < rating
                     ? "fill-yellow-400 text-yellow-400"
                     : "fill-gray-200 text-gray-200"
@@ -83,16 +83,16 @@ export default function LuxePropCard({
 
           {/* Price */}
           <div className="text-right">
-            <span className="text-2xl font-bold text-gray-900">
+            <span className="text-lg sm:text-2xl font-bold text-gray-900">
               {currency} {formatPrice(price)}
             </span>
           </div>
         </div>
 
         {/* Property Details */}
-        <div className="border-t border-slate-400 pt-4">
+        <div className="border-t border-slate-400 pt-3 sm:pt-4">
           <div className="flex items-center justify-between text-gray-700">
-            <span className="text-lg font-medium">
+            <span className="text-sm sm:text-lg font-medium">
               {beds} beds - {baths} baths - {formatSqft(sqft)} sq. ft.
             </span>
           </div>
