@@ -339,7 +339,7 @@ export default function LuxuryCommunities({ className = "" }: LuxuryCommunitiesP
           viewport={{ once: false, amount: 0.5 }}
         >
           <h2 className="text-4xl lg:text-5xl font-playfair font-light text-gray-900 mb-4">
-            Dubai's Most Coveted Corners
+            Dubai&apos;s Most Coveted Corners
           </h2>
         </motion.div>
         

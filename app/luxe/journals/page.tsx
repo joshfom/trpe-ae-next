@@ -79,7 +79,7 @@ export default function InsightsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.0, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
             >
-              Stay updated with the latest trends and insights from Dubai's luxury real estate market
+              Stay updated with the latest trends and insights from Dubai&apos;s luxury real estate market
             </motion.p>
           </motion.div>
         </div>

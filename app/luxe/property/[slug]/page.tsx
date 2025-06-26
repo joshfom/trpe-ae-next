@@ -541,7 +541,7 @@ export default function PropertyDetailPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  FAQ's
+                  FAQ&apos;s
                 </motion.h2>
                 
                 <motion.div

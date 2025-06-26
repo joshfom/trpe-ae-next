@@ -360,7 +360,7 @@ export default function HomeLandPage() {
                 viewport={{ amount: 0.8 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                Experience unparalleled luxury in Dubai's most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
+                Experience unparalleled luxury in Dubai&apos;s most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
               </motion.p>
               <motion.p 
                 className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
@@ -420,7 +420,7 @@ export default function HomeLandPage() {
                       viewport={{ amount: 0.8 }}
                       transition={{ duration: 1.0, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      Experience unparalleled luxury in Dubai's most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
+                      Experience unparalleled luxury in Dubai&apos;s most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
                     </motion.p>
                     <motion.p 
                       className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
@@ -510,7 +510,7 @@ export default function HomeLandPage() {
               viewport={{}}
               transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              Explore cutting-edge architectural masterpieces that define Dubai's skyline. Each development represents innovation in luxury living with world-class amenities.
+              Explore cutting-edge architectural masterpieces that define Dubai&apos;s skyline. Each development represents innovation in luxury living with world-class amenities.
             </motion.p>
             <motion.p 
               className='text-base sm:text-lg text-gray-200 mb-6 sm:mb-8 leading-relaxed'
@@ -686,7 +686,7 @@ export default function HomeLandPage() {
                 viewport={{}}
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
-                Discover rare opportunities in Dubai's most coveted neighborhoods. These exclusive properties offer privacy, prestige, and unmatched luxury amenities.
+                Discover rare opportunities in Dubai&apos;s most coveted neighborhoods. These exclusive properties offer privacy, prestige, and unmatched luxury amenities.
               </motion.p>
               <motion.p 
                 className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
@@ -742,7 +742,7 @@ export default function HomeLandPage() {
                       viewport={{}}
                       transition={{ duration: 1.0, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      Discover rare opportunities in Dubai's most coveted neighborhoods. These exclusive properties offer privacy, prestige, and unmatched luxury amenities.
+                      Discover rare opportunities in Dubai&apos;s most coveted neighborhoods. These exclusive properties offer privacy, prestige, and unmatched luxury amenities.
                     </motion.p>
                     <motion.p 
                       className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
@@ -815,7 +815,7 @@ export default function HomeLandPage() {
               variants={animationVariants.fadeInUp}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
-              Experience the pinnacle of luxury living in Dubai's most prestigious developments. Each property is meticulously crafted to offer unparalleled comfort, sophistication, and lifestyle amenities that exceed every expectation.
+              Experience the pinnacle of luxury living in Dubai&apos;s most prestigious developments. Each property is meticulously crafted to offer unparalleled comfort, sophistication, and lifestyle amenities that exceed every expectation.
             </motion.p>
           </div>
         </motion.section>
@@ -1038,13 +1038,13 @@ export default function HomeLandPage() {
                   transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
                   <p className='text-gray-700 text-lg leading-relaxed mb-6'>
-                    In a world that celebrates noise, we chose something quieter. TRPE didn't begin with a billboard or a bold claim. It began with a single key handed over in trust. A young agent in London, showing homes not as products, but as places where lives quietly unfold.
+                    In a world that celebrates noise, we chose something quieter. TRPE didn&apos;t begin with a billboard or a bold claim. It began with a single key handed over in trust. A young agent in London, showing homes not as products, but as places where lives quietly unfold.
                   </p>
                   <p className='text-gray-700 text-lg leading-relaxed mb-6'>
                     From that beginning, something rare took shape. Word by word. Name by name. Clients became believers. Believers became our community. No noise. No pressure. Only presence.
                   </p>
                   <p className='text-gray-700 text-lg leading-relaxed mb-8'>
-                    When Dubai opened its doors to global ambition, we brought the same mindset to a new skyline. We didn't follow trends, we followed trust. TRPE Luxe was never built to compete. It was built to belong. This is our story. Not in headlines but in homes.
+                    When Dubai opened its doors to global ambition, we brought the same mindset to a new skyline. We didn&apos;t follow trends, we followed trust. TRPE Luxe was never built to compete. It was built to belong. This is our story. Not in headlines but in homes.
                   </p>
                   
                   {/* CTA Button */}
@@ -1299,7 +1299,7 @@ export default function HomeLandPage() {
                     transition={{ duration: 0.8, delay: 0.3 }}
                     whileHover={{ scale: 1.02 }}
                   >
-                    Discover Dubai's Most Prestigious Developments
+                    Discover Dubai&apos;s Most Prestigious Developments
                     <br />
                     Where Luxury Meets Innovation
                   </motion.h2>

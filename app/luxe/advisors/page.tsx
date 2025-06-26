@@ -34,21 +34,21 @@ const OurTeamPage: React.FC = () => {
       image: "https://images.unsplash.com/photo-1494790108755-2616b612b786?q=80&w=3387&auto=format&fit=crop",
       description: `With over a decade of experience as a television host and producer, Hedieh Tazeh is a well-known and trusted name in media — admired for her elegance, authenticity, and natural ability to connect with people. Her work in front of the camera was built on trust, presence, and powerful storytelling — qualities that continue to define her today.
 
-With her experience in UK real estate and a strong background in media, Hedieh brings her signature poise and professionalism into a bold new arena: Dubai's luxury property market. As the face of LUXE by TRPE, the exclusive luxury division of TRPE, she offers a fresh and elevated approach to Dubai's dynamic property market.
+With her experience in UK real estate and a strong background in media, Hedieh brings her signature poise and professionalism into a bold new arena: Dubai&apos;s luxury property market. As the face of LUXE by TRPE, the exclusive luxury division of TRPE, she offers a fresh and elevated approach to Dubai&apos;s dynamic property market.
 
 Her goal? To offer each client not just a home — but a complete experience, an elevated lifestyle, and a genuine sense of belonging.
 
-Whether you're looking for a stunning residence, a high-value investment, or a trusted guide in Dubai's competitive real estate space, Hedieh Tazeh is here to lead you — with integrity, heart, and style.`
+Whether you&apos;re looking for a stunning residence, a high-value investment, or a trusted guide in Dubai&apos;s competitive real estate space, Hedieh Tazeh is here to lead you — with integrity, heart, and style.`
     },
     {
       name: "Arya Parsa",
       title: "Luxury Advisor",
       image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=3387&auto=format&fit=crop",
-      description: `With a strong foundation in media as both a host, producer and director, Arya Parsa has spent over a decade building trust and presence on screen. Known for his refined communication style and natural ability to connect, Arya's career has been shaped by authenticity, clarity, and a deep understanding of people.
+      description: `With a strong foundation in media as both a host, producer and director, Arya Parsa has spent over a decade building trust and presence on screen. Known for his refined communication style and natural ability to connect, Arya&apos;s career has been shaped by authenticity, clarity, and a deep understanding of people.
 
-Having also gained experience in the UK real estate market, Arya now brings this powerful combination of media expertise and property knowledge to Dubai. As a key figure at LUXE by TRPE, he offers clients a tailored and sophisticated approach to luxury living in one of the world's most vibrant cities.
+Having also gained experience in the UK real estate market, Arya now brings this powerful combination of media expertise and property knowledge to Dubai. As a key figure at LUXE by TRPE, he offers clients a tailored and sophisticated approach to luxury living in one of the world&apos;s most vibrant cities.
 
-Arya's mission is clear: to help clients discover more than just exceptional properties — he aims to deliver an immersive experience, an elevated lifestyle, and a trusted relationship built on integrity and insight.
+Arya&apos;s mission is clear: to help clients discover more than just exceptional properties — he aims to deliver an immersive experience, an elevated lifestyle, and a trusted relationship built on integrity and insight.
 
 Whether you are searching for a dream residence or a smart investment, Arya Parsa is here to guide you with professionalism, vision, and style.`
     }

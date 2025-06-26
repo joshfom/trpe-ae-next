@@ -75,7 +75,7 @@ export default function AboutPage() {
             }}
             transition={{ duration: 1.2, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            We believe that luxury real estate is more than just property—it's about creating extraordinary experiences 
+            We believe that luxury real estate is more than just property—it&apos;s about creating extraordinary experiences 
             and building lasting relationships with our clients through unparalleled service and expertise.
           </motion.p>
         </div>
@@ -86,8 +86,3 @@ export default function AboutPage() {
     </motion.div>
   );
 }
-
-export const metadata = {
-  title: 'About Us | Luxe Real Estate',
-  description: 'Learn about our story and commitment to luxury real estate excellence.',
-};
