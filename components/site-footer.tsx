@@ -685,7 +685,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                             </div>
                             <Link className={'text-lg '} href={'/communities'}>Communities</Link>
                             <Link className={'text-lg '} href={'/off-plan'}>New Projects</Link>
-                            <Link className={'text-lg '} href={'/luxury-properties-for-sale-dubai'}>Luxe by TRPE</Link>
+                            <Link className={'text-lg '} href={'/luxe'}>Luxe by TRPE</Link>
                             <Link className={'text-lg '} href={'/insights'}>Insights</Link>
                             <Link className={'text-lg '} href={'/about-us'}>About Us</Link>
                             <Link className={'text-lg '} href={'/contact-us'}>Contact Us</Link>
