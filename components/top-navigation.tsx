@@ -255,7 +255,7 @@ function TopNavigation() {
                     <Link href={'/insights'}>
                         <TextBorderAnimation text="Insights"/>
                     </Link>
-                    <Link href={'/luxury-properties-for-sale-dubai'}>
+                    <Link href={'/luxe'}>
                         <TextBorderAnimation text="Luxe by TRPE"/>
                     </Link>
 

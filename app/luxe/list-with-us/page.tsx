@@ -1,46 +1,129 @@
+"use client"
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { motion } from "framer-motion";
+
+// Animation variants following the main page pattern
+const fadeInUp = {
+  initial: { opacity: 0, y: 80 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }
+};
+
+const fadeInScale = {
+  initial: { opacity: 0, scale: 0.92 },
+  animate: { opacity: 1, scale: 1 },
+  transition: { duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const slideInLeft = {
+  initial: { opacity: 0, x: -120 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 1.3, ease: [0.25, 0.1, 0.25, 1] }
+};
+
+const slideInRight = {
+  initial: { opacity: 0, x: 120 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 1.3, ease: [0.25, 0.1, 0.25, 1] }
+};
 
 export default function ListWithUsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <motion.div 
+      className="min-h-screen bg-white"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       {/* Hero Section - Sell your property easily on TRPE */}
-      <section className="relative bg-gray-50 py-20 lg:py-32 overflow-hidden">
+      <motion.section 
+        className="relative bg-gray-50 py-12 sm:py-16 lg:py-32 overflow-hidden"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={staggerContainer}
+      >
         {/* Background architectural elements */}
-        <div className="absolute inset-0 opacity-10">
+        <motion.div 
+          className="absolute inset-0 opacity-10"
+          variants={fadeInScale}
+        >
           <div className="absolute top-10 right-10 w-64 h-64 bg-gradient-to-br from-blue-200 to-gray-200 rounded-lg transform rotate-12"></div>
           <div className="absolute bottom-20 right-32 w-48 h-48 bg-gradient-to-br from-gray-300 to-blue-100 rounded-lg transform -rotate-6"></div>
           <div className="absolute top-32 right-48 w-32 h-32 bg-gradient-to-br from-blue-100 to-gray-100 rounded-lg transform rotate-45"></div>
-        </div>
+        </motion.div>
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
             {/* Left Content */}
-            <div className="relative z-10">
-              <h1 className="text-4xl lg:text-5xl xl:text-6xl font-light text-slate-900 mb-8 leading-tight">
+            <motion.div 
+              className="relative z-10"
+              variants={slideInLeft}
+            >
+              <motion.h1 
+                className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-light text-slate-900 mb-6 sm:mb-8 leading-tight"
+                initial={{ opacity: 0, y: 100 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.4, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                whileHover={{ scale: 1.01 }}
+              >
                 Sell your property<br />
                 easily on TRPE.
-              </h1>
+              </motion.h1>
               
-              <p className="text-lg text-gray-700 mb-10 leading-relaxed max-w-lg">
+              <motion.p 
+                className="text-base sm:text-lg text-gray-700 mb-8 sm:mb-10 leading-relaxed max-w-lg"
+                initial={{ opacity: 0, y: 60 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              >
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
                 labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo 
                 viverra maecenas accumsan lacus vel facilisis.
-              </p>
+              </motion.p>
               
-              <button className="bg-slate-900 text-white px-8 py-4 rounded-full text-lg font-medium hover:bg-slate-800 transition-colors duration-300 shadow-lg hover:shadow-xl">
-                Apply Now
-              </button>
-            </div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.0, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <motion.button 
+                  className="bg-slate-900 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-medium hover:bg-slate-800 transition-colors duration-300 shadow-lg hover:shadow-xl"
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  Apply Now
+                </motion.button>
+              </motion.div>
+            </motion.div>
             
             {/* Right Side - Architectural Visualization */}
-            <div className="relative">
+            <motion.div 
+              className="relative"
+              variants={slideInRight}
+            >
               {/* Main building structure */}
-              <div className="relative">
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              >
                 {/* Background buildings */}
                 <div className="absolute top-8 right-16 w-32 h-48 bg-gradient-to-b from-gray-200 to-gray-300 opacity-60 rounded-t-lg"></div>
                 <div className="absolute top-12 right-32 w-24 h-40 bg-gradient-to-b from-gray-300 to-gray-400 opacity-40 rounded-t-lg"></div>
@@ -64,24 +147,42 @@ export default function ListWithUsPage() {
                 {/* Floating elements */}
                 <div className="absolute top-16 left-8 w-16 h-16 bg-gradient-to-br from-blue-200 to-blue-300 rounded-lg opacity-70 transform rotate-12"></div>
                 <div className="absolute bottom-16 left-16 w-12 h-12 bg-gradient-to-br from-gray-200 to-gray-300 rounded-lg opacity-50 transform -rotate-6"></div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Trusted Agencies Section */}
-      <section className="bg-slate-900 py-16 lg:py-20">
+      <motion.section 
+        className="bg-slate-900 py-12 sm:py-16 lg:py-20"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true, margin: "-200px", amount: 0.3 }}
+        variants={staggerContainer}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Title */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-light text-white mb-4">
+          <motion.div 
+            className="text-center mb-8 sm:mb-12"
+            variants={fadeInUp}
+          >
+            <motion.h2 
+              className="text-2xl sm:text-3xl lg:text-4xl font-light text-white mb-3 sm:mb-4"
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.8 }}
+              transition={{ duration: 1.0, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+            >
               Trusted by TRPE leading agencies
-            </h2>
-          </div>
+            </motion.h2>
+          </motion.div>
           
           {/* Logo Placeholders */}
-          <div className="flex justify-center items-center space-x-8 lg:space-x-12">
+          <motion.div 
+            className="flex justify-center items-center space-x-8 lg:space-x-12"
+            variants={fadeInScale}
+          >
             {Array.from({ length: 5 }).map((_, index) => (
               <div 
                 key={index}
@@ -90,9 +191,9 @@ export default function ListWithUsPage() {
                 <div className="w-12 h-12 lg:w-16 lg:h-16 bg-gray-200 rounded"></div>
               </div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Luxury Communities Section */}
       <section className="bg-white py-20 lg:py-32">
@@ -456,6 +557,6 @@ export default function ListWithUsPage() {
           </Accordion>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }
