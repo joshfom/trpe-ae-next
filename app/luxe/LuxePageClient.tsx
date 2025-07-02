@@ -861,7 +861,7 @@ export default function LuxePageClient({
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                   >
-                    <Link href="/villas" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
+                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
                       Explore Special Villas
                       <motion.svg 
                         className='ml-2 w-5 h-5' 
@@ -944,7 +944,7 @@ export default function LuxePageClient({
                     whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Link href="/apartments" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
+                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
                       Discover Unique Apartments
                       <motion.svg 
                         className='ml-2 w-5 h-5' 
@@ -1028,7 +1028,7 @@ export default function LuxePageClient({
                       whileTap={{ scale: 0.98 }}
                       transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      <Link href="/about" className='inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-3xl hover:bg-gray-800 transition-colors text-base'>
+                      <Link href="/luxe/about-us" className='inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-3xl hover:bg-gray-800 transition-colors text-base'>
                         Discover Our Story
                       </Link>
                     </motion.div>
@@ -1285,7 +1285,7 @@ export default function LuxePageClient({
                     transition={{ duration: 0.2 }}
                   >
                     <Link 
-                      href="/properties" 
+                      href="/luxe/dubai/properties" 
                       className='inline-flex items-center px-12 py-4 bg-slate-900 text-white rounded-3xl hover:bg-slate-800 transition-colors font-medium text-lg'
                     >
                       View All Properties
