@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Star, MapPin, Bed, Bath, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -8,11 +9,13 @@ import { useState } from "react";
 
 interface LuxePropCardProps {
   id?: string;
+  slug?: string;
   title?: string;
   location?: string;
   price?: number;
   currency?: string;
   beds?: number;
+  showPrice?: boolean;
   baths?: number;
   sqft?: number;
   imageUrl?: string;
@@ -23,17 +26,19 @@ interface LuxePropCardProps {
 
 export default function LuxePropCard({
   id,
+  slug,
   title = "The Beverly House",
   location = "Beverly Hills, CA",
   price = 290000,
-  currency = "$",
+  currency = "AED",
   beds = 3,
+  showPrice = true,
   baths = 2,
   sqft = 1500,
   imageUrl = "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   rating = 5,
   className = "",
-  status = "For Rent"
+  status = "For Sale"
 }: LuxePropCardProps) {
   const formatPrice = (price: number) => {
     if (price >= 1000000) {
@@ -198,7 +203,7 @@ export default function LuxePropCard({
 
       {/* Content */}
       <motion.div 
-        className="py-6"
+        className="py-6 px-4"
         initial={{ opacity: 1 }}
       >
         {/* Location with Icon */}
@@ -213,16 +218,17 @@ export default function LuxePropCard({
             {location}
           </p>
         </motion.div>
-
         {/* Title */}
-        <motion.h3 
-          className="text-lg font-bold text-gray-900 mb-4 leading-tight"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-        >
-          {title}
-        </motion.h3>
+        <Link href={`/luxe/property/${slug}`}>
+          <motion.h3 
+            className="text-lg font-bold text-gray-900 mb-4 leading-tight hover:text-blue-600 transition-colors cursor-pointer"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
+          >
+            {title}
+          </motion.h3>
+        </Link>
 
         {/* Property Details */}
         <motion.div 
@@ -251,7 +257,9 @@ export default function LuxePropCard({
         </motion.div>
 
         {/* Price */}
-        <motion.div 
+       {
+        showPrice && (
+           <motion.div 
           className=" font-bold text-gray-900"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -259,7 +267,11 @@ export default function LuxePropCard({
         >
           {currency} {formatPrice(price)}
         </motion.div>
-      </motion.div>
+        )
+       }
+         </motion.div>
     </div>
+  
+
   );
 }

@@ -66,6 +66,8 @@ export const MenuItem = memo(({
     );
 });
 
+MenuItem.displayName = 'MenuItem';
+
 export const Menu = memo(({
                          setActive,
                          children,
@@ -88,6 +90,8 @@ export const Menu = memo(({
     );
 });
 
+Menu.displayName = 'Menu';
+
 export const HoveredLink = memo(({children, ...rest}: any) => {
     return (
         <Link
@@ -98,3 +102,5 @@ export const HoveredLink = memo(({children, ...rest}: any) => {
         </Link>
     );
 });
+
+HoveredLink.displayName = 'HoveredLink';

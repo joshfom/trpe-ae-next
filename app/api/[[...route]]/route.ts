@@ -6,6 +6,7 @@ import {HTTPException} from "hono/http-exception";
 import communities from "@/app/api/[[...route]]/communityRoute";
 import adminAgents from "@/app/api/[[...route]]/admin/adminAgentRoute";
 import adminCommunities from "@/app/api/[[...route]]/admin/admin-communities";
+import adminLuxeCommunities from "@/app/api/[[...route]]/admin/admin-luxe-communities";
 import properties from "@/app/api/[[...route]]/properties";
 import luxeRoute from "@/app/api/[[...route]]/luxeRoute";
 import unitTypes from "@/app/api/[[...route]]/unit-types";
@@ -43,6 +44,8 @@ const app = new Hono<{
 
     app.use("admin/*", async (c, next) => {
         const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+        console.log("Auth middleware - Session check:", session ? "Session found" : "No session");
 
         if (!session) {
             c.set("user", null);
@@ -91,6 +94,7 @@ const routes = app
     .route("/admin/insights", adminInsight)
     .route("/admin/developers", adminDevelopers)
     .route("/admin/communities", adminCommunities)
+    .route("/admin/luxe-communities", adminLuxeCommunities)
     .route("/admin/offering-types", adminOfferingTypeRoute)
     .route("/admin/property-types", adminPropertyTypeRoute)
     .route("/admin/offplans", adminOffplans)

@@ -7,7 +7,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose 
 import { Filter, ArrowRight, X, Home, Building2, Bed, DollarSign } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-type SearchMode = "Buy" | "Rent" | "Development"
+type SearchMode = "Buy" | "Rent" 
 
 interface LuxeMainSearchProps {
   className?: string
@@ -31,7 +31,7 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
 
-  const searchModes: SearchMode[] = ["Buy", "Rent", "Development"]
+  const searchModes: SearchMode[] = ["Buy", "Rent"]
 
   const handleSearch = () => {
     onSearch?.(searchQuery, searchMode)
@@ -167,7 +167,7 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
                       {/* Price Range */}
                       <div className="space-y-4">
                         <div className="flex items-center space-x-2">
-                          <DollarSign className="h-5 w-5 text-gray-600" />
+                          
                           <h3 className="text-lg font-medium text-gray-900">Price Range</h3>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
@@ -203,7 +203,7 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
                           <h3 className="text-lg font-medium text-gray-900">Property Type</h3>
                         </div>
                         <div className="grid grid-cols-2 gap-3">
-                          {["Apartment", "Villa", "Townhouse", "Penthouse", "Studio", "Office"].map((type) => (
+                          {["Apartment", "Villa", "Townhouse", "Penthouse", "Commercial"].map((type) => (
                             <Button
                               key={type}
                               variant={filters.propertyType === type ? "default" : "outline"}
@@ -224,7 +224,7 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
                           <h3 className="text-lg font-medium text-gray-900">Bedrooms</h3>
                         </div>
                         <div className="grid grid-cols-3 gap-3">
-                          {["Studio", "1", "2", "3", "4", "5+"].map((beds) => (
+                          {[ "1", "2", "3", "4", "5+"].map((beds) => (
                             <Button
                               key={beds}
                               variant={filters.bedrooms === beds ? "default" : "outline"}
@@ -294,7 +294,6 @@ export function LuxeMainSearch({ className, onSearch, onFilterChange }: LuxeMain
           <p className="text-sm text-muted-foreground">
             {searchMode === "Buy" && "Find your perfect property to purchase"}
             {searchMode === "Rent" && "Discover premium rental properties"}
-            {searchMode === "Development" && "Explore new development projects"}
           </p>
         </div>
       </div>

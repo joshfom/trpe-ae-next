@@ -6,17 +6,24 @@ export function AboutStory() {
     sections: [
       {
         id: 1,
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-        image: "/api/placeholder/500/400",
-        imageAlt: "Modern architectural building",
+        text: "In a world that celebrates noise, we chose something quieter.\nBut our silence wasn't easy, it was earned.\n\nIn 2006, a young agent stepped into the London property market with nothing but a license, determination, and a promise: to never sell homes like products. To sell space as possibility.\n\nThe early years were brutal. Markets crashed. Partnerships failed. Between 2007 and 2011, four ventures fell apart, each one a lesson, not a loss.\nThe hardest years of real estate became the foundation of something unshakable.",
+        image: "https://images.unsplash.com/photo-1544092683-c0c9ebb368e5?q=80&w=3251&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageAlt: "London property market early days",
         imagePosition: "right"
       },
       {
         id: 2,
-        text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.",
-        image: "/api/placeholder/500/400",
-        imageAlt: "Contemporary building design",
+        text: "In 2011, that foundation became Nazemi Property Consultancy, the first true shape of a vision built on consistency, clarity, and quiet ambition.\n\nBy 2019, with new momentum, ADN Holding was formed in London, followed by Fix My Property, a boutique renovation and maintenance firm born from a belief: real estate is not just about finding homes, but making them better.\n\nIn 2020, the vision evolved. A rebrand to TRPE, The Real Property Experts. No gimmicks. No noise. Just presence and process.\n\nAnd in 2022, TRPE crossed borders, bringing that same quiet trust to Dubai's bold skyline.",
+        image: "https://images.unsplash.com/photo-1544092683-c0c9ebb368e5?q=80&w=3251&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageAlt: "TRPE expansion to Dubai",
         imagePosition: "left"
+      },
+      {
+        id: 3,
+        text: "TRPE Luxe was born on 05.05.2025.\nNot as a launch. As a reveal.\n\nA response to a clear gap in the market: Dubai's luxury deserved something more, not louder, but deeper. Not flash, but feeling.\n\nBecause true luxury isn't a listing. It's a lived experience.\nAnd every experience begins with trust.",
+        image: "https://images.unsplash.com/photo-1544092683-c0c9ebb368e5?q=80&w=3251&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        imageAlt: "TRPE Luxe Dubai luxury properties",
+        imagePosition: "right"
       }
     ]
   };
@@ -61,12 +68,10 @@ export function AboutStory() {
                 section.imagePosition === 'left' ? 'lg:col-start-1 lg:row-start-1' : ''
               }`}>
                 <div className="relative h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden">
-                  <Image
+                  <img
                     src={section.image}
                     alt={section.imageAlt}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>

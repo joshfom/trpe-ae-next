@@ -14,4 +14,14 @@ type CommunityType = {
     createdAt: string;
     featured?: boolean;
     displayOrder?: number;
+    // Luxe fields
+    isLuxe?: boolean;
+    luxeName?: string;
+    luxeMetaTitle?: string;
+    luxeMetaDesc?: string;
+    luxeAbout?: string;
+    luxeImageUrl?: string;
+    luxeHeroImageUrl?: string;
+    luxeFeatured?: boolean;
+    luxeDisplayOrder?: number;
 }

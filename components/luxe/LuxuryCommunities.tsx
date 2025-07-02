@@ -250,59 +250,47 @@ const MobileCommunityCard = ({
   );
 };
 
-interface LuxuryCommunitiesProps {
-  className?: string;
+interface CommunityData {
+  id: string;
+  name: string;
+  location: string;
+  imageUrl: string;
+  propertyCount: number;
+  slug: string;
 }
 
-export default function LuxuryCommunities({ className = "" }: LuxuryCommunitiesProps) {
+interface LuxuryCommunitiesProps {
+  className?: string;
+  communities: CommunityData[];
+}
+
+export default function LuxuryCommunities({ className = "", communities }: LuxuryCommunitiesProps) {
   const [expandedIndex, setExpandedIndex] = useState(0); // Default first card expanded
   const [isAutoRotating, setIsAutoRotating] = useState(true);
 
-  const communities = [
-    {
-      id: "luxury-residences",
-      title: "Luxury Residences",
-      itemCount: 42,
-      imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/communities/apartments",
-      description: "Experience unparalleled elegance in our luxury residences, featuring exquisite design, premium amenities, and prime locations for the most discerning tastes."
-    },
-    {
-      id: "eco-green-buildings",
-      title: "Eco Green Buildings",
-      itemCount: 119,
-      imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/communities/villas",
-      description: "Sustainable luxury living with innovative green technologies, energy-efficient designs, and eco-friendly materials that harmonize with nature."
-    },
-    {
-      id: "unique-vacation-homes",
-      title: "Unique Vacation Homes",
-      itemCount: 99,
-      imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/communities/penthouses",
-      description: "Distinctive vacation retreats offering unique architectural concepts and exclusive amenities for extraordinary holiday experiences."
-    },
-    {
-      id: "modern-apartments",
-      title: "Modern Apartments",
-      itemCount: 156,
-      imageUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      href: "/communities/modern",
-      description: "Contemporary living spaces with cutting-edge design, smart home technology, and urban convenience for the modern lifestyle."
-    }
-  ];
+  // Transform communities data to match the expected format for display
+  const transformedCommunities = communities.map(community => ({
+    id: community.id,
+    title: community.name,
+    itemCount: community.propertyCount,
+    imageUrl: community.imageUrl,
+    href: `/communities/${community.slug}`,
+    description: `Discover luxury living in ${community.name}, ${community.location}. Experience world-class amenities and sophisticated design in one of Dubai's most prestigious communities.`
+  }));
+
+  // Use up to 4 communities for display
+  const finalCommunities = transformedCommunities.slice(0, 4);
 
   // Auto-rotation effect
   useEffect(() => {
     if (!isAutoRotating) return;
     
     const interval = setInterval(() => {
-      setExpandedIndex((prev) => (prev + 1) % communities.length);
+      setExpandedIndex((prev) => (prev + 1) % finalCommunities.length);
     }, 4000); // Change every 4 seconds
 
     return () => clearInterval(interval);
-  }, [isAutoRotating, communities.length]);
+  }, [isAutoRotating, finalCommunities.length]);
 
   const handleCardHover = (index: number) => {
     setIsAutoRotating(false); // Stop auto-rotation on hover
@@ -355,7 +343,7 @@ export default function LuxuryCommunities({ className = "" }: LuxuryCommunitiesP
           }}
           viewport={{ once: false, amount: 0.3 }}
         >
-          {communities.map((community, index) => (
+          {finalCommunities.map((community, index) => (
             <CommunityCard
               key={community.id}
               title={community.title}
@@ -382,7 +370,7 @@ export default function LuxuryCommunities({ className = "" }: LuxuryCommunitiesP
           }}
           viewport={{ once: false, amount: 0.3 }}
         >
-          {communities.map((community, index) => (
+          {finalCommunities.map((community, index) => (
             <MobileCommunityCard
               key={community.id}
               title={community.title}

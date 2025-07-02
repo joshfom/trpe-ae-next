@@ -11,6 +11,7 @@ import {useAddAgent} from "@/features/admin/agent/api/use-add-agent";
 import {z} from "zod";
 import {employeeCreateSchema} from "@/db/schema/employee-table";
 import {TipTapEditor} from "@/components/TiptapEditor";
+import { RequestData } from "@/actions/admin/add-agent-action";
 
 interface AddAgentCardProps {
     isOpen: boolean;
@@ -40,7 +41,12 @@ function AddAgentForm({isOpen, setIsOpen}: AddAgentCardProps) {
             avatarUrl: '',
             email: '',
             phone: '',
-            bio: ''
+            bio: '',
+            title: '',
+            rera: '',
+            isVisible: false,
+            isLuxe: false,
+            order: 100
         }
     })
 
@@ -64,7 +70,22 @@ function AddAgentForm({isOpen, setIsOpen}: AddAgentCardProps) {
     }
 
     const onSubmit = (values: formValues) => {
-        mutation.mutate(values, {
+        // Transform values to ensure required fields are set
+        const transformedValues: RequestData = {
+            firstName: values.firstName || undefined,
+            lastName: values.lastName || undefined,
+            email: values.email || undefined,
+            phone: values.phone || undefined,
+            title: values.title || undefined,
+            bio: values.bio || undefined,
+            rera: values.rera || undefined,
+            avatarUrl: values.avatarUrl || undefined,
+            isVisible: values.isVisible ?? false,
+            isLuxe: values.isLuxe ?? false,
+            order: values.order ?? 100,
+        };
+        
+        mutation.mutate(transformedValues, {
             onSuccess: () => {
                 setIsOpen(false)
                 form.reset()

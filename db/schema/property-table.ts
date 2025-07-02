@@ -58,6 +58,7 @@ export const propertyTable = pgTable("properties", {
     communityId: text("community_id"),
     isFeatured: boolean("is_featured").default(false),
     isExclusive: boolean("is_exclusive").default(false),
+    isLuxe: boolean("is_luxe").default(false),
     cityId: text("city_id"),
     offeringTypeId: text("offering_type_id"),
     unitTypeId: text("unit_type_id"),

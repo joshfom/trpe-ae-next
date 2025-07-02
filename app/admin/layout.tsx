@@ -46,6 +46,10 @@ async function AdminLayout({children}: AdminLayoutProps) {
                         Communities
                     </Link>
 
+                    <Link className={'py-2 px-4 hover:bg-slate-700 pl-8 rounded-l-xl flex items-center gap-2'} href={'/admin/luxe'}>
+                        <span>👑</span> Luxe
+                    </Link>
+
                     <Link className={'py-2 px-4 hover:bg-slate-700 pl-8 rounded-l-xl'} href={'/admin/offering-types'}>
                         Offering Types
                     </Link>

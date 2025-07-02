@@ -1,4 +1,4 @@
-import {pgTable, text, timestamp} from "drizzle-orm/pg-core";
+import {boolean, pgTable, text, timestamp} from "drizzle-orm/pg-core";
 import {sql} from "drizzle-orm";
 import {createInsertSchema} from "drizzle-zod";
 
@@ -19,6 +19,7 @@ export const insightTable = pgTable("insights", {
     content: text("content"),
     developmentId: text("development_id"),
     isPublished: text("is_published"),
+    isLuxe: boolean("is_luxe").default(false),
     publishedAt: timestamp("published_at", {withTimezone: true, mode: 'string'}),
     agentId: text("agent_id"),
     slug: text("slug").notNull().unique(),

@@ -106,15 +106,21 @@ const app = new Hono()
         })),
         zValidator("json", employeeCreateSchema.omit({
             id: true,
-            slug: true
-        })),
+            slug: true,
+            createdAt: true,
+            updatedAt: true
+        }).partial()),
         async (c) => {
 
             // Extract the user from the request context
             const user: User = (c.get as any)("user");
+            
+            // Debug logging
+            console.log("Update agent - User context:", user ? "User found" : "No user");
 
             // If the user is not authenticated, return a 401 error response
             if (!user) {
+                console.log("Update agent - Authentication failed: No user in context");
                 return c.json({Unauthorized: "Please log in or your session to access resource."}, 401);
             }
 

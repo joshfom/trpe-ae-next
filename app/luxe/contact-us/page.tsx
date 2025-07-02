@@ -39,8 +39,7 @@ export default function LuxeContactPage() {
                     {/* Description Text */}
                     <div className='text-center mb-8 sm:mb-12'>
                         <p className='text-gray-600 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto'>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna 
-                            aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
+                            We&apos;d love to hear from you. Whether you have questions about our luxury real estate services, need assistance with property investment, or want to schedule a consultation, our team is here to help you every step of the way.
                         </p>
                     </div>
 

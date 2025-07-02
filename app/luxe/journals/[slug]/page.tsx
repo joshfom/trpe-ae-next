@@ -3,30 +3,78 @@ import { InsightHeader } from '@/components/luxe/InsightHeader';
 import { InsightContent } from '@/components/luxe/InsightContent';
 import { InsightSidebar } from '@/components/luxe/InsightSidebar';
 import { Insight } from '@/types/insight';
+import { getLuxeInsightBySlugAction } from '@/actions/insights/get-luxe-insight-by-slug-action';
 
-// Mock data - replace with actual data fetching
-const getInsightBySlug = async (slug: string): Promise<Insight | null> => {
-  // This would be replaced with actual data fetching
+// Transform database insight to UI format
+const transformInsightData = (dbInsight: any): Insight => {
+  // Calculate reading time based on content length
+  const calculateReadingTime = (content: string | null): string => {
+    if (!content) return '3 min read';
+    const wordsPerMinute = 200;
+    const wordCount = content.split(/\s+/).length;
+    const readTime = Math.ceil(wordCount / wordsPerMinute);
+    return `${readTime} min read`;
+  };
+
+  // Format date
+  const formatDate = (dateString: string | null): string => {
+    if (!dateString) return new Date().toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long', 
+      year: 'numeric'
+    });
+    
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    } catch {
+      return new Date().toLocaleDateString('en-US', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    }
+  };
+
+  // Extract excerpt from content
+  const getExcerpt = (content: string | null, metaDescription: string | null): string => {
+    if (metaDescription) return metaDescription;
+    if (!content) return 'Discover the latest insights from Dubai\'s luxury real estate market.';
+    
+    const plainText = content.replace(/<[^>]*>/g, '').trim();
+    return plainText.length > 150 ? plainText.substring(0, 150).trim() + '...' : plainText;
+  };
+
   return {
-    id: '1',
-    title: 'The name of the blog is here',
-    content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
-
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.`,
-    excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
-    imageUrl: 'https://images.unsplash.com/photo-1743819464838-ead29229489e?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-    date: '1st June 2025',
-    category: 'Buying real estate',
-    readingTime: '5 Minutes',
+    id: dbInsight.id,
+    title: dbInsight.title || 'Untitled',
+    content: dbInsight.content || '',
+    excerpt: getExcerpt(dbInsight.content, dbInsight.metaDescription),
+    imageUrl: dbInsight.coverUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    date: formatDate(dbInsight.publishedAt || dbInsight.createdAt),
+    category: 'Luxury Insights',
+    readingTime: calculateReadingTime(dbInsight.content),
     author: {
-      name: 'Mohammad Salari',
-      title: 'Senior Real Estate Specialist',
+      name: 'TRPE Luxe Team',
+      title: 'Luxury Real Estate Specialists',
       avatar: 'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
     },
-    slug
+    slug: dbInsight.slug
   };
+};
+
+const getInsightBySlug = async (slug: string): Promise<Insight | null> => {
+  const result = await getLuxeInsightBySlugAction(slug);
+  
+  if (!result.success || !result.data) {
+    return null;
+  }
+  
+  return transformInsightData(result.data);
 };
 
 interface InsightDetailPageProps {
@@ -66,6 +114,16 @@ export default async function InsightDetailPage({ params }: InsightDetailPagePro
       </div>
     </div>
   );
+}
+
+export async function generateStaticParams() {
+  try {
+    // Generate on-demand for better performance with dynamic content
+    return [];
+  } catch (error) {
+    console.error('Error generating static params:', error);
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: InsightDetailPageProps) {

@@ -12,7 +12,7 @@ import {z} from "zod";
 import {useUpdateCommunity} from "@/features/admin/community/api/use-update-community";
 import {CommunityFormSchema} from '../form-schema/community-form-schema';
 import {Textarea} from '@/components/ui/textarea';
-import {X} from "lucide-react";
+import {X, Crown} from "lucide-react";
 import {TipTapEditor} from "@/components/TiptapEditor";
 
 interface AdminCommunityCardProps {
@@ -40,7 +40,8 @@ const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
         metaDesc: community.metaDesc || '',
         featured: community.featured || false,
         displayOrder: community.displayOrder || 0,
-    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder]);
+        isLuxe: community.isLuxe || false,
+    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder, community.isLuxe]);
 
     const form = useForm({
         mode: "onChange",
@@ -88,6 +89,20 @@ const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
         setHasDefaultImage(false);
     }, []);
 
+    const handleToggleLuxe = useCallback(() => {
+        const newLuxeStatus = !community.isLuxe;
+        mutation.mutate({
+            name: community.name,
+            image: community.image || '',
+            about: community.about || '',
+            metaTitle: community.metaTitle || '',
+            metaDesc: community.metaDesc || '',
+            featured: community.featured || false,
+            displayOrder: community.displayOrder || 0,
+            isLuxe: newLuxeStatus,
+        });
+    }, [mutation, community]);
+
     useEffect(() => {
         if (community.image) {
             setHasDefaultImage(true)
@@ -105,8 +120,31 @@ const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
                 </div>
                 <div className="px-4 py-3">
                     <h2 className=" font-bold">{community.name}</h2>
+                    <div className="flex items-center gap-2 mt-2">
+                        {community.isLuxe && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                <Crown className="w-3 h-3 mr-1" />
+                                Luxe
+                            </span>
+                        )}
+                        {community.featured && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                Featured
+                            </span>
+                        )}
+                    </div>
                 </div>
-                <div className={'flex justify-end items-end px-4 pb-4'}>
+                <div className={'flex justify-between items-end px-4 pb-4'}>
+                    <button 
+                        onClick={handleToggleLuxe} 
+                        className={`text-sm py-1 px-3 border rounded-2xl transition-colors ${
+                            community.isLuxe 
+                                ? 'bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200' 
+                                : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                        }`}
+                    >
+                        {community.isLuxe ? 'Disable Luxe' : 'Enable Luxe'}
+                    </button>
                     <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
                         Edit
                     </button>
@@ -186,6 +224,31 @@ const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
                                                         </FormLabel>
                                                         <div className="text-sm text-muted-foreground">
                                                             Display this community on the homepage
+                                                        </div>
+                                                    </div>
+                                                    <FormControl>
+                                                        <Switch
+                                                            checked={field.value}
+                                                            onCheckedChange={field.onChange}
+                                                        />
+                                                    </FormControl>
+                                                </FormItem>
+                                            )}/>
+                                    </div>
+
+                                    {/* Enable Luxe Toggle */}
+                                    <div className="">
+                                        <FormField
+                                            name={'isLuxe'}
+                                            control={form.control}
+                                            render={({field}) => (
+                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                                                    <div className="space-y-0.5">
+                                                        <FormLabel className="text-base">
+                                                            Enable Luxe
+                                                        </FormLabel>
+                                                        <div className="text-sm text-muted-foreground">
+                                                            Make this community available in the Luxe section
                                                         </div>
                                                     </div>
                                                     <FormControl>

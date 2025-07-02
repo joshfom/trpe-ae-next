@@ -125,7 +125,7 @@ const LuxePropertyCard = memo<LuxePropertyCardProps>(({property}) => {
                 <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-4 items-center space-x-2 py-3 justify-between">
                     <Link
                         className={'py-1.5 px-5 rounded-full hover:bg-slate-100 text-sm border'}
-                        href={propertyLink}>
+                        href={"#"}>
                         View Property
                     </Link>
                     <p className={'text-lg font-semibold'}>

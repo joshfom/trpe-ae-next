@@ -52,7 +52,7 @@ function LuxeTopNavigation({ scrollYProgress }: LuxeTopNavigationProps) {
 
     const navigationLinks = [
         { href: '/', label: 'Home' },
-        { href: '/luxe/properties', label: 'Properties' },
+        { href: '/luxe/dubai/properties', label: 'Properties' },
         { href: '/luxe/advisors', label: 'Advisors' },
         { href: '/luxe/journals', label: 'Journals' },
         { href: '/luxe/contact-us', label: 'Contact' },

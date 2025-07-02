@@ -1,7 +1,11 @@
 "use server";
 
-import { client } from "@/lib/hono";
+import { db } from "@/db/drizzle";
+import { employeeTable } from "@/db/schema/employee-table";
+import { eq, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 export type UpdateAgentRequestData = {
   [key: string]: any;
@@ -15,23 +19,38 @@ export type UpdateAgentRequestData = {
  */
 export async function updateAgentAction(agentId: string, agentData: UpdateAgentRequestData) {
   try {
-    const response = await client.api.admin.agents[":agentId"].$post({
-      param: { agentId },
-      json: agentData
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to update agent');
+    // Check authentication
+    const session = await auth.api.getSession({ headers: await headers() });
+    
+    if (!session) {
+      return {
+        success: false,
+        error: 'Unauthorized: Please log in to update agents'
+      };
     }
 
-    const data = await response.json();
+    // Update the agent directly in the database
+    const [updatedAgent] = await db.update(employeeTable)
+      .set({
+        ...agentData,
+        updatedAt: sql`now()`
+      })
+      .where(eq(employeeTable.id, agentId))
+      .returning();
+
+    if (!updatedAgent) {
+      return {
+        success: false,
+        error: 'Agent not found'
+      };
+    }
     
     // Revalidate the agents tag
     revalidateTag('agents');
     
     return {
       success: true,
-      data
+      data: updatedAgent
     };
   } catch (error) {
     console.error("Error updating agent:", error);

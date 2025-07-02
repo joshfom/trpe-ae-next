@@ -1,45 +1,29 @@
 import LuxeAgentCard from './LuxeAgentCard';
+import { getLuxeAgentsAction } from '@/actions/agents/get-luxe-agents-action';
 
-interface Agent {
-  id: string;
-  name: string;
-  title: string;
-  image: string;
-  description: string;
-  phone?: string;
-  email?: string;
+// Helper function to truncate text and remove HTML tags
+function truncateAndClean(text: string, maxLength: number = 120): string {
+  if (!text) return '';
+  
+  // Remove HTML tags
+  const cleanText = text.replace(/<[^>]*>/g, '');
+  
+  // Truncate if necessary
+  if (cleanText.length <= maxLength) return cleanText;
+  
+  // Find the last space before the max length to avoid cutting words
+  const truncated = cleanText.substring(0, maxLength);
+  const lastSpace = truncated.lastIndexOf(' ');
+  
+  return (lastSpace > 0 ? truncated.substring(0, lastSpace) : truncated) + '...';
 }
 
-export function OurAgents() {
-  const agents: Agent[] = [
-    {
-      id: '1',
-      name: 'Micheal Doe',
-      title: 'Local Agent',
-      image: '/api/placeholder/300/400',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum.',
-      phone: '+1 (555) 123-4567',
-      email: 'micheal.doe@luxerealestate.com'
-    },
-    {
-      id: '2',
-      name: 'Micheal Doe',
-      title: 'Local Agent',
-      image: '/api/placeholder/300/400',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum.',
-      phone: '+1 (555) 123-4568',
-      email: 'micheal.doe2@luxerealestate.com'
-    },
-    {
-      id: '3',
-      name: 'Micheal Doe',
-      title: 'Local Agent',
-      image: '/api/placeholder/300/400',
-      description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum.',
-      phone: '+1 (555) 123-4569',
-      email: 'micheal.doe3@luxerealestate.com'
-    }
-  ];
+export async function OurAgents() {
+  // Fetch real luxe agents data
+  const { success, data: agents } = await getLuxeAgentsAction();
+  
+  // Take only the first 2 agents for the about-us page
+  const displayAgents = success ? agents.slice(0, 2) : [];
 
   return (
     <section className="py-12 sm:py-16 lg:py-24 bg-white">
@@ -50,25 +34,32 @@ export function OurAgents() {
             Our Agents
           </h2>
           <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna 
-            aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
+            Meet our luxury property specialists who are dedicated to providing exceptional service 
+            and helping you find your perfect luxury home.
           </p>
         </div>
 
-        {/* Agents Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
-          {agents.map((agent) => (
-            <div key={agent.id} className="flex justify-center">
-              <LuxeAgentCard
-                name={agent.name}
-                title={agent.title}
-                image={agent.image}
-                description={agent.description}
-                phone={agent.phone}
-                email={agent.email}
-              />
+        {/* Agents Grid - 2 columns, each taking 50% width */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          {displayAgents.length > 0 ? (
+            displayAgents.map((agent) => (
+              <div key={agent.id} className="w-full">
+                <LuxeAgentCard
+                  name={`${agent.firstName || ''} ${agent.lastName || ''}`.trim()}
+                  title={agent.title || 'Luxury Property Specialist'}
+                  image={agent.avatarUrl || '/api/placeholder/300/400'}
+                  description={truncateAndClean(agent.bio || 'Dedicated to providing exceptional luxury real estate services.')}
+                  phone={agent.phone || undefined}
+                  email={agent.email || undefined}
+                />
+              </div>
+            ))
+          ) : (
+            // Fallback if no agents are found
+            <div className="col-span-full text-center py-8">
+              <p className="text-gray-500">Our luxury agents will be available soon.</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>

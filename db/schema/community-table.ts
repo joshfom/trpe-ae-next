@@ -46,6 +46,24 @@ export const communityTable = pgTable("communities", {
     featured: boolean("featured").default(false),
     /** Display order for featured communities (lower numbers appear first) */
     displayOrder: integer("display_order").default(0),
+    /** Whether this community is available in Luxe section */
+    isLuxe: boolean("is_luxe").default(false),
+    /** Luxe-specific name */
+    luxeName: text("luxe_name"),
+    /** Luxe-specific meta title for SEO */
+    luxeMetaTitle: text("luxe_meta_title"),
+    /** Luxe-specific meta description for SEO */
+    luxeMetaDesc: text("luxe_meta_desc"),
+    /** Luxe-specific about content (rich text) */
+    luxeAbout: text("luxe_about"),
+    /** URL to the luxe community's main image */
+    luxeImageUrl: text("luxe_image_url"),
+    /** URL to the luxe community's hero image */
+    luxeHeroImageUrl: text("luxe_hero_image_url"),
+    /** Whether this luxe community is featured */
+    luxeFeatured: boolean("luxe_featured").default(false),
+    /** Display order for luxe communities (lower numbers appear first) */
+    luxeDisplayOrder: integer("luxe_display_order").default(0),
     /** Last update timestamp */
     updatedAt: timestamp("updated_at", {withTimezone: true, mode: 'string'}),
     /** Creation timestamp */

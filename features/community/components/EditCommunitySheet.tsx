@@ -46,7 +46,8 @@ export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) 
         metaDesc: community.metaDesc || '',
         featured: community.featured || false,
         displayOrder: community.displayOrder || 0,
-    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder]);
+        isLuxe: community.isLuxe || false,
+    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder, community.isLuxe]);
 
     const form = useForm({
         mode: "onChange",

@@ -15,22 +15,19 @@ export function AboutHero() {
     <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
-        <Image
-          src="/api/placeholder/1920/1080"
+        <img
+          src="https://images.unsplash.com/photo-1503900311769-9f25e9f06068?q=80&w=3274&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt="Modern glass buildings"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
+          className="w-full h-full object-cover"
         />
         {/* Overlay */}
-        <div className="absolute inset-0 bg-white/10" />
+        <div className="absolute inset-0 bg-black/60" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light text-gray-900 mb-6 sm:mb-8 lg:mb-12 leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-light text-white mb-6 sm:mb-8 lg:mb-12 leading-tight">
             About Us
           </h1>
         </div>

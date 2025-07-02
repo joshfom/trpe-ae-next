@@ -14,6 +14,7 @@ export const employeeTable = pgTable("employees", {
     order: integer("order").default(100),
     type: text("type").default('agent'),
     isVisible: boolean("is_visible").default(false),
+    isLuxe: boolean("is_luxe").default(false),
     userId: text("user_id"),
     avatarUrl: text("avatar_url"),
     isActive: text("is_active").default('false'),

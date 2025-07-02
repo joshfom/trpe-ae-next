@@ -8,4 +8,7 @@ export const CommunityFormSchema = z.object({
     metaDesc: z.string(),
     featured: z.boolean().default(false),
     displayOrder: z.number().default(0),
+    isLuxe: z.boolean().default(false),
 })
+
+export type CommunityFormType = z.infer<typeof CommunityFormSchema>;

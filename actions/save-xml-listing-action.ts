@@ -2,7 +2,7 @@
 import { db } from "@/db/drizzle";
 import { propertyTable } from "@/db/schema/property-table";
 import { createId } from "@paralleldrive/cuid2";
-import { eq, inArray, not, sql } from "drizzle-orm";
+import { eq, inArray, not, sql, and } from "drizzle-orm";
 import { propertyImagesTable } from "@/db/schema/property-images-table";
 import { importJobTable } from "@/db/schema/import-job-table";
 import { subCommunityTable } from "@/db/schema/sub-community-table";
@@ -117,6 +117,18 @@ export async function saveXmlListing(url: string) {
         invalidPriceSkippedCount: 0, // Added new stat for invalid prices
     };
 
+    // Add tracking for detailed skip reasons
+    const detailedStats = {
+        totalProcessed: 0,
+        noImagesSkipped: 0,
+        invalidPriceSkipped: 0,
+        lastUpdateSkipped: 0,
+        duplicatesSkipped: 0,
+        insufficientImagesDeleted: 0,
+        imageProcessingFailed: 0,
+        successfullyProcessed: 0,
+    };
+
     // Create an import job record to track the import process
     let [importJob] = await db.insert(importJobTable).values({
         id: createId(),
@@ -135,16 +147,30 @@ export async function saveXmlListing(url: string) {
 
         // Parse the properties from the feed
         const processedListings = processListings(data);
+        console.log(`📄 XML FEED ANALYSIS:`);
+        console.log(`Total properties found in XML: ${data.list.property.length}`);
+        console.log(`Successfully processed from XML: ${processedListings.length}`);
+        console.log(`Difference: ${data.list.property.length - processedListings.length}`);
 
-        // Track all permit numbers in this feed for cleanup later
-        const feedPermitNumbers: string[] = [];
+        // Track all reference numbers in this feed for cleanup later
+        const feedReferenceNumbers: string[] = [];
+        
+        // Track duplicates within the feed - use permit_number + reference_number as unique key
+        const seenPropertyKeys = new Set<string>();
+        const duplicatePropertyKeys = new Set<string>();
+        const skippedDuplicates = new Set<string>();
 
         // Process each property in the feed - no transaction wrapping
         for (const { newProperty, agent, photos } of processedListings) {
+            detailedStats.totalProcessed++;
+            console.log(`\n=== Processing property ${detailedStats.totalProcessed}/${processedListings.length}: ${newProperty.reference_number} ===`);
+            
             try {
                 // Skip properties without photos
                 if (photos.length < 1) {
+                    console.log(`❌ SKIPPED: No images (${photos.length} photos) - ${newProperty.reference_number}`);
                     stats.noImagesSkippedCount++;
+                    detailedStats.noImagesSkipped++;
                     continue;
                 }
 
@@ -153,8 +179,9 @@ export async function saveXmlListing(url: string) {
                 
                 const priceValue = validateAndParsePrice(newProperty.price);
                 if (priceValue === null) {
-                    console.log(`Skipping property ${newProperty.reference_number} due to invalid price: ${newProperty.price}`);
+                    console.log(`❌ SKIPPED: Invalid price (${newProperty.price}) - ${newProperty.reference_number}`);
                     stats.invalidPriceSkippedCount++;
+                    detailedStats.invalidPriceSkipped++;
                     continue;
                 }
 
@@ -163,10 +190,25 @@ export async function saveXmlListing(url: string) {
                 // Update the property with the validated price
                 newProperty.price = priceValue.toString();
 
-                // Extract permit number and track it
+                // Extract permit number and reference number for tracking
                 const permitNumber = newProperty.permit_number;
-                if (permitNumber) {
-                    feedPermitNumbers.push(permitNumber);
+                
+                // Track reference number for cleanup (with DXB- prefix to match database format)
+                feedReferenceNumbers.push('DXB-' + newProperty.reference_number);
+                
+                // Create a unique key using only reference_number for duplicate detection
+                const propertyKey = newProperty.reference_number;
+                
+                // Check for duplicates within the feed
+                if (seenPropertyKeys.has(propertyKey)) {
+                    duplicatePropertyKeys.add(propertyKey);
+                    skippedDuplicates.add(newProperty.reference_number);
+                    console.log(`❌ SKIPPED: DUPLICATE detected - ${newProperty.reference_number}`);
+                    stats.skippedCount++;
+                    detailedStats.duplicatesSkipped++;
+                    continue;
+                } else {
+                    seenPropertyKeys.add(propertyKey);
                 }
 
                 // Parse last_update from the feed, handling both formats:
@@ -211,12 +253,10 @@ export async function saveXmlListing(url: string) {
                 // Generate the property slug
                 const slug = generatePropertySlug(newProperty, subCommunity, community);
 
-                // Check if the property already exists by permit number
-                const existingProperty = permitNumber
-                    ? await db.query.propertyTable.findFirst({
-                        where: eq(propertyTable.permitNumber, permitNumber),
-                    })
-                    : null;
+                // Check if the property already exists by reference number only
+                const existingProperty = await db.query.propertyTable.findFirst({
+                    where: eq(propertyTable.referenceNumber, 'DXB-' + newProperty.reference_number),
+                });
 
                 let property;
 
@@ -228,7 +268,9 @@ export async function saveXmlListing(url: string) {
 
                     // Skip if the existing property is newer or same as the feed
                     if (existingLastUpdate && existingLastUpdate >= lastUpdate) {
+                        console.log(`❌ SKIPPED: Last update check failed - ${newProperty.reference_number} (existing: ${existingLastUpdate}, feed: ${lastUpdate})`);
                         stats.skippedCount++;
+                        detailedStats.lastUpdateSkipped++;
                         continue;
                     }
 
@@ -277,16 +319,27 @@ export async function saveXmlListing(url: string) {
                 // Process and upload images
                 await processImages(property.id, photos);
                 stats.imageCount += photos.length;
+                
+                console.log(`✅ SUCCESS: Property processed successfully - ${newProperty.reference_number}`);
+                detailedStats.successfullyProcessed++;
 
             } catch (error) {
-                console.error('Error processing property:', error);
+                console.error(`❌ FAILED: Error processing property ${newProperty.reference_number}:`, error);
+                
+                // Check if it's an insufficient images error
+                if (error instanceof Error && error.message.includes('insufficient images')) {
+                    detailedStats.insufficientImagesDeleted++;
+                } else {
+                    detailedStats.imageProcessingFailed++;
+                }
+                
                 stats.failedCount++;
             }
         }
 
         // Clean up properties not in the feed (if the feed has properties)
-        if (feedPermitNumbers.length > 0) {
-            const deletedProperties = await cleanupRemovedProperties(feedPermitNumbers);
+        if (feedReferenceNumbers.length > 0) {
+            const deletedProperties = await cleanupRemovedProperties(feedReferenceNumbers);
             stats.deletedCount = deletedProperties.length;
         }
 
@@ -301,9 +354,33 @@ export async function saveXmlListing(url: string) {
             eq(importJobTable.id, importJob.id)
         );
 
+        // Log detailed statistics
+        console.log(`\n=== IMPORT SUMMARY ===`);
+        console.log(`Total properties in feed: ${processedListings.length}`);
+        console.log(`Total processed: ${detailedStats.totalProcessed}`);
+        console.log(`✅ Successfully processed: ${detailedStats.successfullyProcessed}`);
+        console.log(`❌ Skipped - No images: ${detailedStats.noImagesSkipped}`);
+        console.log(`❌ Skipped - Invalid price: ${detailedStats.invalidPriceSkipped}`);
+        console.log(`❌ Skipped - Last update: ${detailedStats.lastUpdateSkipped}`);
+        console.log(`❌ Skipped - Duplicates: ${detailedStats.duplicatesSkipped}`);
+        console.log(`❌ Failed - Insufficient images: ${detailedStats.insufficientImagesDeleted}`);
+        console.log(`❌ Failed - Image processing: ${detailedStats.imageProcessingFailed}`);
+        console.log(`📊 Created: ${stats.createdCount}, Updated: ${stats.updatedCount}, Deleted: ${stats.deletedCount}`);
+        
+        if (duplicatePropertyKeys.size > 0) {
+            console.log(`\n🔄 DUPLICATE KEYS FOUND:`);
+            duplicatePropertyKeys.forEach(key => console.log(`  - ${key}`));
+        }
+        
+        if (skippedDuplicates.size > 0) {
+            console.log(`\n⏭️ SKIPPED DUPLICATE REFERENCES:`);
+            skippedDuplicates.forEach(ref => console.log(`  - ${ref}`));
+        }
+
         return {
             success: true,
             stats,
+            detailedStats,
             jobId: importJob.id,
         };
 
@@ -688,6 +765,9 @@ async function updateProperty(
     // Handle featured and exclusive flags
     const isFeatured = newProperty.is_featured === 'YES' || newProperty.is_featured === '1';
     const isExclusive = newProperty.is_exclusive === 'YES' || newProperty.is_exclusive === '1';
+    
+    // Mark as luxe if price is above 20,000,000
+    const isLuxe = priceValue > 20000000;
 
     return await db.update(propertyTable).set({
         title: newProperty.title_en,
@@ -716,6 +796,7 @@ async function updateProperty(
         slug,
         isFeatured: isFeatured,
         isExclusive: isExclusive,
+        isLuxe: isLuxe,
         lastUpdated: lastUpdate.toISOString(),
         updatedAt: sql`now()`,
     }).where(
@@ -749,6 +830,9 @@ async function createProperty(
     // Handle featured and exclusive flags
     const isFeatured = newProperty.is_featured === 'YES' || newProperty.is_featured === '1';
     const isExclusive = newProperty.is_exclusive === 'YES' || newProperty.is_exclusive === '1';
+    
+    // Mark as luxe if price is above 20,000,000
+    const isLuxe = priceValue > 20000000;
 
     return await db.insert(propertyTable).values({
         id: createId(),
@@ -778,6 +862,7 @@ async function createProperty(
         slug,
         isFeatured: isFeatured,
         isExclusive: isExclusive,
+        isLuxe: isLuxe,
         status: 'published',
         lastUpdated: lastUpdate.toISOString(),
     }).returning();
@@ -853,7 +938,7 @@ async function processImages(propertyId: string, photoUrls: string[]) {
 
     // If the property has less than 5 valid images, delete the property and its images
     if (validImages.length < 5) {
-        console.warn(`Property ${propertyId} has less than 5 valid images. Deleting property and associated images.`);
+        console.warn(`❌ INSUFFICIENT IMAGES: Property ${propertyId} has ${validImages.length} valid images (minimum 5 required). Deleting property.`);
 
         // Delete property images
         await deletePropertyImages(propertyId);
@@ -893,17 +978,25 @@ async function deletePropertyImages(propertyId: string) {
 }
 
 // Clean up properties that are no longer in the feed
-async function cleanupRemovedProperties(feedPermitNumbers: string[]) {
-    // Find properties not present in the feed
+async function cleanupRemovedProperties(feedReferenceNumbers: string[]) {
+    console.log(`\n=== CLEANUP ANALYSIS ===`);
+    console.log(`Feed reference numbers count: ${feedReferenceNumbers.length}`);
+    console.log(`Sample feed reference numbers:`, feedReferenceNumbers.slice(0, 5));
+    
+    // Find properties not present in the feed by reference number
     const removedProperties = await db.select({
         id: propertyTable.id,
         slug: propertyTable.slug,
+        referenceNumber: propertyTable.referenceNumber,
         offeringTypeId: propertyTable.offeringTypeId,
     }).from(propertyTable).where(
-        not(inArray(propertyTable.permitNumber,
-            feedPermitNumbers.filter(Boolean) as string[]
+        not(inArray(propertyTable.referenceNumber,
+            feedReferenceNumbers.filter(Boolean) as string[]
         ))
     );
+
+    console.log(`Properties to be deleted: ${removedProperties.length}`);
+    console.log(`Sample properties to delete:`, removedProperties.slice(0, 5).map(p => p.referenceNumber));
 
     // Get offering types for the redirect URLs
     const offeringTypes = await db.select().from(offeringTypeTable).where(

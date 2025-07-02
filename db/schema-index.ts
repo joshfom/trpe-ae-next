@@ -1,5 +1,6 @@
 export * from "./schema/property-table";
 export * from "./schema/community-table";
+export * from "./schema/luxe-community-table";
 export * from "./schema/sub-community-table";
 export * from "./schema/property-images-table";
 export * from "./schema/employee-table";
