@@ -66,7 +66,7 @@ function LuxeTopNavigation({ scrollYProgress }: LuxeTopNavigationProps) {
                         
                         {/* Desktop Logo */}
                         <div className={'hidden lg:flex'}>
-                            <Link href={'/'} aria-label={'TRPE Home'}>
+                            <Link href={'/luxe'} aria-label={'TRPE Home'}>
                                 <span className="sr-only">TRPE Home</span>
                                 {/* <svg width="38" height="64" viewBox="0 0 38 64" fill="none"
                                      xmlns="http://www.w3.org/2000/svg">

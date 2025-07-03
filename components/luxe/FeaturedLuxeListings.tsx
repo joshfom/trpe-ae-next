@@ -74,7 +74,8 @@ export default async function FeaturedLuxeListings({ className = '' }: FeaturedL
     baths: property.bathrooms || 0,
     sqft: property.size ? Math.round(property.size / 100) : 0, // Convert from centi units to sq ft
     status: property.offeringType?.name === 'For Sale' ? 'For Sale' as const : 'For Rent' as const,
-    imageUrl: property.images?.[0]?.s3Url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    imageUrl: property.images?.[0]?.s3Url || "https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    slug: property.slug
   }));
 
   // Transform communities for display

@@ -14,6 +14,7 @@ interface PropertyData {
   sqft: number;
   status: 'For Sale' | 'For Rent';
   imageUrl: string;
+  slug: string;
 }
 
 interface CommunityData {

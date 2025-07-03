@@ -5,14 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import 'swiper/css';
 import Link from "next/link";
 import React from "react";
-import LuxeHero from '@/components/luxe/LuxeHero';
 import { LuxeMainSearch } from "@/components/luxe/LuxeMainSearch";
 import { LuxeBlogSection, LuxePropCard, LuxuryCommunities, LuxeTopNavigation } from '@/components/luxe';
-import { LuxeNewsGrid } from "@/components/luxe/luxe-news-grid";
-import LuxeFooter from "@/components/luxe/luxe-footer";
-import { TypesOfEstate } from "@/components/luxe/TypesOfEstate";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import FeaturedLuxeListingsClient from '@/components/luxe/FeaturedLuxeListingsClient';
 import { 
   ChevronDown, 
@@ -44,6 +38,7 @@ interface PropertyData {
   sqft: number;
   status: 'For Sale' | 'For Rent';
   imageUrl: string;
+  slug: string;
 }
 
 interface CommunityData {
@@ -426,7 +421,7 @@ export default function LuxePageClient({
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                  <Link href="/luxe/dubai/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
                     Explore Properties
                   </Link>
                 </motion.div>
@@ -486,7 +481,7 @@ export default function LuxePageClient({
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                       >
-                        <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                        <Link href="/luxe/dubai/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
                           Explore Properties
                         </Link>
                       </motion.div>

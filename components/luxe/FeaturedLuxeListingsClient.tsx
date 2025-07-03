@@ -15,6 +15,7 @@ interface PropertyData {
   sqft: number;
   status: 'For Sale' | 'For Rent';
   imageUrl: string;
+  slug: string;
 }
 
 interface CommunityData {
@@ -90,6 +91,7 @@ export default function FeaturedLuxeListingsClient({
           >
             <LuxePropCard 
               id={property.id}
+              slug={property.slug}
               title={property.title}
               location={property.location}
               className='bg-white'

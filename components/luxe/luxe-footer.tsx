@@ -10,6 +10,7 @@ import {toast} from "sonner";
 import {useUnitStore} from "@/hooks/use-unit-store";
 import {useCurrencyStore} from "@/hooks/use-currency-store";
 import {usePathname, useRouter} from "next/navigation";
+import LuxeFooterCommunities from './LuxeFooterCommunities';
 import { Separator } from '../ui/separator';
 
 
@@ -138,7 +139,7 @@ function LuxeFooter({showAbout = true}: LuxeFooterProps) {
                             <p className="text-lg sm:text-xl px-4 font-medium mb-3">
                                 Neighbourhoods
                             </p>
-                            {/* <FooterCommunitiesClient/> */}
+                            <LuxeFooterCommunities />
                         </div>
                         
                         <div className="pb-6 sm:pb-8 lg:pb-0 space-y-4 sm:space-y-6">
@@ -161,6 +162,26 @@ function LuxeFooter({showAbout = true}: LuxeFooterProps) {
                                     href="/luxe/advisors">
                                     Meet Our Advisors
                                 </Link>
+                            </div>
+                            
+                            {/* Newsletter Subscription */}
+                            <div className="mt-8 px-4">
+                                <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                                    Stay informed with exclusive insights and the finest luxury properties in Dubai delivered to your inbox.
+                                </p>
+                                <div className="space-y-3">
+                                    <Input 
+                                        type="email" 
+                                        placeholder="Enter your email address"
+                                        className="w-full text-sm border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+                                    />
+                                    <Button 
+                                        className="w-full bg-black hover:bg-gray-800 text-white text-sm py-2.5"
+                                        type="submit"
+                                    >
+                                        Subscribe to Updates
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
