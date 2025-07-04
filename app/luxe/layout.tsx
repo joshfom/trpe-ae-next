@@ -1,23 +1,18 @@
-'use client'
-
 import React from 'react';
 import LuxeTopNavigation from '@/components/luxe/luxe-top-navigation';
-import LuxeFooter from '@/components/luxe/luxe-footer';
+import LuxeFooterSuspense from '@/components/luxe/LuxeFooterSuspense';
 
 interface LuxeLayoutProps {
     children: React.ReactNode
 }
 
-// This is a client component wrapper for layout elements that need client-side functionality
-function LuxeLayout({ children }: LuxeLayoutProps) {
+// Server component layout with client components for navigation
+export default function LuxeLayout({ children }: LuxeLayoutProps) {
     return (
         <>
             <LuxeTopNavigation />
             {children}
-            <LuxeFooter />
+            <LuxeFooterSuspense />
         </>
     );
 }
-
-// Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(LuxeLayout);

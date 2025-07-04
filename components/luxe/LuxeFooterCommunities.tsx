@@ -14,7 +14,13 @@ export default async function LuxeFooterCommunities() {
   let communities: FooterLuxeCommunity[] = [];
   
   try {
-    communities = await getFooterLuxeCommunities();
+    // Add timeout to prevent hanging
+    communities = await Promise.race([
+      getFooterLuxeCommunities(),
+      new Promise<FooterLuxeCommunity[]>((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout after 3 seconds')), 3000)
+      )
+    ]);
   } catch (error) {
     console.error('Error fetching luxe communities:', error);
     // Return fallback content on error
@@ -30,7 +36,7 @@ export default async function LuxeFooterCommunities() {
   }
   
   // If no communities found, show a fallback
-  if (communities.length === 0) {
+  if (!communities || communities.length === 0) {
     return (
       <div className="flex flex-col pt-2">
         <Link
@@ -48,7 +54,7 @@ export default async function LuxeFooterCommunities() {
         <Link
           key={community.id}
           className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-          href={`#`}>
+          href={`/luxe/communities/${community.slug}`}>
           {community.name}
         </Link>
       ))}

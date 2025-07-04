@@ -9,7 +9,6 @@ import LuxeHero from '@/components/luxe/LuxeHero';
 import { LuxeMainSearch } from "@/components/luxe/LuxeMainSearch";
 import { LuxeBlogSection, LuxePropCard, LuxuryCommunities, LuxeTopNavigation } from '@/components/luxe';
 import { LuxeNewsGrid } from "@/components/luxe/luxe-news-grid";
-import LuxeFooter from "@/components/luxe/luxe-footer";
 import { TypesOfEstate } from "@/components/luxe/TypesOfEstate";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
