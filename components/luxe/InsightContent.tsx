@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Insight } from '@/types/insight';
-import { ServerProcessedTiptap } from '@/components/ServerProcessedTiptap';
+import { TipTapView } from '@/components/TiptapView';
 
 interface InsightContentProps {
   insight: Insight;
@@ -14,9 +14,9 @@ export function InsightContent({ insight }: InsightContentProps) {
         {insight.title}
       </h1>
 
-      {/* Article Content - Use ServerProcessedTiptap for proper HTML rendering */}
+      {/* Article Content - Use TipTapView for proper HTML rendering */}
       <div className="text-gray-700 leading-relaxed">
-        <ServerProcessedTiptap content={insight.content || ''} />
+        <TipTapView content={insight.content || ''} />
       </div>
     </article>
   );

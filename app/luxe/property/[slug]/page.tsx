@@ -4,7 +4,7 @@ import { db } from '@/db/drizzle';
 import { propertyTable } from '@/db/schema/property-table';
 import { eq, and, ne } from 'drizzle-orm';
 import { PropertyType } from '@/types/property';
-import LuxePropertyDetailView from './LuxePropertyDetailView';
+import OptimizedLuxePropertyDetail from './OptimizedLuxePropertyDetail';
 
 interface LuxePropertyPageProps {
     params: Promise<{ slug: string }>;
@@ -75,7 +75,7 @@ export default async function LuxePropertyPage({ params }: LuxePropertyPageProps
             notFound();
         }
 
-        return <LuxePropertyDetailView property={property} />;
+        return <OptimizedLuxePropertyDetail property={property} />;
         
     } catch (error) {
         console.error('Error fetching property:', error);
