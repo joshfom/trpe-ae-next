@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from "@/db/drizzle";
-import {eq} from "drizzle-orm";
+import {eq, and} from "drizzle-orm";
 import {notFound} from "next/navigation";
 import {insightTable} from "@/db/schema/insight-table";
 import {Metadata, ResolvingMetadata} from "next";
@@ -40,7 +40,10 @@ export async function generateMetadata(
     const slug = resolvedParams.slug;
     
     const post = await db.query.insightTable.findFirst({
-        where: eq(insightTable.slug, slug),
+        where: and(
+            eq(insightTable.slug, slug),
+            eq(insightTable.isLuxe, false)
+        ),
     }) as unknown as InsightType;
     const previousImages = (await parent).openGraph?.images || [];
 
@@ -75,7 +78,10 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
     const { user } = await validateRequest();
 
     const post = await db.query.insightTable.findFirst({
-        where: eq(insightTable.slug, params.slug),
+        where: and(
+            eq(insightTable.slug, params.slug),
+            eq(insightTable.isLuxe, false)
+        ),
     }) as unknown as InsightType
 
     if (!post) {

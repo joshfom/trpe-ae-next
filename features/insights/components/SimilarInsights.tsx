@@ -5,7 +5,7 @@ import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
 import {useGetSimilarInsightsV2} from "@/features/insights/api/use-get-similar-insights-v2";
 import { db } from '@/db/drizzle';
-import { desc } from 'drizzle-orm';
+import { desc, eq, and, isNotNull } from 'drizzle-orm';
 import { insightTable } from '@/db/schema-index';
 
 interface SimilarInsightsProps {
@@ -15,9 +15,13 @@ interface SimilarInsightsProps {
 async function SimilarInsights({insightId}: SimilarInsightsProps) {
 
     const insights = await db.query.insightTable.findMany({
-                orderBy: [desc(insightTable.createdAt)],
-                limit: 3
-            });
+        where: and(
+            isNotNull(insightTable.publishedAt),
+            eq(insightTable.isLuxe, false)
+        ),
+        orderBy: [desc(insightTable.createdAt)],
+        limit: 3
+    });
 
     return (
         <div className={'py-6 max-w-7xl mx-auto pt-12 lg:pt-24 '}>

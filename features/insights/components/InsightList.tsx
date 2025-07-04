@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
 import {db} from "@/db/drizzle";
-import {desc, isNotNull, sql} from "drizzle-orm";
+import {desc, isNotNull, sql, and, eq} from "drizzle-orm";
 import {insightTable} from "@/db/schema/insight-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -15,10 +15,13 @@ async function InsightList({ currentPage = 1 }: InsightListProps) {
     const pageSize = 9;
     const offset = (currentPage - 1) * pageSize;
     
-    // Get total count of insights
+    // Get total count of insights (excluding luxe insights)
     const totalCountResult = await db.select({ count: sql<number>`count(*)` })
         .from(insightTable)
-        .where(isNotNull(insightTable.publishedAt));
+        .where(and(
+            isNotNull(insightTable.publishedAt),
+            eq(insightTable.isLuxe, false)
+        ));
     
     const totalCount = totalCountResult[0].count;
     const totalPages = Math.ceil(totalCount / pageSize);
@@ -29,9 +32,12 @@ async function InsightList({ currentPage = 1 }: InsightListProps) {
         notFound();
     }
     
-    // Fetch insights for the current page
+    // Fetch insights for the current page (excluding luxe insights)
     const insights = await db.query.insightTable.findMany({
-        where: isNotNull(insightTable.publishedAt),
+        where: and(
+            isNotNull(insightTable.publishedAt),
+            eq(insightTable.isLuxe, false)
+        ),
         orderBy: [desc(insightTable.publishedAt)],
         limit: pageSize,
         offset: offset

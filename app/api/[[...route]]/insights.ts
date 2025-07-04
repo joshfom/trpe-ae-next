@@ -2,7 +2,7 @@ import {Hono} from "hono";
 import {db} from "@/db/drizzle";
 import {zValidator} from "@hono/zod-validator";
 import {z} from "zod";
-import {desc, eq, isNotNull, sql} from "drizzle-orm";
+import {desc, eq, isNotNull, sql, and} from "drizzle-orm";
 import {insightTable} from "@/db/schema/insight-table";
 
 /**
@@ -40,18 +40,24 @@ const app = new Hono()
             const currentPage = parseInt(page, 10);
             const offset = (currentPage - 1) * pageSize;
             
-            // Query the database to find insights for the current page
+            // Query the database to find insights for the current page (excluding luxe insights)
             const data = await db.query.insightTable.findMany({
-                where: isNotNull(insightTable.publishedAt),
+                where: and(
+                    isNotNull(insightTable.publishedAt),
+                    eq(insightTable.isLuxe, false)
+                ),
                 orderBy: [desc(insightTable.publishedAt)],
                 limit: pageSize,
                 offset: offset
             });
             
-            // Get total count of insights
+            // Get total count of insights (excluding luxe insights)
             const totalCount = await db.select({ count: sql<number>`count(*)` })
                 .from(insightTable)
-                .where(isNotNull(insightTable.publishedAt))
+                .where(and(
+                    isNotNull(insightTable.publishedAt),
+                    eq(insightTable.isLuxe, false)
+                ))
                 .then(result => result[0].count);
                 
             // Calculate total pages
@@ -85,9 +91,12 @@ const app = new Hono()
             // Extract the insightSlug parameter from the request
             const {insightSlug} = c.req.param();
 
-            // Query the database to find the first insight matching the provided slug
+            // Query the database to find the first insight matching the provided slug (excluding luxe insights)
             const data = await db.query.insightTable.findFirst({
-                where: eq(insightTable.slug, insightSlug)
+                where: and(
+                    eq(insightTable.slug, insightSlug),
+                    eq(insightTable.isLuxe, false)
+                )
             });
 
             // Return the insight data as a JSON response
@@ -105,8 +114,12 @@ const app = new Hono()
             insightId: z.string().optional()
         })),
         async (c) => {
-        // Query the database to find the three most recent insights
+        // Query the database to find the three most recent insights (excluding luxe insights)
         const data = await db.query.insightTable.findMany({
+            where: and(
+                isNotNull(insightTable.publishedAt),
+                eq(insightTable.isLuxe, false)
+            ),
             orderBy: [desc(insightTable.createdAt)],
             limit: 3
         });
