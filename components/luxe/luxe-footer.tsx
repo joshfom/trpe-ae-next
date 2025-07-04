@@ -1,82 +1,16 @@
-'use client'
-import React, {useState, useCallback, useMemo, memo} from 'react';
+import React from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import Image from "next/image";
-import {Facebook, Instagram, Linkedin, Youtube} from "lucide-react";
-import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {toast} from "sonner";
-import {useUnitStore} from "@/hooks/use-unit-store";
-import {useCurrencyStore} from "@/hooks/use-currency-store";
-import {usePathname, useRouter} from "next/navigation";
 import LuxeFooterCommunities from './LuxeFooterCommunities';
 import { Separator } from '../ui/separator';
-
-
-
-
 
 interface LuxeFooterProps {
     showAbout?: boolean;
 }
 
-function LuxeFooter({showAbout = true}: LuxeFooterProps) {
-    const {unit, setUnit} = useUnitStore();
-    const {currency, setCurrency} = useCurrencyStore();
-    const [active, setActive] = useState<string | null>(null);
-
-    // Memoize the current year to avoid recalculation on every render
-    const currentYear = useMemo(() => new Date().getFullYear(), []);
-
-    const pathname = usePathname()
-    const router = useRouter();
-
-    // Memoize callback functions to prevent recreation on each render
-    const changeUnitType = useCallback((unitType: string) => {
-        setUnit(unitType as 'sqf' | 'sqm')
-        router.refresh()
-        toast.success(`Unit type changed to ${unitType.toUpperCase()}`)
-    }, [setUnit, router]);
-
-    const changeCurrency = useCallback((currency: string) => {
-        setCurrency(currency as 'AED' | 'GBP' | 'EUR' | 'USD')
-        toast.success(`Currency changed to ${currency}`)
-        router.refresh()
-    }, [setCurrency, router]);
-
-    const handleChangeUnitSqm = useCallback(() => {
-        changeUnitType('sqm');
-    }, [changeUnitType]);
-
-    const handleChangeUnitSqf = useCallback(() => {
-        changeUnitType('sqf');
-    }, [changeUnitType]);
-
-    const handleChangeCurrencyGBP = useCallback(() => {
-        changeCurrency('GBP');
-    }, [changeCurrency]);
-
-    const handleChangeCurrencyEUR = useCallback(() => {
-        changeCurrency('EUR');
-    }, [changeCurrency]);
-
-    const handleChangeCurrencyUSD = useCallback(() => {
-        changeCurrency('USD');
-    }, [changeCurrency]);
-
-    const handleChangeCurrencyAED = useCallback(() => {
-        changeCurrency('AED');
-    }, [changeCurrency]);
-
-    const handleChangeUnitSqmAndClose = useCallback(() => {
-        changeUnitType('sqm');
-    }, [changeUnitType]);
-
-    const handleChangeUnitSqfAndClose = useCallback(() => {
-        changeUnitType('sqf');
-    }, [changeUnitType]);
-
+export default function LuxeFooter({showAbout = true}: LuxeFooterProps) {
+    const currentYear = new Date().getFullYear();
 
     return (
         <div className={'w-full border-zinc-500'}>
@@ -98,37 +32,37 @@ function LuxeFooter({showAbout = true}: LuxeFooterProps) {
                                 <div className="flex flex-col pt-2">
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/properties/for-sale">
+                                        href="#">
                                         Properties for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/apartments/for-sale">
+                                        href="#">
                                         Apartments for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/villas/for-sale">
+                                        href="#">
                                         Villas for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/townhouses/for-sale">
+                                        href="#">
                                         Townhouse for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/penthouses/for-sale">
+                                        href="#">
                                         Penthouses for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/offices/commercial-sale">
+                                        href="#">
                                         Offices for sale in Dubai
                                     </Link>
                                     <Link
                                         className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-                                        href="/property-types/retails/commercial-sale">
+                                        href="#">
                                         Retails for sale in Dubai
                                     </Link>
                                 </div>
@@ -218,7 +152,7 @@ function LuxeFooter({showAbout = true}: LuxeFooterProps) {
                     {/* Desktop Layout: Original horizontal layout */}
                     <div className="hidden lg:flex gap-8 items-center py-4">
                         <div className="text-sm text-gray-600">
-                            TRPE ©{currentYear}. 2025
+                            TRPE ©{currentYear}
                         </div>
                         <div className="flex-grow">
                             <Separator className="h-[2px] bg-black" />
@@ -239,16 +173,6 @@ function LuxeFooter({showAbout = true}: LuxeFooterProps) {
 
             </div>
 
-            <div className="hidden lg:block">
-                {/*<MobileSearch isOpen={openSearch} setIsOpen={setOpenSearch}/>*/}
-            </div>
-
         </div>
     );
 }
-
-// Memoize the entire component to prevent unnecessary re-renders
-const LuxeFooterMemo = memo(LuxeFooter);
-LuxeFooterMemo.displayName = 'LuxeFooter';
-
-export default LuxeFooterMemo;

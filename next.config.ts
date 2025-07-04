@@ -56,6 +56,30 @@ const nextConfig: NextConfig = {
                     },
                 ],
             },
+            // Luxe routes optimization
+            {
+                source: '/luxe/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400',
+                    },
+                    {
+                        key: 'Vary',
+                        value: 'Accept-Encoding, Accept',
+                    },
+                ],
+            },
+            // API routes should not be cached
+            {
+                source: '/api/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'no-store, no-cache, must-revalidate',
+                    },
+                ],
+            },
             {
                 source: '/:path*',
                 headers: [

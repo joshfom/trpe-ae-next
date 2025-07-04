@@ -10,7 +10,8 @@ interface FooterLuxeCommunity {
   propertyCount?: number;
 }
 
-export default async function LuxeFooterCommunities() {
+// Server component that pre-fetches data
+export default async function LuxeFooterCommunitiesServer() {
   let communities: FooterLuxeCommunity[] = [];
   
   try {
@@ -48,7 +49,7 @@ export default async function LuxeFooterCommunities() {
         <Link
           key={community.id}
           className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-          href={`#`}>
+          href={`/luxe/communities/${community.slug}`}>
           {community.name}
         </Link>
       ))}
