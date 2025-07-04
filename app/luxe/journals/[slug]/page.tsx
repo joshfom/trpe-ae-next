@@ -61,7 +61,7 @@ const transformInsightData = (dbInsight: any): Insight => {
     author: {
       name: 'TRPE Luxe Team',
       title: 'Luxury Real Estate Specialists',
-      avatar: 'https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+      avatar: '/assets/images/defaults/agent.jpg'
     },
     slug: dbInsight.slug
   };
