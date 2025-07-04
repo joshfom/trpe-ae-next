@@ -368,7 +368,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                             {agent && (
                                 <div className="flex items-center">
                                     <div>
-                                        <Link href={`/our-team/${agent.slug}`} aria-label="agent profile">
+                                        <Link href={`#`} aria-label="agent profile">
                                             <img
                                                 className="rounded-full object-cover w-[90px] h-[90px]"
                                                 src={agent.avatarUrl || '/images/defaults/agent.jpg'}
@@ -378,7 +378,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                                     </div>
                                     <div className="space-y-2 ml-4">
                                         <Link 
-                                            href={`/our-team/${agent.slug}`}
+                                            href={`#`}
                                             className="text-lg font-semibold hover:underline"
                                         >
                                             {agentName || 'TRPE Team'}
@@ -406,7 +406,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                                             asChild
                                         >
                                             <a href={`tel:${agent?.phone || '+971505232712'}`}>
-                                                <Phone size={20} className="stroke-1 group-hover:text-black text-white mr-2"/>
+                                                <Phone size={20} className="stroke-1 group-hover:text-black  mr-2"/>
                                                 Call Now
                                             </a>
                                         </Button>
