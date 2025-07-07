@@ -1,8 +1,8 @@
 "use client"
 
 import React from 'react';
-import { AgentDetails } from '@/components/luxe';
-import { motion } from "framer-motion";
+import {AgentDetails} from '@/components/luxe';
+import {motion} from "framer-motion";
 
 // Animation variants following the main page pattern
 const fadeInUp = {

@@ -1,30 +1,13 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import {motion, useScroll, useTransform} from "framer-motion";
+import React, {useRef} from "react";
 import 'swiper/css';
 import Link from "next/link";
-import React from "react";
-import { LuxeMainSearch } from "@/components/luxe/LuxeMainSearch";
-import { LuxeBlogSection, LuxePropCard, LuxuryCommunities, LuxeTopNavigation } from '@/components/luxe';
+import {LuxeMainSearch} from "@/components/luxe/LuxeMainSearch";
+import {LuxeBlogSection, LuxuryCommunities} from '@/components/luxe';
 import FeaturedLuxeListingsClient from '@/components/luxe/FeaturedLuxeListingsClient';
-import { 
-  ChevronDown, 
-  ArrowRight, 
-  Wifi, 
-  Clock, 
-  Users, 
-  Coffee, 
-  Shield, 
-  Car, 
-  CheckCircle, 
-  Building, 
-  MapPin, 
-  Star, 
-  Mail, 
-  Phone, 
-  Calendar 
-} from "lucide-react";
+import {ChevronDown} from "lucide-react";
 
 // Type definitions for props
 interface PropertyData {

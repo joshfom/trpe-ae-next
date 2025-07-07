@@ -1,14 +1,6 @@
 import React from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from "@/components/ui/dialog";
-import Image from "next/image";
-import { PropertyType } from "@/types/property";
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
+import {PropertyType} from "@/types/property";
 
 interface ListingGalleryOverViewProps {
     property: PropertyType,

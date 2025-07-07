@@ -1,11 +1,9 @@
-
-
 "use client"
 
-import React, { Suspense, memo } from 'react';
-import { Skeleton } from "@/components/ui/skeleton";
+import React, {memo} from 'react';
+import {Skeleton} from "@/components/ui/skeleton";
 import LuxePropertyCard from "@/features/luxe/components/LuxePropertyCard";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 
 interface LuxeListingsProps {
     listings?: PropertyType[]

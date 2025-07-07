@@ -1,9 +1,9 @@
 import React from 'react';
 import 'swiper/css';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import PropertyCard from "@/components/property-card";
 import Link from "next/link";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 
 interface FeaturedListingsSectionServerProps {
     saleListings: PropertyType[],

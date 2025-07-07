@@ -1,8 +1,6 @@
 "use client"
 import React, {useState} from 'react';
-import {Button} from "@/components/ui/button";
 import UploadPropertyData from "@/features/crm/property-owners/components/UploadPropertyData";
-import {Upload} from "lucide-react";
 
 enum VARIANT {
     LIST = 'list',

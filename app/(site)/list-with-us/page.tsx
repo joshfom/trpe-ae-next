@@ -5,7 +5,6 @@ import {DollarSign, File, Globe, Hotel} from "lucide-react";
 import type {Metadata} from "next";
 
 
-
 export const metadata: Metadata = {
     title: "List with us, Properties for Sale in Dubai | Buy, Sell or Rent Property in Dubai",
     description: "List your property with us, Find your next home or investment in Dubai. Browse the latest Dubai property for sale or rent.",

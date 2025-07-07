@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from "next/link";
-import InsightForm from "@/features/admin/insights/components/InsightForm";
 import AdminInsights from "@/features/admin/insights/components/AdminInsights";
 
 function AdminInsightPage() {

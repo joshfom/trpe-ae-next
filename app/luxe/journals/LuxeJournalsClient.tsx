@@ -1,7 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion";
-import { LuxeBlogCard } from "@/components/luxe/LuxeBlogCard";
+import {motion} from "framer-motion";
+import {LuxeBlogCard} from "@/components/luxe/LuxeBlogCard";
 
 // Faster animation variants
 const fadeInUp = {

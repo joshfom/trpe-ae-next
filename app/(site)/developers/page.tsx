@@ -1,4 +1,4 @@
-import React, { cache, Suspense } from 'react';
+import React, {cache, Suspense} from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
 import type {Metadata} from "next";

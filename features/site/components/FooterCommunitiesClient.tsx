@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState, useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import { client } from "@/lib/hono";
+import {client} from "@/lib/hono";
 
 // Define Community interface to match the API response format
 interface Community {

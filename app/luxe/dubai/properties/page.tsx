@@ -1,9 +1,9 @@
-import { db } from "@/db/drizzle";
-import { eq } from "drizzle-orm";
-import { propertyTable } from "@/db/schema/property-table";
+import {db} from "@/db/drizzle";
+import {eq} from "drizzle-orm";
+import {propertyTable} from "@/db/schema/property-table";
 import LuxePropertySearch from "@/components/luxe/LuxePropertySearch";
 import LuxePropCard from "@/components/luxe/LuxePropCard";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 
 export default async function LuxePropertiesPage() {
   // Fetch only luxe properties from the database

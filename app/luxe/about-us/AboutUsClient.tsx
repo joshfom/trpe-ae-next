@@ -1,7 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion";
-import { AboutHero, AboutStory, TypesOfEstate } from '@/components/luxe';
+import {motion} from "framer-motion";
+import {AboutHero, AboutStory, TypesOfEstate} from '@/components/luxe';
 
 // Mobile-friendly animation variants
 const fadeInUp = {

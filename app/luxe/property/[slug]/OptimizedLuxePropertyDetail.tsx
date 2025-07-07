@@ -1,24 +1,24 @@
 'use client'
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Button } from "@/components/ui/button";
-import { Bath, Bed, MapPin, Phone, Share } from "lucide-react";
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {Button} from "@/components/ui/button";
+import {Bath, Bed, MapPin, Phone, Share} from "lucide-react";
 import Link from "next/link";
-import { usePathname } from 'next/navigation';
-import { useMediaQuery } from "react-responsive";
+import {usePathname} from 'next/navigation';
+import {useMediaQuery} from "react-responsive";
 import "swiper/css";
 import 'swiper/css/pagination';
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ShareSocial } from "react-share-social";
-import { ImageSwiper } from "@/features/properties/components/ImageSwiper";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {ShareSocial} from "react-share-social";
+import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 import Captions from "yet-another-react-lightbox/plugins/captions";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 import "yet-another-react-lightbox/plugins/captions.css";
-import { Zoom } from "yet-another-react-lightbox/plugins";
+import {Zoom} from "yet-another-react-lightbox/plugins";
 import RequestCallBack from "@/features/site/components/RequestCallBack";
 import PropSize from '@/components/ui/icons/PropSize';
-import { TipTapView } from '@/components/TiptapView';
+import {TipTapView} from '@/components/TiptapView';
 
 interface OptimizedLuxePropertyDetailProps {
     property: PropertyType;

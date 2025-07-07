@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useRef, useState, memo, useCallback} from 'react';
+import React, {memo, useCallback, useEffect, useRef, useState} from 'react';
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
@@ -16,7 +16,7 @@ import PriceFilter from "@/features/search/PriceFilter";
 import SizeFilter from "@/features/search/SizeFilter";
 import FurnishingFilter from "@/features/search/components/Filters/FurnishingFilter";
 import BedroomFilter from "@/features/search/components/Filters/BedroomFilter";
-import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
+import {CommunityFilterType, toCommunityFilterType} from "@/types/community";
 
 const OFFERING_TYPES = [
     {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { getLuxeInsightsAction } from '@/actions/insights/get-luxe-insights-action';
+import {getLuxeInsightsAction} from '@/actions/insights/get-luxe-insights-action';
 import LuxeJournalsClient from './LuxeJournalsClient';
 
 interface PageProps {

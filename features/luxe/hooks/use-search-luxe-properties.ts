@@ -1,14 +1,13 @@
-import { and, asc, desc, eq, gte, inArray, ilike, lte, or, sql } from "drizzle-orm";
-import { extractPathSearchParams } from "@/features/search/hooks/path-search-helper";
-import { propertyTable, propertyTableSchema } from "@/db/schema/property-table";
-import { communityTable, CommunitySelect, communitySelectSchema } from "@/db/schema/community-table";
-import { propertyTypeTable, PropertyTypeSelect, propertyTypeSelectSchema } from "@/db/schema/property-type-table";
-import { unitTypeTable, UnitTypeSelect, unitTypeSelectSchema } from "@/db/schema/unit-type-table";
-import { offeringTypeTable, OfferingTypeSelect, offeringTypeSelectSchema } from "@/db/schema/offering-type-table";
-import { propertyImagesTable, PropertyImagesSelect, propertyImagesSelectSchema } from "@/db/schema/property-images-table";
-import { db } from "@/db/drizzle";
-import { z } from "zod";
-import { notFound } from "next/navigation";
+import {and, asc, desc, eq, gte, ilike, inArray, lte, or, sql} from "drizzle-orm";
+import {extractPathSearchParams} from "@/features/search/hooks/path-search-helper";
+import {propertyTable, propertyTableSchema} from "@/db/schema/property-table";
+import {CommunitySelect, communityTable} from "@/db/schema/community-table";
+import {PropertyTypeSelect, propertyTypeTable} from "@/db/schema/property-type-table";
+import {UnitTypeSelect, unitTypeTable} from "@/db/schema/unit-type-table";
+import {OfferingTypeSelect, offeringTypeTable} from "@/db/schema/offering-type-table";
+import {PropertyImagesSelect, propertyImagesTable} from "@/db/schema/property-images-table";
+import {db} from "@/db/drizzle";
+import {z} from "zod";
 
 // Define Json type directly in this file to avoid module resolution issues
 type Json =

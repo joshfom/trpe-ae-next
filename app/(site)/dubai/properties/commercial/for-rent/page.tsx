@@ -1,12 +1,9 @@
-import React, {Suspense} from 'react';
+import React from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata, ResolvingMetadata} from "next";
 import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
-import {communityTable} from "@/db/schema/community-table";
-import {prepareExcerpt} from "@/lib/prepare-excerpt";
-import {propertyTypeTable} from "@/db/schema/property-type-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {TipTapView} from "@/components/TiptapView";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";

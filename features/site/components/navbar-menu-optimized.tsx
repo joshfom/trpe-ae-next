@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, memo } from "react";
+import React, {memo, useCallback} from "react";
 import {motion} from "framer-motion";
 import Link from "next/link";
 

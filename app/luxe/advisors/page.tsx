@@ -1,5 +1,5 @@
 import React from 'react';
-import { getLuxeAgentsAction } from '@/actions/agents/get-luxe-agents-action';
+import {getLuxeAgentsAction} from '@/actions/agents/get-luxe-agents-action';
 import LuxeAdvisorsClient from './LuxeAdvisorsClient';
 
 const OurTeamPage: React.FC = async () => {

@@ -1,10 +1,9 @@
-import React, {Suspense} from 'react';
+import React from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata, ResolvingMetadata} from "next";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
-import {notFound} from "next/navigation";
 import {propertyTypeTable} from "@/db/schema/property-type-table";
 
 

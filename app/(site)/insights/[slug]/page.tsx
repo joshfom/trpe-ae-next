@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from "@/db/drizzle";
-import {eq, and} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 import {notFound} from "next/navigation";
 import {insightTable} from "@/db/schema/insight-table";
 import {Metadata, ResolvingMetadata} from "next";
@@ -9,7 +9,7 @@ import SimilarInsights from "@/features/insights/components/SimilarInsights";
 import {ServerProcessedTiptap} from "@/components/ServerProcessedTiptap";
 import {validateRequest} from "@/actions/auth-session";
 import {EditInsightSheet} from "@/features/insights/components/EditInsightSheet";
-import type { InsightType } from '@/types/insights';
+import type {InsightType} from '@/types/insights';
 
 
 type Props = {

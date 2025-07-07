@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import {Button} from '@/components/ui/button';
 import React from 'react';
 import AdminCommunities from "@/features/admin/community/components/AdminCommunities";
 

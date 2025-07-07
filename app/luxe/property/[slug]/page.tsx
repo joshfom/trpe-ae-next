@@ -1,9 +1,9 @@
-import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
-import { db } from '@/db/drizzle';
-import { propertyTable } from '@/db/schema/property-table';
-import { eq, and, ne } from 'drizzle-orm';
-import { PropertyType } from '@/types/property';
+import {Metadata} from 'next';
+import {notFound} from 'next/navigation';
+import {db} from '@/db/drizzle';
+import {propertyTable} from '@/db/schema/property-table';
+import {and, eq} from 'drizzle-orm';
+import {PropertyType} from '@/types/property';
 import OptimizedLuxePropertyDetail from './OptimizedLuxePropertyDetail';
 
 interface LuxePropertyPageProps {

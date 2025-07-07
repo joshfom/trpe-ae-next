@@ -1,9 +1,9 @@
-import { notFound } from 'next/navigation';
-import { InsightHeader } from '@/components/luxe/InsightHeader';
-import { InsightContent } from '@/components/luxe/InsightContent';
-import { InsightSidebar } from '@/components/luxe/InsightSidebar';
-import { Insight } from '@/types/insight';
-import { getLuxeInsightBySlugAction } from '@/actions/insights/get-luxe-insight-by-slug-action';
+import {notFound} from 'next/navigation';
+import {InsightHeader} from '@/components/luxe/InsightHeader';
+import {InsightContent} from '@/components/luxe/InsightContent';
+import {InsightSidebar} from '@/components/luxe/InsightSidebar';
+import {Insight} from '@/types/insight';
+import {getLuxeInsightBySlugAction} from '@/actions/insights/get-luxe-insight-by-slug-action';
 
 // Transform database insight to UI format
 const transformInsightData = (dbInsight: any): Insight => {

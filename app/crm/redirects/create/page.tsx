@@ -1,4 +1,4 @@
-import { RedirectForm } from "@/features/admin/redirects/components/RedirectForm";
+import {RedirectForm} from "@/features/admin/redirects/components/RedirectForm";
 
 export default function CreateRedirectPage() {
   return (

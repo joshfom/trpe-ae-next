@@ -1,11 +1,10 @@
 "use client"
-import React, { memo, useMemo } from 'react';
+import React, {memo, useMemo} from 'react';
 import 'swiper/css';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import PropertyCard from "@/components/property-card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 
 interface FeaturedListingsSectionProps {
     saleListings: PropertyType[],

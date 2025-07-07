@@ -1,7 +1,7 @@
 import React from 'react';
 import InsightList from "@/features/insights/components/InsightList";
 import type {Metadata} from "next";
-import { notFound } from "next/navigation";
+import {notFound} from "next/navigation";
 
 export const metadata: Metadata = {
     title: "Expert Insights and Dubai Property Market Trend - TRPE AE",

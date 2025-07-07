@@ -1,12 +1,11 @@
 import React from 'react';
-import { db } from '@/db/drizzle';
-import { eq, desc, and } from 'drizzle-orm';
-import { propertyTable } from '@/db/schema/property-table';
-import { communityTable } from '@/db/schema/community-table';
-import { insightTable } from '@/db/schema/insight-table';
-import { PropertyType } from '@/types/property';
+import {db} from '@/db/drizzle';
+import {and, desc, eq} from 'drizzle-orm';
+import {propertyTable} from '@/db/schema/property-table';
+import {communityTable} from '@/db/schema/community-table';
+import {insightTable} from '@/db/schema/insight-table';
+import {PropertyType} from '@/types/property';
 import LuxePageClient from './LuxePageClient';
-import slugify from 'slugify';
 
 // Server-side data fetching functions
 async function getFeaturedLuxeProperties() {

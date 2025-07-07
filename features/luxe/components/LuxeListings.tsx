@@ -1,14 +1,13 @@
-import React, { memo, useMemo } from 'react';
+import React, {memo, useMemo} from 'react';
 import Pagination from "@/components/Pagination";
-import { getLuxePropertiesServer } from "@/features/luxe/hooks/use-search-luxe-properties";
-import { headers } from "next/headers";
-import Image from "next/image";
+import {getLuxePropertiesServer} from "@/features/luxe/hooks/use-search-luxe-properties";
+import {headers} from "next/headers";
 import Link from "next/link";
-import { truncateText } from "@/lib/truncate-text";
+import {truncateText} from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import unitConverter from "@/lib/unit-converter";
-import { prepareExcerpt } from "@/lib/prepare-excerpt";
-import { notFound } from "next/navigation";
+import {prepareExcerpt} from "@/lib/prepare-excerpt";
+import {notFound} from "next/navigation";
 
 interface LuxeListingsProps {
     unitType?: string;

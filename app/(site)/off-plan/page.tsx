@@ -1,8 +1,8 @@
-import React, { cache, Suspense } from 'react';
+import React, {cache, Suspense} from 'react';
 import type {Metadata} from "next";
-import { client } from "@/lib/hono";
+import {client} from "@/lib/hono";
 import Link from "next/link";
-import { Home, ChevronRight } from "lucide-react";
+import {ChevronRight, Home} from "lucide-react";
 import dynamic from "next/dynamic";
 
 // Dynamic import for ProjectCardServer to reduce initial bundle size

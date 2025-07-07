@@ -1,20 +1,8 @@
-import React, { useState } from 'react';
-import { useMediaQuery } from 'react-responsive';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-    Drawer,
-    DrawerContent,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
+import React, {useState} from 'react';
+import {useMediaQuery} from 'react-responsive';
+import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog";
+import {Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger,} from "@/components/ui/drawer";
+import {Button} from "@/components/ui/button";
 import RequestCallbackForm from "@/features/site/components/RequestCallbackForm";
 
 interface RequestCallBackProps {

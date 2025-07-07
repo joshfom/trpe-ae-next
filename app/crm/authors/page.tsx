@@ -1,8 +1,5 @@
 "use client"
 import React from 'react';
-import Link from "next/link";
-import InsightForm from "@/features/admin/insights/components/InsightForm";
-import AdminInsights from "@/features/admin/insights/components/AdminInsights";
 import AuthorForm from "@/features/admin/author/components/AuthorForm";
 import {Button} from "@/components/ui/button";
 

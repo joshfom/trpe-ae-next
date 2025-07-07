@@ -1,4 +1,4 @@
-import { AdminRedirects } from "@/features/admin/redirects/components/AdminRedirects";
+import {AdminRedirects} from "@/features/admin/redirects/components/AdminRedirects";
 
 export default function CrmRedirectsPage() {
   return (

@@ -1,8 +1,8 @@
-import { RedirectForm } from "@/features/admin/redirects/components/RedirectForm";
-import { db } from "@/db/drizzle";
-import { redirectTable } from "@/db/schema/redirect-table";
-import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import {RedirectForm} from "@/features/admin/redirects/components/RedirectForm";
+import {db} from "@/db/drizzle";
+import {redirectTable} from "@/db/schema/redirect-table";
+import {eq} from "drizzle-orm";
+import {notFound} from "next/navigation";
 
 interface EditRedirectPageProps {
   params: Promise<{

@@ -5,7 +5,7 @@ import {insightTable} from "@/db/schema/insight-table";
 import {notFound} from "next/navigation";
 import Link from "next/link";
 import InsightForm from "@/features/admin/insights/components/InsightForm";
-import type { InsightType } from '@/types/insights';
+import type {InsightType} from '@/types/insights';
 
 
 interface EditInsightPageProps {

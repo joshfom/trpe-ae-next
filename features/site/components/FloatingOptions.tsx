@@ -1,5 +1,5 @@
 "use client"
-import React, { memo, useCallback } from 'react';
+import React, {memo, useCallback} from 'react';
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 
 function FloatingOptions() {

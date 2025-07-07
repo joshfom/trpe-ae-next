@@ -1,5 +1,5 @@
 'use client'
-import React, { memo, useMemo } from 'react';
+import React, {memo, useMemo} from 'react';
 import {Dot} from "lucide-react";
 import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
@@ -8,9 +8,8 @@ import unitConverter from "@/lib/unit-converter";
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css';
-import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
-import { PropertyType } from "@/types/property";
+import {PropertyType} from "@/types/property";
 
 interface LuxePropertyCardProps {
     property: PropertyType

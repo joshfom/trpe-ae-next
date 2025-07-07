@@ -1,7 +1,6 @@
-
 import React from "react";
 import Link from "next/link";
-import { getFooterCommunities } from "@/actions/get-footer-communities-action";
+import {getFooterCommunities} from "@/actions/get-footer-communities-action";
 
 export default async function FooterCommunities() {
     // Use the dedicated server action with strong caching

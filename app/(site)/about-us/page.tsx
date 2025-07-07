@@ -1,6 +1,5 @@
 import React from 'react';
 import type {Metadata} from "next";
-import Image from "next/image";
 import Link from "next/link";
 import BoxReveal from "@/features/site/components/BoxReveal";
 

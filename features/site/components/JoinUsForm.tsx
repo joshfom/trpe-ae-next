@@ -1,9 +1,9 @@
 "use client"
-import React, { useState, useCallback, memo } from 'react';
-import { Input } from "@/components/ui/input";
-import { PhoneInput } from "react-international-phone";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
+import React, {memo, useCallback, useState} from 'react';
+import {Input} from "@/components/ui/input";
+import {PhoneInput} from "react-international-phone";
+import {Textarea} from "@/components/ui/textarea";
+import {Button} from "@/components/ui/button";
 import 'react-international-phone/style.css';
 
 const JoinUsForm = memo(() => {

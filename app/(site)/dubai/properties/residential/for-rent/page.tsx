@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react';
+import React from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata} from "next";
 import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';

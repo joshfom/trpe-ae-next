@@ -1,10 +1,9 @@
-import React, { Suspense, cache, memo } from 'react';
+import React, {cache, memo, Suspense} from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
 import type {Metadata} from "next";
-import { sql } from "drizzle-orm";
-import { communityTable, type CommunitySelect } from "@/db/schema/community-table";
-import { propertyTable } from "@/db/schema/property-table";
+import {sql} from "drizzle-orm";
+import {type CommunitySelect} from "@/db/schema/community-table";
 
 export const metadata: Metadata = {
     title: "Communities in Dubai From Dubai Marina to Majan - TRPE AE",

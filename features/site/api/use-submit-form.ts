@@ -3,8 +3,8 @@
 import {InferRequestType, InferResponseType} from "hono";
 import {client} from "@/lib/hono";
 import {toast} from "sonner";
-import { useState } from "react";
-import { submitContactForm } from "@/actions/submit-contact-form";
+import {useState} from "react";
+import {submitContactForm} from "@/actions/submit-contact-form";
 
 type ResponseType = InferResponseType<typeof client.api.leads.contact.$post>;
 type RequestType = InferRequestType<typeof client.api.leads.contact.$post>["json"];

@@ -7,7 +7,6 @@ import {notFound} from "next/navigation";
 import ListingsGrid from "@/features/properties/components/ListingsGrid";
 import {employeeTable} from "@/db/schema/employee-table";
 import {Metadata, ResolvingMetadata} from "next";
-import {communityTable} from "@/db/schema/community-table";
 import {truncateText} from "@/lib/truncate-text";
 
 
