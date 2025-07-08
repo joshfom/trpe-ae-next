@@ -246,7 +246,7 @@ export default function LuxePageClient({
         style={{ y: backgroundY }}
       >
         <img
-        src="/assets/db-hero.jpg"
+        src="https://www.nakheelcommunities.com/images/nakheelcommunitieslibraries/communities/palm-jumeirah2801cfc3-6328-423b-b735-3d3bb2a5c39c.jpg?sfvrsn=74da3db1_2"
         alt="Luxury workspace"
         className="w-full h-full object-cover"
         />
@@ -333,7 +333,7 @@ export default function LuxePageClient({
             variants={animationVariants.fadeInScale}
           >
             <motion.img 
-              src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
+              src="/assets/luxryprop.webp" 
               alt="Luxury Property" 
               className="w-full h-64 sm:h-80 object-cover rounded-3xl"
               whileHover={{ 
@@ -349,7 +349,7 @@ export default function LuxePageClient({
             variants={animationVariants.slideInLeft}
           >
             <motion.img 
-              src="/assets/db-hero.jpg" 
+              src="/assets/luxryprop.webp" 
               alt="Luxury Property" 
               className="w-full h-auto object-cover rounded-r-3xl"
               whileHover={{ 
@@ -382,7 +382,12 @@ export default function LuxePageClient({
                 viewport={{ amount: 0.8 }}
                 transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                Experience unparalleled luxury in Dubai&apos;s most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
+                From stunning gardens to carefully curated interiors, each
+villa is a sanctuary made for inward reflection and outward
+beauty. The Ocean Mansions at Jumeirah Asora Bay
+embody a transformative experience, where nature and
+timeless architecture converge, creating a life that feels
+both grounded and extraordinary.
               </motion.p>
               <motion.p 
                 className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed text-justify'
@@ -391,8 +396,10 @@ export default function LuxePageClient({
                 viewport={{ amount: 0.8 }}
                 transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
-                From waterfront penthouses to exclusive villas, each property is carefully curated to meet the highest standards of luxury living.
-              </motion.p>
+                Jumeirah Residences represent an ultra-luxurious and
+serviced residential development brand, offering a lifestyle
+defined by exclusivity, originality and sophistication.
+ </motion.p>
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -404,8 +411,8 @@ export default function LuxePageClient({
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  <Link href="/luxe/dubai/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
-                    Explore Properties
+                  <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                    View Property 
                   </Link>
                 </motion.div>
               </motion.div>
@@ -436,23 +443,30 @@ export default function LuxePageClient({
                       Discover Luxury Living
                     </motion.h2>
                     <motion.p 
-                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
+                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 text-justify leading-relaxed'
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ amount: 0.8 }}
                       transition={{ duration: 1.0, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      Experience unparalleled luxury in Dubai&apos;s most prestigious locations. Our premium properties offer the perfect blend of modern sophistication and timeless elegance.
-                    </motion.p>
+                       From stunning gardens to carefully curated interiors, each
+villa is a sanctuary made for inward reflection and outward
+beauty. The Ocean Mansions at Jumeirah Asora Bay
+embody a transformative experience, where nature and
+timeless architecture converge, creating a life that feels
+both grounded and extraordinary.
+ </motion.p>
                     <motion.p 
-                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
+                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 text-justify leading-relaxed'
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ amount: 0.8 }}
                       transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      From waterfront penthouses to exclusive villas, each property is carefully curated to meet the highest standards of luxury living.
-                    </motion.p>
+                      Jumeirah Residences represent an ultra-luxurious and
+serviced residential development brand, offering a lifestyle
+defined by exclusivity, originality and sophistication.
+ </motion.p>
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       whileInView={{ opacity: 1, scale: 1 }}
@@ -464,8 +478,8 @@ export default function LuxePageClient({
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                       >
-                        <Link href="/luxe/dubai/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
-                          Explore Properties
+                        <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                          View Property
                         </Link>
                       </motion.div>
                     </motion.div>
@@ -940,101 +954,111 @@ export default function LuxePageClient({
               </motion.div>
             </div>
           </div>
-        </motion.section>
-
-
-
+        </motion.section>   
         
-
-        {/* Built on Trust Section with Simple Animations */}
+        
+        
+             {/* Built on Trust Section with Simple Animations */}
         <motion.section 
           ref={trustSectionRef}
-          className='w-full bg-gray-50 py-6 lg:py-12 relative z-30'
+          className='w-full bg-black text-white py-6 lg:py-12 relative z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
           variants={animationVariants.staggerContainer}
           style={{ y: trustY }}
         >
-          {/* Section Title */}
-          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 lg:mb-20'>
-            <motion.div 
-              className='text-center'
-              variants={animationVariants.fadeInUp}
-            >
-              <h2 className='text-3xl sm:text-4xl lg:text-5xl font-playfair font-light text-gray-900 mb-6 leading-tight'>
-            Built on Trust. Grown Through Resilience.
-              </h2>
-            </motion.div>
-          </div>
+          {/* Background image left aligned - full width */}
+            <div className="absolute inset-0 ">
+            <img 
+              src="/assets/head.webp" 
+              alt="" 
+              className="w-full h-full object-left scale-[0.6] -ml-24 object-none "
+            />
+            {/* Gradient overlay for blending with black background */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
+            </div>
 
-          {/* Timeline Content */}
-          <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-            <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-start'>
-              
-              {/* Left Section - Fixed Story Content */}
+            {/* Section Title */}
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 lg:mb-20 relative z-10'>
               <motion.div 
-                className='lg:pr-8'
-                variants={animationVariants.slideInLeft}
+                className='text-center'
+                variants={animationVariants.fadeInUp}
               >
+                <h2 className='text-3xl sm:text-4xl lg:text-5xl font-playfair font-light text-white mb-6 leading-tight'>
+                  Built on Trust. Grown Through Resilience.
+                </h2>
+              </motion.div>
+            </div>
+
+            {/* Timeline Content */}
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
+              <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-start'>
+
+               
+                {/* Left Section - Fixed Story Content */}
                 <motion.div 
-                  className='prose prose-lg max-w-none'
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ amount: 0.3 }}
-                  transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className='lg:pr-8 '
+                  variants={animationVariants.slideInLeft}
                 >
-                  <p className='text-gray-700 text-lg leading-relaxed mb-6'>
-                    In a world that celebrates noise, we chose something quieter. TRPE didn&apos;t begin with a billboard or a bold claim. It began with a single key handed over in trust. A young agent in London, showing homes not as products, but as places where lives quietly unfold.
-                  </p>
-                  <p className='text-gray-700 text-lg leading-relaxed mb-6'>
-                    From that beginning, something rare took shape. Word by word. Name by name. Clients became believers. Believers became our community. No noise. No pressure. Only presence.
-                  </p>
-                  <p className='text-gray-700 text-lg leading-relaxed mb-8'>
-                    When Dubai opened its doors to global ambition, we brought the same mindset to a new skyline. We didn&apos;t follow trends, we followed trust. TRPE Luxe was never built to compete. It was built to belong. This is our story. Not in headlines but in homes.
-                  </p>
-                  
-                  {/* CTA Button */}
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ amount: 0.8 }}
-                    transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  <motion.div 
+                    className='prose prose-lg max-w-none hidden'
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ amount: 0.3 }}
+                    transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                   >
+                    <p className='text-gray-200 leading-relaxed mb-6'>
+                      In a world that celebrates noise, we chose something quieter. TRPE didn&apos;t begin with a billboard or a bold claim. It began with a single key handed over in trust. A young agent in London, showing homes not as products, but as places where lives quietly unfold.
+                    </p>
+                    <p className='text-gray-200 leading-relaxed mb-6'>
+                      From that beginning, something rare took shape. Word by word. Name by name. Clients became believers. Believers became our community. No noise. No pressure. Only presence.
+                    </p>
+                    <p className='text-gray-200 leading-relaxed mb-8'>
+                      When Dubai opened its doors to global ambition, we brought the same mindset to a new skyline. We didn&apos;t follow trends, we followed trust. TRPE Luxe was never built to compete. It was built to belong. This is our story. Not in headlines but in homes.
+                    </p>
+                    
+                    {/* CTA Button */}
                     <motion.div
-                      whileHover={{ scale: 1.02, y: -1 }}
-                      whileTap={{ scale: 0.98 }}
-                      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ amount: 0.8 }}
+                      transition={{ duration: 0.4, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      <Link href="/luxe/about-us" className='inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-3xl hover:bg-gray-800 transition-colors text-base'>
-                        Discover Our Story
-                      </Link>
+                      <motion.div
+                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileTap={{ scale: 0.98 }}
+                        transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                      >
+                        <Link href="/luxe/about-us" className='inline-flex items-center px-6 py-3 bg-white text-gray-900 rounded-3xl hover:bg-gray-100 transition-colors text-base'>
+                          Discover Our Story
+                        </Link>
+                      </motion.div>
                     </motion.div>
                   </motion.div>
                 </motion.div>
-              </motion.div>
 
-              {/* Right Section - Simple Timeline Animation */}
-              <motion.div 
-                className='relative'
-                variants={animationVariants.slideInRight}
-              >
-                {/* Vertical timeline line */}
+                {/* Right Section - Simple Timeline Animation */}
                 <motion.div 
-                  className='absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-300 via-gray-500 to-gray-300'
-                  initial={{ scaleY: 0, opacity: 0 }}
-                  whileInView={{ scaleY: 1, opacity: 1 }}
-                  viewport={{ amount: 0.3 }}
-                  transition={{ 
-                    duration: 2.0, 
-                    delay: 0.5, 
-                    ease: [0.25, 0.46, 0.45, 0.94] 
-                  }}
-                  style={{ transformOrigin: 'top' }}
-                />
+                  className='relative'
+                  variants={animationVariants.slideInRight}
+                >
+                  {/* Vertical timeline line */}
+                  <motion.div 
+                    className='absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-300 via-gray-500 to-gray-300'
+                    initial={{ scaleY: 0, opacity: 0 }}
+                    whileInView={{ scaleY: 1, opacity: 1 }}
+                    viewport={{ amount: 0.3 }}
+                    transition={{ 
+                      duration: 1.0, 
+                      delay: 0.2, 
+                      ease: [0.25, 0.46, 0.45, 0.94] 
+                    }}
+                    style={{ transformOrigin: 'top' }}
+                  />
 
-                {/* Timeline Cards - Simple Staggered Animation */}
-                <div className='relative pl-20 space-y-8'>
+                  {/* Timeline Cards - Simple Staggered Animation */}
+                  <div className='relative pl-20 space-y-8'>
                     {[
                       {
                         year: "2019",
@@ -1072,7 +1096,7 @@ export default function LuxePageClient({
                         className='relative'
                         initial={{ 
                           opacity: 0, 
-                          y: 60
+                          y: 40
                         }}
                         whileInView={{ 
                           opacity: 1, 
@@ -1083,8 +1107,8 @@ export default function LuxePageClient({
                           margin: "-100px"
                         }}
                         transition={{ 
-                          duration: 1.2, 
-                          delay: index * 0.2 + 0.3, 
+                          duration: 0.6, 
+                          delay: index * 0.1 + 0.1, 
                           ease: [0.25, 0.46, 0.45, 0.94]
                         }}
                       >
@@ -1095,8 +1119,8 @@ export default function LuxePageClient({
                           whileInView={{ scale: 1, rotate: 0 }}
                           viewport={{}}
                           transition={{ 
-                            duration: 0.8, 
-                            delay: index * 0.2 + 0.5, 
+                            duration: 0.5, 
+                            delay: index * 0.1 + 0.2, 
                             ease: [0.25, 0.46, 0.45, 0.94] 
                           }}
                           whileHover={{
@@ -1130,8 +1154,8 @@ export default function LuxePageClient({
                             whileInView={{ scaleY: 1 }}
                             viewport={{}}
                             transition={{ 
-                              duration: 0.8, 
-                              delay: index * 0.2 + 1.3, 
+                              duration: 0.5, 
+                              delay: index * 0.1 + 0.4, 
                               ease: [0.25, 0.46, 0.45, 0.94] 
                             }}
                             style={{ transformOrigin: 'top' }}
@@ -1144,8 +1168,8 @@ export default function LuxePageClient({
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{}}
                             transition={{ 
-                              duration: 0.6, 
-                              delay: index * 0.2 + 0.7, 
+                              duration: 0.4, 
+                              delay: index * 0.1 + 0.3, 
                               ease: [0.25, 0.46, 0.45, 0.94] 
                             }}
                           >
@@ -1156,12 +1180,12 @@ export default function LuxePageClient({
                           <div className='relative z-10'>
                             <motion.h3 
                               className='text-xl font-playfair font-medium text-gray-900 mb-3'
-                              initial={{ opacity: 0, y: 30 }}
+                              initial={{ opacity: 0, y: 20 }}
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{}}
                               transition={{ 
-                                duration: 0.8, 
-                                delay: index * 0.2 + 0.9, 
+                                duration: 0.4, 
+                                delay: index * 0.1 + 0.4, 
                                 ease: [0.25, 0.46, 0.45, 0.94] 
                               }}
                             >
@@ -1169,12 +1193,12 @@ export default function LuxePageClient({
                             </motion.h3>
                             <motion.p 
                               className='text-gray-600 leading-relaxed'
-                              initial={{ opacity: 0, y: 30 }}
+                              initial={{ opacity: 0, y: 20 }}
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{}}
                               transition={{ 
-                                duration: 0.8, 
-                                delay: index * 0.2 + 1.1, 
+                                duration: 0.4, 
+                                delay: index * 0.1 + 0.5, 
                                 ease: [0.25, 0.46, 0.45, 0.94] 
                               }}
                             >
@@ -1184,11 +1208,11 @@ export default function LuxePageClient({
                         </motion.div>
                       </motion.div>
                     ))}
-                </div>
-              </motion.div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
 
         {/* Latest Blog Section */}
         <motion.div

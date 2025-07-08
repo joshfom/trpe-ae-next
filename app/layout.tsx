@@ -66,7 +66,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100')}>
+      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 px-6 xl:px-0')}>
       <SpeedInsights/>
       <Analytics/>
       <NextTopLoader
