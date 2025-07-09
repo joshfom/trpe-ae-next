@@ -9,6 +9,7 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const poppins = Poppins({
   weight: ['400', '500', '600'],
@@ -44,6 +45,15 @@ export default function RootLayout({
   return (
       <html lang="en" className="js" suppressHydrationWarning>
       <head>
+        {/* Google Tag Manager */}
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MNQMSPX');`}
+        </Script>
+        
         {/* Google Analytics 4 */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=G-KYYZEMLWMT`}
@@ -71,13 +81,23 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 px-6 xl:px-0')}>
+      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 xl:px-0')}>
+      {/* Google Tag Manager (noscript) */}
+      <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNQMSPX"
+                height="0" width="0" style={{display:"none",visibility:"hidden"}}></iframe>
+      </noscript>
+      
       <NextTopLoader
           color="#374151"
       />
       <EdgeStoreProvider>
           {children}
       </EdgeStoreProvider>
+
+      {/* TODO: Testing multiple analytics implementations - remove duplicates once working */}
+      {/* GA4 via Next.js third-parties */}
+      <GoogleAnalytics gaId="G-NQ5VN37Z0Y" />
       <Toaster
           position="top-center"
           richColors
