@@ -6,7 +6,7 @@ import {env} from "@/config/env";
 // Create a proper client-side auth client that makes API requests
 // rather than importing server-side database code
 export const authClient = createAuthClient({
-    baseURL: env.NEXT_PUBLIC_APP_URL || 'https://trpe.ae',
+    baseURL: process.env.NEXT_PUBLIC_URL || env.NEXT_PUBLIC_APP_URL || 'https://trpe.ae',
     debug: true, // Enable debug logging
     onError: (error: { code?: string; message?: string }) => {
         console.error('Auth Client Error:', error);
