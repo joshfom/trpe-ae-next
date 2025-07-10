@@ -335,7 +335,7 @@ export default function LuxePageClient({
             <motion.img 
               src="/assets/luxryprop.webp" 
               alt="Luxury Property" 
-              className="w-full h-64 sm:h-80 object-cover rounded-3xl"
+              className="w-full h-64 sm:h-96 object-cover"
               whileHover={{ 
                 scale: 1.02,
                 transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
@@ -601,7 +601,7 @@ defined by exclusivity, originality and sophistication.
             <motion.img 
               src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
               alt="Luxury Property" 
-              className="w-full h-64 sm:h-80 object-cover rounded-3xl"
+              className="w-full h-64 sm:h-80 object-cover"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.4 }}
             />
