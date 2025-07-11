@@ -5,8 +5,11 @@ import {env} from "@/config/env";
 
 // Create a proper client-side auth client that makes API requests
 // rather than importing server-side database code
+const baseURL = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_URL || 'https://trpe.ae';
+console.log('🔧 Better Auth Client baseURL:', baseURL);
+
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_URL || env.NEXT_PUBLIC_APP_URL || 'https://trpe.ae',
+    baseURL,
     debug: true, // Enable debug logging
     onError: (error: { code?: string; message?: string }) => {
         console.error('Auth Client Error:', error);

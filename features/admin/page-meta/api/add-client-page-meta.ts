@@ -1,10 +1,18 @@
 "use client"
 import { addPageMetaAction } from "@/actions/admin/add-page-meta-action";
 import { toast } from "sonner";
-import { InferRequestType } from "hono";
-import { client } from "@/lib/hono";
 
-type RequestType = InferRequestType<typeof client.api.admin["page-meta"]["new"]["$post"]>["json"];
+interface PageMetaData {
+    metaTitle: string;
+    metaDescription: string;
+    noIndex?: boolean;
+    noFollow?: boolean;
+    title: string;
+    content: string;
+    path: string;
+    metaKeywords?: string;
+    includeInSitemap?: boolean;
+}
 
 /**
  * Client-side function to add page meta using the server action
@@ -12,35 +20,28 @@ type RequestType = InferRequestType<typeof client.api.admin["page-meta"]["new"][
  * @param onSuccess - Optional callback for successful addition
  */
 export const addClientPageMeta = async (
-  data: RequestType,
+  data: PageMetaData,
   onSuccess?: (data: any) => void
 ) => {
   try {
     const result = await addPageMetaAction(data);
-    console.log('Page meta added successfully:', result);
+    
+    if (!result.success) {
+      toast.error(result.error || 'Failed to add page meta');
+      return result;
+    }
+    
+    console.log('Page meta added successfully:', result.data);
     toast.success('Page meta added successfully');
     
     if (onSuccess) {
-      onSuccess(result);
+      onSuccess(result.data);
     }
     
     return result;
   } catch (error) {
     console.error('Error adding page meta:', error);
-    
-    if (error instanceof Error) {
-      try {
-        const errorData = JSON.parse(error.message);
-        if (errorData.error) {
-          toast.error(errorData.error);
-          return;
-        }
-      } catch (e) {
-        // Not a JSON error
-      }
-    }
-    
-    toast.error('An error occurred while updating page Meta');
+    toast.error('Failed to add page meta');
     throw error;
   }
 };
