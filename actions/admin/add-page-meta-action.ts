@@ -12,7 +12,7 @@ interface PageMetaData {
     noIndex?: boolean;
     noFollow?: boolean;
     title: string;
-    content: string;
+    content?: string; // Optional to match schema
     path: string;
     metaKeywords?: string;
     includeInSitemap?: boolean;
