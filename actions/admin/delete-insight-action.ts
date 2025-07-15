@@ -1,8 +1,11 @@
 "use server";
 
-import { client } from "@/lib/hono";
 import { revalidateTag } from "next/cache";
 import { s3Service } from "@/lib/s3Service";
+import { getSession } from "@/actions/auth-session";
+import { db } from "@/db/drizzle";
+import { insightTable } from "@/db/schema/insight-table";
+import { eq } from "drizzle-orm";
 
 /**
  * Server action to delete an insight
@@ -19,16 +22,33 @@ export async function deleteInsight({ slug, coverUrl }: { slug: string; coverUrl
   }
 
   try {
-    // First delete the insight from the database
-    const response = await client.api.admin.insights[":insightSlug"].$delete({
-      param: { insightSlug: slug }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to delete insight: ${response.statusText}`);
+    // Check authentication first
+    const session = await getSession();
+    if (!session) {
+      return {
+        success: false,
+        error: "Please log in or your session to access resource.",
+        data: null
+      };
     }
 
-    const responseData = await response.json();
+    // Check if insight exists
+    const existingInsight = await db.query.insightTable.findFirst({
+      where: eq(insightTable.slug, slug)
+    });
+
+    if (!existingInsight) {
+      return {
+        success: false,
+        error: "Insight not found",
+        data: null
+      };
+    }
+
+    // Delete the insight from the database
+    const [deletedInsight] = await db.delete(insightTable)
+      .where(eq(insightTable.slug, slug))
+      .returning();
 
     // If there's a cover image, try to delete it from S3
     // But don't fail the entire operation if S3 deletion fails
@@ -46,7 +66,7 @@ export async function deleteInsight({ slug, coverUrl }: { slug: string; coverUrl
     
     return {
       success: true,
-      data: responseData
+      data: deletedInsight
     };
   } catch (error) {
     console.error("Error deleting insight:", error);

@@ -1061,34 +1061,46 @@ defined by exclusivity, originality and sophistication.
                   <div className='relative pl-20 space-y-8'>
                     {[
                       {
-                        year: "2019",
-                        title: "The First Key",
-                        description: "One agent. One promise. A first showing that felt like a beginning, not a sale.",
+                        year: "2006",
+                        title: "The First Step",
+                        description: "Eight months. One agent. Many doubts. But a mindset formed: Never give up.",
                         color: "from-gray-600 to-gray-700"
                       },
                       {
-                        year: "2020",
-                        title: "A Small Start", 
-                        description: "A modest studio in London. But ambition, taste, and integrity ran deep.",
+                        year: "2007-2011",
+                        title: "The Hard Years", 
+                        description: "Four ventures. Countless setbacks. A global crash. But every failure refined the vision.",
                         color: "from-slate-600 to-slate-700"
                       },
                       {
-                        year: "2021",
-                        title: "Growth Through Trust",
-                        description: "No ads. Just names passed hand to hand. Clients returned and brought others.",
+                        year: "2011",
+                        title: "The First Foundation",
+                        description: "Nazemi Property Consultancy was born, built on service, not showmanship.",
                         color: "from-zinc-600 to-zinc-700"
+                      },
+                      {
+                        year: "2019",
+                        title: "Expansion in London",
+                        description: "ADN Holding and Fix My Property launch, bringing design, renovation, and ownership under one roof.",
+                        color: "from-neutral-600 to-neutral-700"
+                      },
+                      {
+                        year: "2020",
+                        title: "TRPE Rebrand",
+                        description: "\"The Real Property Experts\" takes shape, built for longevity, not headlines.",
+                        color: "from-stone-600 to-stone-700"
                       },
                       {
                         year: "2022",
                         title: "Dubai Chapter",
-                        description: "A bold new skyline. The same quiet values. A bridge between cultures.",
-                        color: "from-neutral-600 to-neutral-700"
+                        description: "TRPE enters the UAE. A familiar mindset, now among unfamiliar skylines.",
+                        color: "from-amber-600 to-amber-700"
                       },
                       {
-                        year: "2024",
+                        year: "2025",
                         title: "The Luxe Vision",
-                        description: "TRPE Luxe was born not to be loud, but to be lasting.",
-                        color: "from-stone-600 to-stone-700"
+                        description: "TRPE Luxe launched on May 5th, 2025 to fill a market gap in Dubai by showcasing true luxury leadership, not as appearance, but as experience.",
+                        color: "from-emerald-600 to-emerald-700"
                       }
                     ].map((item, index) => (
                       <motion.div

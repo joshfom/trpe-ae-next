@@ -1,8 +1,12 @@
 "use server"
-import {client} from "@/lib/hono";
-import {InferRequestType} from "hono";
+import {db} from "@/db/drizzle";
+import {pageMetaTable} from "@/db/schema/page-meta-table";
+import {eq} from "drizzle-orm";
+import {getSession} from "@/actions/auth-session";
+import {PageMetaFormSchema} from "@/lib/types/form-schema/page-meta-form-schema";
+import {z} from "zod";
 
-type RequestType = InferRequestType<typeof client.api.admin["page-meta"][":id"]["update"]["$patch"]>["json"];
+type RequestType = z.infer<typeof PageMetaFormSchema>;
 
 /**
  * Server action to update page meta
@@ -11,18 +15,45 @@ type RequestType = InferRequestType<typeof client.api.admin["page-meta"][":id"][
  */
 export async function updatePageMetaAction(id: string, data: RequestType) {
     try {
-        const response = await client.api.admin["page-meta"][":id"]["update"]["$patch"]({
-            param: {id},
-            json: data
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('API error response:', errorData);
-            throw new Error(JSON.stringify(errorData));
+        // Check authentication using Better Auth session
+        const session = await getSession();
+        if (!session) {
+            throw new Error(JSON.stringify({Unauthorized: "Please log in or your session to access resource."}));
         }
 
-        return await response.json();
+        // Check if page meta exists
+        const pageMeta = await db.query.pageMetaTable.findFirst({
+            where: eq(pageMetaTable.id, id)
+        });
+
+        if (!pageMeta) {
+            throw new Error(JSON.stringify({error: "Page meta not found"}));
+        }
+
+        // Check if path already exists and belongs to another page
+        const existingPath = await db.query.pageMetaTable.findFirst({
+            where: eq(pageMetaTable.path, data.path)
+        });
+
+        if (existingPath && existingPath.id !== id) {
+            throw new Error(JSON.stringify({error: "Path already exists for another page"}));
+        }
+
+        // Update the page meta
+        const [updatedData] = await db.update(pageMetaTable).set({
+            metaTitle: data.metaTitle,
+            metaDescription: data.metaDescription,
+            title: data.title,
+            content: data.content,
+            path: data.path,
+            noIndex: data.noIndex,
+            noFollow: data.noFollow,
+            metaKeywords: data.metaKeywords,
+            includeInSitemap: data.includeInSitemap,
+            updatedAt: new Date().toISOString()
+        }).where(eq(pageMetaTable.id, id)).returning();
+
+        return {data: updatedData};
     } catch (error) {
         console.error('Error updating page meta:', error);
         throw error;
