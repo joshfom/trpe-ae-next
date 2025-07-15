@@ -1252,7 +1252,7 @@ defined by exclusivity, originality and sophistication.
             className='w-full h-full object-cover'
             variants={animationVariants.parallaxVariants}
           />
-          
+
           {/* Light overlay for better text readability */}
           <motion.div 
             className='absolute inset-0 bg-white/20'

@@ -7,14 +7,14 @@ import { luxeCommunityTable } from "@/db/schema/luxe-community-table";
 import { eq } from "drizzle-orm";
 
 interface LuxeCommunityUpdateData {
-  name?: string;
-  metaTitle?: string;
-  metaDesc?: string;
-  about?: string;
-  image?: string;
-  heroImage?: string;
-  featured?: boolean;
-  displayOrder?: number;
+  isLuxe?: boolean;
+  luxeMetaTitle?: string;
+  luxeTitle?: string; // This maps to name in the database
+  luxeDescription?: string; // This maps to about in the database
+  luxeImageUrl?: string; // This maps to image in the database
+  luxeHeroImageUrl?: string; // This maps to heroImage in the database
+  luxeFeatured?: boolean; // This maps to featured in the database
+  luxeDisplayOrder?: number; // This maps to displayOrder in the database
 }
 
 export type UpdateLuxeCommunitySuccessResult = {
@@ -65,14 +65,14 @@ export async function updateLuxeCommunity(communityId: string, data: LuxeCommuni
 
         // Update the luxe community
         const [updatedLuxeCommunity] = await db.update(luxeCommunityTable).set({
-            name: data.name !== undefined ? data.name : existingLuxeCommunity.name,
-            metaTitle: data.metaTitle !== undefined ? data.metaTitle : existingLuxeCommunity.metaTitle,
-            metaDesc: data.metaDesc !== undefined ? data.metaDesc : existingLuxeCommunity.metaDesc,
-            about: data.about !== undefined ? data.about : existingLuxeCommunity.about,
-            image: data.image !== undefined ? data.image : existingLuxeCommunity.image,
-            heroImage: data.heroImage !== undefined ? data.heroImage : existingLuxeCommunity.heroImage,
-            featured: data.featured !== undefined ? data.featured : existingLuxeCommunity.featured,
-            displayOrder: data.displayOrder !== undefined ? data.displayOrder : existingLuxeCommunity.displayOrder,
+            name: data.luxeTitle !== undefined ? data.luxeTitle : existingLuxeCommunity.name,
+            metaTitle: data.luxeMetaTitle !== undefined ? data.luxeMetaTitle : existingLuxeCommunity.metaTitle,
+            metaDesc: existingLuxeCommunity.metaDesc, // No client mapping for this field
+            about: data.luxeDescription !== undefined ? data.luxeDescription : existingLuxeCommunity.about,
+            image: data.luxeImageUrl !== undefined ? data.luxeImageUrl : existingLuxeCommunity.image,
+            heroImage: data.luxeHeroImageUrl !== undefined ? data.luxeHeroImageUrl : existingLuxeCommunity.heroImage,
+            featured: data.luxeFeatured !== undefined ? data.luxeFeatured : existingLuxeCommunity.featured,
+            displayOrder: data.luxeDisplayOrder !== undefined ? data.luxeDisplayOrder : existingLuxeCommunity.displayOrder,
             updatedAt: new Date()
         }).where(eq(luxeCommunityTable.communityId, communityId)).returning();
         
