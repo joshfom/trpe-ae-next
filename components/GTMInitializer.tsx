@@ -5,16 +5,27 @@ import { initializeGTM } from '@/lib/gtm';
 
 export default function GTMInitializer() {
   useEffect(() => {
-    // Wait for DOM to be ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeGTM);
-    } else {
+    console.log('GTMInitializer useEffect triggered');
+    console.log('Document readyState:', document.readyState);
+    
+    const initGTM = () => {
+      console.log('Calling initializeGTM...');
       initializeGTM();
+    };
+
+    // Ensure GTM initializes after the DOM is ready
+    if (document.readyState === 'loading') {
+      console.log('Document still loading, waiting for DOMContentLoaded');
+      document.addEventListener('DOMContentLoaded', initGTM);
+    } else {
+      console.log('Document ready, initializing GTM immediately');
+      // Small delay to ensure everything is mounted
+      setTimeout(initGTM, 100);
     }
 
     // Cleanup
     return () => {
-      document.removeEventListener('DOMContentLoaded', initializeGTM);
+      document.removeEventListener('DOMContentLoaded', initGTM);
     };
   }, []);
 

@@ -106,7 +106,7 @@ const nextConfig: NextConfig = {
                     // Ensure scripts can load properly
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel.app vercel.app *.trpe.ae trpe.ae; style-src 'self' 'unsafe-inline'; img-src * data:; font-src 'self' data:; connect-src *;",
+                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel.app vercel.app *.trpe.ae trpe.ae *.googletagmanager.com googletagmanager.com *.google-analytics.com google-analytics.com *.facebook.net facebook.net connect.facebook.net *.doubleclick.net doubleclick.net *.googleadservices.com googleadservices.com *.clarity.ms clarity.ms *.google.com google.com; style-src 'self' 'unsafe-inline'; img-src * data:; font-src 'self' data:; connect-src *; frame-src 'self' *.googletagmanager.com googletagmanager.com *.doubleclick.net doubleclick.net *.facebook.com facebook.com;",
                     },
                 ],
             },

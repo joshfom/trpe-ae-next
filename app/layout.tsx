@@ -9,7 +9,7 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
-import GTMInitializer from "@/components/GTMInitializer";
+import GTMDebugPanel from "@/components/GTMDebugPanel";
 
 const poppins = Poppins({
   weight: ['400', '500', '600'],
@@ -45,6 +45,52 @@ export default function RootLayout({
   return (
       <html lang="en" className="js" suppressHydrationWarning>
       <head>
+   
+   <Script id="gtm-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{
+            __html: `
+            console.log('🚀 Initializing GTM...');
+            (function(w,d,s,l,i){
+            w[l]=w[l]||[];
+            w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+            console.log('🏷️ GTM dataLayer initialized:', w[l]);
+            var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+            j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;
+            console.log('🏷️ GTM script URL:', j.src);
+            j.onload = function() {
+              console.log('✅ GTM script loaded successfully');
+              console.log('🏷️ GTM container status:', typeof w.google_tag_manager);
+              w[l].push({
+                event: 'gtm_script_loaded',
+                timestamp: new Date().toISOString()
+              });
+            };
+            j.onerror = function() {
+              console.error('❌ GTM script failed to load');
+            };
+            f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-MNQMSPX');
+            
+            // Additional logging
+            setTimeout(function() {
+              console.log('🔍 GTM Status Check:');
+              console.log('  - dataLayer exists:', !!window.dataLayer);
+              console.log('  - dataLayer length:', window.dataLayer ? window.dataLayer.length : 0);
+              console.log('  - google_tag_manager exists:', !!window.google_tag_manager);
+              console.log('  - GTM scripts on page:', document.querySelectorAll('script[src*="googletagmanager"]').length);
+              
+              if (window.dataLayer && window.dataLayer.length > 0) {
+                console.log('🎉 SUCCESS: GTM is working! Tag Assistant should now detect your container.');
+                console.log('🏷️ Recent events:', window.dataLayer.slice(-5));
+              }
+            }, 2000);
+          `,
+          }}
+          />
+
+          
+        {/* End Google Tag Manager */}
         <meta name="google-site-verification" content="1PdN9Ng2af8MbSlor1keRIIXn_sM3nHkj2JPsWnyB1o"/>
         <meta name="next-head-count" content="3"/>
         <style dangerouslySetInnerHTML={{ 
@@ -60,8 +106,12 @@ export default function RootLayout({
         }} />
       </head>
       <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 xl:px-0')}>
-      {/* Google Tag Manager - React GTM Module */}
-      <GTMInitializer />
+
+      <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNQMSPX"
+                height="0" width="0" style={{display:"none",visibility:"hidden"}}></iframe>
+      </noscript>
+      {/* End Google Tag Manager (noscript) */}
       
       <NextTopLoader
           color="#374151"
@@ -74,33 +124,10 @@ export default function RootLayout({
           position="top-center"
           richColors
       />
+      
+      {/* GTM Debug Panel - Development only */}
+      <GTMDebugPanel />
 
-      <Script
-          id="facebook-pixel"
-          strategy="afterInteractive"
-      >
-          {`
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}');
-          fbq('track', 'PageView');
-        `}
-      </Script>
-      <noscript>
-          <img
-              height="1"
-              width="1"
-              style={{display: "none"}}
-              src={`https://www.facebook.com/tr?${process.env.NEXT_PUBLIC_FACEBOOK_PIXEL}&ev=PageView&noscript=1`}
-              alt="Facebook Pixel"
-          />
-      </noscript>
       </body>
 
       </html>
