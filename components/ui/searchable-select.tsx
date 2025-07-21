@@ -40,7 +40,17 @@ export function SearchableSelect({
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false);
 
-  const selectedOption = options.find((option) => option.id === value);
+  // Safety checks: ensure options is always an array and handle all edge cases
+  const safeOptions = React.useMemo(() => {
+    if (!options) return [];
+    if (!Array.isArray(options)) return [];
+    return options.filter(option => option && typeof option === 'object' && option.id);
+  }, [options]);
+
+  const selectedOption = React.useMemo(() => {
+    if (!value || safeOptions.length === 0) return null;
+    return safeOptions.find((option) => option?.id === value) || null;
+  }, [value, safeOptions]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -55,7 +65,7 @@ export function SearchableSelect({
             renderOption ? (
               renderOption(selectedOption)
             ) : (
-              selectedOption.title || selectedOption.name
+              selectedOption.title || selectedOption.name || "Unknown"
             )
           ) : (
             placeholder
@@ -68,10 +78,10 @@ export function SearchableSelect({
           <CommandInput placeholder={searchPlaceholder} />
           <CommandEmpty>{emptyMessage}</CommandEmpty>
           <CommandGroup className="max-h-64 overflow-auto">
-            {options.map((option) => (
+            {safeOptions.length > 0 ? safeOptions.map((option) => (
               <CommandItem
                 key={option.id}
-                value={`${option.title || option.name}-${option.id}`}
+                value={`${option.title || option.name || option.id}-${option.id}`}
                 onSelect={() => {
                   onValueChange(option.id);
                   setOpen(false);
@@ -83,9 +93,13 @@ export function SearchableSelect({
                     value === option.id ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {renderOption ? renderOption(option) : (option.title || option.name)}
+                {renderOption ? renderOption(option) : (option.title || option.name || "Unknown")}
               </CommandItem>
-            ))}
+            )) : (
+              <CommandItem disabled>
+                {emptyMessage}
+              </CommandItem>
+            )}
           </CommandGroup>
         </Command>
       </PopoverContent>

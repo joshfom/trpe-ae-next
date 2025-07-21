@@ -411,6 +411,7 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
     })
 
     const editor = useEditor({
+        immediatelyRender: false,
         extensions: [
             StarterKit,
             CharacterCount.configure({

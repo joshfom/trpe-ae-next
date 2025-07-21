@@ -9,7 +9,6 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
-import GTMDebugPanel from "@/components/GTMDebugPanel";
 
 const poppins = Poppins({
   weight: ['400', '500', '600'],
@@ -48,43 +47,14 @@ export default function RootLayout({
    
    <Script id="gtm-init" strategy="beforeInteractive" dangerouslySetInnerHTML={{
             __html: `
-            console.log('🚀 Initializing GTM...');
-            (function(w,d,s,l,i){
-            w[l]=w[l]||[];
+            (function(w,d,s,l,i){w[l]=w[l]||[];
             w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-            console.log('🏷️ GTM dataLayer initialized:', w[l]);
             var f=d.getElementsByTagName(s)[0],
             j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
             j.async=true;j.src=
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;
-            console.log('🏷️ GTM script URL:', j.src);
-            j.onload = function() {
-              console.log('✅ GTM script loaded successfully');
-              console.log('🏷️ GTM container status:', typeof w.google_tag_manager);
-              w[l].push({
-                event: 'gtm_script_loaded',
-                timestamp: new Date().toISOString()
-              });
-            };
-            j.onerror = function() {
-              console.error('❌ GTM script failed to load');
-            };
             f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-MNQMSPX');
-            
-            // Additional logging
-            setTimeout(function() {
-              console.log('🔍 GTM Status Check:');
-              console.log('  - dataLayer exists:', !!window.dataLayer);
-              console.log('  - dataLayer length:', window.dataLayer ? window.dataLayer.length : 0);
-              console.log('  - google_tag_manager exists:', !!window.google_tag_manager);
-              console.log('  - GTM scripts on page:', document.querySelectorAll('script[src*="googletagmanager"]').length);
-              
-              if (window.dataLayer && window.dataLayer.length > 0) {
-                console.log('🎉 SUCCESS: GTM is working! Tag Assistant should now detect your container.');
-                console.log('🏷️ Recent events:', window.dataLayer.slice(-5));
-              }
-            }, 2000);
           `,
           }}
           />
@@ -124,9 +94,6 @@ export default function RootLayout({
           position="top-center"
           richColors
       />
-      
-      {/* GTM Debug Panel - Development only */}
-      <GTMDebugPanel />
 
       </body>
 

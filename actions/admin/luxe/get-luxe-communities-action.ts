@@ -33,6 +33,17 @@ export type GetLuxeCommunitiesResult = GetLuxeCommunitiesSuccessResult | GetLuxe
 export async function getLuxeCommunities(): Promise<GetLuxeCommunitiesResult> {
     try {
         console.log('Action: Starting to fetch luxe communities...');
+        
+        // Check if client is available
+        if (!client) {
+            console.error('Action: Client is not available');
+            return {
+                success: false,
+                error: "API client is not available"
+            };
+        }
+        
+        console.log('Action: Client is available, making request...');
         const response = await client.api.admin["luxe-communities"].$get();
         
         console.log('Action: Response status:', response.status, response.ok);

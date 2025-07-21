@@ -251,3 +251,31 @@
   @apply p-4;
   border-radius: 16px;
 }
+
+/* TipTap Editor Focus Styles - Remove blue outline */
+#tip-tap .ProseMirror,
+#tip-tap .ProseMirror *,
+#tip-tap .ProseMirror-focused,
+#tip-tap [contenteditable="true"],
+#tip-tap [contenteditable="true"] *,
+.ProseMirror,
+.ProseMirror *,
+.ProseMirror-focused {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+/* Remove focus ring on focus events */
+#tip-tap .ProseMirror:focus,
+#tip-tap .ProseMirror-focused:focus,
+#tip-tap [contenteditable="true"]:focus,
+#tip-tap [contenteditable="true"] *:focus,
+.ProseMirror:focus,
+.ProseMirror-focused:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}

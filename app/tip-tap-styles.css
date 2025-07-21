@@ -17,3 +17,32 @@
   height: 1px;
   background-color: transparent;
 }
+
+/* Remove focus outline for TipTap editor */
+.tiptap-editor,
+.tiptap-editor *,
+.ProseMirror,
+.ProseMirror *,
+.ProseMirror-focused,
+[data-tiptap-editor],
+[data-tiptap-editor] *,
+.editor-content,
+.editor-content *,
+.tiptap,
+.tiptap * {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove browser default focus styles */
+.tiptap-editor:focus,
+.ProseMirror:focus,
+.ProseMirror-focused:focus,
+[data-tiptap-editor]:focus,
+.editor-content:focus,
+.tiptap:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}

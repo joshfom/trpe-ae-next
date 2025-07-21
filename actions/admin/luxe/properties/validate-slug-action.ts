@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { propertyTable } from "@/db/schema/property-table";
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 import slugify from "slugify";
 
 export async function validateLuxePropertySlugAction(slug: string, excludeId?: string) {
@@ -15,19 +15,23 @@ export async function validateLuxePropertySlugAction(slug: string, excludeId?: s
         });
 
         // Check if slug exists (excluding current property if editing)
-        const whereConditions = [eq(propertyTable.slug, normalizedSlug)];
+        let whereCondition;
         
         if (excludeId) {
-            whereConditions.push(eq(propertyTable.id, excludeId));
+            // When editing, exclude the current property from the check
+            whereCondition = and(
+                eq(propertyTable.slug, normalizedSlug),
+                ne(propertyTable.id, excludeId)
+            );
+        } else {
+            // When creating new, just check if slug exists
+            whereCondition = eq(propertyTable.slug, normalizedSlug);
         }
 
         const existingProperty = await db
             .select({ id: propertyTable.id })
             .from(propertyTable)
-            .where(excludeId 
-                ? and(eq(propertyTable.slug, normalizedSlug), eq(propertyTable.id, excludeId))
-                : eq(propertyTable.slug, normalizedSlug)
-            )
+            .where(whereCondition)
             .limit(1);
 
         if (existingProperty.length > 0) {
@@ -36,10 +40,21 @@ export async function validateLuxePropertySlugAction(slug: string, excludeId?: s
             let uniqueSlug = `${normalizedSlug}-${counter}`;
             
             while (true) {
+                let checkWhereCondition;
+                
+                if (excludeId) {
+                    checkWhereCondition = and(
+                        eq(propertyTable.slug, uniqueSlug),
+                        ne(propertyTable.id, excludeId)
+                    );
+                } else {
+                    checkWhereCondition = eq(propertyTable.slug, uniqueSlug);
+                }
+                
                 const checkUnique = await db
                     .select({ id: propertyTable.id })
                     .from(propertyTable)
-                    .where(eq(propertyTable.slug, uniqueSlug))
+                    .where(checkWhereCondition)
                     .limit(1);
                 
                 if (checkUnique.length === 0) {

@@ -10,14 +10,14 @@ import {Progress} from "@/components/ui/progress";
 import Image from "next/image";
 
 const variants = {
-    base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
+    base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[200px] w-full border-2 border-dashed border-gray-300 dark:border-gray-600 transition-colors duration-200 ease-in-out hover:border-gray-400 dark:hover:border-gray-500 bg-gray-50 dark:bg-gray-900',
     image:
         'border-0 p-0 w-full h-full relative shadow-md bg-slate-200 dark:bg-slate-900 rounded-md',
-    active: 'border-2',
+    active: 'border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20',
     disabled:
         'bg-gray-200 border-gray-300 cursor-default pointer-events-none bg-opacity-30 dark:bg-gray-700',
-    accept: 'border border-blue-500 bg-blue-500 bg-opacity-10',
-    reject: 'border border-red-700 bg-red-700 bg-opacity-10',
+    accept: 'border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20',
+    reject: 'border-2 border-red-500 bg-red-50 dark:bg-red-900/20',
 };
 
 export type FileState = {
@@ -145,8 +145,8 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         }, [fileRejections, dropzoneOptions]);
 
         return (
-            <div className={'space-y-4 '}>
-                <div className="w-full max-h-56 py-6  relatiive">
+            <div className="w-full space-y-4">
+                <div className="w-full relative">
                     {
                         value &&
                         <div className={'space-y-3 pb-3'}>
@@ -173,14 +173,20 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                         >
                             {/* Main File Input */}
                             <input ref={ref} {...getInputProps()} />
-                            <div className="flex flex-col items-center justify-center text-xs text-gray-400">
-                                <ImageUp className="storke-1 mb-2 h-10 w-10"/>
-                                <div className="text-gray-400">drag & drop to upload</div>
-                                <div className="mt-3">
-                                    <Button variant={'outline'} type={'button'} disabled={disabled} className={'flex border-brand-primary'}>
-                                        <Camera className="stroke-1 mr-2 h-5 w-5 text-brand-primary"/>
-                                        Upload Photos
-                                    </Button>
+                            <div className="flex flex-col items-center justify-center text-center p-6">
+                                <ImageUp className="stroke-1 mb-4 h-12 w-12 text-gray-400"/>
+                                <div className="text-gray-600 dark:text-gray-300 text-lg font-medium mb-2">
+                                    Drag & drop images here
+                                </div>
+                                <div className="text-gray-500 dark:text-gray-400 text-sm mb-4">
+                                    or click to browse files
+                                </div>
+                                <Button variant={'outline'} type={'button'} disabled={disabled} className="border-blue-500 text-blue-600 hover:bg-blue-50">
+                                    <Camera className="stroke-1 mr-2 h-5 w-5"/>
+                                    Upload Photos
+                                </Button>
+                                <div className="text-xs text-gray-400 mt-3">
+                                    Support: JPG, PNG, GIF (Max: {formatFileSize(dropzoneOptions?.maxSize ?? 5242880)})
                                 </div>
                             </div>
                         </div>

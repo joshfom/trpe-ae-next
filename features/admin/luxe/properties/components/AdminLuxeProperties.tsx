@@ -76,7 +76,7 @@ async function AdminLuxeProperties() {
                                     <div className="flex flex-col h-full">
                                         <div className="relative">
                                             {property.images?.[0]?.s3Url ? (
-                                                <Image
+                                                <img
                                                     height={200}
                                                     width={400}
                                                     className="rounded-t-lg h-48 w-full object-cover"
@@ -109,7 +109,7 @@ async function AdminLuxeProperties() {
                                                 {property.bedrooms ? `${property.bedrooms} bed` : ''} 
                                                 {property.bedrooms && property.bathrooms ? ' • ' : ''}
                                                 {property.bathrooms ? `${property.bathrooms} bath` : ''}
-                                                {property.size ? ` • ${Math.round(property.size / 100)} sqft` : ''}
+                                                {property.size ? ` • ${Math.round(property.size )} sqft` : ''}
                                             </div>
                                             
                                             <div className="flex items-center justify-between mt-auto">
