@@ -202,15 +202,11 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                             className={variants.image + ' aspect-square h-full'}
                         >
 
-                            <div className="relative h-full w-full">
-                                <Image
-                                    src={imageUrls[index]}
-                                    alt={typeof file === 'string' ? file : file.name}
-                                    className="h-full w-full rounded-md object-cover"
-                                    fill
-                                    sizes="(max-width: 768px) 100vw, 80px"
-                                />
-                            </div>
+                            <img
+                                src={imageUrls[index]}
+                                alt={typeof file === 'string' ? file : file.name}
+                                className="h-full w-full rounded-md object-cover"
+                            />
 
                             {/* Progress Bar */}
                             {typeof progress === 'number' && (

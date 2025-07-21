@@ -121,6 +121,18 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
         }
     }, [property, propertySlug]);
 
+    // Load existing images into fileStates when editing
+    useEffect(() => {
+        if (property?.images && property.images.length > 0 && fileStates.length === 0) {
+            const existingFileStates: FileState[] = property.images.map((image: any, index: number) => ({
+                file: image.s3Url || image.url, // Use the URL as the file (FileState accepts string)
+                key: `existing-${image.id || index}`, // Use image ID or index as key
+                progress: 'COMPLETE',
+            }));
+            setFileStates(existingFileStates);
+        }
+    }, [property?.images, fileStates.length]);
+
     // Auto-generate slug from title
     const handleTitleBlur = async (title: string) => {
         // Only auto-generate if slug is empty OR if slug hasn't been manually edited

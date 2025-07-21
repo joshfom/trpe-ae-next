@@ -124,7 +124,7 @@ async function AdminLuxeProperties() {
                                                     </span>
                                                 </div>
                                                 
-                                                <Link href={`/admin/properties/${property.id}/edit`}>
+                                                <Link href={`/admin/luxe/properties/edit/${property.id}`}>
                                                     <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                                                         <Edit size={14} />
                                                     </Button>

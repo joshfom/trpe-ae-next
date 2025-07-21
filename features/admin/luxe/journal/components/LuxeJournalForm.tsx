@@ -20,6 +20,7 @@ import {cn} from '@/lib/utils';
 import {Calendar} from '@/components/ui/calendar';
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue,} from "@/components/ui/select"
 import {useGetAdminAuthors} from "@/features/admin/author/api/use-get-admin-authors";
+import {useGetLuxeJournalBySlug} from "@/features/admin/luxe/journal/api/use-get-luxe-journal-by-slug";
 import {TipTapEditor} from "@/components/TiptapEditor";
 import type { InsightType } from '@/types/insights';
 
@@ -36,7 +37,14 @@ function LuxeJournalForm({journal, journalSlug}: LuxeJournalFormProps) {
     const router = useRouter()
     const [isEditing, setIsEditing] = React.useState(false)
     const mutation = useAddLuxeJournal()
-    const updateMutation = useUpdateLuxeJournal(journal?.slug || journalSlug)
+    
+    // Fetch journal data if only slug is provided
+    const journalBySlugQuery = useGetLuxeJournalBySlug(journalSlug && !journal ? journalSlug : undefined)
+    
+    // Use the provided journal prop or the fetched journal data
+    const currentJournal = journal || journalBySlugQuery.data
+    
+    const updateMutation = useUpdateLuxeJournal(currentJournal?.slug || journalSlug)
     const authorQuery = useGetAdminAuthors()
     const authors = authorQuery.data
 
@@ -48,23 +56,47 @@ function LuxeJournalForm({journal, journalSlug}: LuxeJournalFormProps) {
         mode: "onChange",
         resolver: zodResolver(luxeJournalFormSchema),
         defaultValues: {
-            title: journal?.title || '',
-            content: journal?.content || '',
-            altText: journal?.altText || '',
-            metaTitle: journal?.metaTitle || '',
-            metaDescription: journal?.metaDescription || '',
-            publishedAt: journal?.publishedAt || '',
-            authorId: journal?.authorId || '',
-            coverUrl: journal?.coverUrl || '',
+            title: '',
+            content: '',
+            altText: '',
+            metaTitle: '',
+            metaDescription: '',
+            publishedAt: '',
+            authorId: '',
+            coverUrl: '',
             isLuxe: true // Always true for luxe journal
         }
     })
 
     useEffect(() => {
-        if (journal || journalSlug) {
+        if (currentJournal || journalSlug) {
             setIsEditing(true)
         }
-    }, [journal, journalSlug]);
+    }, [currentJournal, journalSlug]);
+
+    // Update form values when journal data is fetched
+    useEffect(() => {
+        console.log('Journal data effect triggered:', { currentJournal, journalSlug });
+        if (currentJournal) {
+            console.log('Resetting form with journal data:', currentJournal);
+            form.reset({
+                title: currentJournal.title || '',
+                content: currentJournal.content || '',
+                altText: currentJournal.altText || '',
+                metaTitle: currentJournal.metaTitle || '',
+                metaDescription: currentJournal.metaDescription || '',
+                publishedAt: currentJournal.publishedAt || '',
+                authorId: currentJournal.authorId || '',
+                coverUrl: currentJournal.coverUrl || '',
+                isLuxe: true
+            })
+            
+            // Update character counts
+            setMetaTitleCount(currentJournal.metaTitle?.length || 0)
+            setMetaDescriptionCount(currentJournal.metaDescription?.length || 0)
+            setContentWordCount(currentJournal.content?.split(' ').length || 0)
+        }
+    }, [currentJournal, form]);
 
     const updateCover = async (file: File | undefined) => {
         if (file) {
@@ -84,7 +116,7 @@ function LuxeJournalForm({journal, journalSlug}: LuxeJournalFormProps) {
     }
 
     const onSubmit = (values: formValues) => {
-        if (isEditing && (journal?.slug || journalSlug)) {
+        if (isEditing && (currentJournal?.slug || journalSlug)) {
             updateMutation.mutate(values, {
                 onSuccess: () => {
                     form.reset();
@@ -119,15 +151,37 @@ function LuxeJournalForm({journal, journalSlug}: LuxeJournalFormProps) {
     }, [form.watch('content')])
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={'p-6 space-y-6'}>
-                <div className="">
-                    <FormField
-                        name={'title'}
-                        control={form.control}
-                        render={({field}) => (
-                            <FormItem>
-                                <FormLabel>Title</FormLabel>
+        <>
+            {/* Show loading while fetching journal data */}
+            {journalSlug && !journal && journalBySlugQuery.isLoading && (
+                <div className="flex items-center justify-center p-8">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-2"></div>
+                        <p className="text-sm text-gray-600">Loading journal data...</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Show error if journal fetch failed */}
+            {journalSlug && !journal && journalBySlugQuery.error && (
+                <div className="flex items-center justify-center p-8">
+                    <div className="text-center">
+                        <p className="text-red-600">Error loading journal data. Please try again.</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Show form when we have data or when creating new */}
+            {(!journalSlug || currentJournal || journal) && (
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className={'p-6 space-y-6'}>
+                    <div className="">
+                        <FormField
+                            name={'title'}
+                            control={form.control}
+                            render={({field}) => (
+                                <FormItem>
+                                    <FormLabel>Title</FormLabel>
                                 <Input
                                     {...field}
                                     placeholder={'Title'}
@@ -324,6 +378,8 @@ function LuxeJournalForm({journal, journalSlug}: LuxeJournalFormProps) {
                 </div>
             </form>
         </Form>
+            )}
+        </>
     );
 }
 

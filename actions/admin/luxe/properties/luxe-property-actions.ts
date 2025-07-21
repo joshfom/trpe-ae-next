@@ -32,6 +32,7 @@ export async function createLuxePropertyAction(values: FormValues) {
             const [property] = await tx.insert(propertyTable).values({
                 id: propertyId,
                 name: validatedData.name,
+                title: validatedData.name,
                 description: validatedData.description,
                 slug: validatedData.slug,
                 bedrooms: validatedData.bedrooms,
@@ -120,6 +121,7 @@ export async function updateLuxePropertyAction(propertyId: string, values: FormV
             await tx.update(propertyTable)
                 .set({
                     name: validatedData.name,
+                    title: validatedData.name,
                     description: validatedData.description,
                     slug: validatedData.slug,
                     bedrooms: validatedData.bedrooms,

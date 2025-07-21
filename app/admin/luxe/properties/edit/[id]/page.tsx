@@ -6,15 +6,18 @@ import { propertyTable } from '@/db/schema/property-table';
 import LuxePropertyForm from '@/features/admin/luxe/properties/components';
 
 interface EditLuxePropertyPageProps {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 }
 
 async function EditLuxePropertyPage({ params }: EditLuxePropertyPageProps) {
+    // Await params before using its properties (Next.js 15 requirement)
+    const { id } = await params;
+    
     // Fetch the property
     const property = await db.query.propertyTable.findFirst({
-        where: eq(propertyTable.id, params.id),
+        where: eq(propertyTable.id, id),
         with: {
             images: true,
             community: true,
@@ -43,7 +46,6 @@ async function EditLuxePropertyPage({ params }: EditLuxePropertyPageProps) {
                 
                 <LuxePropertyForm 
                     property={property} 
-                    propertySlug={params.id} 
                 />
             </div>
         </div>

@@ -1,10 +1,10 @@
-"use client"
 import { useEditor, EditorContent, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Typography from '@tiptap/extension-typography'
 import TextAlign from '@tiptap/extension-text-align'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
+import Image from '@tiptap/extension-image'
 import CharacterCount from '@tiptap/extension-character-count'
 import { useState, useCallback, useEffect, useMemo, memo } from 'react'
 import {
@@ -22,6 +22,9 @@ import {
     Strikethrough,
     Underline as UnderlineIcon,
     Link as LinkIcon,
+    ImageIcon,
+    Upload,
+    Loader2,
     ChevronDown,
 } from 'lucide-react'
 import { useController, type Control } from 'react-hook-form'
@@ -41,6 +44,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useEdgeStore } from '@/db/edgestore'
 
 const headingOptions = [
     { label: 'Paragraph', value: 'paragraph' },
@@ -91,6 +95,10 @@ const MenuBar = memo<MenuBarProps>(({ editor }) => {
     const [isLinkPopoverOpen, setIsLinkPopoverOpen] = useState(false)
     const [linkUrl, setLinkUrl] = useState('')
     const [linkStatus, setLinkStatus] = useState<string>('')
+    const [isImagePopoverOpen, setIsImagePopoverOpen] = useState(false)
+    const [imageUrl, setImageUrl] = useState('')
+    const [isUploading, setIsUploading] = useState(false)
+    const { edgestore } = useEdgeStore()
 
     // Update link URL when popover opens
     useEffect(() => {
@@ -169,6 +177,52 @@ const MenuBar = memo<MenuBarProps>(({ editor }) => {
     const handleUndoClick = useCallback(() => editor?.chain().focus().undo().run(), [editor])
     const handleRedoClick = useCallback(() => editor?.chain().focus().redo().run(), [editor])
 
+    // Image upload handlers
+    const handleImageUpload = useCallback(async (file: File) => {
+        if (!editor) return
+        
+        setIsUploading(true)
+        try {
+            const res = await edgestore.publicFiles.upload({ file })
+            editor.chain().focus().setImage({ src: res.url }).run()
+            setIsImagePopoverOpen(false)
+            setImageUrl('')
+        } catch (error) {
+            console.error('Image upload failed:', error)
+        } finally {
+            setIsUploading(false)
+        }
+    }, [editor, edgestore])
+
+    const handleImageUrlSubmit = useCallback((e: React.FormEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (!editor || !imageUrl.trim()) return
+
+        let url = imageUrl.trim()
+        if (!url.match(/^https?:\/\//i)) {
+            url = `https://${url}`
+        }
+
+        try {
+            new URL(url) // Validate URL
+            editor.chain().focus().setImage({ src: url }).run()
+            setIsImagePopoverOpen(false)
+            setImageUrl('')
+        } catch (e) {
+            console.error('Invalid image URL')
+        }
+    }, [editor, imageUrl])
+
+    const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file && file.type.startsWith('image/')) {
+            handleImageUpload(file)
+        }
+        // Reset the input
+        e.target.value = ''
+    }, [handleImageUpload])
+
     // Memoized heading handlers
     const handleParagraphClick = useCallback(() => editor?.chain().focus().setParagraph().run(), [editor])
     const handleH2Click = useCallback(() => editor?.chain().focus().toggleHeading({ level: 2 }).run(), [editor])
@@ -195,6 +249,11 @@ const MenuBar = memo<MenuBarProps>(({ editor }) => {
         } else {
             setLinkStatus('');
         }
+    }, [])
+
+    // Memoized image URL change handler
+    const handleImageUrlChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+        setImageUrl(e.target.value)
     }, [])
 
     // Memoized heading click handler
@@ -365,6 +424,77 @@ const MenuBar = memo<MenuBarProps>(({ editor }) => {
                 </PopoverContent>
             </Popover>
 
+            <Popover
+                open={isImagePopoverOpen}
+                onOpenChange={setIsImagePopoverOpen}
+            >
+                <PopoverTrigger asChild>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        disabled={isUploading}
+                    >
+                        {isUploading ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <ImageIcon className="h-4 w-4" />
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 p-3 bg-popover shadow-md border border-border" style={{ opacity: 1 }}>
+                    <div className="flex flex-col gap-3">
+                        <div className="text-sm font-medium">Add Image</div>
+                        
+                        {/* File Upload */}
+                        <div className="flex flex-col gap-2">
+                            <Label htmlFor="image-upload" className="text-sm">Upload Image</Label>
+                            <div className="relative">
+                                <input
+                                    id="image-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileInputChange}
+                                    className="hidden"
+                                    disabled={isUploading}
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => document.getElementById('image-upload')?.click()}
+                                    disabled={isUploading}
+                                    className="w-full"
+                                >
+                                    <Upload className="h-4 w-4 mr-2" />
+                                    Choose File
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* URL Input */}
+                        <div className="relative">
+                            <div className="text-center text-xs text-muted-foreground py-2">
+                                or
+                            </div>
+                            <form onSubmit={handleImageUrlSubmit} className="flex flex-col gap-2">
+                                <Label htmlFor="image-url" className="text-sm">Image URL</Label>
+                                <Input
+                                    id="image-url"
+                                    placeholder="https://example.com/image.jpg"
+                                    value={imageUrl}
+                                    onChange={handleImageUrlChange}
+                                    disabled={isUploading}
+                                />
+                                <Button type="submit" disabled={isUploading || !imageUrl.trim()}>
+                                    Insert Image
+                                </Button>
+                            </form>
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
+
             <ToolbarButton
                 onClick={handleBlockquoteClick}
                 isActive={editor.isActive('blockquote')}
@@ -410,6 +540,64 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
         defaultValue,
     })
 
+    const { edgestore } = useEdgeStore()
+
+    // Handle drag and drop for images
+    const handleDrop = useCallback((view: any, event: DragEvent, slice: any, moved: boolean) => {
+        const files = Array.from(event.dataTransfer?.files || [])
+        const imageFiles = files.filter(file => file.type.startsWith('image/'))
+        
+        if (imageFiles.length > 0) {
+            event.preventDefault()
+            
+            const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY })
+            const pos = coordinates?.pos || view.state.selection.from
+            
+            // Handle async upload in background
+            imageFiles.forEach(async (file) => {
+                try {
+                    const res = await edgestore.publicFiles.upload({ file })
+                    const { tr } = view.state
+                    tr.insert(pos, view.state.schema.nodes.image.create({ src: res.url }))
+                    view.dispatch(tr)
+                } catch (error) {
+                    console.error('Image upload failed:', error)
+                }
+            })
+            return true
+        }
+        return false
+    }, [edgestore])
+
+    // Handle paste for images
+    const handlePaste = useCallback((view: any, event: ClipboardEvent) => {
+        const items = Array.from(event.clipboardData?.items || [])
+        const imageItems = items.filter(item => item.type.startsWith('image/'))
+        
+        if (imageItems.length > 0) {
+            event.preventDefault()
+            
+            imageItems.forEach(async item => {
+                const file = item.getAsFile()
+                if (file) {
+                    try {
+                        const res = await edgestore.publicFiles.upload({ file })
+                        view.dispatch(
+                            view.state.tr.insert(
+                                view.state.selection.from,
+                                view.state.schema.nodes.image.create({ src: res.url })
+                            )
+                        )
+                    } catch (error) {
+                        console.error('Image upload failed:', error)
+                    }
+                }
+            })
+            return true
+        }
+        return false
+    }, [edgestore])
+
     const editor = useEditor({
         immediatelyRender: false,
         extensions: [
@@ -423,6 +611,78 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
                 alignments: ['left', 'center', 'right', 'justify'],
             }),
             Underline,
+            Image.configure({
+                HTMLAttributes: {
+                    class: 'max-w-full h-auto rounded-lg relative group',
+                },
+                allowBase64: true,
+                inline: false,
+            }).extend({
+                addNodeView() {
+                    return ({ node, getPos, editor }) => {
+                        const container = document.createElement('div')
+                        container.className = 'relative inline-block image-container'
+                        
+                        const img = document.createElement('img')
+                        img.src = node.attrs.src
+                        img.className = 'max-w-full h-auto rounded-lg'
+                        img.alt = node.attrs.alt || ''
+                        
+                        // Delete button
+                        const deleteBtn = document.createElement('button')
+                        deleteBtn.innerHTML = '✕'
+                        deleteBtn.className = 'absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold delete-btn z-10 border-0 cursor-pointer'
+                        deleteBtn.title = 'Delete image'
+                        deleteBtn.style.cssText = `
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            opacity: 0;
+                            transition: all 0.2s ease-in-out;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                        `
+                        deleteBtn.onclick = (e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            if (typeof getPos === 'function') {
+                                const pos = getPos()
+                                editor.chain().focus().deleteRange({ from: pos, to: pos + node.nodeSize }).run()
+                            }
+                        }
+                        
+                        // Hover effects for delete button
+                        deleteBtn.onmouseenter = () => {
+                            deleteBtn.style.backgroundColor = '#dc2626'
+                            deleteBtn.style.transform = 'scale(1.1)'
+                        }
+                        deleteBtn.onmouseleave = () => {
+                            deleteBtn.style.backgroundColor = '#ef4444'
+                            deleteBtn.style.transform = 'scale(1)'
+                        }
+                        
+                        // Show delete button on container hover
+                        container.onmouseenter = () => {
+                            deleteBtn.style.opacity = '1'
+                        }
+                        container.onmouseleave = () => {
+                            deleteBtn.style.opacity = '0'
+                        }
+                        
+                        container.appendChild(img)
+                        container.appendChild(deleteBtn)
+                        
+                        return {
+                            dom: container,
+                            update: (updatedNode) => {
+                                if (updatedNode.type !== node.type) return false
+                                img.src = updatedNode.attrs.src
+                                img.alt = updatedNode.attrs.alt || ''
+                                return true
+                            }
+                        }
+                    }
+                }
+            }),
             Link.extend({
                 addAttributes() {
                     return {
@@ -503,13 +763,22 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
         autofocus: 'end',
         editorProps: {
             attributes: {
-                class: 'prose prose-sm max-w-none focus:outline-hidden prose-headings:mb-3 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-3 prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic min-h-[300px]',
+                class: 'prose prose-sm max-w-none focus:outline-hidden prose-headings:mb-3 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-3 prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-img:rounded-lg prose-img:shadow-sm min-h-[300px] [&_.ProseMirror]:focus:outline-none',
             },
+            handleDrop: handleDrop,
+            handlePaste: handlePaste,
         },
         onUpdate: ({ editor }) => {
             field.onChange(editor.getHTML())
         },
     })
+
+    // Update editor content when field value changes (e.g., when form is reset)
+    useEffect(() => {
+        if (editor && field.value !== editor.getHTML()) {
+            editor.commands.setContent(field.value || '<p></p>')
+        }
+    }, [editor, field.value])
 
     return (
         <div className="border rounded-lg overflow-hidden bg-background">
