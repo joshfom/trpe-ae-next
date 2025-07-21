@@ -16,10 +16,10 @@ function ThankYouFallback() {
     );
 }
 
-export default function ThankYouPage() {
+export default function SellerThankYouPage() {
     return (
         <Suspense fallback={<ThankYouFallback />}>
-            <ThankYouContent formType="general" />
+            <ThankYouContent formType="seller" />
         </Suspense>
     );
 }

@@ -11,7 +11,7 @@ export default function SellerFormPage() {
             <div className="container mx-auto mt-32 max-w-4xl">
                 <SellerContactForm
                     requestType="Seller Landing Page Form"
-                    redirectUrl="/landing/thank-you?msg=success"
+                    redirectUrl="/landing-forms/seller/thank-you?msg=success"
                     language={language}
                     onLanguageChange={setLanguage}
                 />
