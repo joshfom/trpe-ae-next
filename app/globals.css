@@ -279,3 +279,48 @@
   box-shadow: none !important;
   -webkit-tap-highlight-color: transparent !important;
 }
+
+/* RTL Support for Enhanced Contact Form */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl input,
+.rtl textarea {
+  text-align: right;
+}
+
+.rtl .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 1;
+  margin-right: calc(0.5rem * var(--tw-space-x-reverse));
+  margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.ltr {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Phone input RTL support */
+.rtl .react-international-phone-input-container {
+  direction: ltr;
+}
+
+.rtl .react-international-phone-input {
+  text-align: right;
+}
+
+/* Ensure proper spacing for RTL layouts */
+.rtl .flex.items-center.space-x-2 {
+  flex-direction: row-reverse;
+}
+
+.rtl .grid.gap-4 {
+  direction: rtl;
+}
+
+/* Icons alignment for RTL */
+.rtl .flex.items-center.gap-2 {
+  flex-direction: row-reverse;
+}

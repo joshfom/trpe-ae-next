@@ -357,6 +357,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'monthly',
     },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/landing/enlgish-form`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+
     ...propertyUrls, // Add property URLs to the sitemap
     ...articleUrls, // Add article URLs to the sitemap
     ...developerUrls, // Add developer URLs to the sitemap
