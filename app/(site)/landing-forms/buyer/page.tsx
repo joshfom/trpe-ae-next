@@ -8,7 +8,7 @@ export default function EnglishFormPage() {
 
     return (
         <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 ${language === 'fa' ? 'rtl' : 'ltr'}`}>
-            <div className="container mx-auto mt-32 max-w-4xl">
+            <div className="lg:container mx-auto mt-32 lg:max-w-4xl">
                 <EnhancedContactForm
                     requestType="Landing Page English Form"
                     redirectUrl="/landing/thank-you?msg=success"

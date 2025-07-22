@@ -232,23 +232,32 @@
 
 /* React International Phone Input */
 .react-international-phone-input-container .react-international-phone-input {
-  @apply flex-1 border text-lg;
+  flex: 1;
+  border: 1px solid #d1d5db;
+  font-size: 1.03rem;
   height: 43px !important;
-  font-size: 1.03rem !important;
-  border-top-right-radius: 20px !important;
-  border-bottom-right-radius: 20px !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
 }
 
 .react-international-phone-input-container .react-international-phone-country-selector-button {
-  @apply px-2;
-  border-top-left-radius: 20px !important;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-top-left-radius: 6px !important;
   font-size: 16px !important;
-  border-bottom-left-radius: 20px !important;
+  border-bottom-left-radius: 6px !important;
   height: 43px !important;
+  border: 1px solid #d1d5db;
+}
+
+.react-international-phone-input-container {
+  display: flex !important;
+  align-items: stretch !important;
+  width: 100% !important;
 }
 
 .react-international-phone-country-selector-dropdown {
-  @apply p-4;
+  padding: 16px;
   border-radius: 16px;
 }
 
@@ -311,6 +320,52 @@
   text-align: right;
 }
 
+.rtl-phone-input .react-international-phone-input-container {
+  direction: rtl !important;
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  width: 100% !important;
+}
+
+.rtl-phone-input .react-international-phone-country-selector-button {
+  border-left: 1px solid #d1d5db !important;
+  border-right: none !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-top-right-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  order: 2 !important;
+  flex-shrink: 0 !important;
+}
+
+.rtl-phone-input .react-international-phone-input {
+  padding-right: 12px !important;
+  padding-left: 12px !important;
+  text-align: right !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border-top-left-radius: 6px !important;
+  border-bottom-left-radius: 6px !important;
+  border-right: none !important;
+  border-left: 1px solid #d1d5db !important;
+  order: 1 !important;
+  flex: 1 !important;
+  direction: rtl !important;
+}
+
+/* Force RTL layout overrides */
+.rtl-phone-input .react-international-phone-input-container > * {
+  box-sizing: border-box !important;
+}
+
+.rtl-phone-input .react-international-phone-input-container > *:first-child {
+  order: 2 !important;
+}
+
+.rtl-phone-input .react-international-phone-input-container > *:last-child {
+  order: 1 !important;
+}
+
 /* Ensure proper spacing for RTL layouts */
 .rtl .flex.items-center.space-x-2 {
   flex-direction: row-reverse;
@@ -323,4 +378,78 @@
 /* Icons alignment for RTL */
 .rtl .flex.items-center.gap-2 {
   flex-direction: row-reverse;
+}
+
+/* Form field labels RTL support */
+.rtl .flex.flex-row-reverse {
+  justify-content: flex-end;
+}
+
+/* Select dropdown RTL support */
+.rtl [data-radix-select-trigger] {
+  text-align: right;
+  flex-direction: row-reverse;
+}
+
+.rtl [data-radix-select-trigger] svg {
+  order: 1;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.rtl [data-radix-select-trigger] [data-radix-select-value] {
+  order: 2;
+}
+
+.rtl [data-radix-select-content] {
+  direction: rtl;
+}
+
+.rtl [data-radix-select-item] {
+  text-align: right;
+  justify-content: flex-end;
+  direction: rtl;
+}
+
+.rtl [data-radix-select-viewport] {
+  direction: rtl;
+}
+
+/* Input field RTL styling */
+.rtl input[type="text"],
+.rtl input[type="email"],
+.rtl textarea,
+.rtl select {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Placeholder text RTL */
+.rtl input::placeholder,
+.rtl textarea::placeholder {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Form layout RTL adjustments */
+.rtl .form-field {
+  text-align: right;
+}
+
+.rtl .form-label {
+  justify-content: flex-end;
+}
+
+/* Button alignment for RTL */
+.rtl .text-center {
+  direction: rtl;
+}
+
+/* Specific RTL fixes for icons in labels */
+.rtl .flex-row-reverse .lucide {
+  order: 2;
+}
+
+.rtl .flex-row-reverse span:not(.lucide) {
+  order: 1;
 }

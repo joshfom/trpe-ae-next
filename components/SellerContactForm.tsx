@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Label } from "@/components/ui/label";
 import { User, Phone, Mail, MapPin, Home, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -77,8 +76,8 @@ const translations = {
     fa: {
         title: "TRPE",
         subtitle: "ملک خود را با اطمینان بفروشید - مشاوره رایگان دریافت کنید!",
-        tagline: "سفر فروش ملک شما از اینجا شروع می‌شود.",
-        description: "ما به حریم خصوصی شما احترام می‌گذاریم. اطلاعات شما فقط برای ارتباط با کارشناس ملک مناسب استفاده خواهد شد.",
+        tagline: "فروش خانه را به حرفه‌ای‌ها بسپارید",
+        description: "حریم خصوصی شما اولویت ماست. اطلاعاتتان فقط برای معرفی شما به کارشناس ملکی مناسب و در کمال محرمانگی استفاده می‌شود.",
         fields: {
             fullName: "نام کامل",
             phone: "شماره تلفن همراه (با کد کشور)",
@@ -183,7 +182,7 @@ function SellerContactForm({
     }
 
     return (
-        <div className={`w-full max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`w-full max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg`} dir={isRTL ? 'rtl' : 'ltr'}>
             {/* Language Switcher */}
             <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-end'}`}>
                 <div className="flex bg-gray-100 rounded-lg p-1">
@@ -203,8 +202,7 @@ function SellerContactForm({
             </div>
 
             {/* Header */}
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-gray-800 mb-4">{t.title}</h1>
+            <div className={`text-center mb-8 ${isRTL ? 'rtl-text' : ''}`}>
                 <h2 className="text-xl text-gray-600 mb-4">{t.subtitle}</h2>
                 <div className="space-y-2">
                     <h3 className="text-lg font-semibold text-gray-700">{t.tagline}</h3>
@@ -220,14 +218,14 @@ function SellerContactForm({
                         name="fullName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <User className="h-4 w-4" />
-                                    {t.fields.fullName}
+                                    <span>{t.fields.fullName}</span>
                                 </FormLabel>
                                 <Input
                                     {...field}
                                     placeholder={t.fields.fullName}
-                                    className="w-full"
+                                    className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -240,22 +238,34 @@ function SellerContactForm({
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <Phone className="h-4 w-4" />
-                                    {t.fields.phone}
+                                    <span>{t.fields.phone}</span>
                                 </FormLabel>
-                                <PhoneInput
-                                    value={field.value}
-                                    placeholder={t.fields.phone}
-                                    className="w-full"
-                                    onChange={(value) => {
-                                        if (isPhoneValid(value)) {
-                                            form.setValue('phone', value);
-                                        } else {
-                                            form.setValue('phone', value);
-                                        }
-                                    }}
-                                />
+                                <div className={isRTL ? 'rtl-phone-input' : ''}>
+                                    <PhoneInput
+                                        value={field.value}
+                                        placeholder={t.fields.phone}
+                                        className="w-full"
+                                        defaultCountry="ae"
+                                        countrySelectorStyleProps={{
+                                            buttonStyle: {
+                                                direction: isRTL ? 'rtl' : 'ltr'
+                                            }
+                                        }}
+                                        inputStyle={{
+                                            direction: isRTL ? 'rtl' : 'ltr',
+                                            textAlign: isRTL ? 'right' : 'left'
+                                        }}
+                                        onChange={(value) => {
+                                            if (isPhoneValid(value)) {
+                                                form.setValue('phone', value);
+                                            } else {
+                                                form.setValue('phone', value);
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -267,15 +277,15 @@ function SellerContactForm({
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <Mail className="h-4 w-4" />
-                                    {t.fields.email} <span className="text-xs text-gray-400">{t.optional}</span>
+                                    <span>{t.fields.email} <span className="text-xs text-gray-400">{t.optional}</span></span>
                                 </FormLabel>
                                 <Input
                                     type="email"
                                     {...field}
                                     placeholder={t.fields.email}
-                                    className="w-full"
+                                    className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -288,14 +298,14 @@ function SellerContactForm({
                         name="currentCity"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <MapPin className="h-4 w-4" />
-                                    {t.fields.currentCity} <span className="text-xs text-gray-400">{t.optional}</span>
+                                    <span>{t.fields.currentCity} <span className="text-xs text-gray-400">{t.optional}</span></span>
                                 </FormLabel>
                                 <Input
                                     {...field}
                                     placeholder={t.fields.currentCity}
-                                    className="w-full"
+                                    className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -308,17 +318,17 @@ function SellerContactForm({
                         name="propertyType"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <Home className="h-4 w-4" />
-                                    {t.fields.propertyType} <span className="text-xs text-gray-400">{t.optional}</span>
+                                    <span>{t.fields.propertyType} <span className="text-xs text-gray-400">{t.optional}</span></span>
                                 </FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className="w-full">
+                                    <SelectTrigger className={`w-full ${isRTL ? 'text-right rtl' : 'text-left'}`}>
                                         <SelectValue placeholder={`Select ${t.fields.propertyType.toLowerCase()}`} />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className={isRTL ? 'rtl' : ''}>
                                         {Object.entries(t.propertyTypes).map(([key, label]) => (
-                                            <SelectItem key={key} value={key}>
+                                            <SelectItem key={key} value={key} className={isRTL ? 'text-right rtl' : 'text-left'}>
                                                 {label}
                                             </SelectItem>
                                         ))}
@@ -335,15 +345,15 @@ function SellerContactForm({
                         name="message"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                                <FormLabel className={`text-sm font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'items-center justify-start'}`}>
                                     <MessageSquare className="h-4 w-4" />
-                                    {t.fields.message} <span className="text-xs text-gray-400">{t.optional}</span>
+                                    <span>{t.fields.message} <span className="text-xs text-gray-400">{t.optional}</span></span>
                                 </FormLabel>
                                 <Textarea
                                     {...field}
                                     placeholder={t.fields.message}
                                     rows={4}
-                                    className="w-full"
+                                    className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -354,7 +364,8 @@ function SellerContactForm({
                     <div className="text-center pt-4">
                         <Button
                             type="submit"
-                            className="w-full md:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
+                            variant="default"
+                            className="w-full md:w-auto px-8 py-3 bg-black hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
                             disabled={formSubmitted || isSubmitting}
                         >
                             {isSubmitting ? 'Submitting...' : t.submitButton}

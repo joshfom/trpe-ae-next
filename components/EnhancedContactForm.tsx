@@ -82,8 +82,8 @@ const translations = {
     fa: {
         title: "TRPE",
         subtitle: "فرم را همین حالا پر کنید تا مشاوره رایگان دریافت کنید!",
-        tagline: "سفر املاک شما از اینجا شروع می‌شود.",
-        description: "ما به حریم خصوصی شما احترام می‌گذاریم. اطلاعات شما فقط برای ارتباط با مشاور مناسب استفاده خواهد شد.",
+        tagline: "اولین قدم برای یک انتخاب درست، اینجاست",
+        description: "اطلاعات شما نزد ما محرمانه است و فقط برای ارتباط با مشاور استفاده می‌شود",
         requestTypes: {
             label: "نوع درخواست:",
             buyProperty: "خرید املاک",
@@ -195,7 +195,7 @@ function EnhancedContactForm({
     }
 
     return (
-        <div className={`w-full max-w-2xl  mx-auto bg-white p-8 rounded-lg shadow-lg ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`w-full max-w-2xl mx-auto bg-white p-3 sm:p-6 lg:p-8 rounded-lg shadow-lg ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             {/* Language Switcher */}
             <div className={`flex mb-4 ${isRTL ? 'justify-start' : 'justify-end'}`}>
                 <div className="flex bg-gray-100 rounded-lg p-1">
@@ -215,33 +215,33 @@ function EnhancedContactForm({
             </div>
 
             {/* Header */}
-            <div className="text-center mb-8">
-                <h2 className="text-xl text-gray-600 mb-4">{t.subtitle}</h2>
+            <div className="text-center mb-6 sm:mb-8">
+                <h2 className="text-lg sm:text-xl text-gray-600 mb-3 sm:mb-4 px-2">{t.subtitle}</h2>
                 <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-gray-700">{t.tagline}</h3>
-                    <p className="text-sm text-gray-500">{t.description}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-gray-700 px-2">{t.tagline}</h3>
+                    <p className="text-xs sm:text-sm text-gray-500 px-2">{t.description}</p>
                 </div>
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
                     {/* Request Type */}
                     <FormField
                         control={form.control}
                         name="requestType"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-base font-medium text-gray-700 flex items-center gap-2">
-                                    {t.requestTypes.label}
+                                <FormLabel className={`text-sm sm:text-base font-medium text-gray-700 flex gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                    <span>{t.requestTypes.label}</span>
                                 </FormLabel>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     {[
                                         { value: 'buy', label: t.requestTypes.buyProperty },
                                         { value: 'sell', label: t.requestTypes.sellProperty },
                                         { value: 'residency', label: t.requestTypes.residency },
                                         { value: 'consultation', label: t.requestTypes.consultation }
                                     ].map((type) => (
-                                        <div key={type.value} className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+                                        <div key={type.value} className={`flex items-center ${isRTL ? 'flex-row-reverse space-x-reverse space-x-2' : 'space-x-2'}`}>
                                             <Checkbox
                                                 id={type.value}
                                                 checked={field.value?.includes(type.value) || false}
@@ -252,7 +252,7 @@ function EnhancedContactForm({
                                                     field.onChange(updatedValue);
                                                 }}
                                             />
-                                            <Label htmlFor={type.value} className="text-sm font-medium cursor-pointer">
+                                            <Label htmlFor={type.value} className={`text-xs sm:text-sm font-medium cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 {type.label}
                                             </Label>
                                         </div>
@@ -264,20 +264,20 @@ function EnhancedContactForm({
                     />
 
                     {/* Name Fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <FormField
                             control={form.control}
                             name="firstName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                        <User className="h-4 w-4" />
-                                        {t.fields.firstName}
+                                    <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                        <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                        <span>{t.fields.firstName}</span>
                                     </FormLabel>
                                     <Input
                                         {...field}
                                         placeholder={t.fields.firstName}
-                                        className="w-full"
+                                        className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -289,14 +289,14 @@ function EnhancedContactForm({
                             name="lastName"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                        <User className="h-4 w-4" />
-                                        {t.fields.lastName}
+                                    <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                        <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                        <span>{t.fields.lastName}</span>
                                     </FormLabel>
                                     <Input
                                         {...field}
                                         placeholder={t.fields.lastName}
-                                        className="w-full"
+                                        className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -310,22 +310,34 @@ function EnhancedContactForm({
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <Phone className="h-4 w-4" />
-                                    {t.fields.phone}
+                                <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                    <Phone className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                    <span>{t.fields.phone}</span>
                                 </FormLabel>
-                                <PhoneInput
-                                    value={field.value}
-                                    placeholder={t.fields.phone}
-                                    className="w-full"
-                                    onChange={(value) => {
-                                        if (isPhoneValid(value)) {
-                                            form.setValue('phone', value);
-                                        } else {
-                                            form.setValue('phone', value);
-                                        }
-                                    }}
-                                />
+                                <div className={isRTL ? 'rtl-phone-input' : ''}>
+                                    <PhoneInput
+                                        value={field.value}
+                                        placeholder={t.fields.phone}
+                                        className="w-full"
+                                        defaultCountry="ae"
+                                        countrySelectorStyleProps={{
+                                            buttonStyle: {
+                                                direction: isRTL ? 'rtl' : 'ltr'
+                                            }
+                                        }}
+                                        inputStyle={{
+                                            direction: isRTL ? 'rtl' : 'ltr',
+                                            textAlign: isRTL ? 'right' : 'left'
+                                        }}
+                                        onChange={(value) => {
+                                            if (isPhoneValid(value)) {
+                                                form.setValue('phone', value);
+                                            } else {
+                                                form.setValue('phone', value);
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 <FormMessage />
                             </FormItem>
                         )}
@@ -337,15 +349,15 @@ function EnhancedContactForm({
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <Mail className="h-4 w-4" />
-                                    {t.fields.email}
+                                <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                    <Mail className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                    <span>{t.fields.email}</span>
                                 </FormLabel>
                                 <Input
                                     type="email"
                                     {...field}
                                     placeholder={t.fields.email}
-                                    className="w-full"
+                                    className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -353,20 +365,20 @@ function EnhancedContactForm({
                     />
 
                     {/* Current City and Budget */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <FormField
                             control={form.control}
                             name="currentCity"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                        <MapPin className="h-4 w-4" />
-                                        {t.fields.currentCity}
+                                    <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                        <MapPin className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                        <span>{t.fields.currentCity}</span>
                                     </FormLabel>
                                     <Input
                                         {...field}
                                         placeholder={t.fields.currentCity}
-                                        className="w-full"
+                                        className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -378,14 +390,14 @@ function EnhancedContactForm({
                             name="budget"
                             render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                        <DollarSign className="h-4 w-4" />
-                                        {t.fields.budget} <span className="text-xs text-gray-400">(optional)</span>
+                                    <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                        <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                        <span>{t.fields.budget} <span className="text-xs text-gray-400">(optional)</span></span>
                                     </FormLabel>
                                     <Input
                                         {...field}
                                         placeholder={t.fields.budget}
-                                        className="w-full"
+                                        className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -398,20 +410,20 @@ function EnhancedContactForm({
                         control={form.control}
                         name="currency"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className='flex'>
                                 <RadioGroup
                                     value={field.value}
                                     onValueChange={field.onChange}
-                                    className="flex gap-6"
+                                    className={`flex flex-wrap gap-4 sm:gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}
                                 >
                                     {[
                                         { value: 'EUR', label: t.currencies.euro },
                                         { value: 'USD', label: t.currencies.usd },
                                         { value: 'AED', label: t.currencies.aed }
                                     ].map((currency) => (
-                                        <div key={currency.value} className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+                                        <div key={currency.value} className={`flex items-center ${isRTL ? 'flex-row-reverse space-x-reverse space-x-2' : 'space-x-2'}`}>
                                             <RadioGroupItem value={currency.value} id={currency.value} />
-                                            <Label htmlFor={currency.value} className="text-sm font-medium cursor-pointer">
+                                            <Label htmlFor={currency.value} className={`text-xs sm:text-sm font-medium cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 {currency.label}
                                             </Label>
                                         </div>
@@ -428,15 +440,15 @@ function EnhancedContactForm({
                         name="message"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                                    <MessageSquare className="h-4 w-4" />
-                                    {t.fields.message}
+                                <FormLabel className={`text-xs sm:text-sm font-medium text-gray-700 flex gap-1 sm:gap-2 w-full ${isRTL ? '' : 'justify-start'}`}>
+                                    <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 mt-0.5 sm:mt-0" />
+                                    <span>{t.fields.message}</span>
                                 </FormLabel>
                                 <Textarea
                                     {...field}
                                     placeholder={t.fields.message}
                                     rows={4}
-                                    className="w-full"
+                                    className={`w-full text-sm resize-none ${isRTL ? 'text-right' : 'text-left'}`}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -444,10 +456,10 @@ function EnhancedContactForm({
                     />
 
                     {/* Submit Button */}
-                    <div className="text-center pt-4">
+                    <div className="text-center pt-3 sm:pt-4">
                         <Button
                             type="submit"
-                            className="w-full md:w-auto px-8 py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors"
+                            className="w-full sm:w-auto px-6 sm:px-8 py-2.5 sm:py-3 bg-gray-700 hover:bg-gray-800 text-white font-medium rounded-lg transition-colors text-sm sm:text-base"
                             disabled={formSubmitted || isSubmitting}
                         >
                             {isSubmitting ? 'Submitting...' : t.submitButton}
@@ -455,8 +467,8 @@ function EnhancedContactForm({
                     </div>
 
                     {/* Confidentiality Notice */}
-                    <div className="text-center pt-4">
-                        <p className="text-xs text-gray-500">{t.confidentiality}</p>
+                    <div className="text-center pt-3 sm:pt-4">
+                        <p className="text-xs text-gray-500 px-2">{t.confidentiality}</p>
                     </div>
                 </form>
             </Form>
