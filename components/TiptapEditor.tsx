@@ -45,6 +45,7 @@ import { cn } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useEdgeStore } from '@/db/edgestore'
+import { convertImageToWebP, getOptimizedImageSettings } from '@/lib/image-utils'
 
 const headingOptions = [
     { label: 'Paragraph', value: 'paragraph' },
@@ -183,7 +184,11 @@ const MenuBar = memo<MenuBarProps>(({ editor }) => {
         
         setIsUploading(true)
         try {
-            const res = await edgestore.publicFiles.upload({ file })
+            // Convert to WebP
+            const { quality, maxWidth, maxHeight } = getOptimizedImageSettings(file)
+            const webpFile = await convertImageToWebP(file, quality, maxWidth, maxHeight)
+            
+            const res = await edgestore.publicFiles.upload({ file: webpFile })
             editor.chain().focus().setImage({ src: res.url }).run()
             setIsImagePopoverOpen(false)
             setImageUrl('')
@@ -553,10 +558,14 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
             const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY })
             const pos = coordinates?.pos || view.state.selection.from
             
-            // Handle async upload in background
+            // Handle async upload in background with WebP conversion
             imageFiles.forEach(async (file) => {
                 try {
-                    const res = await edgestore.publicFiles.upload({ file })
+                    // Convert to WebP
+                    const { quality, maxWidth, maxHeight } = getOptimizedImageSettings(file)
+                    const webpFile = await convertImageToWebP(file, quality, maxWidth, maxHeight)
+                    
+                    const res = await edgestore.publicFiles.upload({ file: webpFile })
                     const { tr } = view.state
                     tr.insert(pos, view.state.schema.nodes.image.create({ src: res.url }))
                     view.dispatch(tr)
@@ -581,7 +590,11 @@ export const TipTapEditor = memo<TipTapEditorProps>(({
                 const file = item.getAsFile()
                 if (file) {
                     try {
-                        const res = await edgestore.publicFiles.upload({ file })
+                        // Convert to WebP
+                        const { quality, maxWidth, maxHeight } = getOptimizedImageSettings(file)
+                        const webpFile = await convertImageToWebP(file, quality, maxWidth, maxHeight)
+                        
+                        const res = await edgestore.publicFiles.upload({ file: webpFile })
                         view.dispatch(
                             view.state.tr.insert(
                                 view.state.selection.from,

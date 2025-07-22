@@ -1,6 +1,7 @@
 "use client"
 import React, {useEffect, useMemo} from 'react';
 import {useEdgeStore} from "@/db/edgestore";
+import { useImageUpload } from "@/hooks/use-image-upload";
 import {useForm} from "react-hook-form";
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
@@ -39,6 +40,7 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
     const [slugValidating, setSlugValidating] = React.useState(false);
     const [slugManuallyEdited, setSlugManuallyEdited] = React.useState(false);
     const {edgestore} = useEdgeStore();
+    const { convertToWebP } = useImageUpload();
     const router = useRouter();
     const [isEditing, setIsEditing] = React.useState(false);
 
@@ -209,8 +211,11 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
             // Check if it's a File object (not a string URL) and is pending upload
             if (fileState.file instanceof File && fileState.progress === 'PENDING') {
                 try {
+                    // Convert to WebP before uploading
+                    const webpFile = await convertToWebP(fileState.file);
+                    
                     const res = await edgestore.publicFiles.upload({
-                        file: fileState.file,
+                        file: webpFile,
                         onProgressChange: (progress) => {
                             setFileStates(prev => prev.map((state, index) => 
                                 index === i ? { ...state, progress } : state

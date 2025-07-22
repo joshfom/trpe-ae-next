@@ -19,6 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { TipTapEditor } from "@/components/TiptapEditor";
 import { SingleImageDropzone } from "@/components/single-image-dropzone";
 import { useEdgeStore } from "@/db/edgestore";
+import { useImageUpload } from "@/hooks/use-image-upload";
 import { z } from "zod";
 import { useUpdateCommunity } from "@/features/admin/community/api/use-update-community";
 import { CommunityFormSchema } from '@/features/admin/community/form-schema/community-form-schema';
@@ -35,6 +36,7 @@ export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) 
     const [hasDefaultImage, setHasDefaultImage] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { edgestore } = useEdgeStore();
+    const { uploadSingleImage } = useImageUpload();
     const mutation = useUpdateCommunity(community.id);
 
     // Memoize form default values
@@ -63,18 +65,19 @@ export const EditCommunitySheet = memo<EditCommunitySheetProps>(({ community }) 
     // Memoize callback functions
     const updateAvatar = useCallback(async (file: File | undefined) => {
         if (file) {
-            const res = await edgestore.publicFiles.upload({
-                file,
-                onProgressChange: (progress) => {
+            try {
+                const url = await uploadSingleImage(file, (progress) => {
                     // you can use this to show a progress bar
                     console.log(progress);
-                },
-            });
+                });
 
-            setFile(file);
-            form.setValue('image', res.url);
+                setFile(file);
+                form.setValue('image', url);
+            } catch (error) {
+                console.error('Avatar upload failed:', error);
+            }
         }
-    }, [edgestore, form]);
+    }, [uploadSingleImage, form]);
 
     const onSubmit = useCallback((values: formValues) => {
         setIsSubmitting(true);

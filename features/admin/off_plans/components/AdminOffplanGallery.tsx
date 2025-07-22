@@ -7,6 +7,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
 import {FileState, MultiImageDropzone} from "@/components/multi-image-dropzone";
 import {useEdgeStore} from "@/db/edgestore";
+import { useImageUpload } from "@/hooks/use-image-upload";
 import {useUploadOffplanImages} from "@/features/admin/off_plans/api/use-upload-offplan-images";
 
 interface AdminOffplanGalleryProps {
@@ -29,6 +30,7 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
     const isLoaded = galleryQuery.data && !galleryQuery.isError
 
     const { edgestore } = useEdgeStore();
+    const { convertToWebP } = useImageUpload();
 
     const isLoading = galleryQuery.isLoading
     const [addingImage, setAddingImage] = React.useState(false)
@@ -105,9 +107,11 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
                                 await Promise.all(
                                     addedFiles.map(async (addedFileState) => {
                                         try {
+                                            // Convert to WebP before uploading
+                                            const webpFile = await convertToWebP(addedFileState.file as File);
+                                            
                                             const res = await edgestore.publicFiles.upload({
-                                                // @ts-ignore
-                                                file: addedFileState.file,
+                                                file: webpFile,
                                                 onProgressChange: async (progress) => {
                                                     updateFileProgress(addedFileState.key, progress);
                                                     if (progress === 100) {

@@ -8,6 +8,7 @@ import { twMerge } from 'tailwind-merge';
 import {Button} from "@/components/ui/button";
 import {Progress} from "@/components/ui/progress";
 import Image from "next/image";
+import { convertMultipleImagesToWebP, getOptimizedImageSettings } from '@/lib/image-utils';
 
 const variants = {
     base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[200px] w-full border-2 border-dashed border-gray-300 dark:border-gray-600 transition-colors duration-200 ease-in-out hover:border-gray-400 dark:hover:border-gray-500 bg-gray-50 dark:bg-gray-900',
@@ -83,7 +84,7 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         } = useDropzone({
             accept: { 'image/*': [] },
             disabled,
-            onDrop: (acceptedFiles) => {
+            onDrop: async (acceptedFiles) => {
                 const files = acceptedFiles;
                 setCustomError(undefined);
                 if (
@@ -94,13 +95,28 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     return;
                 }
                 if (files) {
-                    const addedFiles = files.map<FileState>((file) => ({
-                        file,
-                        key: Math.random().toString(36).slice(2),
-                        progress: 'PENDING',
-                    }));
-                    void onFilesAdded?.(addedFiles);
-                    void onChange?.([...(value ?? []), ...addedFiles]);
+                    try {
+                        // Convert all images to WebP
+                        const convertedFiles = await convertMultipleImagesToWebP(files)
+                        
+                        const addedFiles = convertedFiles.map<FileState>((file) => ({
+                            file,
+                            key: Math.random().toString(36).slice(2),
+                            progress: 'PENDING',
+                        }));
+                        void onFilesAdded?.(addedFiles);
+                        void onChange?.([...(value ?? []), ...addedFiles]);
+                    } catch (error) {
+                        console.error('Failed to convert images to WebP:', error)
+                        // Fallback to original files if conversion fails
+                        const addedFiles = files.map<FileState>((file) => ({
+                            file,
+                            key: Math.random().toString(36).slice(2),
+                            progress: 'PENDING',
+                        }));
+                        void onFilesAdded?.(addedFiles);
+                        void onChange?.([...(value ?? []), ...addedFiles]);
+                    }
                 }
             },
             ...dropzoneOptions,

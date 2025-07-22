@@ -4,6 +4,7 @@ import { UploadCloudIcon, X } from 'lucide-react';
 import * as React from 'react';
 import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { twMerge } from 'tailwind-merge';
+import { convertImageToWebP, getOptimizedImageSettings } from '@/lib/image-utils';
 
 const variants = {
     base: 'relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[70px] w-full border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
@@ -96,10 +97,19 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             accept: { 'image/*': [] },
             multiple: false,
             disabled,
-            onDrop: (acceptedFiles) => {
+            onDrop: async (acceptedFiles) => {
                 const file = acceptedFiles[0];
                 if (file) {
-                    void onChange?.(file);
+                    try {
+                        // Convert to WebP
+                        const { quality, maxWidth, maxHeight } = getOptimizedImageSettings(file)
+                        const webpFile = await convertImageToWebP(file, quality, maxWidth, maxHeight)
+                        void onChange?.(webpFile);
+                    } catch (error) {
+                        console.error('Failed to convert image to WebP:', error)
+                        // Fallback to original file if conversion fails
+                        void onChange?.(file);
+                    }
                 }
             },
             ...dropzoneOptions,

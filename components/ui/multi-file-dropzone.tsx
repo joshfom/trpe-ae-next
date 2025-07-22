@@ -12,6 +12,7 @@ import {
 import * as React from 'react';
 import { useDropzone, type DropzoneOptions } from 'react-dropzone';
 import { twMerge } from 'tailwind-merge';
+import { convertMultipleImagesToWebP } from '@/lib/image-utils';
 
 const variants = {
     base: 'relative rounded-md p-4 w-full flex justify-center items-center flex-col cursor-pointer border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out',
@@ -72,7 +73,7 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             isDragReject,
         } = useDropzone({
             disabled,
-            onDrop: (acceptedFiles) => {
+            onDrop: async (acceptedFiles) => {
                 const files = acceptedFiles;
                 setCustomError(undefined);
                 if (
@@ -83,13 +84,36 @@ const MultiFileDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     return;
                 }
                 if (files) {
-                    const addedFiles = files.map<FileState>((file) => ({
-                        file,
-                        key: Math.random().toString(36).slice(2),
-                        progress: 'PENDING',
-                    }));
-                    void onFilesAdded?.(addedFiles);
-                    void onChange?.([...(value ?? []), ...addedFiles]);
+                    try {
+                        // Convert images to WebP if they are image files
+                        const imageFiles = files.filter(file => file.type.startsWith('image/'));
+                        const nonImageFiles = files.filter(file => !file.type.startsWith('image/'));
+                        
+                        let processedFiles: File[] = [...nonImageFiles];
+                        
+                        if (imageFiles.length > 0) {
+                            const convertedImages = await convertMultipleImagesToWebP(imageFiles);
+                            processedFiles = [...processedFiles, ...convertedImages];
+                        }
+                        
+                        const addedFiles = processedFiles.map<FileState>((file) => ({
+                            file,
+                            key: Math.random().toString(36).slice(2),
+                            progress: 'PENDING',
+                        }));
+                        void onFilesAdded?.(addedFiles);
+                        void onChange?.([...(value ?? []), ...addedFiles]);
+                    } catch (error) {
+                        console.error('Failed to process files:', error);
+                        // Fallback to original files if processing fails
+                        const addedFiles = files.map<FileState>((file) => ({
+                            file,
+                            key: Math.random().toString(36).slice(2),
+                            progress: 'PENDING',
+                        }));
+                        void onFilesAdded?.(addedFiles);
+                        void onChange?.([...(value ?? []), ...addedFiles]);
+                    }
                 }
             },
             ...dropzoneOptions,
