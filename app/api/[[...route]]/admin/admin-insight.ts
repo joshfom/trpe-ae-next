@@ -10,7 +10,7 @@ import slugify from "slugify";
 import {HTTPException} from "hono/http-exception";
 import {User} from "@/lib/auth";
 import {insightFormSchema} from "@/app/crm/schema/insight-form-schema";
-import {revalidatePath} from "next/cache";
+import {revalidatePath, revalidateTag} from "next/cache";
 import { 
     processInsightImage, 
     updateInsightImage,
@@ -188,9 +188,12 @@ const app = new Hono()
                 }).where(eq(insightTable.slug, insightSlug)).returning();
 
 
-                // Add revalidation here
+                // Add revalidation here for both admin and frontend
                 revalidatePath(`/insights/${insightSlug}`);
-                revalidatePath('/insights'); // If you have a list page that needs updating too
+                revalidatePath('/insights');
+                revalidateTag('admin-insights');
+                revalidateTag('insights');
+                revalidateTag('insights-list');
 
                 return c.json({ data: updatedInsight });
 
@@ -248,9 +251,12 @@ const app = new Hono()
                 // Delete the insight
                 await db.delete(insightTable).where(eq(insightTable.slug, insightSlug));
                 
-                // Revalidate paths
+                // Revalidate paths and cache tags for both admin and frontend
                 revalidatePath(`/insights/${insightSlug}`);
                 revalidatePath('/insights');
+                revalidateTag('admin-insights');
+                revalidateTag('insights');
+                revalidateTag('insights-list');
                 
                 return c.json({ success: true, message: 'Insight deleted successfully.' });
             } catch (error) {

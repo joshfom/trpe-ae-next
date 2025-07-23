@@ -116,13 +116,14 @@ export async function addLuxeJournal(data: LuxeJournalData) {
     }).returning();
 
     // Revalidate cache
+    // Revalidate insights cache tags for frontend
     revalidateTag('insights');
     revalidateTag('luxe-insights');
-
+    revalidateTag('insights-list');
+    
     return {
       success: true,
-      data: newInsight,
-      error: null
+      data: newInsight
     };
 
   } catch (error: unknown) {

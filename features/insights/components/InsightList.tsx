@@ -6,24 +6,58 @@ import {desc, isNotNull, sql, and, eq} from "drizzle-orm";
 import {insightTable} from "@/db/schema/insight-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 
 interface InsightListProps {
     currentPage?: number;
 }
 
+// Cached function to get insights count
+const getInsightsCount = unstable_cache(
+    async () => {
+        const totalCountResult = await db.select({ count: sql<number>`count(*)` })
+            .from(insightTable)
+            .where(and(
+                isNotNull(insightTable.publishedAt),
+                eq(insightTable.isLuxe, false)
+            ));
+        
+        return totalCountResult[0].count;
+    },
+    ['insights-count'],
+    {
+        revalidate: 1800, // Cache for 30 minutes
+        tags: ['insights', 'insights-list']
+    }
+);
+
+// Cached function to get insights for a specific page
+const getInsightsPage = unstable_cache(
+    async (currentPage: number, pageSize: number) => {
+        const offset = (currentPage - 1) * pageSize;
+        
+        return await db.query.insightTable.findMany({
+            where: and(
+                isNotNull(insightTable.publishedAt),
+                eq(insightTable.isLuxe, false)
+            ),
+            orderBy: [desc(insightTable.publishedAt)],
+            limit: pageSize,
+            offset: offset
+        });
+    },
+    ['insights-page'],
+    {
+        revalidate: 1800, // Cache for 30 minutes  
+        tags: ['insights', 'insights-list']
+    }
+);
+
 async function InsightList({ currentPage = 1 }: InsightListProps) {
     const pageSize = 9;
-    const offset = (currentPage - 1) * pageSize;
     
-    // Get total count of insights (excluding luxe insights)
-    const totalCountResult = await db.select({ count: sql<number>`count(*)` })
-        .from(insightTable)
-        .where(and(
-            isNotNull(insightTable.publishedAt),
-            eq(insightTable.isLuxe, false)
-        ));
-    
-    const totalCount = totalCountResult[0].count;
+    // Get total count using cached function
+    const totalCount = await getInsightsCount();
     const totalPages = Math.ceil(totalCount / pageSize);
     
     // Return 404 if the requested page is invalid (less than 1 or exceeds total pages)
@@ -32,16 +66,8 @@ async function InsightList({ currentPage = 1 }: InsightListProps) {
         notFound();
     }
     
-    // Fetch insights for the current page (excluding luxe insights)
-    const insights = await db.query.insightTable.findMany({
-        where: and(
-            isNotNull(insightTable.publishedAt),
-            eq(insightTable.isLuxe, false)
-        ),
-        orderBy: [desc(insightTable.publishedAt)],
-        limit: pageSize,
-        offset: offset
-    });
+    // Fetch insights for the current page using cached function
+    const insights = await getInsightsPage(currentPage, pageSize);
 
     // Server-side pagination rendering function
     const renderPagination = () => {

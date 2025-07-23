@@ -83,8 +83,10 @@ export async function addInsight(data: InsightData) {
         content: processedContent,
       }).returning();
 
-      // Revalidate insights data
+      // Revalidate insights data for both admin and frontend
       revalidateTag('admin-insights');
+      revalidateTag('insights');
+      revalidateTag('insights-list');
       
       return {
         success: true,
@@ -116,8 +118,10 @@ export async function addInsight(data: InsightData) {
         content: processedContent,
       }).returning();
 
-      // Revalidate insights data
+      // Revalidate insights data for both admin and frontend
       revalidateTag('admin-insights');
+      revalidateTag('insights');
+      revalidateTag('insights-list');
       
       return {
         success: true,

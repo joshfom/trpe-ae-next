@@ -194,6 +194,18 @@ export const CACHE_CONFIGS = {
     tags: ['page-meta', 'seo'],
     memoryTtl: 1800000, // 30 minutes
     fallback: true
+  },
+  INSIGHTS: {
+    revalidate: 1800, // 30 minutes
+    tags: ['insights', 'insights-list'],
+    memoryTtl: 600000, // 10 minutes
+    fallback: true
+  },
+  LUXE_INSIGHTS: {
+    revalidate: 1800, // 30 minutes
+    tags: ['luxe-insights', 'insights'],
+    memoryTtl: 600000, // 10 minutes
+    fallback: true
   }
 } as const;
 

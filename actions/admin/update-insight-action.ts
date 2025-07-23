@@ -95,8 +95,10 @@ export async function updateInsight(insightSlug: string, data: InsightUpdateData
       updatedAt: new Date().toISOString()
     }).where(eq(insightTable.slug, insightSlug)).returning();
     
-    // Revalidate insights data
+    // Revalidate insights data for both admin and frontend
     revalidateTag('admin-insights');
+    revalidateTag('insights');
+    revalidateTag('insights-list');
     
     return {
       success: true,

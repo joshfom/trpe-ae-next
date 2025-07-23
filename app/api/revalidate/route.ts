@@ -1,6 +1,6 @@
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { NextRequest } from 'next/server'
-import { revalidateAllContent, revalidateHomepage, revalidateListings, revalidateCommunities } from '@/lib/cache-revalidation';
+import { revalidateAllContent, revalidateHomepage, revalidateListings, revalidateCommunities, revalidateInsights } from '@/lib/cache-revalidation';
 
 /**
  * Request body type definition for the revalidation endpoint
@@ -17,8 +17,8 @@ export interface RevalidateRequestBody {
     path?: string;
     /** The cache tag to revalidate (e.g., 'post-123') */
     tag?: string;
-    /** The type of content to revalidate (homepage, listings, communities, all) */
-    type?: 'homepage' | 'listings' | 'communities' | 'all';
+    /** The type of content to revalidate (homepage, listings, communities, insights, all) */
+    type?: 'homepage' | 'listings' | 'communities' | 'insights' | 'all';
     /** Secret key for authentication */
     secret?: string;
     /** Optional offering type ID for listings revalidation */
@@ -110,6 +110,9 @@ export async function POST(request: NextRequest): Promise<Response> {
                     break;
                 case 'communities':
                     await revalidateCommunities();
+                    break;
+                case 'insights':
+                    await revalidateInsights();
                     break;
                 case 'all':
                     await revalidateAllContent();

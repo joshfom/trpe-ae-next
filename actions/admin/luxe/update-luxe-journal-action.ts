@@ -113,13 +113,14 @@ export async function updateLuxeJournal(slug: string, data: LuxeJournalUpdateDat
       .returning();
 
     // Revalidate cache
+    // Revalidate insights cache tags for frontend
     revalidateTag('insights');
     revalidateTag('luxe-insights');
-
+    revalidateTag('insights-list');
+    
     return {
       success: true,
-      data: updatedJournal,
-      error: null
+      data: updatedJournal
     };
 
   } catch (error: unknown) {

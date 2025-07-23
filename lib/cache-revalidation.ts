@@ -49,6 +49,17 @@ export async function revalidateOfferingTypes() {
     }
 }
 
+export async function revalidateInsights() {
+    try {
+        revalidateTag('insights');
+        revalidateTag('insights-list');
+        revalidateTag('luxe-insights');
+        console.log('Insights cache revalidated successfully');
+    } catch (error) {
+        console.error('Error revalidating insights cache:', error);
+    }
+}
+
 // Comprehensive cache revalidation for admin updates
 export async function revalidateAllContent() {
     try {
@@ -56,7 +67,8 @@ export async function revalidateAllContent() {
             revalidateHomepage(),
             revalidateListings(),
             revalidateCommunities(),
-            revalidateOfferingTypes()
+            revalidateOfferingTypes(),
+            revalidateInsights()
         ]);
         console.log('All content cache revalidated successfully');
     } catch (error) {

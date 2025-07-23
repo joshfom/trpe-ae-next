@@ -61,8 +61,10 @@ export async function deleteInsight({ slug, coverUrl }: { slug: string; coverUrl
       }
     }
     
-    // Revalidate insights data
+    // Revalidate insights data for both admin and frontend
     revalidateTag('admin-insights');
+    revalidateTag('insights');
+    revalidateTag('insights-list');
     
     return {
       success: true,
