@@ -1,6 +1,22 @@
-#tip-tap p:empty {
+/* Minimal spacing for empty paragraphs in TipTap content */
+#tip-tap p:empty,
+#tip-tap p:has(br:only-child),
+#tip-tap p.empty-paragraph {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+  padding: 0 !important;
+  min-height: 0.5rem !important;
+  height: 0.5rem !important;
+  line-height: 0.5rem !important;
   display: block;
-  min-height: 1.5rem;
-  margin-top: 1rem !important;
-  margin-bottom: 1rem !important;
+}
+
+/* Also handle paragraphs that only contain &nbsp; */
+#tip-tap p:has(:only-child:is(br, [data-empty="true"])) {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
+  padding: 0 !important;
+  min-height: 0.5rem !important;
+  height: 0.5rem !important;
+  line-height: 0.5rem !important;
 }

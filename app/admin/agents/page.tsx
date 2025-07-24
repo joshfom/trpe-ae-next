@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 import AdminAgents from "@/features/admin/agents/components/AdminAgents";
-import { AddEditAgentSheet } from "@/features/admin/agents/components/AddEditAgentSheet";
 
 function AdminAgentsPage() {
-    const [isAddAgentOpen, setIsAddAgentOpen] = useState(false);
+    const router = useRouter();
 
     return (
         <div className={'space-y-8'}>
@@ -18,7 +18,7 @@ function AdminAgentsPage() {
                 <nav className="flex items-center space-x-4">
                     <Button 
                         className={'py-2'}
-                        onClick={() => setIsAddAgentOpen(true)}
+                        onClick={() => router.push('/admin/agents/new')}
                     >
                         Add Agent
                     </Button>
@@ -26,11 +26,6 @@ function AdminAgentsPage() {
             </div>
 
             <AdminAgents />
-            
-            <AddEditAgentSheet 
-                isOpen={isAddAgentOpen}
-                onClose={() => setIsAddAgentOpen(false)}
-            />
         </div>
     );
 }

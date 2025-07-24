@@ -8,7 +8,9 @@ import {truncateText} from "@/lib/truncate-text";
 import SimilarInsights from "@/features/insights/components/SimilarInsights";
 import {ServerProcessedTiptap} from "@/components/ServerProcessedTiptap";
 import {validateRequest} from "@/actions/auth-session";
-import {EditInsightSheet} from "@/features/insights/components/EditInsightSheet";
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Edit2 } from 'lucide-react';
 import type {InsightType} from '@/types/insights';
 
 
@@ -133,7 +135,12 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
                 
                 {user && (
                     <div className="flex justify-end mt-4 px-6">
-                        <EditInsightSheet insight={post} />
+                        <Link href={`/admin/insights/edit/${post.slug}`}>
+                            <Button variant="outline" className="flex items-center gap-2">
+                                <Edit2 className="h-4 w-4" />
+                                Edit Insight
+                            </Button>
+                        </Link>
                     </div>
                 )}
             </div>

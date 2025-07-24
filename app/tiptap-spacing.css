@@ -1,6 +1,6 @@
 /* 
- * Comprehensive TipTap styling with special attention to empty paragraphs
- * This CSS ensures proper spacing between content blocks
+ * Comprehensive TipTap styling with reduced spacing for better readability
+ * This CSS ensures optimal spacing between content blocks
  */
 
 /* Base reset to prevent collapsing margins */
@@ -8,14 +8,20 @@
   overflow: visible;
 }
 
-/* Empty paragraphs need proper spacing */
+/* Reduced spacing for regular paragraphs */
+#tip-tap p {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+/* Minimal spacing for empty paragraphs */
 #tip-tap p:empty,
 #tip-tap p.empty-paragraph {
   display: block !important;
-  min-height: 1.5rem !important;
-  height: 1.5rem !important; 
-  margin-top: 1rem !important;
-  margin-bottom: 1rem !important;
+  min-height: 0.5rem !important;
+  height: 0.5rem !important; 
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
   position: relative;
 }
 
@@ -23,28 +29,28 @@
 #tip-tap p:has(br:only-child),
 #tip-tap p:has(br.ProseMirror-trailingBreak) {
   display: block !important;
-  min-height: 1.5rem !important;
-  height: 1.5rem !important;
-  margin-top: 1rem !important;
-  margin-bottom: 1rem !important;
+  min-height: 0.5rem !important;
+  height: 0.5rem !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
 }
 
-/* Headings deserve breathing room */
+/* Headings deserve breathing room but less than before */
 #tip-tap h1, #tip-tap h2, #tip-tap h3, #tip-tap h4, #tip-tap h5, #tip-tap h6 {
-  margin-top: 1.5rem;
-  margin-bottom: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Lists need proper spacing */
 #tip-tap ul, #tip-tap ol {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 /* Blockquotes get consistent spacing */
 #tip-tap blockquote {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 /* Make sure interactive elements like images have proper spacing */

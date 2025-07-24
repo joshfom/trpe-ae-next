@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { employeeTable } from "@/db/schema/employee-table";
-import { and, eq, asc } from "drizzle-orm";
+import { and, eq, asc, desc } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 /**

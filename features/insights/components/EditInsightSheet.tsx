@@ -29,6 +29,10 @@ export const EditInsightSheet = ({ insight }: EditInsightSheetProps) => {
         publishedAt: insight.publishedAt || '',
     };
 
+    const handleSuccess = () => {
+        setIsOpen(false);
+    };
+
     return (
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className='py-2 px-4'>
@@ -43,7 +47,7 @@ export const EditInsightSheet = ({ insight }: EditInsightSheetProps) => {
                 </SheetHeader>
                 <div className="mt-6 flex-1 flex-col overflow-y-auto gap-4">
                     {/* @ts-ignore - Type assertions aren't sufficient here, but the component works at runtime */}
-                    <InsightForm insight={formattedInsight} />
+                    <InsightForm insight={formattedInsight} onSuccess={handleSuccess} />
                 </div>
             </SheetContent>
         </Sheet>

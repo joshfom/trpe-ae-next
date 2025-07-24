@@ -8,7 +8,7 @@ interface InsightContentProps {
 
 export function InsightContent({ insight }: InsightContentProps) {
   return (
-    <article className="prose prose-lg max-w-none">
+    <article className="prose prose-sm max-w-none prose-p:my-1">
       {/* Mobile Title */}
       <h1 className="block lg:hidden text-2xl sm:text-3xl font-light text-gray-900 mb-6 leading-tight">
         {insight.title}

@@ -9,10 +9,6 @@
 
 /* Style for completely empty paragraphs */
 p:empty {
-  display: block !important;
-  min-height: 1.5rem !important;
-  height: 1.5rem !important;
-  margin-top: 1rem !important;
   margin-bottom: 1rem !important;
 }
 

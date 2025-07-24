@@ -12,8 +12,10 @@ import {z} from "zod";
 import {useUpdateAgent} from "../api/use-update-agent";
 import {AgentFormSchema} from '../form-schema/agent-form-schema';
 import {Textarea} from '@/components/ui/textarea';
+import {TipTapEditor} from "@/components/TiptapEditor";
 import {X, Crown, User} from "lucide-react";
 import {employeeTable} from "@/db/schema/employee-table";
+import Link from 'next/link';
 
 type EmployeeType = typeof employeeTable.$inferSelect;
 
@@ -153,9 +155,9 @@ const AdminAgentCard = memo(({agent}: AdminAgentCardProps) => {
                     </p>
                 </div>
                 <div className={'flex justify-end items-end px-4 pb-4'}>
-                    <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
+                    <Link href={`/admin/agents/${agent.id}/edit`} className={'text-sm py-1 px-3 border rounded-2xl'}>
                         Edit Agent
-                    </button>
+                    </Link>
                 </div>
             </div>
 
@@ -268,10 +270,11 @@ const AdminAgentCard = memo(({agent}: AdminAgentCardProps) => {
                                         render={({field}) => (
                                             <FormItem>
                                                 <FormLabel>Bio</FormLabel>
-                                                <Textarea
-                                                    {...field}
-                                                    placeholder={'Agent biography'}
-                                                    className={'textarea min-h-[100px]'}/>
+                                                <TipTapEditor
+                                                    name="bio"
+                                                    control={form.control}
+                                                    defaultValue={agent.bio || ''}
+                                                />
                                             </FormItem>
                                         )}
                                     />

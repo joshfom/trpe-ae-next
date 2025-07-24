@@ -25,7 +25,7 @@ export async function OptimizedTipTapView({ content }: OptimizedTipTapViewProps)
         <div id="tip-tap" className="relative px-4 py-3">
           <TipTapContentBlock 
             content={processedContent} 
-            className="prose-headings:mb-3 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-3 prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic" 
+            className="prose-headings:mb-2 prose-headings:mt-4 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-1 prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic" 
           />
         </div>
       </div>
@@ -38,7 +38,7 @@ export async function OptimizedTipTapView({ content }: OptimizedTipTapViewProps)
       <div className="rounded-lg overflow-hidden bg-background">
         <div id="tip-tap" className="relative px-4 py-3">
           <div 
-            className="prose prose-sm max-w-none prose-headings:mb-3 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-3"
+            className="prose prose-sm max-w-none prose-headings:mb-2 prose-headings:mt-4 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-h4:text-lg prose-h5:text-base prose-p:my-1"
             dangerouslySetInnerHTML={{ __html: content }}
           />
         </div>

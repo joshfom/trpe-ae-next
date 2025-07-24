@@ -23,6 +23,35 @@ const app = new Hono()
     })
 
 
+    /**
+     * Handles GET requests to fetch a single employee by ID.
+     *
+     * @param {string} id - The ID of the employee to fetch.
+     * @returns {Promise<Response>} - A JSON response containing the employee data or an error message if not found.
+     */
+    .get("/:id",
+        zValidator("param", z.object({
+            id: z.string()
+        })),
+        async (c) => {
+            // Extract the id parameter from the request
+            const { id } = c.req.param();
+
+            // Query the database to find the specific employee
+            const data = await db.query.employeeTable.findFirst({
+                where: eq(employeeTable.id, id)
+            });
+
+            // If no employee found, return 404
+            if (!data) {
+                return c.json({ error: "Agent not found" }, 404);
+            }
+
+            // Return the employee data as a JSON response
+            return c.json({ data });
+        })
+
+
 
     /**
      * Handles POST requests to create a new employee.

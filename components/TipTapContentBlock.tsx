@@ -17,30 +17,49 @@ export function TipTapContentBlock({ content, className = "" }: TipTapContentBlo
   // Using layoutEffect to process DOM before paint
   useLayoutEffect(() => {
     if (contentRef.current) {
-      // Process paragraphs to ensure proper spacing
+      // Process paragraphs to handle empty ones properly
       const paragraphs = contentRef.current.querySelectorAll('p');
       
       paragraphs.forEach((p, index) => {
-        // Check if paragraph is empty or just contains non-breaking space
+        // Check if paragraph is empty or just contains whitespace/nbsp/br
+        const textContent = p.textContent || '';
+        const innerHTML = p.innerHTML.trim();
+        
         const isEmpty = 
-          p.innerHTML.trim() === '' || 
-          p.innerHTML === '&nbsp;' || 
-          p.textContent?.trim() === '' ||
+          innerHTML === '' || 
+          innerHTML === '&nbsp;' || 
+          innerHTML === '<br>' ||
+          innerHTML === '<br/>' ||
+          innerHTML === '<br />' ||
+          textContent.trim() === '' ||
           p.childNodes.length === 0 ||
           (p.childNodes.length === 1 && p.firstChild?.nodeName === 'BR');
         
         if (isEmpty) {
-          // Ensure proper styling
+          // Remove spacing for empty paragraphs
           p.classList.add('empty-paragraph');
-          p.style.minHeight = '1.5rem';
-          p.style.marginTop = '1rem';
-          p.style.marginBottom = '1rem';
+          p.style.margin = '0';
+          p.style.padding = '0';
+          p.style.minHeight = '0';
+          p.style.height = '0';
+          p.style.lineHeight = '0';
           p.style.display = 'block';
           
-          // Make sure there's content to maintain the height
-          if (p.innerHTML.trim() === '') {
-            p.innerHTML = '&nbsp;';
-          }
+          // Remove any content to prevent spacing
+          p.innerHTML = '';
+          
+          // Add a data attribute for CSS targeting
+          p.setAttribute('data-empty', 'true');
+        } else {
+          // Ensure normal paragraphs have proper spacing
+          p.classList.remove('empty-paragraph');
+          p.removeAttribute('data-empty');
+          // Reset inline styles to allow CSS to take over
+          p.style.margin = '';
+          p.style.padding = '';
+          p.style.minHeight = '';
+          p.style.height = '';
+          p.style.lineHeight = '';
         }
       });
     }

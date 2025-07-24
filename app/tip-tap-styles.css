@@ -1,21 +1,27 @@
-/* TipTap Empty Paragraph Styles */
-#tip-tap p:empty {
-  display: block;
-  min-height: 1.5rem;
-  margin-top: 1rem !important;
-  margin-bottom: 1rem !important;
-  position: relative;
+/* TipTap Paragraph Spacing - Reduce spacing between paragraphs with high specificity */
+.prose p,
+div[class*="prose"] p,
+[class*="prose"] p {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.25rem !important;
 }
 
-/* Add a visual indicator for empty paragraphs */
-#tip-tap p:empty::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 1px;
-  background-color: transparent;
+/* Empty paragraphs - only margin bottom as requested */
+.prose p:empty,
+.prose p:has(br:only-child),
+.prose p.empty-paragraph,
+div[class*="prose"] p:empty,
+div[class*="prose"] p:has(br:only-child),
+div[class*="prose"] p.empty-paragraph {
+  margin-bottom: 1rem !important;
+}
+
+/* Handle paragraphs with only non-breaking spaces */
+.prose p:has(:only-child:is(br, [data-empty="true"])),
+div[class*="prose"] p:has(:only-child:is(br, [data-empty="true"])) {
+  margin-top: 0.125rem !important;
+  margin-bottom: 0.125rem !important;
+  min-height: 0.25rem !important;
 }
 
 /* Remove focus outline for TipTap editor */

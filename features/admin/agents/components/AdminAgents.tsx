@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import AdminAgentCard from './AdminAgentCard';
+import AdminAgentCardDisplay from './AdminAgentCardDisplay';
 import { useGetAgents } from '../api/use-get-agents';
 import { employeeTable } from "@/db/schema/employee-table";
 
@@ -37,7 +37,7 @@ function AdminAgents() {
         <div className={'px-8'}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {agents.map((agent: EmployeeType) => (
-                    <AdminAgentCard key={agent.id} agent={agent} />
+                    <AdminAgentCardDisplay key={agent.id} agent={agent} />
                 ))}
             </div>
         </div>

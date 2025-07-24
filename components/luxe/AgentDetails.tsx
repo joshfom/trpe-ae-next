@@ -43,7 +43,7 @@ const AgentDetailItem: React.FC<AgentDetailItemProps> = ({
             {title}
           </p>
 
-          <div dangerouslySetInnerHTML={{ __html: description }} className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-8">
+          <div dangerouslySetInnerHTML={{ __html: description }} className="prose prose-sm max-w-none text-gray-700 leading-relaxed mb-8 prose-p:my-1">
 
           </div>
           

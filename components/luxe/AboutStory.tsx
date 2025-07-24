@@ -51,11 +51,11 @@ export function AboutStory() {
               <div className={`${
                 section.imagePosition === 'left' ? 'lg:col-start-2' : ''
               }`}>
-                <div className="prose prose-lg max-w-none">
+                <div className="prose prose-sm max-w-none prose-p:my-1">
                   {section.text.split('\n\n').map((paragraph, index) => (
                     <p 
                       key={index} 
-                      className="text-sm sm:text-base lg:text-lg leading-relaxed text-gray-700 mb-4 sm:mb-6"
+                      className="text-sm sm:text-base lg:text-lg leading-relaxed text-gray-700 mb-2 sm:mb-3"
                     >
                       {paragraph}
                     </p>

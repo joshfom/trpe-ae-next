@@ -304,7 +304,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                             {/* Description */}
                             <div className="mb-12">
                                 <h2 className="text-3xl font-playfair font-light text-gray-900 mb-6">Description</h2>
-                                <div className="prose prose-lg max-w-none text-gray-700">
+                                <div className="prose prose-sm max-w-none text-gray-700 prose-p:my-1">
                                     <TipTapView content={description} />
                                 </div>
                             </div>
