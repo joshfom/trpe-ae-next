@@ -6,6 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { 
     Table, 
     TableBody, 
     TableCell, 
@@ -32,7 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useGetAdminInsights } from "@/features/admin/insights/api/use-get-admin-insights";
 import { useDeleteInsight } from "@/features/admin/insights/api/use-delete-insight";
-import { Search, Plus, MoreVertical, Edit, Trash2, Eye } from "lucide-react";
+import { Search, Plus, MoreVertical, Edit, Trash2, Eye, ArrowUpDown } from "lucide-react";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { InsightType } from '@/types/insights';
@@ -44,12 +51,16 @@ interface InsightsListProps {
 function InsightsList({ }: InsightsListProps) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
+    const [sortBy, setSortBy] = useState("createdAt");
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
     const router = useRouter();
     
     const { data, isLoading, isError } = useGetAdminInsights({ 
         search, 
         page, 
-        limit: 10 
+        limit: 10,
+        sortBy,
+        sortOrder
     });
     
     const deleteMutation = useDeleteInsight();
@@ -74,6 +85,18 @@ function InsightsList({ }: InsightsListProps) {
     const handleSearch = (value: string) => {
         setSearch(value);
         setPage(1); // Reset to first page when searching
+    };
+
+    const handleSortChange = (newSortBy: string) => {
+        if (newSortBy === sortBy) {
+            // Toggle order if same column
+            setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        } else {
+            // New column, default to desc
+            setSortBy(newSortBy);
+            setSortOrder("desc");
+        }
+        setPage(1); // Reset to first page when sorting
     };
 
     const getStatusBadge = (insight: InsightType) => {
@@ -118,14 +141,39 @@ function InsightsList({ }: InsightsListProps) {
 
             {/* Search and Stats */}
             <div className="flex justify-between items-center">
-                <div className="relative w-72">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                    <Input
-                        placeholder="Search insights..."
-                        value={search}
-                        onChange={(e) => handleSearch(e.target.value)}
-                        className="pl-10"
-                    />
+                <div className="flex items-center gap-4">
+                    <div className="relative w-72">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                        <Input
+                            placeholder="Search insights..."
+                            value={search}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            className="pl-10"
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">Sort by:</span>
+                        <Select value={sortBy} onValueChange={handleSortChange}>
+                            <SelectTrigger className="w-40">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="createdAt">Created Date</SelectItem>
+                                <SelectItem value="publishedAt">Published Date</SelectItem>
+                                <SelectItem value="updatedAt">Updated Date</SelectItem>
+                                <SelectItem value="title">Title</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                            className="px-2"
+                        >
+                            <ArrowUpDown className="w-4 h-4" />
+                            {sortOrder === "asc" ? "↑" : "↓"}
+                        </Button>
+                    </div>
                 </div>
                 <div className="text-sm text-gray-600">
                     Total: {totalCount} insights
@@ -139,7 +187,6 @@ function InsightsList({ }: InsightsListProps) {
                         <TableRow>
                             <TableHead>Title</TableHead>
                             <TableHead>Status</TableHead>
-                            <TableHead>Author</TableHead>
                             <TableHead>Published Date</TableHead>
                             <TableHead>Created</TableHead>
                             <TableHead className="w-20">Actions</TableHead>
@@ -157,9 +204,6 @@ function InsightsList({ }: InsightsListProps) {
                                         <div className="h-6 bg-gray-200 rounded animate-pulse w-16"></div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="h-4 bg-gray-200 rounded animate-pulse w-24"></div>
-                                    </TableCell>
-                                    <TableCell>
                                         <div className="h-4 bg-gray-200 rounded animate-pulse w-20"></div>
                                     </TableCell>
                                     <TableCell>
@@ -172,7 +216,7 @@ function InsightsList({ }: InsightsListProps) {
                             ))
                         ) : insights.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center py-8">
+                                <TableCell colSpan={5} className="text-center py-8">
                                     <div className="text-gray-500">
                                         {search ? `No insights found for "${search}"` : "No insights yet"}
                                     </div>
@@ -202,11 +246,6 @@ function InsightsList({ }: InsightsListProps) {
                                     </TableCell>
                                     <TableCell>
                                         {getStatusBadge(insight)}
-                                    </TableCell>
-                                    <TableCell>
-                                        <div className="text-sm text-gray-900">
-                                            {insight.authorId || "No author"}
-                                        </div>
                                     </TableCell>
                                     <TableCell>
                                         <div className="text-sm text-gray-600">

@@ -8,6 +8,8 @@ interface InsightsParams {
   search?: string;
   page?: number;
   limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 /**
@@ -15,7 +17,7 @@ interface InsightsParams {
  * This hook mimics the React Query useQuery API to maintain compatibility
  */
 export const useGetAdminInsights = (params: InsightsParams = {}) => {
-    const { search = '', page = 1, limit = 9 } = params;
+    const { search = '', page = 1, limit = 9, sortBy = 'createdAt', sortOrder = 'desc' } = params;
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
@@ -25,7 +27,7 @@ export const useGetAdminInsights = (params: InsightsParams = {}) => {
     const isMountedRef = useRef(true);
     
     // Create a stable key for the request to prevent unnecessary refetches
-    const requestKey = `${search}-${page}-${limit}`;
+    const requestKey = `${search}-${page}-${limit}-${sortBy}-${sortOrder}`;
     const lastRequestKeyRef = useRef<string>('');
 
     const fetchData = useCallback(async () => {
@@ -43,7 +45,7 @@ export const useGetAdminInsights = (params: InsightsParams = {}) => {
             setIsError(false);
             setError(null);
             
-            const result = await getAdminInsights({ search, page, limit });
+            const result = await getAdminInsights({ search, page, limit, sortBy, sortOrder });
             
             if (!isMountedRef.current) return;
             

@@ -3,12 +3,14 @@
 import { getSession } from "@/actions/auth-session";
 import { db } from "@/db/drizzle";
 import { insightTable } from "@/db/schema/insight-table";
-import { count, desc, sql } from "drizzle-orm";
+import { count, desc, asc, sql, eq, and } from "drizzle-orm";
 
 interface InsightsParams {
   search?: string;
   page?: number;
   limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 /**
@@ -17,7 +19,7 @@ interface InsightsParams {
  * @returns Object with success status and data or error message
  */
 export async function getAdminInsights(params: InsightsParams = {}) {
-  const { search = '', page = 1, limit = 9 } = params;
+  const { search = '', page = 1, limit = 9, sortBy = 'createdAt', sortOrder = 'desc' } = params;
 
   try {
     // Check authentication
@@ -31,17 +33,35 @@ export async function getAdminInsights(params: InsightsParams = {}) {
 
     const offset = (page - 1) * limit;
 
-    let query = db.select().from(insightTable).orderBy(desc(insightTable.createdAt));
-    let countQuery = db.select({ value: count() }).from(insightTable);
+    // Determine sort column and order
+    const getSortColumn = (sortBy: string) => {
+      switch (sortBy) {
+        case 'title':
+          return insightTable.title;
+        case 'publishedAt':
+          return insightTable.publishedAt;
+        case 'updatedAt':
+          return insightTable.updatedAt;
+        case 'createdAt':
+        default:
+          return insightTable.createdAt;
+      }
+    };
+
+    const sortColumn = getSortColumn(sortBy);
+    const orderFn = sortOrder === 'asc' ? asc : desc;
+
+    let query = db.select().from(insightTable).where(eq(insightTable.isLuxe, false)).orderBy(orderFn(sortColumn));
+    let countQuery = db.select({ value: count() }).from(insightTable).where(eq(insightTable.isLuxe, false));
 
     if (search) {
       console.log('search:', search);
       const searchCondition = sql`to_tsvector('english', ${insightTable.title}) @@ plainto_tsquery('english', ${search})`;
 
       //@ts-ignore
-      query = query.where(searchCondition);
+      query = query.where(and(eq(insightTable.isLuxe, false), searchCondition));
       //@ts-ignore
-      countQuery = countQuery.where(searchCondition);
+      countQuery = countQuery.where(and(eq(insightTable.isLuxe, false), searchCondition));
     }
 
     // Apply pagination
