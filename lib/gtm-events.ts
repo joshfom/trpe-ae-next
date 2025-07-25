@@ -9,6 +9,48 @@ export const trackPageView = (pageName: string, additionalData?: any) => {
   });
 };
 
+// Enhanced page view tracking with comprehensive data
+export const trackEnhancedPageView = (pageData?: {
+  page_title?: string;
+  page_path?: string;
+  page_url?: string;
+  page_category?: string;
+  page_type?: string;
+  content_group1?: string;
+  content_group2?: string;
+  content_group3?: string;
+  user_type?: string;
+  property_id?: string;
+  community_id?: string;
+  agent_id?: string;
+  [key: string]: any;
+}) => {
+  const defaultData = {
+    page_title: typeof document !== 'undefined' ? document.title : '',
+    page_path: typeof window !== 'undefined' ? window.location.pathname : '',
+    page_url: typeof window !== 'undefined' ? window.location.href : '',
+    page_location: typeof window !== 'undefined' ? window.location.href : '',
+    platform: 'trpe-ae',
+    timestamp: new Date().toISOString(),
+    send_to: 'AW-11470392777'
+  };
+
+  pushToDataLayer({
+    event: 'page_view',
+    eventModel: {
+      event_callback: "Function",
+      send_to: pageData?.send_to || "AW-11470392777"
+    },
+    eventCallback: "Function",
+    ...defaultData,
+    ...pageData,
+    gtm: {
+      uniqueEventId: Math.floor(Math.random() * 1000000),
+      priorityId: 10
+    }
+  });
+};
+
 export const trackUserAction = (action: string, category: string, label?: string, value?: number) => {
   pushToDataLayer({
     event: 'user_action',

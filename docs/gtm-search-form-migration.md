@@ -1,10 +1,58 @@
-# GTM Form Event Migration Guide
+# GTM Form Event Migration & Page View Tracking Guide
 
-This document outlines the changes made to update search form events from `form_submit` to `form_search` and enhance contact form tracking in your Google Tag Manager implementation.
+This document outlines the changes made to update search form events from `form_submit` to `form_search`, enhance contact form tracking, and implement comprehensive page view tracking in your Google Tag Manager implementation.
 
 ## Summary of Changes
 
 ### 1. Updated GTM Events Library (`lib/gtm-events.ts`)
+
+#### Enhanced Page View Tracking
+Added a comprehensive `trackEnhancedPageView()` function that sends detailed page view data:
+
+```typescript
+trackEnhancedPageView({
+  page_title: "Property Details - Dubai Marina Tower",
+  page_path: "/properties/dubai-marina-tower",
+  page_category: "properties",
+  page_type: "property_detail",
+  content_group1: "properties",
+  content_group2: "for-sale", 
+  content_group3: "dubai-marina",
+  property_id: "12345",
+  community_id: "dubai-marina",
+  agent_id: "agent-123"
+});
+```
+
+This generates a comprehensive page view event:
+```javascript
+dataLayer.push({
+  event: "page_view",
+  eventModel: {
+    event_callback: "Function",
+    send_to: "AW-11470392777"
+  },
+  eventCallback: "Function",
+  page_title: "Property Details - Dubai Marina Tower",
+  page_path: "/properties/dubai-marina-tower",
+  page_url: "https://trpe.ae/properties/dubai-marina-tower",
+  page_location: "https://trpe.ae/properties/dubai-marina-tower",
+  page_category: "properties",
+  page_type: "property_detail",
+  content_group1: "properties",
+  content_group2: "for-sale",
+  content_group3: "dubai-marina",
+  property_id: "12345",
+  community_id: "dubai-marina",
+  agent_id: "agent-123",
+  platform: "trpe-ae",
+  timestamp: "2025-07-25T10:30:00.000Z",
+  gtm: {
+    uniqueEventId: 123456,
+    priorityId: 10
+  }
+});
+```
 
 #### Search Form Tracking
 Added a new function `trackSearchFormSubmit()` that sends `form_search` events instead of `form_submit` for search forms:
@@ -90,7 +138,46 @@ dataLayer.push({
 });
 ```
 
-### 2. Updated Search Form Components
+### 2. Page View Tracking Hook (`hooks/use-page-view-tracking.ts`)
+
+Created a React hook for automatic page view tracking:
+
+```typescript
+import { usePageViewTracking } from '@/hooks/use-page-view-tracking';
+
+// Automatic tracking with custom data
+usePageViewTracking({
+  page_category: 'properties',
+  page_type: 'property_detail',
+  property_id: '12345',
+  community_id: 'dubai-marina'
+});
+```
+
+Features:
+- **Automatic route change detection** - Tracks page views on Next.js route changes
+- **Auto-categorization** - Automatically detects page category and type from URL
+- **Content grouping** - Automatically populates content groups from URL segments
+- **Custom data support** - Add any additional tracking data
+- **Virtual page views** - Track modal opens, tab changes, filter usage, etc.
+
+### 3. Page View Tracker Component (`components/PageViewTracker.tsx`)
+
+Created a component for easy integration into your layout:
+
+```typescript
+import PageViewTracker from '@/components/PageViewTracker';
+
+// Add to your root layout
+<PageViewTracker 
+  defaultPageData={{
+    user_type: 'visitor',
+    content_group1: 'trpe-ae'
+  }}
+/>
+```
+
+### 4. Updated Search Form Components
 
 #### PropertyPageSearchFilterOptimized.tsx
 - Added import for `trackSearchFormSubmit`
@@ -137,6 +224,11 @@ Created a Node.js script to scan the codebase for any hardcoded `form_submit` ev
 
 ## Form Types and Their GTM Events
 
+### Page Views → `page_view` event
+- **Automatic tracking** on all route changes
+- **Enhanced data** with page categorization, content groups, and custom data
+- **Virtual page views** for SPAs, modals, tabs, filters
+
 ### Search Forms → `form_search` event
 - PropertyPageSearchFilterOptimized
 - PropertyPageSearchFilterClient
@@ -147,7 +239,41 @@ Created a Node.js script to scan the codebase for any hardcoded `form_submit` ev
 - Enhanced Contact Form (`enhanced_contact`)
 - Property Listing Form (`property_listing`)
 
+## Page View Auto-Categorization
+
+The system automatically categorizes pages based on URL patterns:
+
+| URL Pattern | Category | Type | Content Groups |
+|-------------|----------|------|----------------|
+| `/` | home | homepage | home, -, - |
+| `/properties/[id]` | properties | property_detail | properties, [id], - |
+| `/for-sale/*` | properties | property_search | for-sale, [community], [filters] |
+| `/communities/[slug]` | communities | community_detail | communities, [slug], - |
+| `/agents/[id]` | agents | agent_detail | agents, [id], - |
+| `/insights/[slug]` | insights | insight_detail | insights, [slug], - |
+| `/admin/*` | admin | admin_panel | admin, [section], [subsection] |
+| `/contact*` | contact | contact_form | contact, [type], - |
+
 ## Data Structure Comparison
+
+### Page Views
+```javascript
+// Enhanced page view events with comprehensive data
+{
+  event: "page_view",
+  eventModel: { /* GTM metadata */ },
+  page_title: "Page Title",
+  page_path: "/current/path",
+  page_category: "properties",
+  page_type: "property_detail", 
+  content_group1: "properties",
+  content_group2: "for-sale",
+  content_group3: "dubai-marina",
+  property_id: "12345",
+  community_id: "dubai-marina",
+  /* any custom data */
+}
+```
 
 ### Search Forms
 ```javascript

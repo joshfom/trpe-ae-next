@@ -2,6 +2,7 @@
 
 import Script from 'next/script';
 import { useEffect } from 'react';
+import { trackEnhancedPageView } from '@/lib/gtm-events';
 
 const GTM_ID = 'GTM-MNQMSPX';
 
@@ -17,13 +18,12 @@ export default function GTMScript() {
         event: 'gtm.js'
       });
       
-      // Push initial page view
-      window.dataLayer.push({
-        event: 'page_view',
-        page_title: document.title,
-        page_location: window.location.href,
-        platform: 'trpe-ae',
-        timestamp: new Date().toISOString()
+      // Push enhanced initial page view with better data structure
+      trackEnhancedPageView({
+        page_category: window.location.pathname === '/' ? 'home' : 'other',
+        page_type: window.location.pathname === '/' ? 'homepage' : 'page',
+        content_group1: 'initial_load',
+        user_type: 'visitor' // You can enhance this with actual user data
       });
     }
   }, []);
