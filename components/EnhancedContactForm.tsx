@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { User, Phone, Mail, MapPin, DollarSign, MessageSquare } from 'lucide-react';
+import { trackContactFormSubmit } from "@/lib/gtm-events";
 
 export const EnhancedFormSchema = z.object({
     requestType: z.array(z.string()).min(1, { message: 'Please select at least one request type' }),
@@ -180,6 +181,27 @@ function EnhancedContactForm({
 
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
+        
+        // Track enhanced contact form submission with detailed data
+        trackContactFormSubmit({
+            form_id: 'enhanced-contact-form',
+            form_name: 'Enhanced Contact Form',
+            form_type: 'enhanced_contact',
+            form_destination: window.location.origin,
+            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            user_data: {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                phone: values.phone,
+                city: values.currentCity,
+                budget: values.budget,
+                currency: values.currency,
+                requestType: values.requestType,
+                message: values.message
+            }
+        });
+        
         try {
             await sendBitrix(values);
             toast.success('Form submitted successfully');

@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { User, Phone, Mail, MapPin, Home, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { trackContactFormSubmit } from "@/lib/gtm-events";
 
 export const SellerFormSchema = z.object({
     fullName: z.string().min(2, { message: 'Full name is required' }),
@@ -167,6 +168,24 @@ function SellerContactForm({
 
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
+        
+        // Track seller contact form submission with enhanced data
+        trackContactFormSubmit({
+            form_id: 'seller-contact-form',
+            form_name: 'Seller Contact Form',
+            form_type: 'seller_contact',
+            form_destination: window.location.origin,
+            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            user_data: {
+                name: values.fullName,
+                phone: values.phone,
+                email: values.email,
+                city: values.currentCity,
+                propertyType: values.propertyType,
+                message: values.message
+            }
+        });
+        
         try {
             await sendBitrix(values);
             toast.success('Form submitted successfully');

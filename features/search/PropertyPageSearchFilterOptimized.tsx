@@ -18,6 +18,7 @@ import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
 import ClickAwayListener from "@/lib/click-away-listener";
 import dynamic from 'next/dynamic';
+import { trackSearchFormSubmit } from "@/lib/gtm-events";
 
 // Lazy load heavy components
 const PropertyFilterSlideOver = dynamic(
@@ -245,6 +246,27 @@ function PropertyPageSearchFilter({ offeringType, propertyType }: PropertyPageSe
     }, []);
 
     const handleFormSubmit = useCallback((data: FormValues) => {
+        // Track the search form submission with GTM
+        trackSearchFormSubmit({
+            form_id: "property-search-form",
+            form_name: "Property Search Form",
+            form_destination: window.location.origin,
+            form_length: Object.keys(data).filter(key => data[key as keyof FormValues]).length,
+            search_term: data.query || "",
+            filters: {
+                communities: selectedCommunities.map(c => c.name),
+                minPrice: data.minPrice,
+                maxPrice: data.maxPrice,
+                minSize: data.minSize,
+                maxSize: data.maxSize,
+                bedrooms: data.bed,
+                bathrooms: data.bath,
+                unitType: data.unitType,
+                offerType: data.offerType
+            },
+            send_to: "AW-11470392777"
+        });
+
         const url = buildPropertySearchUrl({
             searchType: data.offerType || offeringType || 'for-sale',
             selectedCommunities,

@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useSubmitPropertyListingForm } from "@/features/properties/api/use-submit-property-listing-form";
 import { useRouter } from 'next/navigation';
+import { trackContactFormSubmit } from "@/lib/gtm-events";
 
 const FormSchema = z.object({
     firstName: z.string().min(2, { message: 'First name is required' }),
@@ -66,6 +67,25 @@ const ListPropertyForm = memo(() => {
     // Memoize onSubmit handler
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
+
+        // Track property listing form submission with detailed data
+        trackContactFormSubmit({
+            form_id: 'property-listing-form',
+            form_name: 'Property Listing Form',
+            form_type: 'property_listing',
+            form_destination: window.location.origin,
+            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            user_data: {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                phone: values.phone,
+                offeringType: values.offeringType,
+                propertyType: values.propertyType,
+                address: values.address,
+                message: values.message
+            }
+        });
 
         mutation.mutate(values, {
             onSuccess: (data: any) => {

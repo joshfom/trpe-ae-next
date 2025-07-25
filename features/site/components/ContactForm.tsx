@@ -12,6 +12,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useSubmitForm} from "@/features/site/api/use-submit-form";
 import {useRouter} from 'next/navigation';
+import {trackContactFormSubmit} from "@/lib/gtm-events";
 
 const FormSchema = z.object({
     subject: z.string().optional(),
@@ -87,6 +88,22 @@ const ContactForm = memo(() => {
     // Memoize onSubmit handler
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
+
+        // Track contact form submission with enhanced data
+        trackContactFormSubmit({
+            form_id: 'general-contact-form',
+            form_name: 'General Contact Form',
+            form_type: 'general_contact',
+            form_destination: window.location.origin,
+            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            user_data: {
+                name: values.firstName,
+                email: values.email,
+                phone: values.phone,
+                message: values.message,
+                subject: values.subject
+            }
+        });
 
         mutation.mutate(values, {
             onSuccess: (data: any) => {

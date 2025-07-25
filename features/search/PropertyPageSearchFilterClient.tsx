@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { buildPropertySearchUrl } from './hooks/path-search-helper';
 import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
+import { trackSearchFormSubmit } from "@/lib/gtm-events";
 
 interface PropertyPageSearchFilterClientProps {
     offeringType: string;
@@ -44,6 +45,25 @@ function PropertyPageSearchFilterClient({
         const maxPrice = formData.get('maxPrice') as string;
         const bedrooms = formData.get('bedrooms') as string;
         const bathrooms = formData.get('bathrooms') as string;
+
+        // Track the search form submission with GTM
+        trackSearchFormSubmit({
+            form_id: "property-search-filter-client",
+            form_name: "Property Search Filter",
+            form_destination: window.location.origin,
+            form_length: [search, community, propertyType, minPrice, maxPrice, bedrooms, bathrooms]
+                .filter(val => val && val !== 'all' && val !== 'no-min' && val !== 'no-max' && val !== 'any').length,
+            search_term: search || "",
+            filters: {
+                community: community !== 'all' ? community : undefined,
+                propertyType: propertyType !== 'all' ? propertyType : undefined,
+                minPrice: minPrice !== 'no-min' ? minPrice : undefined,
+                maxPrice: maxPrice !== 'no-max' ? maxPrice : undefined,
+                bedrooms: bedrooms !== 'any' ? bedrooms : undefined,
+                bathrooms: bathrooms !== 'any' ? bathrooms : undefined
+            },
+            send_to: "AW-11470392777"
+        });
 
         // Find selected community for path building
         const selectedCommunities = community && community !== 'all' 
