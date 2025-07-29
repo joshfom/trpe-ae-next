@@ -15,9 +15,7 @@ interface MainSearchServerProps {
 
 // Server component version of MainSearch for SSR
 function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
-    console.log('MainSearchServer component rendering on homepage with mode:', mode);
-    console.trace('MainSearchServer homepage component trace');
-    
+
     const placeholderText = mode === 'rental' 
         ? 'Search for rental properties...' 
         : mode === 'sale' 

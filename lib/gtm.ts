@@ -11,9 +11,18 @@ declare global {
   }
 }
 
-export const initializeGTM = () => {
+// GTM initialization function - should only be used internally
+// GTM is properly initialized in app/layout.tsx with early filter
+const initializeGTM = () => {
   // Only initialize in browser environment
   if (typeof window === 'undefined') return;
+  
+  // Initialize form filter FIRST, before GTM loads
+  import('./gtm-form-filter').then(({ initializeGTMFormFilter, startAggressiveFormEventCleaner }) => {
+    initializeGTMFormFilter();
+    // Enable aggressive cleaning to completely eliminate form events
+    startAggressiveFormEventCleaner();
+  });
   
   // Initialize dataLayer first if it doesn't exist
   window.dataLayer = window.dataLayer || [];
@@ -44,6 +53,15 @@ export const initializeGTM = () => {
       page_location: window.location.href,
       timestamp: new Date().toISOString()
     });
+      
+    // Debug monitor disabled to prevent Tag Assistant popup
+    // if (process.env.NODE_ENV === 'development') {
+    //   setTimeout(() => {
+    //     import('./gtm-debug').then(({ initializeGTMMonitor }) => {
+    //       initializeGTMMonitor();
+    //     });
+    //   }, 2000);
+    // }
     
   } catch (error) {
     console.error('GTM initialization error:', error);
@@ -53,11 +71,19 @@ export const initializeGTM = () => {
 export const pushToDataLayer = (data: any) => {
   if (typeof window === 'undefined') return;
   
+  // Initialize dataLayer if it doesn't exist, but don't re-initialize GTM
+  // GTM should already be initialized in layout.tsx with early filter
   if (!window.dataLayer) {
-    initializeGTM();
+    window.dataLayer = [];
   }
   
-  window.dataLayer.push(data);
+  // Use the safeGTMPush if available (from gtm-form-filter), otherwise use regular push
+  if (typeof window !== 'undefined' && (window as any).safeGTMPush) {
+    (window as any).safeGTMPush(data);
+  } else {
+    // Fallback to regular push
+    window.dataLayer.push(data);
+  }
 };
 
 export { TagManager };

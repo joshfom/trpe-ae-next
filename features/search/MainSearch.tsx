@@ -16,6 +16,7 @@ import {buildPropertySearchUrl} from './hooks/path-search-helper';
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
 import { CommunityFilterType } from '@/types/community';
 import { pushToDataLayer } from '@/lib/gtm';
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -297,14 +298,21 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
         }
     });
 
-    const onSubmit = useCallback((data: any) => {
+    const onSubmit = useCallback((data: any, event?: React.FormEvent) => {
         console.log('MainSearch form submitted from homepage with data:', data);
         console.log('Search mode:', mode, 'Search type:', searchType);
         console.log('Selected communities:', selectedCommunities);
         console.trace('Homepage search submission trace');
         
-        // Push search event to GTM data layer
-        pushToDataLayer({
+        // Prevent any default form submission behavior
+        if (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            (event.nativeEvent as Event).stopImmediatePropagation?.();
+        }
+        
+        // Push our specific search event to GTM data layer using safe method
+        safeGTMPush({
             event: 'search_submitted',
             search_location: 'homepage',
             search_mode: mode,
@@ -424,8 +432,17 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}
-                  className={'max-w-7xl mx-auto mt-6 w-full py-4 px-6 flex flex-col items-center justify-center'}>
+            <form 
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                    form.handleSubmit((data) => onSubmit(data, e))(e);
+                }}
+                id='main-search-form'
+                className={'max-w-7xl mx-auto mt-6 w-full py-4 px-6 flex flex-col items-center justify-center'}
+                data-gtm-disabled="true"
+                suppressHydrationWarning={true}>
                 {
                     mode === 'general' &&
                     <div
@@ -483,8 +500,12 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                             });
                                         }
                                     }}
-                                    onFocus={() => {
+                                    onFocus={(e) => {
                                         setShowSearchDropdown(true);
+                                        
+                                        // Prevent GTM form_start event
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
                                         
                                         // Track search input focus
                                         pushToDataLayer({
@@ -499,6 +520,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                     value={searchInput}
                                     placeholder="Area, Property or Development"
                                     className="grow border-t-0 border-l-0 py-1 -mt-1 border-r-0 rounded-none focus-visible:ring-0 border-white bg-transparent"
+                                    suppressHydrationWarning={true}
                                 />
                             </div>
 
@@ -610,7 +632,15 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                     <div className={'lg:hidden'}>
                         <div onClick={handleOpenMobileSearch} className="flex flex-col justify-center items-center">
                             <div className="relative w-full">
-                                <Input className={'w-full rounded-full px-8 py-3'} placeholder="Search Properties"/>
+                                <Input 
+                                    className={'w-full rounded-full px-8 py-3'} 
+                                    placeholder="Search Properties"
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
+                                />
                                 <Search className={'absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700'}/>
                             </div>
                         </div>
@@ -621,9 +651,16 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                 <div className="lg:hidden w-[95%]">
 
                     <Input
-                        onFocus={() => setOpenMobileSearch(true)}
+                        onFocus={(e) => {
+                            setOpenMobileSearch(true);
+                            // Prevent GTM form tracking
+                            e.stopPropagation();
+                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                        }}
                         placeholder="Area, Property or Development"
-                        className="grow rounded-3xl border w-full "/>
+                        className="grow rounded-3xl border w-full "
+                        suppressHydrationWarning={true}
+                    />
                 </div>
 
                 {/*<PropertyFilterSlideOver*/}
