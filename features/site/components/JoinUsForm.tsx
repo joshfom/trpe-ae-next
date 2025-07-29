@@ -5,6 +5,7 @@ import {PhoneInput} from "react-international-phone";
 import {Textarea} from "@/components/ui/textarea";
 import {Button} from "@/components/ui/button";
 import 'react-international-phone/style.css';
+import { pushToDataLayer } from '@/lib/gtm';
 
 const JoinUsForm = memo(() => {
     const [formData, setFormData] = useState({
@@ -24,6 +25,16 @@ const JoinUsForm = memo(() => {
         }));
     }, []);
 
+    const handleInputFocus = useCallback((field: string) => () => {
+        pushToDataLayer({
+            event: 'join_us_form_field_focused',
+            field_name: field,
+            form_type: 'career_application',
+            page_location: '/join-us',
+            timestamp: new Date().toISOString()
+        });
+    }, []);
+
     const handlePhoneChange = useCallback((value: string) => {
         setFormData(prev => ({
             ...prev,
@@ -35,12 +46,36 @@ const JoinUsForm = memo(() => {
         e.preventDefault();
         setIsSubmitting(true);
         
+        // Track form submission in GTM
+        pushToDataLayer({
+            event: 'join_us_form_submitted',
+            form_type: 'career_application',
+            page_location: '/join-us',
+            form_data: {
+                full_name: formData.fullName,
+                email: formData.email,
+                phone: formData.phone,
+                linkedin: formData.linkedin,
+                message_length: formData.message.length
+            },
+            timestamp: new Date().toISOString()
+        });
+        
         // TODO: Implement form submission logic
         console.log('Form data:', formData);
         
         // Simulate API call
         setTimeout(() => {
             setIsSubmitting(false);
+            
+            // Track successful submission
+            pushToDataLayer({
+                event: 'join_us_form_success',
+                form_type: 'career_application',
+                page_location: '/join-us',
+                timestamp: new Date().toISOString()
+            });
+            
             // Reset form on success
             setFormData({
                 fullName: '',
@@ -61,6 +96,7 @@ const JoinUsForm = memo(() => {
                     className="w-full bg-black text-white border border-white"
                     value={formData.fullName}
                     onChange={handleInputChange('fullName')}
+                    onFocus={handleInputFocus('fullName')}
                     required
                 />
             </div>
@@ -72,6 +108,7 @@ const JoinUsForm = memo(() => {
                     className="w-full bg-black text-white border border-white"
                     value={formData.email}
                     onChange={handleInputChange('email')}
+                    onFocus={handleInputFocus('email')}
                     required
                 />
             </div>
@@ -83,6 +120,7 @@ const JoinUsForm = memo(() => {
                     name={'phone'}
                     defaultCountry={'ae'}
                     onChange={handlePhoneChange}
+                    onFocus={handleInputFocus('phone')}
                 />
             </div>
 
@@ -93,6 +131,7 @@ const JoinUsForm = memo(() => {
                     className="w-full bg-black text-white border border-white"
                     value={formData.linkedin}
                     onChange={handleInputChange('linkedin')}
+                    onFocus={handleInputFocus('linkedin')}
                 />
             </div>
 
@@ -103,6 +142,7 @@ const JoinUsForm = memo(() => {
                     className="w-full rounded-2xl text-white bg-black"
                     value={formData.message}
                     onChange={handleInputChange('message')}
+                    onFocus={handleInputFocus('message')}
                 />
             </div>
             <div className="flex justify-end col-span-1 lg:col-span-2 ">

@@ -15,6 +15,7 @@ import Fuse from 'fuse.js';
 import {buildPropertySearchUrl} from './hooks/path-search-helper';
 import PropertyFilterSlideOver from "@/features/search/components/PropertyFilterSlideOver";
 import { CommunityFilterType } from '@/types/community';
+import { pushToDataLayer } from '@/lib/gtm';
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -57,7 +58,17 @@ const CommunityItem: React.FC<CommunityItemProps> = memo(({
     const handleCommunityClick = useCallback(() => {
         setSelectedCommunities([...selectedCommunities, community]);
         setSearchInput('');
-    }, [selectedCommunities, community, setSelectedCommunities, setSearchInput]);
+        
+        // Track community selection in GTM
+        pushToDataLayer({
+            event: 'search_community_selected',
+            community_name: community.name,
+            community_slug: community.slug,
+            search_location: 'homepage',
+            offering_type: offeringType,
+            timestamp: new Date().toISOString()
+        });
+    }, [selectedCommunities, community, setSelectedCommunities, setSearchInput, offeringType]);
 
     const isDisabled = useMemo(() => 
         selectedCommunities.some((item) => item.slug === community.slug || propertyCount === 0),
@@ -84,6 +95,20 @@ CommunityItem.displayName = 'CommunityItem';
 
 
 function MainSearch({mode = 'general'}: MainSearchProps) {
+    // Add logging to track main search component usage
+    useEffect(() => {
+        console.log('MainSearch component mounted on homepage with mode:', mode);
+        console.trace('MainSearch homepage component trace');
+        
+        // Push to GTM data layer
+        pushToDataLayer({
+            event: 'search_component_loaded',
+            component_type: 'main_search',
+            page_location: 'homepage',
+            search_mode: mode,
+            timestamp: new Date().toISOString()
+        });
+    }, [mode]);
 
     const [communities, setCommunities] = useState<CommunityFilterType[]>([])
     const [isLoading, setIsLoading] = useState(true)
@@ -273,14 +298,42 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
     });
 
     const onSubmit = useCallback((data: any) => {
+        console.log('MainSearch form submitted from homepage with data:', data);
+        console.log('Search mode:', mode, 'Search type:', searchType);
+        console.log('Selected communities:', selectedCommunities);
+        console.trace('Homepage search submission trace');
+        
+        // Push search event to GTM data layer
+        pushToDataLayer({
+            event: 'search_submitted',
+            search_location: 'homepage',
+            search_mode: mode,
+            search_type: searchType,
+            search_query: data.query || '',
+            selected_communities: selectedCommunities.map(c => c.name),
+            selected_communities_count: selectedCommunities.length,
+            form_data: {
+                unit_type: data.unitType,
+                min_price: data.minPrice,
+                max_price: data.maxPrice,
+                min_size: data.minSize,
+                max_size: data.maxSize,
+                bedrooms: data.bed,
+                bathrooms: data.bath,
+                furnishing: data.furnishing
+            },
+            timestamp: new Date().toISOString()
+        });
+        
         const finalUrl = buildPropertySearchUrl({
             searchType: searchType, // or 'sale'
             selectedCommunities: selectedCommunities,
             formData: data
         });
         
+        console.log('Navigating to:', finalUrl);
         router.push(finalUrl);
-    }, [searchType, selectedCommunities, router]);
+    }, [searchType, selectedCommunities, router, mode]);
 
     const handleFormValueChange = useCallback((value: any, fieldName: string): void => {
         //@ts-ignore
@@ -305,19 +358,58 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
     const handleOfferingTypeClick = useCallback((slug: string) => {
         setSearchType(slug);
         form.setValue('offerType', slug);
-    }, [form]);
+        
+        // Track offering type selection in GTM
+        pushToDataLayer({
+            event: 'search_filter_changed',
+            filter_type: 'offering_type',
+            filter_value: slug,
+            search_location: 'homepage',
+            search_mode: mode,
+            timestamp: new Date().toISOString()
+        });
+    }, [form, mode]);
 
     const handleRemoveCommunity = useCallback((communitySlug: string) => {
+        const removedCommunity = selectedCommunities.find(c => c.slug === communitySlug);
         setSelectedCommunities(prev => prev.filter((item) => item.slug !== communitySlug));
-    }, []);
+        
+        // Track community removal in GTM
+        if (removedCommunity) {
+            pushToDataLayer({
+                event: 'search_community_removed',
+                community_name: removedCommunity.name,
+                community_slug: removedCommunity.slug,
+                search_location: 'homepage',
+                search_mode: mode,
+                timestamp: new Date().toISOString()
+            });
+        }
+    }, [selectedCommunities, mode]);
 
     const handleShowSearchDropdown = useCallback(() => {
         setShowSearchDropdown(true);
-    }, []);
+        
+        // Track search dropdown opening
+        pushToDataLayer({
+            event: 'search_dropdown_opened',
+            search_location: 'homepage',
+            search_mode: mode,
+            timestamp: new Date().toISOString()
+        });
+    }, [mode]);
 
     const handleOpenMobileSearch = useCallback(() => {
         setIsOpen(true);
-    }, []);
+        
+        // Track mobile search opening
+        pushToDataLayer({
+            event: 'mobile_search_opened',
+            search_location: 'homepage',
+            search_mode: mode,
+            timestamp: new Date().toISOString()
+        });
+    }, [mode]);
 
 
     const getOfferingTypeLabel = (unitType: string) => {
@@ -378,8 +470,31 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                     {...form.register('query')} // Add this line
                                     onChange={(e) => {
                                         setSearchInput(e.target.value);
+                                        
+                                        // Track search input changes in GTM
+                                        if (e.target.value.length > 0) {
+                                            pushToDataLayer({
+                                                event: 'search_input_changed',
+                                                search_query_length: e.target.value.length,
+                                                search_location: 'homepage',
+                                                search_mode: mode,
+                                                component: 'interactive_search',
+                                                timestamp: new Date().toISOString()
+                                            });
+                                        }
                                     }}
-                                    onFocus={() => setShowSearchDropdown(true)}
+                                    onFocus={() => {
+                                        setShowSearchDropdown(true);
+                                        
+                                        // Track search input focus
+                                        pushToDataLayer({
+                                            event: 'search_input_focused',
+                                            search_location: 'homepage',
+                                            search_mode: mode,
+                                            component: 'interactive_search',
+                                            timestamp: new Date().toISOString()
+                                        });
+                                    }}
                                     autoComplete='off'
                                     value={searchInput}
                                     placeholder="Area, Property or Development"

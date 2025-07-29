@@ -12,6 +12,7 @@ import {Form, FormControl, FormField, FormItem, FormMessage} from "@/components/
 import {useCallbackRequest} from "@/features/site/api/use-submit-request-callback";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {toast} from "sonner";
+import { pushToDataLayer } from '@/lib/gtm';
 
 const FormSchema = z.object({
     firstName: z.string().min(3, {message: 'Name is required'}),
@@ -91,8 +92,33 @@ function RequestCallBack({itemUrl, itemType, agentName, handleFormSubmitted} : R
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
+        // Track callback request form submission in GTM
+        pushToDataLayer({
+            event: 'callback_request_submitted',
+            form_type: 'callback_request',
+            item_type: itemType,
+            item_url: itemUrl,
+            agent_name: agentName,
+            form_data: {
+                first_name: values.firstName,
+                phone: values.phone,
+                time_to_call: values.timeToCall
+            },
+            timestamp: new Date().toISOString()
+        });
+
         mutation.mutate(values, {
             onSuccess: (data) => {
+                // Track successful callback request
+                pushToDataLayer({
+                    event: 'callback_request_success',
+                    form_type: 'callback_request',
+                    item_type: itemType,
+                    item_url: itemUrl,
+                    agent_name: agentName,
+                    timestamp: new Date().toISOString()
+                });
+
                 sendBitrix(values)
                 form.reset()
                 handleFormSubmitted()

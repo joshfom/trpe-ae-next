@@ -4,6 +4,7 @@ import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "
 import {Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger,} from "@/components/ui/drawer";
 import {Button} from "@/components/ui/button";
 import RequestCallbackForm from "@/features/site/components/RequestCallbackForm";
+import { pushToDataLayer } from '@/lib/gtm';
 
 interface RequestCallBackProps {
     itemUrl: string;
@@ -21,6 +22,19 @@ const RequestCallBack = ({
     const handleFormSubmitted = () => {
         setIsOpen(false);
     }
+
+    const handleOpenModal = () => {
+        setIsOpen(true);
+        
+        // Track callback request modal opening
+        pushToDataLayer({
+            event: 'callback_request_modal_opened',
+            item_type: itemType,
+            item_url: itemUrl,
+            agent_name: agentName,
+            timestamp: new Date().toISOString()
+        });
+    };
     // Use breakpoint for tablet and mobile
     const isMobileOrTablet = useMediaQuery({ query: '(max-width: 1024px)' });
 
@@ -29,6 +43,7 @@ const RequestCallBack = ({
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerTrigger asChild>
                     <Button
+                        onClick={handleOpenModal}
                         className="w-full border bg-black border-white hover:bg-white hover:text-black"
                     >
                         Request Call Back
@@ -57,6 +72,7 @@ const RequestCallBack = ({
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button
+                    onClick={handleOpenModal}
                     className="w-full border bg-black border-white hover:bg-white hover:text-black"
                 >
                     Request Call Back

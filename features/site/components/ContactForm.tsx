@@ -58,7 +58,6 @@ const ContactForm = memo(() => {
 
     // Memoize sendBitrix function
     const sendBitrix = useCallback(async (data: FormValues) => {
-        console.log('data', data)
         const crmUrl = `https://crm.trpeglobal.com/rest/18/l3lel0d42eptuymb/crm.lead.add.json?
             FIELDS[TITLE]=${encodeURIComponent('New TRPE.AE Lead')}
             &FIELDS[NAME]=${encodeURIComponent(data?.firstName!)}

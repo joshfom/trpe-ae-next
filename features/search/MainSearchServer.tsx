@@ -4,6 +4,9 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { CommunityFilterType } from '@/types/community';
+import { pushToDataLayer } from '@/lib/gtm';
+import PopularSearchLink from './components/PopularSearchLink';
+import SearchInputTracker from './components/SearchInputTracker';
 
 interface MainSearchServerProps {
     mode?: 'rental' | 'sale' | 'general' | 'off-plan';
@@ -12,6 +15,9 @@ interface MainSearchServerProps {
 
 // Server component version of MainSearch for SSR
 function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
+    console.log('MainSearchServer component rendering on homepage with mode:', mode);
+    console.trace('MainSearchServer homepage component trace');
+    
     const placeholderText = mode === 'rental' 
         ? 'Search for rental properties...' 
         : mode === 'sale' 
@@ -22,14 +28,11 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
         <div data-server-search className="w-full max-w-4xl mx-auto">
             <div className="relative">
                 <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-lg shadow-lg p-2">
-                    <div className="flex-1 relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                        <Input
-                            placeholder={placeholderText}
-                            className="pl-10 border-0 focus:ring-0 text-lg h-12"
-                            disabled // Disabled in server version - will be enhanced client-side
-                        />
-                    </div>
+                    <SearchInputTracker 
+                        placeholder={placeholderText}
+                        searchLocation="homepage"
+                        mode={mode}
+                    />
                     <Link href={`/properties/${mode === 'rental' ? 'for-rent' : mode === 'sale' ? 'for-sale' : 'for-sale'}`}>
                         <Button 
                             size="lg" 
@@ -45,30 +48,34 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
                 <div className="mt-4 text-center">
                     <p className="text-sm text-gray-600 mb-2">Popular searches:</p>
                     <div className="flex flex-wrap justify-center gap-2">
-                        <Link 
+                        <PopularSearchLink 
                             href="/properties/for-sale?community=downtown-dubai" 
                             className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            searchTerm="Downtown Dubai"
                         >
                             Downtown Dubai
-                        </Link>
-                        <Link 
+                        </PopularSearchLink>
+                        <PopularSearchLink 
                             href="/properties/for-sale?community=dubai-marina" 
                             className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            searchTerm="Dubai Marina"
                         >
                             Dubai Marina
-                        </Link>
-                        <Link 
+                        </PopularSearchLink>
+                        <PopularSearchLink 
                             href="/properties/for-sale?community=jumeirah-beach-residence" 
                             className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            searchTerm="JBR"
                         >
                             JBR
-                        </Link>
-                        <Link 
+                        </PopularSearchLink>
+                        <PopularSearchLink 
                             href="/properties/for-sale?community=palm-jumeirah" 
                             className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            searchTerm="Palm Jumeirah"
                         >
                             Palm Jumeirah
-                        </Link>
+                        </PopularSearchLink>
                     </div>
                 </div>
             </div>

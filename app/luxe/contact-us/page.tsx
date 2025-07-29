@@ -1,4 +1,5 @@
 import React from 'react';
+import LuxeContactForm from './components/LuxeContactForm';
 
 export default function LuxeContactPage() {
     return (
@@ -48,107 +49,7 @@ export default function LuxeContactPage() {
                             Send us a message
                         </h2>
 
-                        <form className='space-y-4 sm:space-y-6'>
-                            {/* First Row - Full Name and Email */}
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6'>
-                                <div>
-                                    <label htmlFor='fullName' className='block text-sm font-medium text-gray-700 mb-2'>
-                                        Full Name
-                                    </label>
-                                    <input
-                                        type='text'
-                                        id='fullName'
-                                        name='fullName'
-                                        placeholder='Enter your name'
-                                        className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm sm:text-base'
-                                    />
-                                </div>
-                                
-                                <div>
-                                    <label htmlFor='email' className='block text-sm font-medium text-gray-700 mb-2'>
-                                        Email
-                                    </label>
-                                    <input
-                                        type='email'
-                                        id='email'
-                                        name='email'
-                                        placeholder='Enter your email'
-                                        className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm sm:text-base'
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Second Row - Phone Number and Location */}
-                            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6'>
-                                <div>
-                                    <label htmlFor='phone' className='block text-sm font-medium text-gray-700 mb-2'>
-                                        Phone Number
-                                    </label>
-                                    <div className='flex'>
-                                        <span className='inline-flex items-center px-2 sm:px-3 py-2 sm:py-3 border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-xs sm:text-sm rounded-l-md'>
-                                            +971
-                                        </span>
-                                        <input
-                                            type='tel'
-                                            id='phone'
-                                            name='phone'
-                                            placeholder='Enter your number'
-                                            className='flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-r-md focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all text-sm sm:text-base'
-                                        />
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <label htmlFor='location' className='block text-sm font-medium text-gray-700 mb-2'>
-                                        Location
-                                    </label>
-                                    <select
-                                        id='location'
-                                        name='location'
-                                        className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all bg-white appearance-none text-sm sm:text-base'
-                                        style={{
-                                            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
-                                            backgroundPosition: 'right 0.5rem center',
-                                            backgroundRepeat: 'no-repeat',
-                                            backgroundSize: '1.5em 1.5em'
-                                        }}
-                                    >
-                                        <option value=''>Choose your location</option>
-                                        <option value='dubai'>Dubai</option>
-                                        <option value='abu-dhabi'>Abu Dhabi</option>
-                                        <option value='sharjah'>Sharjah</option>
-                                        <option value='ajman'>Ajman</option>
-                                        <option value='ras-al-khaimah'>Ras Al Khaimah</option>
-                                        <option value='fujairah'>Fujairah</option>
-                                        <option value='umm-al-quwain'>Umm Al Quwain</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            {/* Message Field */}
-                            <div>
-                                <label htmlFor='message' className='block text-sm font-medium text-gray-700 mb-2'>
-                                    Message
-                                </label>
-                                <textarea
-                                    id='message'
-                                    name='message'
-                                    rows={5}
-                                    placeholder='Write your message'
-                                    className='w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all resize-none text-sm sm:text-base'
-                                />
-                            </div>
-
-                            {/* Submit Button */}
-                            <div className='flex justify-center sm:justify-end'>
-                                <button
-                                    type='submit'
-                                    className='w-full sm:w-auto px-6 sm:px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors font-medium text-sm sm:text-base'
-                                >
-                                    Send Message
-                                </button>
-                            </div>
-                        </form>
+                        <LuxeContactForm />
                     </div>
                 </div>
             </section>
