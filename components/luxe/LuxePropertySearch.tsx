@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ChevronDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { safeGTMPush } from '@/lib/gtm-form-filter'
 
 interface SearchFilters {
   type: string
@@ -69,6 +70,11 @@ export default function LuxePropertySearch({
             <select
               value={filters.type}
               onChange={(e) => handleFilterChange("type", e.target.value)}
+              onFocus={(e) => {
+                // Prevent GTM form tracking
+                e.stopPropagation();
+                (e.nativeEvent as Event).stopImmediatePropagation?.();
+              }}
               className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -76,6 +82,7 @@ export default function LuxePropertySearch({
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '1.5em 1.5em'
               }}
+              suppressHydrationWarning={true}
             >
               <option value="">Type</option>
               {propertyTypes.map(type => (
@@ -89,6 +96,11 @@ export default function LuxePropertySearch({
             <select
               value={filters.location}
               onChange={(e) => handleFilterChange("location", e.target.value)}
+              onFocus={(e) => {
+                // Prevent GTM form tracking
+                e.stopPropagation();
+                (e.nativeEvent as Event).stopImmediatePropagation?.();
+              }}
               className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -96,6 +108,7 @@ export default function LuxePropertySearch({
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '1.5em 1.5em'
               }}
+              suppressHydrationWarning={true}
             >
               <option value="">Location</option>
               {locations.map(location => (
@@ -109,6 +122,11 @@ export default function LuxePropertySearch({
             <select
               value={filters.bedrooms}
               onChange={(e) => handleFilterChange("bedrooms", e.target.value)}
+              onFocus={(e) => {
+                // Prevent GTM form tracking
+                e.stopPropagation();
+                (e.nativeEvent as Event).stopImmediatePropagation?.();
+              }}
               className="w-full p-3 border border-gray-200 rounded-lg appearance-none bg-white focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               style={{
                 backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
@@ -116,6 +134,7 @@ export default function LuxePropertySearch({
                 backgroundRepeat: 'no-repeat',
                 backgroundSize: '1.5em 1.5em'
               }}
+              suppressHydrationWarning={true}
             >
               <option value="">Bedrooms</option>
               {bedroomOptions.map(bedroom => (
@@ -131,7 +150,13 @@ export default function LuxePropertySearch({
               placeholder="from"
               value={filters.priceFrom}
               onChange={(e) => handleFilterChange("priceFrom", e.target.value)}
+              onFocus={(e) => {
+                // Prevent GTM form tracking
+                e.stopPropagation();
+                (e.nativeEvent as Event).stopImmediatePropagation?.();
+              }}
               className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+              suppressHydrationWarning={true}
             />
             <span className="text-gray-400">-</span>
             <input
@@ -139,13 +164,40 @@ export default function LuxePropertySearch({
               placeholder="to"
               value={filters.priceTo}
               onChange={(e) => handleFilterChange("priceTo", e.target.value)}
+              onFocus={(e) => {
+                // Prevent GTM form tracking
+                e.stopPropagation();
+                (e.nativeEvent as Event).stopImmediatePropagation?.();
+              }}
               className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
+              suppressHydrationWarning={true}
             />
           </div>
 
           {/* Search Button */}
           <button
-            onClick={() => onSearch?.(filters)}
+            onClick={() => {
+              console.log('LuxePropertySearch search button clicked');
+              console.log('Filters:', filters);
+              
+              // Track luxe search submission using safe GTM push
+              safeGTMPush({
+                event: 'search_submitted',
+                search_location: 'luxe_property_search',
+                search_type: 'luxe',
+                search_query: '',
+                form_data: {
+                  property_type: filters.type,
+                  location: filters.location,
+                  bedrooms: filters.bedrooms,
+                  price_from: filters.priceFrom,
+                  price_to: filters.priceTo
+                },
+                timestamp: new Date().toISOString()
+              });
+              
+              onSearch?.(filters);
+            }}
             className="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors font-medium"
           >
             Show Results

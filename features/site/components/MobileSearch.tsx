@@ -16,7 +16,8 @@ import PriceFilter from "@/features/search/PriceFilter";
 import SizeFilter from "@/features/search/SizeFilter";
 import FurnishingFilter from "@/features/search/components/Filters/FurnishingFilter";
 import BedroomFilter from "@/features/search/components/Filters/BedroomFilter";
-import {CommunityFilterType, toCommunityFilterType} from "@/types/community";
+import { CommunityFilterType, toCommunityFilterType } from '@/types/community';
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 const OFFERING_TYPES = [
     {
@@ -120,8 +121,34 @@ function MobileSearch({
     }, [showFilters]);
 
     const handleFormSubmit = useCallback(() => {
+        console.log('MobileSearch form submitted');
+        console.log('Selected communities:', selectedCommunities);
+        
+        const formData = form.getValues();
+        
+        // Track mobile search submission using safe GTM push
+        safeGTMPush({
+            event: 'search_submitted',
+            search_location: 'mobile_search',
+            search_type: formData.sType || 'for-sale',
+            search_query: formData.query || '',
+            selected_communities: selectedCommunities.map(c => c.name),
+            selected_communities_count: selectedCommunities.length,
+            form_data: {
+                unit_type: formData.unitType,
+                min_price: formData.minPrice,
+                max_price: formData.maxPrice,
+                min_size: formData.minSize,
+                max_size: formData.maxSize,
+                bedrooms: formData.bed,
+                bathrooms: formData.bath,
+                furnishing: formData.furnishing
+            },
+            timestamp: new Date().toISOString()
+        });
+        
         form.handleSubmit(onSubmit)();
-    }, [form, onSubmit]);
+    }, [form, onSubmit, selectedCommunities]);
 
     const handleCommunitySearch = (value: string) => {
 
@@ -217,12 +244,18 @@ function MobileSearch({
 
                                     <Input
                                         onChange={handleSearchInputChange}
-                                        onFocus={handleShowSearchDropdown}
+                                        onFocus={(e) => {
+                                            handleShowSearchDropdown();
+                                            // Prevent GTM form tracking
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
                                         autoComplete='off'
                                         autoFocus={true}
                                         value={searchInput}
                                         placeholder="Community or building"
                                         className="rounded-full py-3 pl-6 focus-visible:ring-0"
+                                        suppressHydrationWarning={true}
                                     />
                                     {
                                         showSearchDropdown &&

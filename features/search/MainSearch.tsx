@@ -441,7 +441,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                 }}
                 id='main-search-form'
                 className={'max-w-7xl mx-auto mt-6 w-full py-4 px-6 flex flex-col items-center justify-center'}
-                data-gtm-disabled="true"
+                {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                 suppressHydrationWarning={true}>
                 {
                     mode === 'general' &&

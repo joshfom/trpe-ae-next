@@ -20,6 +20,7 @@ import PropertyFilterSlideOver from "@/features/search/components/PropertyFilter
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import { CommunityFilterType, toCommunityFilterType } from "@/types/community";
 import { countActiveFilters } from "@/features/search/utils/filter-utils";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 interface CommunityItemProps {
     community: CommunityFilterType;
@@ -282,6 +283,30 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
      * @param {FormValues} data - The form data.
      */
     const onSubmit = (data: FormValues) => {
+        console.log('PropertyPageSearchFilter form submitted with data:', data);
+        console.log('Selected communities:', selectedCommunities);
+        
+        // Track search submission using safe GTM push
+        safeGTMPush({
+            event: 'search_submitted',
+            search_location: 'property_page_filter',
+            search_type: data.offerType,
+            search_query: data.query || '',
+            selected_communities: selectedCommunities.map(c => c.name),
+            selected_communities_count: selectedCommunities.length,
+            form_data: {
+                unit_type: data.unitType,
+                min_price: data.minPrice,
+                max_price: data.maxPrice,
+                min_size: data.minSize,
+                max_size: data.maxSize,
+                bedrooms: data.bed,
+                bathrooms: data.bath,
+                furnishing: data.furnishing
+            },
+            timestamp: new Date().toISOString()
+        });
+        
         // Create a transformed version of the data with proper types
         const transformedData = {
             ...data,
@@ -389,8 +414,16 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
     return (
         <>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}
-                      className={'mx-auto mt-6 w-full   flex flex-col items-center bg-white py-3 justify-center'}>
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                        form.handleSubmit((data) => onSubmit(data))(e);
+                    }}
+                    {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
+                    suppressHydrationWarning={true}
+                    className={'mx-auto mt-6 w-full   flex flex-col items-center bg-white py-3 justify-center'}>
 
                     <div className="hidden lg:block w-full  ">
                         <div
@@ -467,11 +500,17 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                                             onChange={(e) => {
                                                 setSearchInput(e.target.value);
                                             }}
-                                            onFocus={() => setShowSearchDropdown(true)}
+                                            onFocus={(e) => {
+                                                setShowSearchDropdown(true);
+                                                // Prevent GTM form tracking
+                                                e.stopPropagation();
+                                                (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                            }}
                                             autoComplete='off'
                                             value={searchInput}
                                             placeholder="Community or building"
                                             className="rounded-full py-3 pl-6 focus-visible:ring-0"
+                                            suppressHydrationWarning={true}
                                         />
                                         {
                                             showSearchDropdown &&
@@ -564,7 +603,13 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                                      className="flex flex-col justify-center items-center">
                                     <div className="relative w-full">
                                         <Input className={'w-full rounded-full px-8 py-3'}
-                                               placeholder="Search Properties"/>
+                                               placeholder="Search Properties"
+                                               onFocus={(e) => {
+                                                   e.stopPropagation();
+                                                   (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                               }}
+                                               suppressHydrationWarning={true}
+                                        />
                                         <Search className={'absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700'}/>
                                     </div>
                                 </div>
@@ -577,9 +622,16 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                     <div className="lg:hidden  w-[95%]">
 
                         <Input
-                            onFocus={() => setOpenMobileSearch(true)}
+                            onFocus={(e) => {
+                                setOpenMobileSearch(true);
+                                // Prevent GTM form tracking
+                                e.stopPropagation();
+                                (e.nativeEvent as Event).stopImmediatePropagation?.();
+                            }}
                             placeholder="Area, Property or Development"
-                            className="grow rounded-3xl border w-full "/>
+                            className="grow rounded-3xl border w-full "
+                            suppressHydrationWarning={true}
+                        />
                     </div>
 
                     {/*MOBILE SEARCH*/}

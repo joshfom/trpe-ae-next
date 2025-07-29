@@ -11,6 +11,7 @@ import {SearchFormData} from "@/features/search/types/property-search.types";
 import SelectedCommunitiesList from "@/features/search/components/communities/SelectedCommunitiesList";
 import { getFilterBadgeCount } from "@/features/search/utils/filter-utils";
 import { CommunityFilterType } from "@/types/community";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 interface PropertyFilterSlideOverProps {
     form: UseFormReturn<SearchFormData>;
@@ -127,9 +128,35 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
     }, [form, setSelectedCommunities]);
 
     const handleSearchSubmit = useCallback(() => {
+        console.log('PropertyFilterSlideOver form submitted');
+        console.log('Selected communities:', selectedCommunities);
+        
+        const formData = form.getValues();
+        
+        // Track filter search submission using safe GTM push
+        safeGTMPush({
+            event: 'search_submitted',
+            search_location: 'filter_slide_over',
+            search_type: formData.offerType || 'for-sale',
+            search_query: formData.query || '',
+            selected_communities: selectedCommunities.map(c => c.name),
+            selected_communities_count: selectedCommunities.length,
+            form_data: {
+                unit_type: formData.unitType,
+                min_price: formData.minPrice,
+                max_price: formData.maxPrice,
+                min_size: formData.minSize,
+                max_size: formData.maxSize,
+                bedrooms: formData.bed,
+                bathrooms: formData.bath,
+                furnishing: formData.furnishing
+            },
+            timestamp: new Date().toISOString()
+        });
+        
         form.handleSubmit(onSubmit)();
         setIsOpen(false);
-    }, [form, onSubmit, setIsOpen]);
+    }, [form, onSubmit, setIsOpen, selectedCommunities]);
 
     const handleOpenFilter = useCallback(() => {
         setIsOpen(true);
