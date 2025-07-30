@@ -12,7 +12,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormField, FormItem, FormMessage} from "@/components/ui/form";
 import {useSubmitForm} from "@/features/site/api/use-submit-form";
 import {useRouter} from 'next/navigation';
-import {trackContactFormSubmit} from "@/lib/gtm-events";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 const FormSchema = z.object({
     subject: z.string().optional(),
@@ -88,12 +88,13 @@ const ContactForm = memo(() => {
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
-        // Track contact form submission with enhanced data
-        trackContactFormSubmit({
+        // Track contact form submission with safeGTMPush
+        safeGTMPush({
+            event: 'general_contact_form',
             form_id: 'general-contact-form',
             form_name: 'General Contact Form',
             form_type: 'general_contact',
-            form_destination: window.location.origin,
+            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
             form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 name: values.firstName,
@@ -101,7 +102,8 @@ const ContactForm = memo(() => {
                 phone: values.phone,
                 message: values.message,
                 subject: values.subject
-            }
+            },
+            timestamp: new Date().toISOString()
         });
 
         mutation.mutate(values, {
@@ -124,7 +126,14 @@ const ContactForm = memo(() => {
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                    form.handleSubmit(onSubmit)(e);
+                }}
+                {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
+                suppressHydrationWarning={true}
                 className="pt-12 space-y-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="col-span-1 lg:col-span-2">
                     <FormField

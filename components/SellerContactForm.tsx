@@ -14,7 +14,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { User, Phone, Mail, MapPin, Home, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { trackContactFormSubmit } from "@/lib/gtm-events";
 import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 export const SellerFormSchema = z.object({

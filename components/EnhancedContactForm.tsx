@@ -16,7 +16,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { User, Phone, Mail, MapPin, DollarSign, MessageSquare } from 'lucide-react';
-import { trackContactFormSubmit } from "@/lib/gtm-events";
 import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 export const EnhancedFormSchema = z.object({

@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { useSubmitPropertyListingForm } from "@/features/properties/api/use-submit-property-listing-form";
 import { useRouter } from 'next/navigation';
-import { trackContactFormSubmit } from "@/lib/gtm-events";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 const FormSchema = z.object({
     firstName: z.string().min(2, { message: 'First name is required' }),
@@ -68,12 +68,13 @@ const ListPropertyForm = memo(() => {
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
-        // Track property listing form submission with detailed data
-        trackContactFormSubmit({
+        // Track property listing form submission with safeGTMPush
+        safeGTMPush({
+            event: 'property_listing_form',
             form_id: 'property-listing-form',
             form_name: 'Property Listing Form',
             form_type: 'property_listing',
-            form_destination: window.location.origin,
+            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
             form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 firstName: values.firstName,
@@ -84,7 +85,8 @@ const ListPropertyForm = memo(() => {
                 propertyType: values.propertyType,
                 address: values.address,
                 message: values.message
-            }
+            },
+            timestamp: new Date().toISOString()
         });
 
         mutation.mutate(values, {
@@ -109,7 +111,17 @@ const ListPropertyForm = memo(() => {
     }, [form]);
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className={'grid p-6 bg-white rounded-2xl gap-6'}>
+            <form 
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                    form.handleSubmit(onSubmit)(e);
+                }}
+                {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
+                suppressHydrationWarning={true}
+                className={'grid p-6 bg-white rounded-2xl gap-6'}
+            >
                 <h3 className={'text-xl'}>Share details</h3>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
