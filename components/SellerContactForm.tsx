@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { User, Phone, Mail, MapPin, Home, MessageSquare } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trackContactFormSubmit } from "@/lib/gtm-events";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 export const SellerFormSchema = z.object({
     fullName: z.string().min(2, { message: 'Full name is required' }),
@@ -169,12 +170,13 @@ function SellerContactForm({
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         
-        // Track seller contact form submission with enhanced data
-        trackContactFormSubmit({
+        // Track seller contact form submission with safeGTMPush
+        safeGTMPush({
+            event: 'seller_contact_form',
             form_id: 'seller-contact-form',
             form_name: 'Seller Contact Form',
             form_type: 'seller_contact',
-            form_destination: window.location.origin,
+            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
             form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 name: values.fullName,
@@ -183,7 +185,8 @@ function SellerContactForm({
                 city: values.currentCity,
                 propertyType: values.propertyType,
                 message: values.message
-            }
+            },
+            timestamp: new Date().toISOString()
         });
         
         try {
@@ -230,7 +233,17 @@ function SellerContactForm({
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                        form.handleSubmit(onSubmit)(e);
+                    }}
+                    {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
+                    suppressHydrationWarning={true}
+                    className="space-y-6"
+                >
                     {/* Full Name */}
                     <FormField
                         control={form.control}
@@ -245,6 +258,11 @@ function SellerContactForm({
                                     {...field}
                                     placeholder={t.fields.fullName}
                                     className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -305,6 +323,11 @@ function SellerContactForm({
                                     {...field}
                                     placeholder={t.fields.email}
                                     className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -325,6 +348,11 @@ function SellerContactForm({
                                     {...field}
                                     placeholder={t.fields.currentCity}
                                     className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -341,8 +369,26 @@ function SellerContactForm({
                                     <Home className="h-4 w-4" />
                                     <span>{t.fields.propertyType} <span className="text-xs text-gray-400">{t.optional}</span></span>
                                 </FormLabel>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger className={`w-full ${isRTL ? 'text-right rtl' : 'text-left'}`}>
+                                <Select 
+                                    onValueChange={field.onChange} 
+                                    value={field.value}
+                                    onOpenChange={(open) => {
+                                        if (open) {
+                                            // Prevent GTM form tracking when select opens
+                                            const event = new Event('focus');
+                                            event.stopPropagation();
+                                            (event as any).stopImmediatePropagation?.();
+                                        }
+                                    }}
+                                >
+                                    <SelectTrigger 
+                                        className={`w-full ${isRTL ? 'text-right rtl' : 'text-left'}`}
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
+                                    >
                                         <SelectValue placeholder={`Select ${t.fields.propertyType.toLowerCase()}`} />
                                     </SelectTrigger>
                                     <SelectContent className={isRTL ? 'rtl' : ''}>
@@ -373,6 +419,11 @@ function SellerContactForm({
                                     placeholder={t.fields.message}
                                     rows={4}
                                     className={`w-full ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>

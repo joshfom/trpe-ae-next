@@ -135,7 +135,7 @@ const PropertyFilterSlideOver = memo<PropertyFilterSlideOverProps>((
         
         // Track filter search submission using safe GTM push
         safeGTMPush({
-            event: 'search_submitted',
+            event: 'filter_search',
             search_location: 'filter_slide_over',
             search_type: formData.offerType || 'for-sale',
             search_query: formData.query || '',

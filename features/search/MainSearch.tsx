@@ -313,7 +313,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
         
         // Push our specific search event to GTM data layer using safe method
         safeGTMPush({
-            event: 'search_submitted',
+            event: 'main_search',
             search_location: 'homepage',
             search_mode: mode,
             search_type: searchType,

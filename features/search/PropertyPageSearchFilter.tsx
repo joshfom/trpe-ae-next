@@ -288,7 +288,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         
         // Track search submission using safe GTM push
         safeGTMPush({
-            event: 'search_submitted',
+            event: 'property_search',
             search_location: 'property_page_filter',
             search_type: data.offerType,
             search_query: data.query || '',

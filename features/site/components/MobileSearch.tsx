@@ -128,7 +128,7 @@ function MobileSearch({
         
         // Track mobile search submission using safe GTM push
         safeGTMPush({
-            event: 'search_submitted',
+            event: 'mobile_search',
             search_location: 'mobile_search',
             search_type: formData.sType || 'for-sale',
             search_query: formData.query || '',

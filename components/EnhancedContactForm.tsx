@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { User, Phone, Mail, MapPin, DollarSign, MessageSquare } from 'lucide-react';
 import { trackContactFormSubmit } from "@/lib/gtm-events";
+import { safeGTMPush } from '@/lib/gtm-form-filter';
 
 export const EnhancedFormSchema = z.object({
     requestType: z.array(z.string()).min(1, { message: 'Please select at least one request type' }),
@@ -182,12 +183,13 @@ function EnhancedContactForm({
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         
-        // Track enhanced contact form submission with detailed data
-        trackContactFormSubmit({
+        // Track enhanced contact form submission with safeGTMPush
+        safeGTMPush({
+            event: 'enhanced_contact_form',
             form_id: 'enhanced-contact-form',
             form_name: 'Enhanced Contact Form',
             form_type: 'enhanced_contact',
-            form_destination: window.location.origin,
+            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
             form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 firstName: values.firstName,
@@ -199,7 +201,8 @@ function EnhancedContactForm({
                 currency: values.currency,
                 requestType: values.requestType,
                 message: values.message
-            }
+            },
+            timestamp: new Date().toISOString()
         });
         
         try {
@@ -246,7 +249,17 @@ function EnhancedContactForm({
             </div>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
+                <form 
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                        form.handleSubmit(onSubmit)(e);
+                    }}
+                    {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
+                    suppressHydrationWarning={true}
+                    className="space-y-4 sm:space-y-6"
+                >
                     {/* Request Type */}
                     <FormField
                         control={form.control}
@@ -273,6 +286,11 @@ function EnhancedContactForm({
                                                         : (field.value || []).filter((value) => value !== type.value);
                                                     field.onChange(updatedValue);
                                                 }}
+                                                onFocus={(e) => {
+                                                    e.stopPropagation();
+                                                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                                }}
+                                                suppressHydrationWarning={true}
                                             />
                                             <Label htmlFor={type.value} className={`text-xs sm:text-sm font-medium cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 {type.label}
@@ -300,6 +318,11 @@ function EnhancedContactForm({
                                         {...field}
                                         placeholder={t.fields.firstName}
                                         className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -319,6 +342,11 @@ function EnhancedContactForm({
                                         {...field}
                                         placeholder={t.fields.lastName}
                                         className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -380,6 +408,11 @@ function EnhancedContactForm({
                                     {...field}
                                     placeholder={t.fields.email}
                                     className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>
@@ -401,6 +434,11 @@ function EnhancedContactForm({
                                         {...field}
                                         placeholder={t.fields.currentCity}
                                         className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -420,6 +458,11 @@ function EnhancedContactForm({
                                         {...field}
                                         placeholder={t.fields.budget}
                                         className={`w-full text-sm ${isRTL ? 'text-right' : 'text-left'}`}
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
                                     />
                                     <FormMessage />
                                 </FormItem>
@@ -437,6 +480,11 @@ function EnhancedContactForm({
                                     value={field.value}
                                     onValueChange={field.onChange}
                                     className={`flex flex-wrap gap-4 sm:gap-6 ${isRTL ? 'flex-row-reverse' : ''}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 >
                                     {[
                                         { value: 'EUR', label: t.currencies.euro },
@@ -444,7 +492,15 @@ function EnhancedContactForm({
                                         { value: 'AED', label: t.currencies.aed }
                                     ].map((currency) => (
                                         <div key={currency.value} className={`flex items-center ${isRTL ? 'flex-row-reverse space-x-reverse space-x-2' : 'space-x-2'}`}>
-                                            <RadioGroupItem value={currency.value} id={currency.value} />
+                                            <RadioGroupItem 
+                                                value={currency.value} 
+                                                id={currency.value}
+                                                onFocus={(e) => {
+                                                    e.stopPropagation();
+                                                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                                }}
+                                                suppressHydrationWarning={true}
+                                            />
                                             <Label htmlFor={currency.value} className={`text-xs sm:text-sm font-medium cursor-pointer ${isRTL ? 'text-right' : 'text-left'}`}>
                                                 {currency.label}
                                             </Label>
@@ -471,6 +527,11 @@ function EnhancedContactForm({
                                     placeholder={t.fields.message}
                                     rows={4}
                                     className={`w-full text-sm resize-none ${isRTL ? 'text-right' : 'text-left'}`}
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage />
                             </FormItem>

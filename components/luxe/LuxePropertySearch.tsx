@@ -182,7 +182,7 @@ export default function LuxePropertySearch({
               
               // Track luxe search submission using safe GTM push
               safeGTMPush({
-                event: 'search_submitted',
+                event: 'luxe_property_search',
                 search_location: 'luxe_property_search',
                 search_type: 'luxe',
                 search_query: '',
