@@ -88,14 +88,13 @@ const ContactForm = memo(() => {
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
-        // Track contact form submission with safeGTMPush
+        // Track contact form submission with safeGTMPush - using MainSearch pattern
         safeGTMPush({
             event: 'general_contact_form',
-            form_id: 'general-contact-form',
-            form_name: 'General Contact Form',
-            form_type: 'general_contact',
-            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
-            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            contact_type: 'general_contact',
+            contact_location: 'general_form',
+            contact_destination: typeof window !== 'undefined' ? window.location.origin : '',
+            contact_fields_count: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 name: values.firstName,
                 email: values.email,
@@ -130,7 +129,7 @@ const ContactForm = memo(() => {
                     e.preventDefault();
                     e.stopPropagation();
                     (e.nativeEvent as Event).stopImmediatePropagation?.();
-                    form.handleSubmit(onSubmit)(e);
+                    form.handleSubmit((data) => onSubmit(data))(e);
                 }}
                 {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                 suppressHydrationWarning={true}
@@ -144,6 +143,11 @@ const ContactForm = memo(() => {
                                     {...field}
                                     placeholder="Your name"
                                     className="w-full "
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -161,6 +165,11 @@ const ContactForm = memo(() => {
                                     {...field}
                                     placeholder="Your email"
                                     className="w-full bg-transparent "
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -178,6 +187,11 @@ const ContactForm = memo(() => {
                                     {...field}
                                     placeholder="Subject"
                                     className="w-full bg-transparent "
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -196,6 +210,13 @@ const ContactForm = memo(() => {
                                     placeholder="Your phone"
                                     className="w-full bg-transparent text-white"
                                     onChange={handlePhoneChange}
+                                    inputProps={{
+                                        onFocus: (e: any) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        },
+                                        suppressHydrationWarning: true
+                                    }}
                                 />
                                 <FormMessage/>
                             </FormItem>
@@ -213,6 +234,11 @@ const ContactForm = memo(() => {
                                     placeholder="Your message"
                                     rows={8}
                                     className="w-full bg-transparent rounded-2xl"
+                                    onFocus={(e) => {
+                                        e.stopPropagation();
+                                        (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                    }}
+                                    suppressHydrationWarning={true}
                                 />
                                 <FormMessage/>
                             </FormItem>

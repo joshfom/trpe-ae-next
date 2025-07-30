@@ -169,14 +169,13 @@ function SellerContactForm({
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         
-        // Track seller contact form submission with safeGTMPush
+        // Track seller contact form submission with safeGTMPush - using MainSearch pattern
         safeGTMPush({
             event: 'seller_contact_form',
-            form_id: 'seller-contact-form',
-            form_name: 'Seller Contact Form',
-            form_type: 'seller_contact',
-            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
-            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            contact_type: 'seller_contact',
+            contact_location: 'seller_form',
+            contact_destination: typeof window !== 'undefined' ? window.location.origin : '',
+            contact_fields_count: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 name: values.fullName,
                 phone: values.phone,
@@ -237,7 +236,7 @@ function SellerContactForm({
                         e.preventDefault();
                         e.stopPropagation();
                         (e.nativeEvent as Event).stopImmediatePropagation?.();
-                        form.handleSubmit(onSubmit)(e);
+                        form.handleSubmit((data) => onSubmit(data))(e);
                     }}
                     {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                     suppressHydrationWarning={true}
@@ -299,6 +298,13 @@ function SellerContactForm({
                                             } else {
                                                 form.setValue('phone', value);
                                             }
+                                        }}
+                                        inputProps={{
+                                            onFocus: (e: any) => {
+                                                e.stopPropagation();
+                                                (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                            },
+                                            suppressHydrationWarning: true
                                         }}
                                     />
                                 </div>

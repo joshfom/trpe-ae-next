@@ -68,14 +68,13 @@ const ListPropertyForm = memo(() => {
     const onSubmit = useCallback((values: FormValues) => {
         setIsSubmitting(true)
 
-        // Track property listing form submission with safeGTMPush
+        // Track property listing form submission with safeGTMPush - using MainSearch pattern
         safeGTMPush({
             event: 'property_listing_form',
-            form_id: 'property-listing-form',
-            form_name: 'Property Listing Form',
-            form_type: 'property_listing',
-            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
-            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            contact_type: 'property_listing',
+            contact_location: 'listing_form',
+            contact_destination: typeof window !== 'undefined' ? window.location.origin : '',
+            contact_fields_count: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -116,7 +115,7 @@ const ListPropertyForm = memo(() => {
                     e.preventDefault();
                     e.stopPropagation();
                     (e.nativeEvent as Event).stopImmediatePropagation?.();
-                    form.handleSubmit(onSubmit)(e);
+                    form.handleSubmit((data) => onSubmit(data))(e);
                 }}
                 {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                 suppressHydrationWarning={true}
@@ -135,6 +134,11 @@ const ListPropertyForm = memo(() => {
                                         {...field}
                                         placeholder="First Name" 
                                         className="w-full"
+                                        onFocus={(e) => {
+                                            e.stopPropagation();
+                                            (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                        }}
+                                        suppressHydrationWarning={true}
                                     />
                                     <FormMessage/>
                                 </FormItem>

@@ -71,7 +71,12 @@ export default function RootLayout({
                data.event === 'gtm.config' ||
                data.event === 'page_view' ||
                data.event === 'gtm.historyChange' ||
-               data.event === 'gtm.historyChange-v2') {
+               data.event === 'gtm.historyChange-v2' ||
+               data.event === 'main_search' ||
+               data.event === 'enhanced_contact_form' ||
+               data.event === 'seller_contact_form' ||
+               data.event === 'general_contact_form' ||
+               data.event === 'property_listing_form') {
              return false;
            }
            
@@ -122,10 +127,14 @@ export default function RootLayout({
          
          const originalPush = window.dataLayer.push;
          window.dataLayer.push = function(data) {
+           // Log ALL attempts for debugging
+           console.log('🔍 GTM Event Attempt:', data);
+           
            if (shouldBlock(data)) {
+             console.log('🚫 BLOCKED:', data.event, data);
              return window.dataLayer.length;
            }
-           console.log('✅ Early Filter: Allowed', data.event);
+           console.log('✅ ALLOWED:', data.event, data);
            return originalPush.call(this, data);
          };
          

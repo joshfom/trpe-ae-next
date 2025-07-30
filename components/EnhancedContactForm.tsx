@@ -182,14 +182,15 @@ function EnhancedContactForm({
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         
-        // Track enhanced contact form submission with safeGTMPush
-        safeGTMPush({
+        console.log('🔥 EnhancedContactForm: About to submit with values:', values);
+        
+        // Track enhanced contact form submission with safeGTMPush - using MainSearch pattern
+        const gtmData = {
             event: 'enhanced_contact_form',
-            form_id: 'enhanced-contact-form',
-            form_name: 'Enhanced Contact Form',
-            form_type: 'enhanced_contact',
-            form_destination: typeof window !== 'undefined' ? window.location.origin : '',
-            form_length: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
+            contact_type: 'enhanced_contact',
+            contact_location: 'buyer_form',
+            contact_destination: typeof window !== 'undefined' ? window.location.origin : '',
+            contact_fields_count: Object.keys(values).filter(key => values[key as keyof FormValues]).length,
             user_data: {
                 firstName: values.firstName,
                 lastName: values.lastName,
@@ -202,7 +203,11 @@ function EnhancedContactForm({
                 message: values.message
             },
             timestamp: new Date().toISOString()
-        });
+        };
+        
+        console.log('🔥 EnhancedContactForm: About to push to GTM:', gtmData);
+        safeGTMPush(gtmData);
+        console.log('🔥 EnhancedContactForm: GTM push completed');
         
         try {
             await sendBitrix(values);
@@ -253,7 +258,7 @@ function EnhancedContactForm({
                         e.preventDefault();
                         e.stopPropagation();
                         (e.nativeEvent as Event).stopImmediatePropagation?.();
-                        form.handleSubmit(onSubmit)(e);
+                        form.handleSubmit((data) => onSubmit(data))(e);
                     }}
                     {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                     suppressHydrationWarning={true}
@@ -384,6 +389,13 @@ function EnhancedContactForm({
                                             } else {
                                                 form.setValue('phone', value);
                                             }
+                                        }}
+                                        inputProps={{
+                                            onFocus: (e: any) => {
+                                                e.stopPropagation();
+                                                (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                            },
+                                            suppressHydrationWarning: true
                                         }}
                                     />
                                 </div>
