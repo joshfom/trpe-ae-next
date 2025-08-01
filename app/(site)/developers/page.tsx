@@ -1,6 +1,7 @@
 import React, {cache, Suspense} from 'react';
 import {db} from "@/db/drizzle";
 import Link from "next/link";
+import Image from "next/image";
 import type {Metadata} from "next";
 import {asc} from "drizzle-orm";
 import {developerTable} from "@/db/schema/developer-table";
@@ -33,11 +34,15 @@ const DeveloperCard = React.memo<{ developer: any }>(({ developer }) => (
     <div key={developer.id} className={'bg-white rounded-lg'}>
         <div className={'relative w-full h-40 border rounded-xl overflow-hidden'}>
             <Link href={`/developers/${developer.slug}`} className="block relative h-40 w-full">
-                <img 
-                    className={'object-cover transition-all hover:scale-105 aspect-3/4 rounded-t-lg w-full h-full'}
+                <Image
                     src={developer.logoUrl || '/images/communities-default.webp'}
                     alt={developer.name || 'Dubai real estate developer'}
+                    fill
+                    className={'object-cover transition-all hover:scale-105 rounded-t-lg'}
                     loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQABAAABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                 />
             </Link>
         </div>

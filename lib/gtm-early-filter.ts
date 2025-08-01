@@ -61,15 +61,11 @@ declare global {
     // Override push method immediately
     (window as any).dataLayer.push = function(data: any) {
         if (shouldBlock(data)) {
-            console.log('🚫 Early Form Filter: Blocked event', data.event, data);
             return (window as any).dataLayer.length;
         }
         
-        console.log('✅ Early Form Filter: Allowed event', data.event);
         return originalPush.call(this, data);
     };
-    
-    console.log('🛡️ Early GTM Form Filter: Active');
     
     // Mark that early filter is active
     (window as any).__earlyGTMFilterActive = true;

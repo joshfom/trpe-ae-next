@@ -82,7 +82,6 @@ export default function RootLayout({
            
            // Block by event name
            if (data.event && BLOCKED_EVENTS.includes(data.event)) {
-             console.log('🚫 Early Filter: Blocked by name', data.event);
              return true;
            }
            
@@ -93,52 +92,39 @@ export default function RootLayout({
                key.includes('form') || key.includes('element') || key.includes('text') || key.includes('url')
              );
              if (hasFormProps || data.event !== 'page_view') { // Allow page_view with eventModel
-               console.log('🚫 Early Filter: Blocked eventModel', data.event, data.eventModel);
                return true;
              }
            }
            
            // Block GTM form priorities (5, 6, 7 are form-related)
            if (data.gtm && (data.gtm.priorityId === 5 || data.gtm.priorityId === 6 || data.gtm.priorityId === 7)) {
-             console.log('🚫 Early Filter: Blocked priority', data.gtm.priorityId);
              return true;
            }
            
            // Block events with eventCallback = "Function" (often form events)
            if (data.eventCallback === 'Function' && !data.event.startsWith('search_')) {
-             console.log('🚫 Early Filter: Blocked eventCallback', data.event);
              return true;
            }
            
            // Block any event that has form-related properties
            if (data && (data.form_id || data.form_name || data.form_destination || data.form_length)) {
-             console.log('🚫 Early Filter: Blocked form properties', data.event);
              return true;
            }
            
            // Block events with element_* properties (GTM auto-tracking)
            if (data && Object.keys(data).some(key => key.startsWith('element_'))) {
-             console.log('🚫 Early Filter: Blocked element properties', data.event);
              return true;
            }
-           
            return false;
          };
          
          const originalPush = window.dataLayer.push;
          window.dataLayer.push = function(data) {
-           // Log ALL attempts for debugging
-           console.log('🔍 GTM Event Attempt:', data);
-           
            if (shouldBlock(data)) {
-             console.log('🚫 BLOCKED:', data.event, data);
              return window.dataLayer.length;
            }
-           console.log('✅ ALLOWED:', data.event, data);
            return originalPush.call(this, data);
          };
-         
-         console.log('🛡️ ULTRA AGGRESSIVE Early GTM Form Filter: Active');
        })();
      `
    }} />
@@ -191,7 +177,6 @@ export default function RootLayout({
                 if (this.tagName === 'FORM' && 
                     (type === 'submit' || type === 'focus' || type === 'blur' || type === 'input' || type === 'change') && 
                     (listener.toString().includes('gtm') || listener.toString().includes('dataLayer'))) {
-                  console.log('🚫 NUKED GTM form listener:', type, this);
                   return;
                 }
                 return originalAddEventListener.call(this, type, listener, options);
@@ -202,7 +187,6 @@ export default function RootLayout({
               document.addEventListener = function(type, listener, options) {
                 if ((type === 'submit' || type === 'focus' || type === 'blur') && 
                     (listener.toString().includes('gtm') || listener.toString().includes('dataLayer'))) {
-                  console.log('🚫 NUKED document GTM listener:', type);
                   return;
                 }
                 return originalDocAddEventListener.call(this, type, listener, options);

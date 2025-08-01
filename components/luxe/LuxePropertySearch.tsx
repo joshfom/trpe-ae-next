@@ -177,10 +177,7 @@ export default function LuxePropertySearch({
           {/* Search Button */}
           <button
             onClick={() => {
-              console.log('LuxePropertySearch search button clicked');
-              console.log('Filters:', filters);
-              
-              // Track luxe search submission using safe GTM push
+              // Submit search with current filters
               safeGTMPush({
                 event: 'luxe_property_search',
                 search_location: 'luxe_property_search',

@@ -62,7 +62,6 @@ const JoinUsForm = memo(() => {
         });
         
         // TODO: Implement form submission logic
-        console.log('Form data:', formData);
         
         // Simulate API call
         setTimeout(() => {

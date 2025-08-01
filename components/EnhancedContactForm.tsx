@@ -182,8 +182,6 @@ function EnhancedContactForm({
     const onSubmit = async (values: FormValues) => {
         setIsSubmitting(true);
         
-        console.log('🔥 EnhancedContactForm: About to submit with values:', values);
-        
         // Track enhanced contact form submission with safeGTMPush - using MainSearch pattern
         const gtmData = {
             event: 'enhanced_contact_form',
@@ -205,9 +203,7 @@ function EnhancedContactForm({
             timestamp: new Date().toISOString()
         };
         
-        console.log('🔥 EnhancedContactForm: About to push to GTM:', gtmData);
         safeGTMPush(gtmData);
-        console.log('🔥 EnhancedContactForm: GTM push completed');
         
         try {
             await sendBitrix(values);

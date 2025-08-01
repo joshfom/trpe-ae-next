@@ -31,7 +31,6 @@ const isPhoneValid = (phone: string) => {
     try {
         return phoneUtil.isValidNumber(phoneUtil.parseAndKeepRawInput(phone));
     } catch (e) {
-        console.log(e);
         return false;
     }
 };

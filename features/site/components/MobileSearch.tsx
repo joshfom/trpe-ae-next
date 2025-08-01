@@ -121,9 +121,6 @@ function MobileSearch({
     }, [showFilters]);
 
     const handleFormSubmit = useCallback(() => {
-        console.log('MobileSearch form submitted');
-        console.log('Selected communities:', selectedCommunities);
-        
         const formData = form.getValues();
         
         // Track mobile search submission using safe GTM push

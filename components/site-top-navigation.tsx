@@ -1,6 +1,7 @@
 "use client"
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 // Use dynamic import with SSR enabled for better performance
 const TopNavigation = dynamic(() => import("@/components/top-navigation"), { 
     ssr: true,
@@ -62,12 +63,14 @@ function SiteTopNavigation() {
 
                             <div className="flex-1 flex justify-center">
                                 <Link className={''} href={'/'}>
-                                    <img
+                                    <Image
                                         src={'/trpe-logo.webp'} 
                                         alt="TRPE Logo" 
                                         width={213} 
                                         height={40}
-                                        loading="eager"
+                                        priority
+                                        placeholder="blur"
+                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                                     />
                                 </Link>
                             </div>

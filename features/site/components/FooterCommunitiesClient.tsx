@@ -28,8 +28,6 @@ export default function FooterCommunitiesClient() {
         
         async function fetchCommunities() {
             try {
-                console.log("Client: Fetching communities for footer");
-                
                 const response = await client.api.communities.list.$get({
                     signal: controller.signal
                 });
@@ -50,18 +48,14 @@ export default function FooterCommunitiesClient() {
                         (community: Community) => (community.propertyCount || 0) > 0
                     );
                     
-                    console.log(`Client: Found ${withProperties.length} communities with properties out of ${data.communities.length} total`);
-                    
                     // Limit to 16 communities
                     setCommunities(withProperties.slice(0, 16));
                 } else {
-                    console.error("Client: Failed to fetch communities:", response.status);
                     setError(`Failed to fetch communities: ${response.status}`);
                 }
             } catch (error) {
                 // Only log errors if they're not from aborting the request
                 if (!controller.signal.aborted) {
-                    console.error("Client: Error fetching communities:", error);
                     setError("Error fetching communities");
                 }
             } finally {

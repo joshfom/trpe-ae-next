@@ -22,7 +22,6 @@ export const interceptFormSubmitEvents = () => {
         ...data,
         event: 'form_search'
       };
-      console.log('Converted form_submit to form_search:', convertedData);
       return originalPush.call(this, convertedData);
     }
     
@@ -93,7 +92,6 @@ export const addSearchFormTracking = () => {
       if (!form.dataset.gtmTracked) {
         form.addEventListener('submit', handleSearchFormSubmit);
         form.dataset.gtmTracked = 'true';
-        console.log('Added GTM tracking to search form:', form);
       }
     }
   });
@@ -142,25 +140,22 @@ function handleSearchFormSubmit(event: Event) {
  * Finds and logs all potential form_submit events in the codebase
  * Use this to audit your codebase for migration
  */
-export const auditFormSubmitEvents = () => {
-  console.log('Searching for form_submit events in dataLayer...');
+export const debugDataLayerFormEvents = () => {
+  if (typeof window === 'undefined' || !window.dataLayer) {
+    return;
+  }
   
-  if (typeof window !== 'undefined' && window.dataLayer) {
-    const formSubmitEvents = window.dataLayer.filter(
-      (item: any) => item.event === 'form_submit'
+  // Filter dataLayer for form-related events
+  const formSubmitEvents = window.dataLayer.filter((item: any) => 
+    item && item.event === 'form_submit'
+  );
+  
+  if (formSubmitEvents.length > 0) {
+    // Log found events (for development only)
+    const searchRelated = formSubmitEvents.filter(e => 
+      JSON.stringify(e).toLowerCase().includes('search') ||
+      JSON.stringify(e).toLowerCase().includes('property')
     );
-    
-    if (formSubmitEvents.length > 0) {
-      console.log('Found form_submit events:', formSubmitEvents);
-      
-      // Log which ones might be search-related
-      const searchRelated = formSubmitEvents.filter(isSearchForm);
-      if (searchRelated.length > 0) {
-        console.log('Search-related form_submit events that should be migrated:', searchRelated);
-      }
-    } else {
-      console.log('No form_submit events found in current dataLayer');
-    }
   }
 };
 
@@ -178,8 +173,8 @@ export const initializeGTMMigration = () => {
     addSearchFormTracking();
   }
   
-  // Also run audit in development
+  // Also run debug in development
   if (process.env.NODE_ENV === 'development') {
-    setTimeout(auditFormSubmitEvents, 2000);
+    setTimeout(debugDataLayerFormEvents, 2000);
   }
 };

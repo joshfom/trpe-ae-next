@@ -50,7 +50,6 @@ export default function LuxeContactForm() {
         });
 
         // TODO: Implement actual form submission
-        console.log('Luxe contact form submitted:', formData);
 
         // Simulate API call
         setTimeout(() => {

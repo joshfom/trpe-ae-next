@@ -41,7 +41,6 @@ const shouldBlockEvent = (data: any): boolean => {
     
     // Block if event name matches unwanted events (most important check)
     if (data && data.event && UNWANTED_FORM_EVENTS.includes(data.event)) {
-        console.log(`🚫 Blocking by event name: ${data.event}`);
         return true;
     }
     
@@ -52,32 +51,27 @@ const shouldBlockEvent = (data: any): boolean => {
             key.includes('form') || key.includes('element') || key.includes('url') || key.includes('text')
         );
         if (hasFormProps) {
-            console.log(`🚫 Blocking event with form eventModel:`, data.event, data.eventModel);
             return true;
         }
     }
     
     // Block if it has GTM auto-generated form data structure (priority 5, 6, or 7 are form events)
+    // Block if it has GTM auto-generated form data structure (priority 5, 6, or 7 are form events)
     if (data && data.gtm && (data.gtm.priorityId === 5 || data.gtm.priorityId === 6 || data.gtm.priorityId === 7)) {
-        console.log(`🚫 Blocking by GTM priority ${data.gtm.priorityId}:`, data.event);
         return true;
     }
-    
     // Block any event that contains form-related properties at root level
     if (data && (data.form_id || data.form_name || data.form_destination || data.form_length)) {
-        console.log(`🚫 Blocking by form properties:`, data.event);
         return true;
     }
     
     // Block events that have element_* properties (GTM auto-tracking)
     if (data && Object.keys(data).some(key => key.startsWith('element_'))) {
-        console.log(`🚫 Blocking event with element properties:`, data.event);
         return true;
     }
     
     // Block events that look like GTM auto-tracking based on data structure
     if (data && data.event && !data.event.startsWith('gtm.') && data.eventCallback === 'Function' && data.gtm) {
-        console.log(`🚫 Blocking potential GTM auto-tracking event:`, data.event);
         return true;
     }
     
@@ -101,21 +95,17 @@ export const initializeGTMFormFilter = () => {
             window.dataLayer.push = function(data: any): number {
                 // Use our comprehensive blocking logic
                 if (shouldBlockEvent(data)) {
-                    console.log(`🚫 GTM Form Filter: Blocked unwanted event "${data.event}"`, data);
                     return window.dataLayer.length; // Return current length without adding
                 }
                 
                 // Allow the event through
-                console.log(`✅ GTM Form Filter: Allowed event "${data.event}"`);
                 return originalPush.call(this, data);
             };
             
             // Set a flag to indicate the filter is active
             (window as any).__gtmFormFilterInitialized = true;
-            console.log('🛡️ GTM Form Filter: Initialized successfully - All form events will be blocked except search_submitted');
             return true;
         }
-        return false;
     };
 
     // Try to set up immediately
@@ -130,7 +120,9 @@ export const initializeGTMFormFilter = () => {
             }
         }, 100);
     }
-};/**
+};
+
+/**
  * Nuclear option - completely clear ALL form events from dataLayer every 100ms
  * Use this if other methods fail
  */
@@ -166,14 +158,13 @@ export const startAggressiveFormEventCleaner = () => {
         if (filteredEvents.length !== originalLength) {
             window.dataLayer.length = 0;
             window.dataLayer.push(...filteredEvents);
-            console.log(`🧹 Aggressive Cleaner: Removed ${originalLength - filteredEvents.length} form events`);
         }
     };
     
     // Clean every 100ms
     setInterval(cleanFormEvents, 100);
-    console.log('🧹 Aggressive Form Event Cleaner: Started - Removing form events every 100ms');
 };
+
 export const clearUnwantedFormEvents = () => {
     if (typeof window === 'undefined' || !window.dataLayer) return;
     
@@ -189,9 +180,25 @@ export const clearUnwantedFormEvents = () => {
     window.dataLayer.push(...filteredEvents);
     
     const removedCount = originalLength - filteredEvents.length;
-    if (removedCount > 0) {
-        console.log(`GTM Form Filter: Removed ${removedCount} unwanted form events`);
-    }
+    // Removed console.log for cleaner output
+};
+
+/**
+    if (typeof window === 'undefined' || !window.dataLayer) return;
+    
+    const originalLength = window.dataLayer.length;
+    
+    // Filter out unwanted events
+    const filteredEvents = window.dataLayer.filter((item: any) => {
+        return !shouldBlockEvent(item);
+    });
+    
+    // Replace the dataLayer contents
+    window.dataLayer.length = 0;
+    window.dataLayer.push(...filteredEvents);
+    
+    const removedCount = originalLength - filteredEvents.length;
+    // Removed console.log for cleaner output
 };
 
 /**
@@ -202,7 +209,6 @@ export const safeGTMPush = (data: any) => {
     
     // Use our comprehensive blocking logic
     if (shouldBlockEvent(data)) {
-        console.warn(`GTM Form Filter: Attempted to push blocked event "${data.event}"`, data);
         return;
     }
     

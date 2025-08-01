@@ -17,13 +17,14 @@ const nextConfig: NextConfig = {
     
     // Note: NODE_OPTIONS should be set in package.json scripts instead
     images: {
-         loader: 'custom',
-    loaderFile: './loader.js',
+        loader: 'custom',
+        loaderFile: './loader.js',
         unoptimized: false, // Ensure images are optimized
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },
             { protocol: 'https', hostname: "crm.trpeglobal.com" },
             { protocol: 'https', hostname: "trpe.ae" },
+            { protocol: 'https', hostname: "images.trpe.ae" },
             { protocol: 'https', hostname: "files.edgestore.dev" },
             { protocol: 'https', hostname: "trpe-ae.s3.me-central-1.amazonaws.com" },
             { protocol: 'https', hostname: "assets.aceternity.com" }
