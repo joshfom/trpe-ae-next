@@ -12,7 +12,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.856.0",
@@ -142,6 +145,9 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250730.0",
     "@tailwindcss/postcss": "^4.1.11",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
     "@types/bcrypt": "^5.0.2",
     "@types/google-libphonenumber": "^7.4.30",
     "@types/he": "^1.2.3",
@@ -156,6 +162,8 @@
     "drizzle-kit": "^0.31.4",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.3.1",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
     "p-limit": "^5.0.0",
     "postcss": "^8.5.6",
     "react-email": "3.0.2",
