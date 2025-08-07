@@ -95,7 +95,7 @@ describe('MultiImageDropzone - Comprehensive Tests', () => {
     allowReorder: true,
     showDeleteConfirmation: true,
     minImages: 6,
-    maxImages: 20,
+    maxImages: 40,
     onImageDelete: jest.fn(),
     onImageReorder: jest.fn()
   };
@@ -240,8 +240,8 @@ describe('MultiImageDropzone - Comprehensive Tests', () => {
       const manyImages = Array.from({ length: 25 }, (_, i) => createMockImage(i.toString()));
       render(<MultiImageDropzone {...defaultProps} value={manyImages} />);
 
-      expect(screen.getByText(/25 of 20 images/)).toBeInTheDocument();
-      expect(screen.getByText(/Too many/)).toBeInTheDocument();
+      expect(screen.getByText(/25 of 40 images/)).toBeInTheDocument();
+      expect(screen.getByText(/OK/)).toBeInTheDocument();
     });
 
     it('should show valid state for correct image count', () => {

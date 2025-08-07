@@ -153,7 +153,7 @@ describe('LuxePropertyForm Enhanced Image Management', () => {
             const validation = validateImageCollection(images, 6, 20);
             
             expect(validation.isValid).toBe(false);
-            expect(validation.errors[0]).toContain('Maximum 20 images allowed');
+            expect(validation.errors[0]).toContain('Maximum 40 images allowed');
         });
 
         test('should pass validation with correct image count', () => {

@@ -42,7 +42,7 @@ export function useImageValidation(
 ): UseImageValidationReturn {
     const {
         minImages = 6,
-        maxImages = 20,
+        maxImages = 40,
         enableRealTimeValidation = true
     } = options;
 

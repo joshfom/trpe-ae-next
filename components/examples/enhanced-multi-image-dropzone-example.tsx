@@ -106,7 +106,7 @@ export function EnhancedMultiImageDropzoneExample({
           allowReorder={true}
           showDeleteConfirmation={true}
           minImages={6}
-          maxImages={20}
+          maxImages={40}
           disabled={isLoading}
           className="border-2 border-dashed border-gray-300 rounded-lg"
           dropzoneOptions={{

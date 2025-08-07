@@ -70,9 +70,9 @@ Updated `updateLuxePropertyAction` to handle:
   allowReorder={true}
   showDeleteConfirmation={true}
   minImages={6}
-  maxImages={20}
+  maxImages={40}
   dropzoneOptions={{
-    maxFiles: 20,
+    maxFiles: 40,
     maxSize: 5 * 1024 * 1024, // 5MB
   }}
 />

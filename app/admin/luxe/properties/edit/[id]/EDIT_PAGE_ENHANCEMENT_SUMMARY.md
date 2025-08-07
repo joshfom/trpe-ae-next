@@ -58,7 +58,7 @@ Created comprehensive test suites to verify the complete workflow:
 
 ### Validation Integration
 - ✅ Minimum 6 images requirement enforced
-- ✅ Maximum 20 images limit enforced
+- ✅ Maximum 40 images limit enforced
 - ✅ Real-time validation feedback during operations
 - ✅ Form submission validation prevents invalid states
 

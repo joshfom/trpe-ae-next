@@ -41,13 +41,13 @@ describe('useImageValidation', () => {
         });
 
         it('should validate maximum image requirements', () => {
-            const images = createMockImages(25); // More than maximum 20
+            const images = createMockImages(45); // More than maximum 40
             const { result } = renderHook(() => useImageValidation(images));
 
             expect(result.current.isValid).toBe(false);
             expect(result.current.hasErrors).toBe(true);
-            expect(result.current.errorMessage).toContain('Maximum 20 images allowed');
-            expect(result.current.counts.visible).toBe(25);
+            expect(result.current.errorMessage).toContain('Maximum 40 images allowed');
+            expect(result.current.counts.visible).toBe(45);
         });
 
         it('should validate valid image count', () => {

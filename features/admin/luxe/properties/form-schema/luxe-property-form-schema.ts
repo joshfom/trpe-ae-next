@@ -52,11 +52,11 @@ export const luxePropertyFormSchema = z.object({
     referenceNumber: z.string().optional(),
     permitNumber: z.string().min(1, 'Permit number is required'),
     
-    // Images (minimum 6, maximum 20) - Enhanced validation with better error messages
+    // Images (minimum 6, maximum 40) - Enhanced validation with better error messages
     images: z.array(z.object({
         url: z.string().url('Invalid image URL'),
         order: z.number().min(0, 'Image order must be non-negative')
-    })).min(6, 'Minimum 6 images required for luxe properties').max(20, 'Maximum 20 images allowed to maintain performance'),
+    })).min(6, 'Minimum 6 images required for luxe properties').max(40, 'Maximum 40 images allowed to maintain performance'),
     
     // Optional: Enhanced image operations for server actions
     imageOperations: z.object({

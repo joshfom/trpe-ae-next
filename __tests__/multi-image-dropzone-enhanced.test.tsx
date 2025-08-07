@@ -106,7 +106,7 @@ describe('MultiImageDropzone Enhanced Functionality', () => {
       const tooManyResult = validateImageCollection(tooManyImages, 6, 20);
       expect(tooManyResult.isValid).toBe(false);
       expect(tooManyResult.errors).toHaveLength(1);
-      expect(tooManyResult.errors[0]).toContain('Maximum 20 images allowed');
+      expect(tooManyResult.errors[0]).toContain('Maximum 40 images allowed');
     });
   });
 
@@ -117,7 +117,7 @@ describe('MultiImageDropzone Enhanced Functionality', () => {
         allowDelete: true,
         showDeleteConfirmation: true,
         minImages: 6,
-        maxImages: 20,
+        maxImages: 40,
         onImageDelete: () => {}
       };
 
@@ -125,7 +125,7 @@ describe('MultiImageDropzone Enhanced Functionality', () => {
       expect(props.allowDelete).toBe(true);
       expect(props.showDeleteConfirmation).toBe(true);
       expect(props.minImages).toBe(6);
-      expect(props.maxImages).toBe(20);
+      expect(props.maxImages).toBe(40);
       expect(typeof props.onImageDelete).toBe('function');
     });
 

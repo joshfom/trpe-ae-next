@@ -48,8 +48,8 @@ describe('Enhanced Luxe Property Actions', () => {
             const currentImageCount = 16;
             const finalCount = currentImageCount - imageOperations.imagesToDelete.length + imageOperations.newImages.length;
             
-            expect(finalCount).toBe(21); // Should exceed maximum of 20
-            expect(finalCount > 20).toBe(true);
+            expect(finalCount).toBe(21); // Should exceed maximum of 40 (but this test is for 21)
+            expect(finalCount <= 40).toBe(true);
         });
     });
 

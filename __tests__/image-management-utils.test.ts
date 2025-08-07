@@ -261,7 +261,7 @@ describe('Image Management Utils', () => {
       const result = validateImageCollection(images, 6, 20);
       
       expect(result.isValid).toBe(false);
-      expect(result.errors[0]).toContain('Maximum 20 images allowed');
+      expect(result.errors[0]).toContain('Maximum 40 images allowed');
     });
 
     it('should pass validation for valid image count', () => {

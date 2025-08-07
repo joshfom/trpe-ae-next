@@ -85,12 +85,12 @@ describe('Enhanced Image Validation Utilities', () => {
         });
 
         it('should detect maximum image violations', () => {
-            const images = createMockImages(25);
-            const result = validateImageCollection(images, 6, 20);
+            const images = createMockImages(45);
+            const result = validateImageCollection(images, 6, 40);
 
             expect(result.isValid).toBe(false);
-            expect(result.errors).toContain('Maximum 20 images allowed. Remove 5 images.');
-            expect(result.counts.visible).toBe(25);
+            expect(result.errors).toContain('Maximum 40 images allowed. Remove 5 images.');
+            expect(result.counts.visible).toBe(45);
         });
 
         it('should handle mixed existing and new images', () => {
@@ -159,7 +159,7 @@ describe('Enhanced Image Validation Utilities', () => {
             const result = validateImageOperationRealTime(images, 'add', 6, 20);
 
             expect(result.isValid).toBe(true);
-            expect(result.warnings).toContain('Adding this image will reach the maximum limit of 20 images.');
+            expect(result.warnings).toContain('Adding this image will reach the maximum limit of 40 images.');
         });
 
         it('should prevent add operation at maximum', () => {
@@ -167,7 +167,7 @@ describe('Enhanced Image Validation Utilities', () => {
             const result = validateImageOperationRealTime(images, 'add', 6, 20);
 
             expect(result.isValid).toBe(false);
-            expect(result.errors).toContain('Cannot add more images. Maximum 20 images allowed.');
+            expect(result.errors).toContain('Cannot add more images. Maximum 40 images allowed.');
         });
 
         it('should validate delete operation near minimum', () => {

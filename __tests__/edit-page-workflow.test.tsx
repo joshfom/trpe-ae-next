@@ -184,7 +184,7 @@ describe('EditLuxePropertyPage Workflow Tests', () => {
             const validation = validateImagesForSubmission(fileStates, 6, 20);
             
             expect(validation.isValid).toBe(false);
-            expect(validation.errors).toContain('Maximum 20 images allowed. Remove 5 images.');
+            expect(validation.errors).toContain('Maximum 40 images allowed. Remove 5 images.');
         });
     });
 

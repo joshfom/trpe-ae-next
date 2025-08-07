@@ -93,7 +93,7 @@ const MultiImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             allowReorder = true,
             showDeleteConfirmation = true,
             minImages = 6,
-            maxImages = 20
+            maxImages = 40
         },
         ref,
     ) => {

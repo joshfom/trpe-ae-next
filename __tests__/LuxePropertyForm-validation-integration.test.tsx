@@ -152,9 +152,9 @@ describe('LuxePropertyForm - Enhanced Image Validation Integration', () => {
             render(<LuxePropertyForm property={propertyWithManyImages} />);
 
             await waitFor(() => {
-                expect(screen.getByText('25 of 20 images')).toBeInTheDocument();
-                expect(screen.getByText('Too many')).toBeInTheDocument();
-                expect(screen.getByText(/Maximum 20 images allowed/)).toBeInTheDocument();
+                expect(screen.getByText('25 of 40 images')).toBeInTheDocument();
+                expect(screen.getByText('OK')).toBeInTheDocument();
+                // 25 images should now be within the 40 limit
             });
         });
     });
@@ -220,7 +220,7 @@ describe('LuxePropertyForm - Enhanced Image Validation Integration', () => {
             const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
             if (deleteButtons.length > 0) {
                 fireEvent.click(deleteButtons[0]);
-                
+
                 // Confirm deletion
                 await waitFor(() => {
                     const confirmButton = screen.queryByText('Delete');
@@ -288,7 +288,7 @@ describe('LuxePropertyForm - Enhanced Image Validation Integration', () => {
             // Should show validation error
             await waitFor(() => {
                 expect(require('sonner').toast.error).toHaveBeenCalledWith(
-                    expect.stringContaining('Maximum 20 images allowed')
+                    expect.stringContaining('Maximum 40 images allowed')
                 );
             });
         });

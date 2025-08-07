@@ -266,13 +266,13 @@ export interface ImageValidationResult {
  * Validate image collection meets requirements with comprehensive feedback
  * @param images - Array of EnhancedFileState objects
  * @param minImages - Minimum required images (default: 6)
- * @param maxImages - Maximum allowed images (default: 20)
+ * @param maxImages - Maximum allowed images (default: 40)
  * @returns Enhanced validation result
  */
 export function validateImageCollection(
   images: EnhancedFileState[],
   minImages: number = 6,
-  maxImages: number = 20
+  maxImages: number = 40
 ): ImageValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -342,7 +342,7 @@ export function validateImageOperationRealTime(
   images: EnhancedFileState[],
   operation: 'add' | 'delete' | 'reorder' | 'upload',
   minImages: number = 6,
-  maxImages: number = 20
+  maxImages: number = 40
 ): ImageValidationResult {
   const baseValidation = validateImageCollection(images, minImages, maxImages);
   const visibleImages = getVisibleImages(images);
@@ -391,7 +391,7 @@ export function validateImageOperationRealTime(
 export function validateImagesForSubmission(
   images: EnhancedFileState[],
   minImages: number = 6,
-  maxImages: number = 20
+  maxImages: number = 40
 ): ImageValidationResult {
   const validation = validateImageCollection(images, minImages, maxImages);
   const visibleImages = getVisibleImages(images);

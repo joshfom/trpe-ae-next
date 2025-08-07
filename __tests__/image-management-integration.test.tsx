@@ -261,7 +261,7 @@ describe('Image Management - Complete Integration Tests', () => {
           value={mockImages}
           onChange={jest.fn()}
           minImages={6}
-          maxImages={20}
+          maxImages={40}
         />
       );
 

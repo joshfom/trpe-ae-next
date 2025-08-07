@@ -18,7 +18,7 @@ Task 7 has been successfully completed, implementing comprehensive form validati
 - `validateImagesForSubmission()`: Strict validation for form submission
 
 #### Validation Features
-- **Minimum/Maximum Image Validation**: Enforces 6-20 image limits with clear messages
+- **Minimum/Maximum Image Validation**: Enforces 6-40 image limits with clear messages
 - **Mixed Image Type Support**: Correctly handles existing vs new images
 - **Upload Progress Tracking**: Validates pending, uploading, and failed images
 - **Deletion Handling**: Accounts for soft-deleted images in counts
@@ -148,7 +148,7 @@ Task 7 has been successfully completed, implementing comprehensive form validati
 - Accounts for soft-deleted existing images
 - Provides clear error messages when below minimum
 
-### ✅ Requirement 3.4: Maximum 20 images validation for total image count
+### ✅ Requirement 3.4: Maximum 40 images validation for total image count
 - Enforces maximum limit across existing and new images
 - Prevents adding images when at maximum
 - Shows clear error messages when limit exceeded
@@ -169,7 +169,7 @@ Task 7 has been successfully completed, implementing comprehensive form validati
 ```typescript
 const imageValidation = useImageValidation(fileStates, {
     minImages: 6,
-    maxImages: 20,
+    maxImages: 40,
     enableRealTimeValidation: true
 });
 

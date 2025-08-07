@@ -53,7 +53,7 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
     // Enhanced image validation
     const imageValidation = useImageValidation(fileStates, {
         minImages: 6,
-        maxImages: 20,
+        maxImages: 40,
         enableRealTimeValidation: true
     });
     const {edgestore} = useEdgeStore();
@@ -867,7 +867,7 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
                         <CardHeader>
                             <CardTitle>Property Images *</CardTitle>
                             <p className="text-sm text-muted-foreground">
-                                Upload minimum 6 images (maximum 20) - High-quality images of the property
+                                Upload minimum 6 images (maximum 40) - High-quality images of the property
                             </p>
                         </CardHeader>
                         <CardContent className="w-full">
@@ -887,9 +887,9 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
                                                     allowReorder={true}
                                                     showDeleteConfirmation={true}
                                                     minImages={6}
-                                                    maxImages={20}
+                                                    maxImages={40}
                                                     dropzoneOptions={{
-                                                        maxFiles: 20,
+                                                        maxFiles: 40,
                                                         maxSize: 5 * 1024 * 1024, // 5MB
                                                     }}
                                                 />
