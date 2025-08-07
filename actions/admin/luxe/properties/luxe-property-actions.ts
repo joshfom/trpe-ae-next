@@ -417,7 +417,8 @@ async function deleteFromEdgeStore(fileKey: string): Promise<void> {
         // 2. Call the delete method with the file key
         // 3. Handle any errors appropriately
         
-        console.log(`Deleting file from EdgeStore: ${fileKey}`);
+        // Use a proper logging library here if needed, or remove in production
+        // logger.info(`Deleting file from EdgeStore: ${fileKey}`);
         
         // Placeholder for actual EdgeStore deletion
         // await edgeStoreClient.delete(fileKey);
