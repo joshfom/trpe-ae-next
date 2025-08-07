@@ -241,8 +241,8 @@ function getAutoComplete(type: string, name: string): string {
   return autoCompleteMap[name.toLowerCase()] || autoCompleteMap[type] || 'off';
 }
 
-function getInputMode(type: string): string {
-  const inputModeMap: Record<string, string> = {
+function getInputMode(type: string): "search" | "email" | "url" | "text" | "tel" | "none" | "numeric" | "decimal" | undefined {
+  const inputModeMap: Record<string, "search" | "email" | "url" | "text" | "tel" | "none" | "numeric" | "decimal"> = {
     tel: 'tel',
     email: 'email',
     number: 'numeric',

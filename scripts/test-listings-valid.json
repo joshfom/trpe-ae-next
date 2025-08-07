@@ -1,0 +1,131 @@
+{
+  "metadata": {
+    "scrapedAt": "2025-08-06T03:39:55.474Z",
+    "totalProperties": 6,
+    "successfulScrapes": 6,
+    "failedScrapes": 0
+  },
+  "properties": [
+    {
+      "url": "https://example.com/luxury-villa-palm",
+      "title": "Stunning Luxury Villa in Palm Jumeirah with Private Beach",
+      "price": "45,000,000 AED",
+      "description": "Exceptional 6-bedroom villa with private beach access, infinity pool, and panoramic views of Dubai skyline. Features include marble flooring, smart home automation, private cinema, and wine cellar.",
+      "propertyDetails": {
+        "propertyType": "Villa",
+        "propertySize": "8,500 sqft / 789 sqm",
+        "bedrooms": "6",
+        "bathrooms": "7",
+        "reference": "LUXE-VILLA-001",
+        "zoneName": "Palm Jumeirah",
+        "dldPermitNumber": "DLD-789456123"
+      },
+      "agentName": "Alexandra Thompson",
+      "images": [
+        "https://via.placeholder.com/1200x800/0066cc/ffffff?text=Villa+Exterior",
+        "https://via.placeholder.com/1200x800/0066cc/ffffff?text=Living+Room",
+        "https://via.placeholder.com/1200x800/0066cc/ffffff?text=Master+Bedroom",
+        "https://via.placeholder.com/1200x800/0066cc/ffffff?text=Kitchen",
+        "https://via.placeholder.com/1200x800/0066cc/ffffff?text=Pool+Area"
+      ],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    },
+    {
+      "url": "https://example.com/luxury-penthouse-downtown",
+      "title": "Exclusive Penthouse in Burj Khalifa with Burj Views",
+      "price": "35,500,000",
+      "description": "Rare penthouse opportunity in the iconic Burj Khalifa. Floor-to-ceiling windows, private elevator access, and unobstructed views of Dubai Fountain.",
+      "propertyDetails": {
+        "propertyType": "Apartment",
+        "propertySize": "5,200 sqft / 483 sqm",
+        "bedrooms": "4",
+        "bathrooms": "5",
+        "reference": "LUXE-PH-002",
+        "zoneName": "Downtown Dubai",
+        "dldPermitNumber": "DLD-456789012"
+      },
+      "agentName": "Mohammed Al-Rashid",
+      "images": [
+        "https://via.placeholder.com/1200x800/cc6600/ffffff?text=Penthouse+View",
+        "https://via.placeholder.com/1200x800/cc6600/ffffff?text=Dining+Area"
+      ],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    },
+    {
+      "url": "https://example.com/luxury-mansion-emirates-hills",
+      "title": "Palatial Mansion in Emirates Hills Golf Course",
+      "price": "28,750,000 AED",
+      "description": "Magnificent 7-bedroom mansion on the golf course with private spa, gym, and staff quarters. Premium location in Dubai's most exclusive community.",
+      "propertyDetails": {
+        "propertyType": "Villa",
+        "propertySize": "12,000 sqft / 1115 sqm",
+        "bedrooms": "7",
+        "bathrooms": "9",
+        "reference": "LUXE-MANSION-003",
+        "zoneName": "Emirates Hills",
+        "dldPermitNumber": "DLD-123456789"
+      },
+      "agentName": "Sarah Mitchell",
+      "images": [],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    },
+    {
+      "url": "https://example.com/apartment-marina",
+      "title": "Modern 2BR Apartment in Dubai Marina with Marina Views",
+      "price": "2,850,000",
+      "description": "Bright and spacious 2-bedroom apartment with stunning marina views. Features include built-in wardrobes, modern kitchen, and balcony.",
+      "propertyDetails": {
+        "propertyType": "Apartment",
+        "propertySize": "1,450 sqft / 135 sqm",
+        "bedrooms": "2",
+        "bathrooms": "2",
+        "reference": "STD-MARINA-001",
+        "zoneName": "Dubai Marina",
+        "dldPermitNumber": "DLD-987654321"
+      },
+      "agentName": "James Wilson",
+      "images": [
+        "https://via.placeholder.com/800x600/009900/ffffff?text=Marina+Apartment"
+      ],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    },
+    {
+      "url": "https://example.com/townhouse-jvc",
+      "title": "Family Townhouse in Jumeirah Village Circle",
+      "price": "1,950,000 AED",
+      "description": "Perfect family home with 3 bedrooms, private garden, and community amenities including pool and playground.",
+      "propertyDetails": {
+        "propertyType": "Townhouse",
+        "propertySize": "2,100 sqft / 195 sqm",
+        "bedrooms": "3",
+        "bathrooms": "3",
+        "reference": "STD-TH-002",
+        "zoneName": "Jumeirah Village Circle",
+        "dldPermitNumber": "DLD-555666777"
+      },
+      "agentName": "Lisa Chen",
+      "images": [],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    },
+    {
+      "url": "https://example.com/studio-business-bay",
+      "title": "Modern Studio in Business Bay with Canal Views",
+      "price": "850,000",
+      "description": "Compact and efficient studio apartment with modern finishes and canal views. Perfect for young professionals.",
+      "propertyDetails": {
+        "propertyType": "Apartment",
+        "propertySize": "650 sqft / 60 sqm",
+        "bedrooms": "Studio",
+        "bathrooms": "1",
+        "reference": "STD-STUDIO-003",
+        "zoneName": "Business Bay",
+        "dldPermitNumber": "DLD-111222333"
+      },
+      "agentName": "David Kumar",
+      "images": [
+        "https://via.placeholder.com/800x600/660099/ffffff?text=Studio+Interior"
+      ],
+      "scrapedAt": "2025-08-06T03:39:55.474Z"
+    }
+  ]
+}

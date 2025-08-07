@@ -15,7 +15,13 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest --config jest.integration.config.js",
+    "test:integration:watch": "jest --config jest.integration.config.js --watch",
+    "test:propertyfinder": "jest --config jest.integration.config.js --testNamePattern='PropertyFinder JSON Import'",
+    "import:propertyfinder": "NODE_OPTIONS='--max-old-space-size=4096 --expose-gc' bun run scripts/import-propertyfinder.ts",
+    "import:propertyfinder:optimized": "NODE_OPTIONS='--max-old-space-size=6144 --expose-gc' PF_BATCH_SIZE=15 PF_ENABLE_PARALLEL=true PF_MAX_CONCURRENT_IMAGES=5 bun run scripts/import-propertyfinder.ts",
+    "import:propertyfinder:safe": "NODE_OPTIONS='--max-old-space-size=4096 --expose-gc' PF_BATCH_SIZE=10 PF_ENABLE_PARALLEL=false PF_MAX_CONCURRENT_IMAGES=3 bun run scripts/import-propertyfinder.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.856.0",

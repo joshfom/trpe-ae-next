@@ -5,7 +5,7 @@ import {Button} from "@/components/ui/button";
 import {off} from "next/dist/client/components/react-dev-overlay/pages/bus";
 import {MultiFileDropzone} from "@/components/ui/multi-file-dropzone";
 import {useEdgeStore} from "@/db/edgestore";
-import {FileState} from "@/components/multi-image-dropzone";
+import {FileState} from "@/components/ui/multi-file-dropzone";
 
 interface AdminOffplanDetailsProps {
     offplan: any;
@@ -62,9 +62,10 @@ function AdminOffplanDetails({offplan}: AdminOffplanDetailsProps) {
             {
                 addingBrochure && (
                     <MultiFileDropzone
-                        //@ts-ignore
                         value={fileStates}
-                        maxFiles={1}
+                        dropzoneOptions={{
+                            maxFiles: 1
+                        }}
                         onChange={(files) => {
                             setFileStates(files);
                         }}

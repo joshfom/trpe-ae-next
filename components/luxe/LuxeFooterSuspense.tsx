@@ -14,7 +14,32 @@ const CommunitiesFallback = () => (
   <div className="flex flex-col pt-2">
     <Link
       className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-      href="/luxe/communities">
+      href="/communities/downtown-dubai?type=luxe">
+      Downtown Dubai
+    </Link>
+    <Link
+      className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
+      href="/communities/palm-jumeirah?type=luxe">
+      Palm Jumeirah
+    </Link>
+    <Link
+      className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
+      href="/communities/emirates-hills?type=luxe">
+      Emirates Hills
+    </Link>
+    <Link
+      className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
+      href="/communities/dubai-marina?type=luxe">
+      Dubai Marina
+    </Link>
+    <Link
+      className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
+      href="/communities/jumeirah-beach-residence?type=luxe">
+      Jumeirah Beach Residence
+    </Link>
+    <Link
+      className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors font-medium"
+      href="/communities?type=luxe">
       View All Luxe Communities
     </Link>
   </div>
@@ -35,7 +60,7 @@ async function FooterCommunities() {
           <Link
             key={community.id}
             className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors"
-            href={`/luxe/communities/${community.slug}`}>
+            href={`/communities/${community.slug}?type=luxe`}>
             {community.name}
           </Link>
         ))}
@@ -44,7 +69,7 @@ async function FooterCommunities() {
           <Link
             className="px-4 py-2 text-sm sm:text-base border-b border-transparent hover:border-slate-700 transition-colors font-medium"
             href="/luxe/communities">
-            View All Communities
+            View All Luxe Communities
           </Link>
         )}
       </div>

@@ -1,0 +1,22 @@
+{
+  "properties": [
+    {
+      "url": "https://example.com/test",
+      "title": "Test Property",
+      "price": "1,000,000",
+      "description": "Test description",
+      "propertyDetails": {
+        "propertyType": "Apartment",
+        "propertySize": "1,000 sqft",
+        "bedrooms": "2",
+        "bathrooms": "2",
+        "reference": "TEST-001",
+        "zoneName": "Test Zone",
+        "dldPermitNumber": "DLD-TEST-001"
+      },
+      "agentName": "Test Agent",
+      "images": [],
+      "scrapedAt": "2025-08-06T03:39:55.478Z"
+    }
+  ]
+}

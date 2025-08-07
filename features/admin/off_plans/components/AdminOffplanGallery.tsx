@@ -5,7 +5,8 @@ import {Button} from "@/components/ui/button";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {z} from "zod";
-import {FileState, MultiImageDropzone} from "@/components/multi-image-dropzone";
+import {MultiImageDropzone} from "@/components/multi-image-dropzone";
+import {EnhancedFileState} from "@/lib/image-management-utils";
 import {useEdgeStore} from "@/db/edgestore";
 import { useImageUpload } from "@/hooks/use-image-upload";
 import {useUploadOffplanImages} from "@/features/admin/off_plans/api/use-upload-offplan-images";
@@ -25,7 +26,7 @@ type formValues = z.infer<typeof GalleryFormSchema>
 function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
 
     const galleryQuery = useGetAdminOffplanGallery(offplanId)
-    const [fileStates, setFileStates] = useState<FileState[]>([]);
+    const [fileStates, setFileStates] = useState<EnhancedFileState[]>([]);
     const gallery = galleryQuery.data
     const isLoaded = galleryQuery.data && !galleryQuery.isError
 
@@ -37,7 +38,7 @@ function AdminOffplanGallery({offplanId}: AdminOffplanGalleryProps) {
 
     const uploadImageMutation = useUploadOffplanImages(offplanId)
 
-    function updateFileProgress(key: string, progress: FileState['progress']) {
+    function updateFileProgress(key: string, progress: EnhancedFileState['progress']) {
         setFileStates((fileStates) => {
 
             const newFileStates = structuredClone(fileStates);

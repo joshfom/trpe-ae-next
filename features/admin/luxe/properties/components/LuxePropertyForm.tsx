@@ -14,7 +14,16 @@ import {useRouter} from "next/navigation";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {Checkbox} from "@/components/ui/checkbox";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import { FileState } from "@/components/multi-image-dropzone";
+import { EnhancedFileState } from "@/lib/image-management-utils";
+import { 
+    convertPropertyImagesToFileState,
+    getVisibleImages,
+    validateImageCollection,
+    validateImagesForSubmission,
+    mergeImageOperations,
+    reorderImages
+} from "@/lib/image-management-utils";
+import { useImageValidation } from "@/hooks/use-image-validation";
 import { createLuxePropertyAction, updateLuxePropertyAction } from '@/actions/admin/luxe/properties/luxe-property-actions';
 import { toast } from 'sonner';
 import { TipTapEditor } from "@/components/TiptapEditor";
@@ -24,7 +33,7 @@ import { useGetAdminPropertyTypes } from "@/features/admin/property-types/api/us
 import { useGetAdminOfferingTypes } from "@/features/admin/offering/api/use-get-admin-offering-types";
 import { validateLuxePropertySlugAction, generateSlugFromTitleAction } from "@/actions/admin/luxe/properties/validate-slug-action";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, RefreshCw, AlertCircle } from "lucide-react";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 
 type FormValues = z.infer<typeof luxePropertyFormSchema>
@@ -35,10 +44,18 @@ interface LuxePropertyFormProps {
 }
 
 function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
-    const [fileStates, setFileStates] = React.useState<FileState[]>([]);
+    const [fileStates, setFileStates] = React.useState<EnhancedFileState[]>([]);
+    const [originalFileStates, setOriginalFileStates] = React.useState<EnhancedFileState[]>([]);
     const [isSubmitting, setIsSubmitting] = React.useState(false);
     const [slugValidating, setSlugValidating] = React.useState(false);
     const [slugManuallyEdited, setSlugManuallyEdited] = React.useState(false);
+
+    // Enhanced image validation
+    const imageValidation = useImageValidation(fileStates, {
+        minImages: 6,
+        maxImages: 20,
+        enableRealTimeValidation: true
+    });
     const {edgestore} = useEdgeStore();
     const { convertToWebP } = useImageUpload();
     const router = useRouter();
@@ -126,12 +143,9 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
     // Load existing images into fileStates when editing
     useEffect(() => {
         if (property?.images && property.images.length > 0 && fileStates.length === 0) {
-            const existingFileStates: FileState[] = property.images.map((image: any, index: number) => ({
-                file: image.s3Url || image.url, // Use the URL as the file (FileState accepts string)
-                key: `existing-${image.id || index}`, // Use image ID or index as key
-                progress: 'COMPLETE',
-            }));
+            const existingFileStates = convertPropertyImagesToFileState(property.images);
             setFileStates(existingFileStates);
+            setOriginalFileStates([...existingFileStates]); // Store original state for comparison
         }
     }, [property?.images, fileStates.length]);
 
@@ -202,92 +216,125 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
         }
     };
 
-    // Handle multiple image uploads
-    const updateImages = async (fileStates: FileState[]) => {
-        const uploadedImages = [];
+    // Handle image state changes (upload, delete, reorder)
+    const handleImageStateChange = React.useCallback(async (updatedFileStates: EnhancedFileState[]) => {
+        setFileStates(updatedFileStates);
         
-        for (let i = 0; i < fileStates.length; i++) {
-            const fileState = fileStates[i];
-            // Check if it's a File object (not a string URL) and is pending upload
-            if (fileState.file instanceof File && fileState.progress === 'PENDING') {
-                try {
-                    // Convert to WebP before uploading
-                    const webpFile = await convertToWebP(fileState.file);
-                    
-                    const res = await edgestore.publicFiles.upload({
-                        file: webpFile,
-                        onProgressChange: (progress) => {
-                            setFileStates(prev => prev.map((state, index) => 
-                                index === i ? { ...state, progress } : state
-                            ));
-                        },
-                    });
-                    
-                    uploadedImages.push({
-                        url: res.url,
-                        order: i
-                    });
-                    
-                    setFileStates(prev => prev.map((state, index) => 
-                        index === i ? { ...state, progress: 'COMPLETE', file: res.url } : state
-                    ));
-                } catch (error) {
-                    setFileStates(prev => prev.map((state, index) => 
-                        index === i ? { ...state, progress: 'ERROR' } : state
-                    ));
-                }
+        // Upload any new pending images
+        const newImagesToUpload = updatedFileStates.filter(
+            state => !state.isExisting && state.file instanceof File && state.progress === 'PENDING'
+        );
+        
+        for (const fileState of newImagesToUpload) {
+            const index = updatedFileStates.findIndex(state => state.key === fileState.key);
+            if (index === -1) continue;
+            
+            try {
+                // Convert to WebP before uploading
+                const webpFile = await convertToWebP(fileState.file as File);
+                
+                const res = await edgestore.publicFiles.upload({
+                    file: webpFile,
+                    onProgressChange: (progress) => {
+                        setFileStates(prev => prev.map((state) => 
+                            state.key === fileState.key ? { ...state, progress } : state
+                        ));
+                    },
+                });
+                
+                // Update the file state with the uploaded URL
+                setFileStates(prev => prev.map((state) => 
+                    state.key === fileState.key 
+                        ? { ...state, progress: 'COMPLETE', file: res.url } 
+                        : state
+                ));
+                
+                // Show success toast for individual image upload
+                toast.success('Image uploaded successfully');
+            } catch (error) {
+                console.error('Upload error:', error);
+                setFileStates(prev => prev.map((state) => 
+                    state.key === fileState.key 
+                        ? { ...state, progress: 'ERROR' } 
+                        : state
+                ));
+                toast.error('Failed to upload image');
             }
         }
         
-        // Update form with all images (existing + newly uploaded)
-        const allImages: Array<{url: string; order: number}> = [];
+        // Update form with visible images for validation
+        const visibleImages = getVisibleImages(updatedFileStates);
+        const formImages = visibleImages
+            .filter(state => state.progress === 'COMPLETE' || typeof state.file === 'string')
+            .map(state => ({
+                url: typeof state.file === 'string' ? state.file : '',
+                order: state.order
+            }));
         
-        // Add existing completed images
-        fileStates.forEach((fileState, index) => {
-            if (fileState.progress === 'COMPLETE') {
-                // For completed uploads, the file should be a URL string
-                const url = typeof fileState.file === 'string' ? fileState.file : URL.createObjectURL(fileState.file);
-                allImages.push({
-                    url: url,
-                    order: index
-                });
-            } else if (typeof fileState.file === 'string') {
-                // For existing images that are already URLs
-                allImages.push({
-                    url: fileState.file,
-                    order: index
-                });
-            }
-        });
-        
-        // Add newly uploaded images
-        uploadedImages.forEach(image => {
-            allImages.push(image);
-        });
-        
-        form.setValue('images', allImages);
-    };
+        form.setValue('images', formImages);
+    }, [edgestore, convertToWebP, form]);
+
+    // Handle image deletion
+    const handleImageDelete = React.useCallback(async (index: number) => {
+        // The MultiImageDropzone will handle the deletion logic
+        // This is just a callback to know when deletion happens
+        console.log('Image deleted at index:', index);
+    }, []);
+
+    // Handle image reordering
+    const handleImageReorder = React.useCallback(async (fromIndex: number, toIndex: number) => {
+        // The MultiImageDropzone will handle the reordering logic
+        // This is just a callback to know when reordering happens
+        console.log('Image reordered from', fromIndex, 'to', toIndex);
+    }, []);
 
     const onSubmit = async (values: FormValues) => {
         console.log('Form values:', values);
         setIsSubmitting(true);
         
         try {
+            // Enhanced validation for form submission
+            const submissionValidation = imageValidation.validateForSubmission();
+            
+            if (!submissionValidation.isValid) {
+                // Show all validation errors
+                submissionValidation.errors.forEach(error => {
+                    toast.error(error);
+                });
+                setIsSubmitting(false);
+                return;
+            }
+
+            // Show warnings if any
+            if (submissionValidation.warnings.length > 0) {
+                submissionValidation.warnings.forEach(warning => {
+                    toast.warning(warning);
+                });
+            }
+
+            // Prepare enhanced form values with image operations
+            const enhancedValues = {
+                ...values,
+                // Include image operation data for server action
+                imageOperations: mergeImageOperations(fileStates)
+            };
+            
             let result;
             
             if (isEditing && (property?.slug || propertySlug)) {
-                // Update existing property
+                // Update existing property with enhanced image handling
                 const propertyId = property?.id || propertySlug;
-                result = await updateLuxePropertyAction(propertyId, values);
+                result = await updateLuxePropertyAction(propertyId, enhancedValues);
             } else {
                 // Create new property
-                result = await createLuxePropertyAction(values);
+                result = await createLuxePropertyAction(enhancedValues);
             }
             
             if (result.success) {
                 toast.success(result.message);
                 form.reset();
                 setFileStates([]);
+                setOriginalFileStates([]);
                 
                 if (isEditing) {
                     router.refresh();
@@ -833,25 +880,31 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
                                             <div className="w-full">
                                                 <MultiImageDropzone
                                                     value={fileStates}
-                                                    onChange={(files) => {
-                                                        setFileStates(files);
-                                                        updateImages(files);
-                                                    }}
-                                                    onFilesAdded={async (addedFiles) => {
-                                                        setFileStates([...fileStates, ...addedFiles]);
-                                                    }}
+                                                    onChange={handleImageStateChange}
+                                                    onImageDelete={handleImageDelete}
+                                                    onImageReorder={handleImageReorder}
+                                                    allowDelete={true}
+                                                    allowReorder={true}
+                                                    showDeleteConfirmation={true}
+                                                    minImages={6}
+                                                    maxImages={20}
                                                     dropzoneOptions={{
                                                         maxFiles: 20,
                                                         maxSize: 5 * 1024 * 1024, // 5MB
                                                     }}
                                                 />
-                                                {/* Image count indicator */}
+                                                {/* Enhanced image count indicator */}
                                                 <div className="flex justify-between items-center mt-2 text-sm text-muted-foreground">
                                                     <span>
-                                                        Images uploaded: {fileStates.filter(f => f.progress === 'COMPLETE' || typeof f.file === 'string').length} / 20
+                                                        Images: {getVisibleImages(fileStates).length} / 20
+                                                        {fileStates.some(f => f.isDeleted) && (
+                                                            <span className="text-orange-500 ml-2">
+                                                                ({fileStates.filter(f => f.isDeleted).length} marked for deletion)
+                                                            </span>
+                                                        )}
                                                     </span>
-                                                    <span className={fileStates.filter(f => f.progress === 'COMPLETE' || typeof f.file === 'string').length >= 6 ? 'text-green-600' : 'text-red-500'}>
-                                                        {fileStates.filter(f => f.progress === 'COMPLETE' || typeof f.file === 'string').length >= 6 ? '✓ Minimum met' : `Need ${6 - fileStates.filter(f => f.progress === 'COMPLETE' || typeof f.file === 'string').length} more`}
+                                                    <span className={getVisibleImages(fileStates).length >= 6 ? 'text-green-600' : 'text-red-500'}>
+                                                        {getVisibleImages(fileStates).length >= 6 ? '✓ Minimum met' : `Need ${6 - getVisibleImages(fileStates).length} more`}
                                                     </span>
                                                 </div>
                                             </div>
@@ -864,16 +917,43 @@ function LuxePropertyForm({property, propertySlug}: LuxePropertyFormProps) {
                     </Card>
 
                     {/* Submit Button */}
-                    <div className="flex justify-end pt-8">
-                        <Button
-                            type="submit"
-                            size="lg"
-                            disabled={isSubmitting}
-                            className="min-w-32"
-                        >
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isEditing ? 'Update Property' : 'Create Property'}
-                        </Button>
+                    <div className="space-y-4 pt-8">
+                        {/* Form Status Indicator */}
+                        {isSubmitting && (
+                            <div className="flex items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <Loader2 className="h-5 w-5 animate-spin text-blue-600 mr-3" />
+                                <div className="text-blue-700 dark:text-blue-300">
+                                    <div className="font-medium">
+                                        {isEditing ? 'Updating Property...' : 'Creating Property...'}
+                                    </div>
+                                    <div className="text-sm opacity-80">
+                                        Processing images and saving changes
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="flex justify-end">
+                            <Button
+                                type="submit"
+                                size="lg"
+                                disabled={isSubmitting || !imageValidation.isValid}
+                                loading={isSubmitting}
+                                className="min-w-40 transition-all duration-200"
+                            >
+                                {isEditing ? 'Update Property' : 'Create Property'}
+                            </Button>
+                        </div>
+                        
+                        {/* Validation Summary */}
+                        {!imageValidation.isValid && (
+                            <div className="flex items-center justify-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                                <AlertCircle className="h-4 w-4 text-orange-600 mr-2" />
+                                <span className="text-orange-700 dark:text-orange-300 text-sm">
+                                    {imageValidation.errorMessage}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </form>
             </Form>

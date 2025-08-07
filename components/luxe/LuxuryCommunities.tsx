@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -30,19 +31,20 @@ const CommunityCard = ({
   onLeave
 }: CommunityCardProps) => {
   return (
-    <motion.div 
-      className="relative cursor-pointer overflow-hidden rounded-lg h-[500px] bg-gray-100"
-      animate={{
-        flex: isExpanded ? "3 1 0%" : "0.5 1 0%",
-        transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
-      }}
-      onHoverStart={onHover}
-      onHoverEnd={onLeave}
-      whileHover={{ 
-        scale: 1.02,
-        transition: { duration: 0.3, ease: "easeOut" }
-      }}
-    >
+    <Link href={href}>
+      <motion.div 
+        className="relative cursor-pointer overflow-hidden rounded-lg h-[500px] bg-gray-100"
+        animate={{
+          flex: isExpanded ? "3 1 0%" : "0.5 1 0%",
+          transition: { duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] }
+        }}
+        onHoverStart={onHover}
+        onHoverEnd={onLeave}
+        whileHover={{ 
+          scale: 1.02,
+          transition: { duration: 0.3, ease: "easeOut" }
+        }}
+      >
       {/* Background Image */}
       <motion.div 
         className="absolute inset-0"
@@ -175,6 +177,7 @@ const CommunityCard = ({
         </motion.div>
       </motion.div>
     </motion.div>
+    </Link>
   );
 };
 
@@ -187,21 +190,22 @@ const MobileCommunityCard = ({
   index
 }: Omit<CommunityCardProps, 'isExpanded' | 'onHover' | 'onLeave'>) => {
   return (
-    <motion.div 
-      className="relative cursor-pointer overflow-hidden rounded-lg h-[350px] sm:h-[400px] bg-gray-100"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ 
-        opacity: 1, 
-        y: 0,
-        transition: { duration: 0.6, delay: index * 0.1, ease: "easeOut" }
-      }}
-      viewport={{ once: false, amount: 0.3 }}
-      whileHover={{ 
-        scale: 1.02,
-        transition: { duration: 0.3, ease: "easeOut" }
-      }}
-      whileTap={{ scale: 0.98 }}
-    >
+    <Link href={href}>
+      <motion.div 
+        className="relative cursor-pointer overflow-hidden rounded-lg h-[350px] sm:h-[400px] bg-gray-100"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ 
+          opacity: 1, 
+          y: 0,
+          transition: { duration: 0.6, delay: index * 0.1, ease: "easeOut" }
+        }}
+        viewport={{ once: false, amount: 0.3 }}
+        whileHover={{ 
+          scale: 1.02,
+          transition: { duration: 0.3, ease: "easeOut" }
+        }}
+        whileTap={{ scale: 0.98 }}
+      >
       {/* Background Image */}
       <div className="absolute inset-0">
         <img
@@ -247,6 +251,7 @@ const MobileCommunityCard = ({
         </div>
       </div>
     </motion.div>
+    </Link>
   );
 };
 
@@ -274,7 +279,7 @@ export default function LuxuryCommunities({ className = "", communities }: Luxur
     title: community.name,
     itemCount: community.propertyCount,
     imageUrl: community.imageUrl,
-    href: `/communities/${community.slug}`,
+    href: `/communities/${community.slug}?type=luxe`,
     description: `Discover luxury living in ${community.name}, ${community.location}. Experience world-class amenities and sophisticated design in one of Dubai's most prestigious communities.`
   }));
 
