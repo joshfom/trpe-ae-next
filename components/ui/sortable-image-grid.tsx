@@ -144,7 +144,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
       event.dataTransfer.setDragImage(dragImage, 50, 50);
 
       logImageOperation('drag_start', { index });
-    }, [allowReorder, disabled]);
+    }, [allowReorder, disabled, isProcessing]);
 
     const handleDragOverEvent = React.useCallback((event: React.DragEvent, index: number) => {
       if (!allowReorder || disabled || isProcessing) return;
@@ -155,7 +155,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
           dragOverIndex: index,
         }));
       }
-    }, [allowReorder, disabled]);
+    }, [allowReorder, disabled, isProcessing]);
 
     const handleDropEvent = React.useCallback((event: React.DragEvent, dropIndex: number) => {
       if (!allowReorder || disabled || isProcessing) return;
@@ -172,7 +172,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
       });
 
       logImageOperation('drag_drop', { sourceIndex, dropIndex });
-    }, [allowReorder, disabled, debouncedReorder]);
+    }, [allowReorder, disabled, isProcessing, debouncedReorder]);
 
     const handleDragEndEvent = React.useCallback(() => {
       setDragState({
@@ -198,7 +198,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
       });
 
       logImageOperation('touch_start', { index, position });
-    }, [allowReorder, disabled]);
+    }, [allowReorder, disabled, isProcessing]);
 
     const handleTouchMove = React.useCallback((event: React.TouchEvent) => {
       if (!touchState.isActive || !allowReorder || disabled || isProcessing) return;
@@ -218,7 +218,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
           currentIndex: targetIndex,
         }));
       }
-    }, [touchState.isActive, touchState.currentIndex, allowReorder, disabled]);
+    }, [touchState.isActive, touchState.currentIndex, allowReorder, disabled, isProcessing]);
 
     const handleTouchEnd = React.useCallback(() => {
       if (!touchState.isActive) return;
@@ -299,7 +299,7 @@ const SortableImageGrid = React.forwardRef<HTMLDivElement, SortableImageGridProp
         event.preventDefault();
         handleDeleteImage(index);
       }
-    }, [disabled, visibleImages.length, visibleImages, gridColumns, allowReorder, allowDelete, onReorder, handleDeleteImage]);
+    }, [disabled, isProcessing, visibleImages, gridColumns, allowReorder, allowDelete, onReorder, handleDeleteImage]);
 
     const cancelDelete = React.useCallback(() => {
       setDeleteConfirmIndex(null);

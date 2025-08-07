@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { SortableImageGrid } from '../sortable-image-grid';
-import { EnhancedFileState } from '../../../lib/image-management-utils';
+import { SortableImageGrid } from './sortable-image-grid';
+import { EnhancedFileState } from '../../lib/image-management-utils';
 
 // Demo component to test SortableImageGrid functionality
 export function SortableImageGridDemo() {

@@ -628,9 +628,15 @@ export async function getPropertyImageStats(propertyId: string): Promise<{
         .where(eq(propertyImagesTable.propertyId, propertyId))
         .orderBy(propertyImagesTable.order);
 
+        // Filter out images with null order or s3Url and ensure type safety
+        const validImages = images
+            .filter((img): img is { id: string; order: number; s3Url: string } => 
+                img.order !== null && img.s3Url !== null
+            );
+
         return {
-            totalImages: images.length,
-            imagesByOrder: images
+            totalImages: validImages.length,
+            imagesByOrder: validImages
         };
     } catch (error) {
         console.error('Error getting property image stats:', error);
