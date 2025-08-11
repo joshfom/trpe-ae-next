@@ -9,7 +9,11 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
-import CookieConsent from "@/components/CookieConsent";
+// Choose one of these cookie consent implementations:
+// import CookieConsent from "@/components/CookieConsent"; // Original blocking version
+// import CookieConsentNonBlocking from "@/components/CookieConsentNonBlocking"; // Non-blocking card
+// import CookieConsentBanner from "@/components/CookieConsentBanner"; // Bottom banner
+import CookieConsentMinimal from "@/components/CookieConsentMinimal"; // Minimal notice
 import GTMConsentScript from "@/components/GTMConsentScript";
 
 const poppins = Poppins({
@@ -317,7 +321,7 @@ export default function RootLayout({
           richColors
       />
 
-      <CookieConsent />
+      <CookieConsentMinimal />
 
       </body>
 
