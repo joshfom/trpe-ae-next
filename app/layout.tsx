@@ -9,6 +9,12 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
+// Choose one of these cookie consent implementations:
+// import CookieConsent from "@/components/CookieConsent"; // Original blocking version
+// import CookieConsentNonBlocking from "@/components/CookieConsentNonBlocking"; // Non-blocking card
+// import CookieConsentBanner from "@/components/CookieConsentBanner"; // Bottom banner
+import CookieConsentMinimal from "@/components/CookieConsentMinimal"; // Minimal notice
+import GTMConsentScript from "@/components/GTMConsentScript";
 
 const poppins = Poppins({
   weight: ['400', '500', '600'],
@@ -44,6 +50,9 @@ export default function RootLayout({
   return (
       <html lang="en" className="js" suppressHydrationWarning>
       <head>
+   
+   {/* GTM Consent Mode - Must load first */}
+   <GTMConsentScript />
    
    {/* Early GTM Form Filter - Must load before GTM */}
    <Script id="gtm-early-filter" strategy="beforeInteractive" dangerouslySetInnerHTML={{
@@ -291,6 +300,9 @@ export default function RootLayout({
       </head>
       <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 xl:px-0')}>
 
+      {/* GDPR-Compliant GTM with Consent Mode */}
+      <GTMConsentScript />
+
       <noscript>
         <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MNQMSPX"
                 height="0" width="0" style={{display:"none",visibility:"hidden"}}></iframe>
@@ -308,6 +320,8 @@ export default function RootLayout({
           position="top-center"
           richColors
       />
+
+      <CookieConsentMinimal />
 
       </body>
 

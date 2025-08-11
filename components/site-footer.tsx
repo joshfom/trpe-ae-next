@@ -363,6 +363,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                     <div className="flex flex-col lg:flex-row gap-4">
                         <Link className={'pb-1 text-center border-b'} href={'/privacy-policy'}>Privacy Policy</Link>
                         <Link className={'pb-1 border-b'} href={'/terms-conditions'}>Terms & Conditions</Link>
+                        <Link className={'pb-1 border-b'} href={'/cookie-settings'}>Cookie Settings</Link>
                     </div>
                 </div>
 
