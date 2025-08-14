@@ -71,6 +71,20 @@
       "when": 1751280296391,
       "tag": "0009_open_maximus",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1755091271392,
+      "tag": "0011_add-author-url-field",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1755153277475,
+      "tag": "0012_panoramic_giant_man",
+      "breakpoints": true
     }
   ]
 }

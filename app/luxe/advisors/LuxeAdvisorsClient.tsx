@@ -4,26 +4,23 @@ import React from 'react';
 import {AgentDetails} from '@/components/luxe';
 import {motion} from "framer-motion";
 
-// Animation variants following the main page pattern
+// Simplified, performance-optimized animation variants
 const fadeInUp = {
-  initial: { opacity: 0, y: 80 },
+  initial: { opacity: 0, y: 30 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] }
+  transition: { duration: 0.6, ease: "easeOut" }
 };
 
-const fadeInScale = {
-  initial: { opacity: 0, scale: 0.92 },
-  animate: { opacity: 1, scale: 1 },
-  transition: { duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }
+const fadeIn = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  transition: { duration: 0.8, ease: "easeOut" }
 };
 
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2
-    }
-  }
+const slideUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5, ease: "easeOut" }
 };
 
 interface Agent {
@@ -34,6 +31,7 @@ interface Agent {
   phone?: string;
   email?: string;
   linkedin?: string;
+  slug?: string;
 }
 
 interface LuxeAdvisorsClientProps {
@@ -46,62 +44,55 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
       className="min-h-screen bg-gray-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.5 }}
     >
       {/* Hero Section */}
       <motion.div 
-        className="relative w-full h-[600px] lg:h-[800px] overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black"
-        initial="initial"
-        whileInView="animate"
-            style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1715168437311-18b9ec0830c1?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"
-          }}
-        viewport={{ once: true, margin: "-10px" }}
-        variants={staggerContainer}
+        className="relative w-full h-screen overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black"
+        style={{
+          backgroundImage: "url('https://images.unsplash.com/photo-1715168437311-18b9ec0830c1?q=80&w=3270&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')"
+        }}
       >
-        <motion.div 
-          className="absolute inset-0 bg-cover bg-center z-10 bg-no-repeat bg-slate-800/40"
-      
-          variants={fadeInScale}
-        />
+        <div className="absolute inset-0 bg-cover bg-center z-10 bg-no-repeat bg-slate-800/40" />
         
         <div className="relative z-10 max-w-7xl h-full mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-32">
           <motion.div 
-            className="text-center flex flex-col items-center justify-center   "
-            variants={fadeInUp}
+        className="text-center flex flex-col items-center justify-center h-full"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <motion.h1 
-              className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 font-playfair leading-tight"
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1.4, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              whileHover={{ scale: 1.01 }}
-            >
-              Meet Our
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
-                Advisors
-              </span>
-            </motion.h1>
-            <div className="max-w-4xl mx-auto">
-              <motion.p 
-                className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8"
-                initial={{ opacity: 0, y: 60 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-              >
-                Our distinguished team of luxury real estate professionals brings unparalleled expertise, 
-                local market knowledge, and commitment to excellence in every transaction.
-              </motion.p>
-              <motion.p 
-                className="text-base sm:text-lg text-gray-400 leading-relaxed"
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1.0, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-              >
-                Each advisor specializes in Dubai&apos;s most prestigious neighborhoods and exclusive properties, 
-                ensuring you receive world-class service whether buying, selling, or investing in luxury real estate.
-              </motion.p>
-            </div>
+        <motion.h1 
+          className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 font-playfair leading-tight"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          Meet Our
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+            Advisors
+          </span>
+        </motion.h1>
+        <div className="max-w-4xl mx-auto">
+          <motion.p 
+            className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+          >
+            Our distinguished team of luxury real estate professionals brings unparalleled expertise, 
+            local market knowledge, and commitment to excellence in every transaction.
+          </motion.p>
+          <motion.p 
+            className="text-base sm:text-lg text-gray-400 leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+          >
+            Each advisor specializes in Dubai&apos;s most prestigious neighborhoods and exclusive properties, 
+            ensuring you receive world-class service whether buying, selling, or investing in luxury real estate.
+          </motion.p>
+        </div>
           </motion.div>
         </div>
         
@@ -113,32 +104,34 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
       {/* Excellence & Experience Section */}
       <motion.div 
         className="bg-gradient-to-br from-slate-900 via-gray-900 to-black py-12 sm:py-16 lg:py-32"
-        initial="initial"
-        whileInView="animate"
-        viewport={{ once: true, margin: "-200px", amount: 0.4 }}
-        variants={staggerContainer}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             className="text-center max-w-4xl mx-auto"
-            variants={fadeInUp}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
             <motion.h3 
               className="text-sm sm:text-lg md:text-xl text-amber-400 font-medium mb-3 sm:mb-4 tracking-wide uppercase"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.8 }}
-              transition={{ duration: 1.0, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
             >
               Unmatched Excellence
             </motion.h3>
             <motion.h2 
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 sm:mb-8 font-playfair leading-tight"
-              initial={{ opacity: 0, y: 80, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, amount: 0.8 }}
-              transition={{ duration: 1.4, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
-              whileHover={{ scale: 1.01 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
               Luxury Real Estate
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
@@ -147,20 +140,20 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
             </motion.h2>
             <motion.p 
               className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8"
-              initial={{ opacity: 0, y: 60 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.8 }}
-              transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
               With decades of combined experience and billions in luxury property transactions, 
               our team represents the pinnacle of real estate excellence in Dubai&apos;s most exclusive markets.
             </motion.p>
             <motion.p 
               className="text-base sm:text-lg text-gray-400 leading-relaxed mb-8 sm:mb-12"
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.8 }}
-              transition={{ duration: 1.0, delay: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
             >
               From waterfront penthouses to private island estates, we curate extraordinary properties 
               for the world&apos;s most discerning clients. Our commitment to discretion, expertise, and 
@@ -170,40 +163,37 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
             {/* Stats */}
             <motion.div 
               className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12"
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true, amount: 0.8 }}
-              variants={staggerContainer}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.5 }}
             >
               <motion.div 
                 className="text-center"
-                variants={{
-                  initial: { opacity: 0, y: 60 },
-                  animate: { opacity: 1, y: 0 }
-                }}
-                transition={{ duration: 1.0, ease: [0.25, 0.1, 0.25, 1] }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.6 }}
               >
                 <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">$2.5B+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Total Sales Volume</div>
               </motion.div>
               <motion.div 
                 className="text-center"
-                variants={{
-                  initial: { opacity: 0, y: 60 },
-                  animate: { opacity: 1, y: 0 }
-                }}
-                transition={{ duration: 1.0, delay: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.7 }}
               >
                 <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">500+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Luxury Properties Sold</div>
               </motion.div>
               <motion.div 
                 className="text-center"
-                variants={{
-                  initial: { opacity: 0, y: 60 },
-                  animate: { opacity: 1, y: 0 }
-                }}
-                transition={{ duration: 1.0, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.8 }}
               >
                 <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">25+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Years Combined Experience</div>
@@ -220,10 +210,23 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
       </motion.div>
 
       {/* Agent details section - passing real agent data */}
-      <AgentDetails agents={agents} />
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
+      >
+        <AgentDetails agents={agents} />
+      </motion.div>
 
       {/* Call to action section */}
-      <div className="relative w-full overflow-hidden bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700 py-24 lg:py-32">
+      <motion.div 
+        className="relative w-full overflow-hidden bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700 py-24 lg:py-32"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.6 }}
+      >
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
           style={{
@@ -232,7 +235,13 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
         />
         
         <div className="relative z-10 max-w-7xl mx-auto px-6">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+          <motion.div 
+            className="flex flex-col lg:flex-row items-center justify-between gap-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             {/* Left Content */}
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
@@ -260,13 +269,13 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
                 Schedule a consultation with our luxury property specialists
               </p>
             </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Decorative Elements */}
         <div className="absolute top-10 left-1/4 w-32 h-32 bg-white/10 rounded-full blur-xl"></div>
         <div className="absolute bottom-10 right-1/4 w-40 h-40 bg-white/5 rounded-full blur-xl"></div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 };
