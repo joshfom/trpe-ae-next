@@ -49,7 +49,7 @@ function ContactPage() {
         "telephone": "+971 4 228 6623",
         "contactPoint": {
             "@type": "ContactPoint",
-            "telephone": "+971 50 523 2712",
+            "telephone": "+971 50 709 8189 ",
             "contactType": "customer service"
         }
     }
@@ -105,8 +105,8 @@ function ContactPage() {
                         </div>
                         <div className="flex items-center space-x-2">
                             <MessageCircle size={20} className={'stroke-1'}/>
-                            <a href={'https://wa.me/971505232712'} className="text-sm">
-                                +971 50 523 2712
+                            <a href={'https://wa.me/971507098189'} className="text-sm">
+                                +971 50 709 8189
                             </a>
                         </div>
                         <div className={'pt-3 flex justify-end'}>
