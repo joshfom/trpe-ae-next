@@ -14,6 +14,7 @@ const OurTeamPage: React.FC = async () => {
     description: agent.bio || 'Dedicated luxury real estate professional committed to providing exceptional service and expertise in Dubai\'s most prestigious neighborhoods.',
     phone: agent.phone || undefined,
     email: agent.email || undefined,
+    slug: agent.slug, // Add slug for individual advisor pages
     // Note: LinkedIn is not in the database schema, could be added later if needed
     linkedin: undefined
   })) : [];

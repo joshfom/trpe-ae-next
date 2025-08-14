@@ -1,6 +1,8 @@
 import {boolean, pgTable, text, timestamp} from "drizzle-orm/pg-core";
-import {sql} from "drizzle-orm";
+import {sql, relations} from "drizzle-orm";
 import {createInsertSchema} from "drizzle-zod";
+import {authorTable} from "@/db/schema/author-table";
+import {employeeTable} from "@/db/schema/employee-table";
 
 
 export const insightTable = pgTable("insights", {
@@ -26,6 +28,18 @@ export const insightTable = pgTable("insights", {
     updatedAt: timestamp("updated_at", {withTimezone: true, mode: 'string'}),
     createdAt: timestamp("created_at", {withTimezone: true, mode: 'string'}).default(sql`now()`).notNull(),
 });
+
+// Insight relations
+export const insightRelation = relations(insightTable, ({one}) => ({
+    author: one(authorTable, {
+        fields: [insightTable.authorId],
+        references: [authorTable.id]
+    }),
+    agent: one(employeeTable, {
+        fields: [insightTable.agentId],
+        references: [employeeTable.id]
+    })
+}));
 
 export const insightCreateSchema = createInsertSchema(insightTable)
 

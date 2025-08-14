@@ -3,6 +3,8 @@ import {relations, sql} from "drizzle-orm";
 import {propertyTable} from "@/db/schema/property-table";
 import {createInsertSchema} from "drizzle-zod";
 import {teamTable} from "@/db/schema/team-table";
+import {authorTable} from "@/db/schema/author-table";
+import {insightTable} from "@/db/schema/insight-table";
 
 
 export const employeeTable = pgTable("employees", {
@@ -23,6 +25,7 @@ export const employeeTable = pgTable("employees", {
     rera: text("rera"),
     phone: text("phone"),
     email: text("email"),
+    authorId: text("author_id"), // Link to author table for journal articles
     updatedAt: timestamp("updated_at", {withTimezone: true, mode: 'string'}),
     createdAt: timestamp("created_at", {withTimezone: true, mode: 'string'}).default(sql`now()`).notNull(),
 });
@@ -30,9 +33,14 @@ export const employeeTable = pgTable("employees", {
 //agents relation
 export const employeeRelation = relations(employeeTable, ({many, one}) => ({
     properties: many(propertyTable),
+    insights: many(insightTable),
     team: one(teamTable, {
         fields: [employeeTable.teamId],
         references: [teamTable.id]
+    }),
+    author: one(authorTable, {
+        fields: [employeeTable.authorId],
+        references: [authorTable.id]
     })
 }));
 
