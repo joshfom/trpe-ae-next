@@ -100,7 +100,23 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
     // Use the insights from the relation, or fall back to author-based matching
     let journalArticles = advisor.insights || []
     
-    // If no direct insights, try to find by author relation or name matching
+    // If no direct insights, try to find by agent ID
+    if (journalArticles.length === 0) {
+        const agentInsights = await db.query.insightTable.findMany({
+            where: and(
+                eq(insightTable.isLuxe, true),
+                eq(insightTable.isPublished, 'true'),
+                eq(insightTable.agentId, advisor.id)
+            ),
+            orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
+            limit: 20
+        })
+        if (agentInsights.length > 0) {
+            journalArticles = agentInsights
+        }
+    }
+    
+    // If still no insights and advisor has an author relation, try by author ID
     if (journalArticles.length === 0 && advisor.author) {
         const authorInsights = await db.query.insightTable.findMany({
             where: and(
@@ -111,10 +127,12 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
             orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
             limit: 20
         })
-        journalArticles = authorInsights
+        if (authorInsights.length > 0) {
+            journalArticles = authorInsights
+        }
     }
     
-    // Final fallback: search by name matching
+    // Final fallback: search by name matching in authorId field
     if (journalArticles.length === 0) {
         const allInsights = await db.query.insightTable.findMany({
             where: and(
@@ -125,7 +143,7 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
             limit: 50
         })
 
-        // Filter by matching author name
+        // Filter by matching author name in the authorId field (which seems to store names)
         journalArticles = allInsights.filter(article => {
             const authorName = article.authorId?.toLowerCase() || ''
             const advisorFullName = `${advisor.firstName} ${advisor.lastName}`.toLowerCase()

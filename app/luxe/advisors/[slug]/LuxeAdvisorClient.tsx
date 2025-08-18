@@ -36,7 +36,7 @@ interface LuxeAdvisorClientProps {
 }
 
 const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalArticles }) => {
-    const [activeTab, setActiveTab] = useState<'overview' | 'journals' | 'listings'>('overview');
+    const [activeTab, setActiveTab] = useState<'journals' | 'listings'>('listings');
 
     const advisorJsonLD = {
         "@context": "https://schema.org",
@@ -65,7 +65,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
         label, 
         count 
     }: { 
-        id: 'overview' | 'journals' | 'listings'; 
+        id: 'journals' | 'listings'; 
         icon: any; 
         label: string; 
         count?: number; 
@@ -274,68 +274,6 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
 
             {/* Tab Content */}
             <div className="max-w-7xl mx-auto px-6 pb-12">
-                {activeTab === 'listings' && (
-                    <div className="space-y-12">
-                        {/* Featured Journal Articles */}
-                        {journalArticles.length > 0 && (
-                            <div>
-                                <h3 className="text-3xl font-semibold mb-8 bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
-                                    Featured Articles
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {journalArticles.slice(0, 3).map((article) => (
-                                        <JournalCard key={article.id} article={article} />
-                                    ))}
-                                </div>
-                                {journalArticles.length > 3 && (
-                                    <div className="text-center mt-8">
-                                        <button 
-                                            onClick={() => setActiveTab('journals')}
-                                            className="inline-flex items-center px-6 py-3 border border-gold/50 text-gold hover:bg-gold hover:text-black rounded-full transition-all duration-300"
-                                        >
-                                            View All Articles
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        {/* Featured Listings */}
-                        <div>
-                            <h3 className="text-3xl font-semibold mb-8 bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
-                                Featured Properties
-                            </h3>
-                            {advisor?.properties && advisor?.properties?.length > 0 ? (
-                                <>
-                                    <ListingsGridWithSkeleton listings={advisor?.properties.slice(0, 6) as any}/>
-                                    {advisor?.properties?.length > 6 && (
-                                        <div className="text-center mt-8">
-                                            <button 
-                                                onClick={() => setActiveTab('listings')}
-                                                className="inline-flex items-center px-6 py-3 border border-gold/50 text-gold hover:bg-gold hover:text-black rounded-full transition-all duration-300"
-                                            >
-                                                View All Properties
-                                            </button>
-                                        </div>
-                                    )}
-                                </>
-                            ) : (
-                                <div className="text-center py-12">
-                                    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-12 border border-gold/20">
-                                        <h4 className="text-2xl font-semibold text-gold mb-4">
-                                            Curating Exclusive Properties
-                                        </h4>
-                                        <p className="text-gray-300 text-lg">
-                                            {advisor?.firstName} is currently curating an exclusive selection of luxury properties. 
-                                            Please contact directly for private viewings and off-market opportunities.
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
                 {activeTab === 'journals' && (
                     <div>
                         <h3 className="text-4xl font-semibold mb-8 bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
