@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { 
   ResponsiveDesignManager, 
   type TouchElement, 
   type BreakpointConfig,
   type ViewportConfig 
-} from '../responsive-design-manager';
+} from '@/lib/responsive-design-manager';
 
 describe('ResponsiveDesignManager', () => {
   let manager: ResponsiveDesignManager;

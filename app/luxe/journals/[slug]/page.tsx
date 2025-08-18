@@ -59,9 +59,9 @@ const transformInsightData = (dbInsight: any): Insight => {
     category: 'Luxury Insights',
     readingTime: calculateReadingTime(dbInsight.content),
     author: {
-      name: 'TRPE Luxe Team',
-      title: 'Luxury Real Estate Specialists',
-      avatar: '/assets/images/defaults/agent.jpg'
+      name: dbInsight.author?.name || 'TRPE Luxe Team',
+      title: dbInsight.author?.about || 'Luxury Real Estate Specialists',
+      avatar: dbInsight.author?.avatar || '/assets/images/defaults/agent.jpg'
     },
     slug: dbInsight.slug
   };

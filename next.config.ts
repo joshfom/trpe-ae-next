@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     // Note: NODE_OPTIONS should be set in package.json scripts instead
     images: {
         loader: 'custom',
-        loaderFile: './loader.js',
+        loaderFile: './scripts/loader.js',
         unoptimized: false, // Ensure images are optimized
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },

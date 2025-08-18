@@ -13,7 +13,7 @@ const mockNews = [
     readTime: "5 min read",
     date: "June 15, 2025",
     imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Sarah Ahmed"
+    author: "TRPE Luxe Team"
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const mockNews = [
     readTime: "7 min read",
     date: "June 12, 2025",
     imageUrl: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Mohammed Al-Rashid"
+    author: "TRPE Luxe Team"
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const mockNews = [
     readTime: "6 min read",
     date: "June 10, 2025",
     imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Elena Vasquez"
+    author: "TRPE Luxe Team"
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ const mockNews = [
     readTime: "8 min read",
     date: "June 8, 2025",
     imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "James Mitchell"
+    author: "TRPE Luxe Team"
   },
   {
     id: 5,
@@ -53,7 +53,7 @@ const mockNews = [
     readTime: "5 min read",
     date: "June 5, 2025",
     imageUrl: "https://images.unsplash.com/photo-1722502831583-b4e93ecc6027?q=80&w=3271&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    author: "Fatima Al-Zahra"
+    author: "TRPE Luxe Team"
   },
   {
     id: 6,
@@ -63,7 +63,7 @@ const mockNews = [
     readTime: "6 min read",
     date: "June 3, 2025",
     imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Alex Thompson"
+    author: "TRPE Luxe Team"
   },
   {
     id: 7,
@@ -73,7 +73,7 @@ const mockNews = [
     readTime: "7 min read",
     date: "June 1, 2025",
     imageUrl: "https://images.unsplash.com/photo-1448630360428-65456885c650?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Amira Hassan"
+    author: "TRPE Luxe Team"
   },
   {
     id: 8,
@@ -83,7 +83,7 @@ const mockNews = [
     readTime: "9 min read",
     date: "May 30, 2025",
     imageUrl: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Robert Chen"
+    author: "TRPE Luxe Team"
   },
   {
     id: 9,
@@ -93,7 +93,7 @@ const mockNews = [
     readTime: "6 min read",
     date: "May 28, 2025",
     imageUrl: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    author: "Lisa Rodriguez"
+    author: "TRPE Luxe Team"
   }
 ];
 

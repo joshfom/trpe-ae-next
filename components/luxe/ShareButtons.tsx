@@ -62,7 +62,7 @@ export function ShareButtons({ insight }: ShareButtonsProps) {
       
       <button
         onClick={() => handleShare('facebook')}
-        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-slate-900 text-white rounded-full hover:bg-blue-700 transition-colors"
         aria-label="Share on Facebook"
       >
         <Facebook size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -71,7 +71,7 @@ export function ShareButtons({ insight }: ShareButtonsProps) {
       {/* WhatsApp */}
       <button
         onClick={() => handleShare('whatsapp')}
-        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors"
+        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-black text-white rounded-full hover:bg-green-600 transition-colors"
         aria-label="Share on WhatsApp"
       >
         <MessageCircle size={16} className="sm:w-[18px] sm:h-[18px]" />

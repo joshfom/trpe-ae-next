@@ -1,5 +1,5 @@
 // Test script for image loader
-const myImageLoader = require('./loader.js').default;
+const myImageLoader = require('../../scripts/loader.js').default;
 
 console.log('🧪 Testing Image Loader Functionality');
 console.log('=====================================');

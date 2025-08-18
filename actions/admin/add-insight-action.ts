@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Server action for adding new insights to the database
+ * Handles insight creation with content processing, image optimization, and database insertion.
+ * 
+ * @author Auto-generated JSDoc
+ * @version 1.0.0
+ * @since 2025-01-18
+ */
+
 "use server";
 
 import { revalidateTag } from "next/cache";
@@ -9,6 +18,19 @@ import { createId } from "@paralleldrive/cuid2";
 import slugify from "slugify";
 import { processInsightImage, ImageProcessingError, ImageFetchError } from "@/lib/insights-image-utils";
 
+/**
+ * Interface defining the structure of insight data for creation
+ * 
+ * @interface InsightData
+ * @property {string} title - The title of the insight (required)
+ * @property {string} [metaTitle] - SEO meta title (optional)
+ * @property {string} [metaDescription] - SEO meta description (optional)
+ * @property {string} [publishedAt] - ISO string date when insight should be published (optional)
+ * @property {string} [authorId] - ID of the insight author (optional)
+ * @property {string} [altText] - Alternative text for the cover image (optional)
+ * @property {string} [coverUrl] - URL of the cover image (optional but validated as required)
+ * @property {string} content - HTML content of the insight (required)
+ */
 interface InsightData {
   title: string;
   metaTitle?: string;
@@ -21,11 +43,63 @@ interface InsightData {
 }
 
 /**
- * Server action to add a new insight
- * @param data Insight data to add
- * @returns Object with success status and data or error message
+ * Response structure for insight creation operations
+ * 
+ * @interface InsightResponse
+ * @property {boolean} success - Whether the operation was successful
+ * @property {object|null} data - The created insight data (if successful)
+ * @property {string} [error] - Error message (if unsuccessful)
  */
-export async function addInsight(data: InsightData) {
+interface InsightResponse {
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
+/**
+ * Server action to create a new insight in the database
+ * 
+ * This function handles the complete workflow of insight creation including:
+ * - User authentication validation
+ * - Input data validation and sanitization
+ * - HTML content processing for safe storage
+ * - Slug generation from title
+ * - Cover image processing and optimization to WebP format
+ * - Database insertion with generated ID
+ * - Cache invalidation for updated data
+ * 
+ * @async
+ * @function addInsight
+ * @param {InsightData} data - The insight data to be created
+ * @returns {Promise<InsightResponse>} Response object containing success status and data or error
+ * 
+ * @example
+ * ```typescript
+ * const result = await addInsight({
+ *   title: "Understanding Real Estate Trends",
+ *   content: "<p>Market analysis shows...</p>",
+ *   coverUrl: "https://example.com/image.jpg",
+ *   metaTitle: "Real Estate Trends 2025",
+ *   metaDescription: "Comprehensive analysis of real estate market trends",
+ *   altText: "Real estate market graph showing growth trends"
+ * });
+ * 
+ * if (result.success) {
+ *   console.log("Insight created:", result.data);
+ * } else {
+ *   console.error("Creation failed:", result.error);
+ * }
+ * ```
+ * 
+ * @throws {Error} Database insertion errors
+ * @throws {ImageProcessingError} Image processing failures
+ * @throws {ImageFetchError} Image fetching failures
+ * 
+ * @see {@link processHtmlForStorage} for HTML content processing
+ * @see {@link processInsightImage} for image optimization
+ * @see {@link getSession} for authentication validation
+ */
+export async function addInsight(data: InsightData): Promise<InsightResponse> {
   try {
     // Check authentication first
     const session = await getSession();
@@ -56,20 +130,20 @@ export async function addInsight(data: InsightData) {
       };
     }
 
-    // Pre-process HTML content before storing
+    // Pre-process HTML content before storing for security and consistency
     const processedContent = content ? await processHtmlForStorage(content) : content;
     
-    // Create slug from title
+    // Create URL-safe slug from title for SEO-friendly URLs
     const slug = slugify(title, {
       lower: true,
       strict: true
     });
 
     try {
-      // Process the cover image to ensure it's WebP format
+      // Process the cover image to ensure optimal WebP format and quality
       const processedCoverUrl = await processInsightImage(coverUrl, { quality: 80 });
       
-      // Insert into database
+      // Insert new insight into database with generated ID and processed data
       const result = await db.insert(insightTable).values({
         id: createId(),
         slug,
@@ -83,7 +157,7 @@ export async function addInsight(data: InsightData) {
         content: processedContent,
       }).returning();
 
-      // Revalidate insights data for both admin and frontend
+      // Invalidate relevant cache tags to ensure fresh data on frontend
       revalidateTag('admin-insights');
       revalidateTag('insights');
       revalidateTag('insights-list');
@@ -95,7 +169,7 @@ export async function addInsight(data: InsightData) {
     } catch (imageError) {
       console.error('Error processing insight image:', imageError);
       
-      // Check if it's a specific image processing error
+      // Handle specific image processing errors gracefully
       if (imageError instanceof ImageProcessingError || imageError instanceof ImageFetchError) {
         return {
           success: false,
@@ -104,7 +178,8 @@ export async function addInsight(data: InsightData) {
         };
       }
       
-      // For other errors, still try to save with original image
+      // For other image errors, attempt to save with original image URL
+      // This ensures insights can still be created even if image optimization fails
       const result = await db.insert(insightTable).values({
         id: createId(),
         slug,
@@ -118,7 +193,7 @@ export async function addInsight(data: InsightData) {
         content: processedContent,
       }).returning();
 
-      // Revalidate insights data for both admin and frontend
+      // Invalidate cache tags even for fallback saves
       revalidateTag('admin-insights');
       revalidateTag('insights');
       revalidateTag('insights-list');

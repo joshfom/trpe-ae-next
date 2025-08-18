@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
-import { HreflangGenerator } from '../hreflang-generator';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { HreflangGenerator } from '@/lib/seo/hreflang-generator';
 
 describe('HreflangGenerator', () => {
   let generator: HreflangGenerator;

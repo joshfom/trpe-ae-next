@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
-import { BreadcrumbStructuredData } from '../breadcrumb-structured-data';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { BreadcrumbStructuredData } from '@/lib/seo/breadcrumb-structured-data';
 
 describe('BreadcrumbStructuredData', () => {
   let breadcrumbData: BreadcrumbStructuredData;

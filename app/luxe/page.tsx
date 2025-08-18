@@ -62,6 +62,9 @@ async function getFeaturedLuxeInsights() {
       ),
       orderBy: [desc(insightTable.publishedAt), desc(insightTable.createdAt)],
       limit: 3,
+      with: {
+        author: true
+      }
     });
 
     return luxeInsights;
@@ -109,7 +112,7 @@ export default async function LuxePage() {
     id: insight.id,
     title: insight.title || 'Untitled',
     excerpt: insight.metaDescription || 'Discover the latest insights from Dubai\'s luxury real estate market.',
-    author: 'TRPE Luxe Team',
+    author: insight.author?.name || 'TRPE Luxe Team',
     date: insight.publishedAt ? new Date(insight.publishedAt).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',

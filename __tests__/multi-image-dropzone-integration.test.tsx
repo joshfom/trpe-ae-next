@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { EnhancedFileState, reorderImages } from '@/lib/image-management-utils';
 
 describe('MultiImageDropzone Integration with SortableImageGrid', () => {

@@ -3,16 +3,13 @@
  * Tests the comprehensive validation functions for image management
  */
 
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { describe } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
-import { it } from 'node:test';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import {
+  EnhancedFileState,
+  validateImageCollection,
+  validateImageFile,
+  getValidationSummary,
+} from '@/lib/image-management-utils';
 import { it } from 'node:test';
 import { describe } from 'node:test';
 import { it } from 'node:test';
