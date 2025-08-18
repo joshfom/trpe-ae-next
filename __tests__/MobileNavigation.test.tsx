@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { usePathname } from 'next/navigation';
-import MobileNavigation, { defaultNavigationItems } from '../MobileNavigation';
+import MobileNavigation, { defaultNavigationItems } from '../components/mobile/MobileNavigation';
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({

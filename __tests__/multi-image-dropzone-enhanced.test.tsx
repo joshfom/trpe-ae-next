@@ -3,7 +3,7 @@
  * Tests the delete functionality and enhanced FileState interface
  */
 
-import { describe, it, expect, beforeEach } from 'bun:test';
+import { describe, it, expect, beforeEach } from '@jest/globals';
 import { EnhancedFileState } from '@/lib/image-management-utils';
 import { 
   getVisibleImages, 

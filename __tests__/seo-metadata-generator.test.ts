@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, mock } from 'bun:test';
-import { SEOMetadataGenerator, PageContext } from '../metadata-generator';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
+import { SEOMetadataGenerator, PageContext } from '@/lib/seo/metadata-generator';
 
 // Mock the page meta actions to avoid database connection
-mock.module('@/actions/page-meta-actions', () => ({
-  getPageMetaByPath: mock(() => Promise.resolve(null))
+jest.mock('@/actions/page-meta-actions', () => ({
+  getPageMetaByPath: jest.fn(() => Promise.resolve(null))
 }));
 
 describe('SEOMetadataGenerator', () => {

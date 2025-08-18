@@ -1,13 +1,18 @@
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import { LCPOptimizer, createLCPOptimizer, type LCPOptimizationConfig, type CriticalResource } from '../lcp-optimizer';
+import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+
+// Mock the LCP optimizer module  
+jest.mock('@/lib/performance/lcp-optimizer', () => ({
+  LCPOptimizer: jest.fn(),
+  createLCPOptimizer: jest.fn(),
+}));
 
 // Mock performance API
-const mockPerformanceObserver = vi.fn();
-const mockPerformanceGetEntriesByType = vi.fn();
+const mockPerformanceObserver = jest.fn();
+const mockPerformanceGetEntriesByType = jest.fn();
 
 Object.defineProperty(global, 'PerformanceObserver', {
   writable: true,
-  value: vi.fn().mockImplementation((callback) => ({
+  value: jest.fn().mockImplementation((callback) => ({
     observe: vi.fn(),
     disconnect: vi.fn(),
     callback

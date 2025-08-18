@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'bun:test';
-import { CanonicalURLGenerator } from '../canonical-url-generator';
+import { describe, it, expect, beforeEach } from '@jest/globals';
+import { CanonicalURLGenerator } from '@/lib/seo/canonical-url-generator';
 
 describe('CanonicalURLGenerator', () => {
   let generator: CanonicalURLGenerator;

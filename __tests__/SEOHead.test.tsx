@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'bun:test';
-import { generateSEOMetadata } from '../SEOHead';
+import { describe, it, expect } from '@jest/globals';
+import { generateSEOMetadata } from '@/components/SEOHead';
 import { Metadata } from 'next';
 
 // Test the generateSEOMetadata function since we can't easily test React components without a testing library
