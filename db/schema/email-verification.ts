@@ -1,6 +1,6 @@
 import {jsonb, pgTable, text, timestamp, varchar} from "drizzle-orm/pg-core";
 import {sql} from "drizzle-orm";
-import {users} from "../../auth-schema";
+import {users} from "./auth-schema";
 
 
 export const emailVerificationTable = pgTable("email_verifications", {

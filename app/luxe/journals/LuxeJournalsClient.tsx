@@ -36,6 +36,12 @@ interface Insight {
   publishedAt: string | null;
   createdAt: string;
   authorId: string | null;
+  author?: {
+    id: string;
+    name: string | null;
+    about: string | null;
+    avatar: string | null;
+  } | null;
 }
 
 interface BlogPost {
@@ -96,7 +102,7 @@ const LuxeJournalsClient: React.FC<LuxeJournalsClientProps> = ({ insights, pagin
     id: insight.id,
     title: insight.title || 'Untitled',
     excerpt: getExcerpt(insight.content),
-    author: 'TRPE Luxe Team',
+    author: insight.author?.name || 'TRPE Luxe Team',
     date: formatDate(insight.publishedAt || insight.createdAt),
     imageUrl: insight.coverUrl || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     slug: insight.slug,

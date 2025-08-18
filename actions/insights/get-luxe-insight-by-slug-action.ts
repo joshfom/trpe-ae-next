@@ -14,13 +14,16 @@ import { unstable_cache } from "next/cache";
 export const getLuxeInsightBySlugAction = unstable_cache(
   async (slug: string) => {
     try {
-      // Fetch luxe insight by slug from database
+      // Fetch luxe insight by slug from database with author relation
       const insight = await db.query.insightTable.findFirst({
         where: and(
           eq(insightTable.slug, slug),
           eq(insightTable.isLuxe, true),
           eq(insightTable.isPublished, "yes")
-        )
+        ),
+        with: {
+          author: true
+        }
       });
       
       if (!insight) {
@@ -46,7 +49,7 @@ export const getLuxeInsightBySlugAction = unstable_cache(
   },
   ['luxe-insight-by-slug'],
   { 
-    revalidate: 1800, // Cache for 30 minutes
+    revalidate: 300, // Cache for 5 minutes instead of 30 minutes
     tags: ['luxe-insights']
   }
 );

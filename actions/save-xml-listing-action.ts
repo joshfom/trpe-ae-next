@@ -8,7 +8,6 @@
  * Key Features:
  * - XML feed fetching and parsing
  * - Property data validation and transformation
- * - Luxury property detection and enhanced processing
  * - Image downloading, optimization, and S3 storage
  * - Duplicate detection and handling
  * - Database transaction management
@@ -231,7 +230,7 @@ interface PropertyOptions {
  * @function saveXmlListing
  * @description Imports property listings from an XML feed URL. Handles the complete workflow
  *              including data fetching, parsing, validation, processing, and database storage.
- *              Includes support for luxury property detection, image processing, and cleanup operations.
+ *              Includes support for image processing and cleanup operations.
  * 
  * @param {string} url - The URL of the XML feed to import from
  * 
@@ -267,8 +266,7 @@ interface PropertyOptions {
  * - Batch processing for database operations to optimize performance
  * 
  * @features
- * - **Luxury Detection**: Automatically identifies properties >20M AED for enhanced processing
- * - **Image Processing**: Downloads, optimizes (WebP), and uploads to S3 for luxury properties
+ * - **Image Processing**: Downloads, optimizes (WebP), and uploads to S3 for all properties
  * - **Duplicate Detection**: Prevents duplicate imports using permit_number + reference_number
  * - **Data Validation**: Validates required fields and data formats before processing
  * - **Incremental Updates**: Only updates properties that have newer timestamps
@@ -284,7 +282,7 @@ interface PropertyOptions {
  * 5. **Deduplicate**: Check for and skip duplicate properties in feed
  * 6. **Validate**: Ensure required fields and data quality
  * 7. **Store**: Create or update property records in database
- * 8. **Images**: Process and upload images for luxury properties
+ * 8. **Images**: Process and upload images for all properties
  * 9. **Cleanup**: Remove properties no longer in feed
  * 10. **Finalize**: Update import job with final statistics
  */
@@ -1021,9 +1019,6 @@ async function updateProperty(
     // Handle featured and exclusive flags
     const isFeatured = newProperty.is_featured === 'YES' || newProperty.is_featured === '1';
     const isExclusive = newProperty.is_exclusive === 'YES' || newProperty.is_exclusive === '1';
-    
-    // Mark as luxe if price is above 20,000,000
-    const isLuxe = priceValue > 20000000;
 
     return await db.update(propertyTable).set({
         title: newProperty.title_en,
@@ -1052,7 +1047,6 @@ async function updateProperty(
         slug,
         isFeatured: isFeatured,
         isExclusive: isExclusive,
-        isLuxe: isLuxe,
         lastUpdated: lastUpdate.toISOString(),
         updatedAt: sql`now()`,
     }).where(
@@ -1086,9 +1080,6 @@ async function createProperty(
     // Handle featured and exclusive flags
     const isFeatured = newProperty.is_featured === 'YES' || newProperty.is_featured === '1';
     const isExclusive = newProperty.is_exclusive === 'YES' || newProperty.is_exclusive === '1';
-    
-    // Mark as luxe if price is above 20,000,000
-    const isLuxe = priceValue > 20000000;
 
     return await db.insert(propertyTable).values({
         id: createId(),
@@ -1118,7 +1109,6 @@ async function createProperty(
         slug,
         isFeatured: isFeatured,
         isExclusive: isExclusive,
-        isLuxe: isLuxe,
         status: 'published',
         lastUpdated: lastUpdate.toISOString(),
     }).returning();
