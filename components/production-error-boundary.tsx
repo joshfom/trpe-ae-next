@@ -59,6 +59,22 @@ export class ProductionErrorBoundary extends Component<Props, State> {
     const isHydrationError = error.message?.includes('hydration') || 
                             error.message?.includes('did not match');
 
+    // Enhanced error logging for production
+    console.error('Application Error Boundary:', error);
+    if (process.env.NODE_ENV === 'production') {
+      // Enhanced production error logging
+      console.error('Production Error Context:', {
+        message: error.message,
+        stack: error.stack,
+        componentStack: errorInfo.componentStack,
+        timestamp: new Date().toISOString(),
+        errorId: this.state.errorId,
+        errorType: isServerActionError ? 'server-action' : 
+                  isClientModulesError ? 'client-modules' : 
+                  isHydrationError ? 'hydration' : 'unknown'
+      });
+    }
+
     // Use our error monitor for comprehensive tracking
     if (isServerActionError) {
       const actionIdMatch = error.message.match(/Failed to find Server Action "([^"]+)"/);
@@ -79,7 +95,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
       });
     }
 
-    // Call optional error handler
+    // Call optional error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }

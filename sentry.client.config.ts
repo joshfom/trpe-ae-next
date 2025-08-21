@@ -3,6 +3,7 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { Replay } from "@sentry/replay";
 
 // Only initialize Sentry if DSN is available
 if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
@@ -87,13 +88,9 @@ if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
     
     // Integrations
     integrations: [
-      new Sentry.Replay({
+      new Replay({
         maskAllText: process.env.NODE_ENV === 'production',
         blockAllMedia: process.env.NODE_ENV === 'production',
-      }),
-      new Sentry.BrowserTracing({
-        // Capture interactions like clicks and navigation
-        routingInstrumentation: Sentry.nextRouterInstrumentation,
       }),
     ],
     

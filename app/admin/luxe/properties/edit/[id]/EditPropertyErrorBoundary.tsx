@@ -98,11 +98,6 @@ function ImageManagementErrorFallback({
 }
 
 function EditPropertyErrorBoundary({ children, propertyId }: EditPropertyErrorBoundaryProps) {
-    const handleError = (error: Error, errorInfo: React.ErrorInfo) => {
-        console.error('Luxe Property Edit Error:', error, errorInfo);
-        // Could add error reporting service here
-    };
-
     const FallbackComponent = ({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
         <ImageManagementErrorFallback 
             error={error} 
@@ -114,7 +109,6 @@ function EditPropertyErrorBoundary({ children, propertyId }: EditPropertyErrorBo
     return (
         <ErrorBoundary
             FallbackComponent={FallbackComponent}
-            onError={handleError}
         >
             {children}
         </ErrorBoundary>

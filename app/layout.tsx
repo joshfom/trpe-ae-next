@@ -314,21 +314,7 @@ export default function RootLayout({
           color="#374151"
       />
       <EdgeStoreProvider>
-          <ProductionErrorBoundary
-            onError={(error, errorInfo) => {
-              // Enhanced error logging for production
-              console.error('Application Error Boundary:', error);
-              if (process.env.NODE_ENV === 'production') {
-                // This is where you'd send to Sentry or other monitoring service
-                console.error('Production Error Context:', {
-                  message: error.message,
-                  stack: error.stack,
-                  componentStack: errorInfo.componentStack,
-                  timestamp: new Date().toISOString()
-                });
-              }
-            }}
-          >
+          <ProductionErrorBoundary>
             {children}
           </ProductionErrorBoundary>
       </EdgeStoreProvider>
