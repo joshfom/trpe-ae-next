@@ -12,7 +12,7 @@ function Layout({children}: LayoutProps) {
                 <div className="">
                     {children}
                 </div>
-            </SiteLayoutClient>
+        </SiteLayoutClient>
     );
 }
 
