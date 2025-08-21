@@ -28,18 +28,29 @@ export async function generateMetadata(
         where: eq(developerTable.slug, slug),
     }) as unknown as DeveloperType
 
+    // Handle case when developer is not found
+    if (!developer) {
+        return {
+            title: 'Developer not found',
+            description: 'The developer you are looking for does not exist.',
+            alternates: {
+                canonical: `${process.env.NEXT_PUBLIC_URL}/developers/${slug}`,
+            },
+        }
+    }
+
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
 
     return {
-        title: `${developer?.name} | Real Estate Developers in Dubai | TRPE`,
+        title: `${developer.name} | Real Estate Developers in Dubai | TRPE`,
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_URL}/developers/${developer?.slug}`,
+            canonical: `${process.env.NEXT_PUBLIC_URL}/developers/${developer.slug}`,
         },
         openGraph: {
-            images: [developer.logoUrl, ...previousImages],
+            images: developer.logoUrl ? [developer.logoUrl, ...previousImages] : previousImages,
             type: 'article',
-            url: `${process.env.NEXT_PUBLIC_URL}/developers/${developer?.slug}`
+            url: `${process.env.NEXT_PUBLIC_URL}/developers/${developer.slug}`
         },
         description: `${ developer.about ?  truncateText(developer.about, 150) : developer.name + ' - Explore our real estate communities, where buyers, sellers, and investors connect. Stay updated on the latest property listings, market insights, and valuable resources to help you make informed decisions in buying and selling real estate.'} `,
     }

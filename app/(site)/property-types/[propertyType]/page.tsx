@@ -1,7 +1,6 @@
 import React from 'react';
 import Listings from "@/features/properties/components/Listings";
 import {Metadata, ResolvingMetadata} from "next";
-import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
 import {propertyTypeTable} from "@/db/schema/property-type-table";
@@ -16,7 +15,6 @@ import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 
 type Props = {
     params: Promise<{
-        offeringType: string,
         propertyType: string
     }>
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
@@ -28,7 +26,7 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
-    const slug = (await params).offeringType
+    const slug = (await params).propertyType
 
     // Get pathname from headers for pageMeta
     const headersList = await headers();
@@ -48,29 +46,27 @@ export async function generateMetadata(
             title: pageMeta.metaTitle,
             description: pageMeta?.metaDescription || description,
             alternates: {
-                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${(await params).propertyType}/${slug}`,
+                canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${slug}`,
             },
         };
     }
 
-    const offeringType = await db.query.offeringTypeTable.findFirst({
-        where: eq(offeringTypeTable.slug, slug)
-    }) as unknown as OfferingType;
+    const propertyType = await db.query.propertyTypeTable.findFirst({
+        where: eq(propertyTypeTable.slug, slug)
+    });
 
-
-    if (!offeringType) {
+    if (!propertyType) {
         return {
-            title: 'Property not found',
-            description: 'The offeringType you are looking for does not exist.',
+            title: 'Property Type not found',
+            description: 'The property type you are looking for does not exist.',
         }
     }
 
     return {
-        title: `Properties ${offeringType?.name} in Dubai | Find Your Next Home`,
-
-        description: `Browse exceptional 200+ ${offeringType?.name} in Dubai with TRPE. Your trusted experts for finding your dream home in this vibrant city.`,
+        title: `${propertyType?.name} Properties in Dubai | Find Your Next Home - TRPE AE`,
+        description: `Browse exceptional ${propertyType?.name} properties in Dubai with TRPE. Your trusted experts for finding your dream home in this vibrant city.`,
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_URL}/properties/${offeringType.slug}`,
+            canonical: `${process.env.NEXT_PUBLIC_URL}/property-types/${propertyType.slug}`,
         },
     }
 }
@@ -79,7 +75,6 @@ export async function generateMetadata(
 interface PropertyTypePage {
     params: Promise<{
         propertyType: string;
-        offeringType: string;
     }>,
     searchParams: Promise<{ [key: string]: string  | undefined }>
 }
@@ -99,25 +94,12 @@ async function PropertyForRentPage(props: PropertyTypePage) {
 
     const page = (await props.searchParams).page;
 
-    const slug = (await params).offeringType
-
     const [unitType] = await db.select().from(propertyTypeTable).where(
         eq(propertyTypeTable.slug, params.propertyType)
     ).limit(1);
 
     if (!unitType) {
         return notFound()
-    }
-
-    let about = ''
-
-    if (slug === 'for-rent') {
-        about = unitType.rentContent as string
-    }
-
-    if (slug === 'for-sale') {
-        about = unitType.saleContent as string,
-            about = unitType.saleContent as string
     }
 
     return (

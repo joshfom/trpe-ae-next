@@ -5,15 +5,59 @@
 
 import * as Sentry from "@sentry/nextjs";
 
-Sentry.init({
-  dsn: "https://9192eb22d13fbfb0f886a1a1e392218c@o4509880779603968.ingest.de.sentry.io/4509880780849232",
+// Only initialize Sentry if DSN is available
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
 
-  // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
-  tracesSampleRate: 1,
+    // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
 
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
+    // Enable logs to be sent to Sentry
+    enableLogs: true,
 
-  // Setting this option to true will print useful information to the console while you're setting up Sentry.
-  debug: false,
-});
+    // Set up error filtering for edge runtime
+    beforeSend(event) {
+      // Filter out Next.js internal module errors in edge runtime too
+      if (event.exception) {
+        const error = event.exception.values?.[0];
+        if (error?.value) {
+          const nextJsInternalErrors = [
+            'clientModules',
+            'entryCSSFiles',
+            'Cannot read properties of undefined (reading \'clientModules\')',
+            'Cannot read properties of undefined (reading \'entryCSSFiles\')',
+          ];
+          
+          if (nextJsInternalErrors.some(internalError => error.value?.includes(internalError))) {
+            return null;
+          }
+        }
+      }
+
+      if (event.message?.includes('clientModules') || 
+          event.message?.includes('entryCSSFiles')) {
+        return null;
+      }
+
+      return event;
+    },
+
+    // Additional edge-specific configuration
+    environment: process.env.NODE_ENV,
+    release: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
+
+    // Enhanced context
+    initialScope: {
+      tags: {
+        component: 'edge',
+        runtime: 'edge',
+      },
+    },
+
+    // Setting this option to true will print useful information to the console while you're setting up Sentry.
+    debug: process.env.NODE_ENV === 'development',
+  });
+} else {
+  console.warn('Sentry not initialized: SENTRY_DSN environment variable not found');
+}

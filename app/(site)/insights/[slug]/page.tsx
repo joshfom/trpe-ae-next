@@ -47,14 +47,26 @@ export async function generateMetadata(
             eq(insightTable.isLuxe, false)
         ),
     }) as unknown as InsightType;
+    
+    // Handle case when post is not found
+    if (!post) {
+        return {
+            title: 'Insight not found',
+            description: 'The insight you are looking for does not exist.',
+            alternates: {
+                canonical: `${process.env.NEXT_PUBLIC_URL}/insights/${slug}`,
+            },
+        };
+    }
+    
     const previousImages = (await parent).openGraph?.images || [];
 
     return {
-        title: `${post?.metaTitle || post?.title}`,
+        title: `${post.metaTitle || post.title}`,
         openGraph: {
             images: post.coverUrl ? [post.coverUrl, ...previousImages] : previousImages,
             type: 'article',
-            url: `${process.env.NEXT_PUBLIC_URL}/insights/${post?.slug}`
+            url: `${process.env.NEXT_PUBLIC_URL}/insights/${post.slug}`
         },
         description: `${post.metaDescription || truncateText(post.content || '', 150)}`,
         alternates: {

@@ -16,59 +16,81 @@ const app = new Hono()
      */
     .get("/",
         async (c) => {
-            // Query the database to find all communities with their properties
-            const communities = await db.query.communityTable.findMany({
-                with: {
-                    properties: true,
-                }
-            })
+            try {
+                // Query the database to find all communities with their properties
+                const communities = await db.query.communityTable.findMany({
+                    with: {
+                        properties: true,
+                    }
+                })
 
-            // Sort the communities by the number of properties in descending order
-            const data = communities.sort((a, b) => a.properties.length - b.properties.length).reverse()
+                // Sort the communities by the number of properties in descending order
+                const data = communities.sort((a, b) => a.properties.length - b.properties.length).reverse()
 
-            // Return the sorted communities data as a JSON response
-            return c.json({data})
+                // Return the sorted communities data as a JSON response
+                return c.json({data})
+            } catch (error) {
+                console.error('Error fetching communities:', error);
+                return c.json({error: "Internal server error"}, 500);
+            }
         })
 
 
 
         .get("/list",
             async (c) => {
+                try {
+                    const [rentType, saleType, commercialRentType, commercialSaleType] = await Promise.all([
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "for-rent"),
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "for-sale"),
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "commercial-rent"),
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "commercial-sale"),
+                        })
+                    ]);
 
-                const rentType = await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, "for-rent"),
-                })
+                    // Get all communities first
+                    const baseCommunities = await db.select({
+                        name: communityTable.name,
+                        slug: communityTable.slug,
+                        shortName: communityTable.shortName,
+                        id: communityTable.id,
+                    }).from(communityTable);
 
-                const saleType = await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, "for-sale"),
-                })
+                    // Then calculate counts for each community
+                    const communities = await Promise.all(baseCommunities.map(async (community) => {
+                        const [propertyCount, rentCount, saleCount, commercialRentCount, commercialSaleCount] = await Promise.all([
+                            db.$count(propertyTable, eq(propertyTable.communityId, community.id)),
+                            rentType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, rentType.id))) : Promise.resolve(0),
+                            saleType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, saleType.id))) : Promise.resolve(0),
+                            commercialRentType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, commercialRentType.id))) : Promise.resolve(0),
+                            commercialSaleType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, commercialSaleType.id))) : Promise.resolve(0),
+                        ]);
 
-                const commercialRentType = await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, "commercial-rent"),
-                })
-
-                const commercialSaleType = await db.query.offeringTypeTable.findFirst({
-                    where: eq(offeringTypeTable.slug, "commercial-sale"),
-                })
-
-
-        
-                // Query the database to find all communities with their properties
-                const communities = await db.select({
-                    name: communityTable.name,
-                    slug: communityTable.slug,
-                    shortName: communityTable.shortName,
-                    propertyCount: db.$count(propertyTable, eq(propertyTable.communityId, communityTable.id)),
-                    rentCount: db.$count(propertyTable, and(eq(propertyTable.communityId, communityTable.id), eq(propertyTable.offeringTypeId, rentType?.id!))),
-                    saleCount: db.$count(propertyTable, and(eq(propertyTable.communityId, communityTable.id), eq(propertyTable.offeringTypeId, saleType?.id!))),
-                    commercialRentCount: db.$count(propertyTable, and(eq(propertyTable.communityId, communityTable.id), eq(propertyTable.offeringTypeId, commercialRentType?.id!))),    
-                    commercialSaleCount: db.$count(propertyTable, and(eq(propertyTable.communityId, communityTable.id), eq(propertyTable.offeringTypeId, commercialSaleType?.id!))),
-                }).from(communityTable);
-              
-    
-    
-                // Return the sorted communities data as a JSON response
-                return c.json({communities})
+                        return {
+                            name: community.name,
+                            slug: community.slug,
+                            shortName: community.shortName,
+                            propertyCount,
+                            rentCount,
+                            saleCount,
+                            commercialRentCount,
+                            commercialSaleCount,
+                        };
+                    }));
+                  
+                    // Return the communities data as a JSON response
+                    return c.json({communities})
+                } catch (error) {
+                    console.error('Error fetching communities:', error);
+                    return c.json({error: "Internal server error"}, 500);
+                }
             })
     
     
