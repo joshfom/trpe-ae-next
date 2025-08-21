@@ -9,6 +9,7 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
+import { ProductionErrorBoundary } from "@/components/production-error-boundary";
 // Choose one of these cookie consent implementations:
 // import CookieConsent from "@/components/CookieConsent"; // Original blocking version
 // import CookieConsentNonBlocking from "@/components/CookieConsentNonBlocking"; // Non-blocking card
@@ -313,7 +314,23 @@ export default function RootLayout({
           color="#374151"
       />
       <EdgeStoreProvider>
-          {children}
+          <ProductionErrorBoundary
+            onError={(error, errorInfo) => {
+              // Enhanced error logging for production
+              console.error('Application Error Boundary:', error);
+              if (process.env.NODE_ENV === 'production') {
+                // This is where you'd send to Sentry or other monitoring service
+                console.error('Production Error Context:', {
+                  message: error.message,
+                  stack: error.stack,
+                  componentStack: errorInfo.componentStack,
+                  timestamp: new Date().toISOString()
+                });
+              }
+            }}
+          >
+            {children}
+          </ProductionErrorBoundary>
       </EdgeStoreProvider>
 
       <Toaster
