@@ -1,7 +1,9 @@
 import {MetadataRoute} from 'next'
 import {db} from "@/db/drizzle";
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import {pageMetaTable} from "@/db/schema/page-meta-table";
+import {insightTable} from "@/db/schema/insight-table";
+import {propertyTable} from "@/db/schema/property-table";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   
@@ -12,6 +14,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
     });
     const articles = await db.query.insightTable.findMany();
+    
+    // Fetch luxe journals (insights with isLuxe: true)
+    const luxeJournals = await db.query.insightTable.findMany({
+      where: and(
+        eq(insightTable.isLuxe, true),
+        eq(insightTable.isPublished, "yes")
+      ),
+      with: {
+        author: true
+      }
+    });
+    
+    // Fetch luxe properties (properties with isLuxe: true)
+    const luxeProperties = await db.query.propertyTable.findMany({
+      where: eq(propertyTable.isLuxe, true),
+      with: {
+        offeringType: true,
+      }
+    });
 
     const propertyTypes = await db.query.propertyTypeTable.findMany();
     const developers = await db.query.developerTable.findMany();
@@ -34,6 +55,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: new Date(article.createdAt),
     changeFrequency: 'daily' as const,
     priority: 0.8,
+  }));
+
+  // Generate URLs for luxe journals
+  const luxeJournalUrls = luxeJournals.map(journal => ({
+    url: `${process.env.NEXT_PUBLIC_URL}/luxe/journals/${journal.slug}`,
+    lastModified: new Date(journal.createdAt),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  }));
+
+  // Generate URLs for luxe properties
+  const luxePropertyUrls = luxeProperties.map(property => ({
+    url: `${process.env.NEXT_PUBLIC_URL}/luxe/properties/${property.offeringType?.slug}/${property.slug}`,
+    lastModified: new Date(property.createdAt),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
   }));
 
 
@@ -91,6 +128,54 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${process.env.NEXT_PUBLIC_URL}/contact-us`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/journals`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/properties`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
+      priority: 0.8,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/about-us`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/advisors`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/contact-us`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/list-with-us`,
+      lastModified: new Date(),
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    },
+    {
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/dubai/properties`,
+      lastModified: new Date(),
+      changeFrequency: 'daily',
       priority: 0.8,
     },
     {
@@ -366,10 +451,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     ...propertyUrls, // Add property URLs to the sitemap
     ...articleUrls, // Add article URLs to the sitemap
+    ...luxeJournalUrls, // Add luxe journal URLs to the sitemap
+    ...luxePropertyUrls, // Add luxe property URLs to the sitemap
     ...developerUrls, // Add developer URLs to the sitemap
     ...propertyTypeUrls, // Add property type URLs to
     ...communitiesUrl, // Add community URLs to the sitemap
     ...offplanUrls, // Add offplan URLs to the sitemap
+    ...pageUrls, // Add page URLs to the sitemap
   ];
   } catch (error) {
     console.warn('Database unavailable during sitemap generation, returning basic sitemap:', error);

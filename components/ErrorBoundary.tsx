@@ -25,7 +25,21 @@ class ErrorBoundary extends Component<Props, State> {
 
     componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
         console.error('ErrorBoundary caught an error:', error, errorInfo);
-        this.props.onError?.(error, errorInfo);
+        
+        // Enhanced error logging for production
+        if (process.env.NODE_ENV === 'production') {
+            console.error('Production ErrorBoundary Context:', {
+                message: error.message,
+                stack: error.stack,
+                componentStack: errorInfo.componentStack,
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        // Call optional error handler if provided
+        if (this.props.onError) {
+            this.props.onError(error, errorInfo);
+        }
     }
 
     render() {

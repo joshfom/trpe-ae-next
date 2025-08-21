@@ -10,7 +10,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {Form, FormControl, FormField, FormItem} from "@/components/ui/form";
 import {useParams, usePathname, useRouter} from "next/navigation";
 import Link from "next/link";
-import {useGetCommunities} from '../community/api/use-get-communities';
+import {getClientCommunities} from '../community/api/get-client-communities';
 import Fuse from 'fuse.js';
 import {buildPropertySearchUrl, extractPathSearchParams, formatCommunityNames} from './hooks/path-search-helper';
 import {useGetUnitType} from "@/features/search/hooks/use-get-unit-type";
@@ -154,23 +154,32 @@ const SelectedCommunitiesList: React.FC<SelectedCommunitiesListProps> = ({
 );
 
 function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSearchFilterProps) {
+    
+    // State to manage community data
+    const [communities, setCommunities] = useState<CommunityFilterType[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    /**
-     * Fetches the list of communities using the `useGetCommunities` hook.
-     */
-    const communityQuery = useGetCommunities();
-
-    /**
-     * Extracts the community data from the query or initializes it as an empty array.
-     * @type {CommunityFilterType[]}
-     */
-    const communities = (communityQuery.data || []).map(toCommunityFilterType);
-
-    /**
-     * Indicates whether the community data is still loading.
-     * @type {boolean}
-     */
-    const isLoading = communityQuery.isLoading;
+    // Load communities on component mount
+    useEffect(() => {
+        const loadCommunities = async () => {
+            try {
+                setIsLoading(true);
+                const data = await getClientCommunities();
+                const mappedCommunities = data.map(toCommunityFilterType);
+                setCommunities(mappedCommunities);
+                setError(null);
+            } catch (err) {
+                console.error('Error loading communities:', err);
+                setError('Failed to load communities');
+                setCommunities([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        
+        loadCommunities();
+    }, []);
 
     /**
      * Retrieves the URL parameters using the `useParams` hook.
@@ -342,7 +351,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
 
         const results = fuse.search(value);
         const items = results.map((result) => result.item);
-        setCommunityResults(items);
+        setCommunityResults(items as CommunityFilterType[]);
     };
 
     /**
@@ -352,7 +361,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
         let communitySlugs = searchedParams.areas || [];
 
         // Filter communities using community slugs if there is value
-        const items = communities.filter((community) => {
+        const items = communities.filter((community: CommunityFilterType) => {
             return communitySlugs.includes(community.slug);
         });
 

@@ -84,7 +84,7 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
     const properties = community.properties as unknown as PropertyType[]
 
     return (
-        (<div className={''}>
+        (<div className={'pt-12'}>
             <div className=" py-8 ">
                 <div className="flex justify-between items-center px-6 pb-4 max-w-7xl mx-auto">
                     <h1 className="text-2xl">
@@ -122,28 +122,7 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
                         }
                     </div>
                 </div>
-                {/*<div className="flex items-center justify-center py-6">*/}
-                {/*    {*/}
-                {/*        properties.length > 0 ? (*/}
-                {/*            <a href={`/communities/${community.slug}/properties`}*/}
-                {/*               className="text-sm text-gray-500 hover:text-gray-700">*/}
-                {/*                View all properties in {community.name}*/}
-                {/*            </a>*/}
-                {/*        ) : (*/}
-                {/*            <div className="flex flex-col gap-6 items-center justify-between px-6">*/}
-
-                {/*                <div className="flex flex-col lg:flex-row justify-between items-center gap-12">*/}
-                {/*                    <Link href={'/communities'} className=" py-3 px-6 bg-white rounded-3xl hover:bg-slate-50 text-gray-500 hover:text-gray-700">*/}
-                {/*                        Back to Communities*/}
-                {/*                    </Link>*/}
-                {/*                    <Link href={'/properties/for-sale'} className=" rounded-3xl bg-white hover:bg-slate-50 py-3 px-6 text-gray-500 hover:text-gray-700">*/}
-                {/*                        View all properties in Dubai*/}
-                {/*                    </Link>*/}
-                {/*                </div>*/}
-                {/*            </div>*/}
-                {/*        )*/}
-                {/*    }*/}
-                {/*</div>*/}
+              
             </div>
             {
                 community.about ? (

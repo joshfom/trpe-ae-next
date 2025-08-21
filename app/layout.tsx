@@ -9,6 +9,7 @@ import {EdgeStoreProvider} from "@/db/edgestore";
 import {Toaster} from "sonner";
 import Script from "next/script";
 import {cn} from "@/lib/utils";
+import { ProductionErrorBoundary } from "@/components/production-error-boundary";
 // Choose one of these cookie consent implementations:
 // import CookieConsent from "@/components/CookieConsent"; // Original blocking version
 // import CookieConsentNonBlocking from "@/components/CookieConsentNonBlocking"; // Non-blocking card
@@ -313,7 +314,9 @@ export default function RootLayout({
           color="#374151"
       />
       <EdgeStoreProvider>
-          {children}
+          <ProductionErrorBoundary>
+            {children}
+          </ProductionErrorBoundary>
       </EdgeStoreProvider>
 
       <Toaster
