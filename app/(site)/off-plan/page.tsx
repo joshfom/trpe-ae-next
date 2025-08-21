@@ -53,8 +53,6 @@ async function NewProjectsPage() {
 
     return (
         <div>
-            <div className="py-12 hidden lg:block bg-black">
-            </div>
             <div className={'max-w-7xl mx-auto py-12 px-6'}>
                 <h1 className={'text-4xl'}>
                     New Projects in Dubai

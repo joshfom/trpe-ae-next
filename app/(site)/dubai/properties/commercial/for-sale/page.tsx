@@ -12,6 +12,7 @@ import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageM
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
+import { generateMobileSEO, generateMobileViewport } from "@/lib/mobile/mobile-seo-optimization";
 
 type Props = {
     searchParams: Promise<{ [key: string]: string | undefined }>
@@ -32,28 +33,54 @@ export async function generateMetadata(props: {
     // Default description to use if not overridden
     const description = "Browse exceptional commercial properties for sale in Dubai with TRPE. Your trusted experts for finding your ideal business investment in this vibrant city.";
     
-    // If pageMeta exists with metaTitle, use it
+    // Generate mobile-optimized SEO
+    const mobileViewport = generateMobileViewport('property-search');
+    const baseUrl = process.env.NEXT_PUBLIC_URL || '';
+    
+    // Default metadata
+    let title = "Commercial properties for sale in Dubai | Find Your Next Investment - TRPE AE";
+    
+    // Override with pageMeta if available
     if (pageMeta?.metaTitle) {
-        return {
-            title: pageMeta.metaTitle,
-            description: pageMeta?.metaDescription || description,
-            alternates: {
-                canonical: `${process.env.NEXT_PUBLIC_URL}/dubai/properties/commercial/for-sale`,
-            },
-            robots: {
-                index: pageMeta?.noIndex === true ? false : undefined,
-                follow: pageMeta?.noFollow === true ? false : undefined,
-            },
-        };
+        title = pageMeta.metaTitle;
     }
 
-    // Default metadata if no pageMeta found
     return {
-        title: "Commercial properties for sale in Dubai | Find Your Next Investment - TRPE AE",
-        description: "Browse exceptional commercial properties for sale in Dubai with TRPE. Your trusted experts for finding your ideal business investment in this vibrant city.",
+        title,
+        description: pageMeta?.metaDescription || description,
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_URL}/dubai/properties/commercial/for-sale`,
+            canonical: `${baseUrl}/dubai/properties/commercial/for-sale`,
         },
+        robots: {
+            index: pageMeta?.noIndex === true ? false : undefined,
+            follow: pageMeta?.noFollow === true ? false : undefined,
+        },
+        viewport: {
+            width: mobileViewport.width,
+            initialScale: mobileViewport.initialScale,
+            minimumScale: mobileViewport.minimumScale,
+            maximumScale: mobileViewport.maximumScale,
+            userScalable: mobileViewport.userScalable,
+            viewportFit: mobileViewport.viewportFit,
+        },
+        openGraph: {
+            title,
+            description: pageMeta?.metaDescription || description,
+            type: 'website',
+            url: `${baseUrl}/dubai/properties/commercial/for-sale`,
+            images: [{
+                url: `${baseUrl}/dubai-commercial-properties-og.webp`,
+                width: 1200,
+                height: 630,
+                alt: 'Commercial properties for sale in Dubai'
+            }]
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description: pageMeta?.metaDescription || description,
+            images: [`${baseUrl}/dubai-commercial-properties-twitter.webp`]
+        }
     };
 }
 
@@ -81,40 +108,58 @@ async function PropertySearchPage({ searchParams }: Props) {
     }
 
     return (
-        <div className={'bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
+        <div className="min-h-screen bg-gray-50">
+            {/* Mobile-first container - no extra spacing needed as layout handles it */}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                
+                {/* Mobile-optimized search filter */}
+                <div className="mb-6 sm:mb-8">
+                    <div className="w-full">
+                        <PropertyPageSearchFilter 
+                            offeringType='commercial-sale'
+                        />
+                    </div>
+                </div>
+                
+                {/* Mobile-first heading and meta section */}
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4">
+                    <div className="flex-1">
+                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                            <SearchPageH1Heading
+                                heading={pageTitle}
+                            />
+                        </div>
+                    </div>
 
-            </div>
-            <PropertyPageSearchFilter offeringType='commercial-sale' />
-            
-            <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
-                <div className="flex space-x-2 items-center">
-                    <SearchPageH1Heading
-                        heading={pageTitle}
+                    {/* Admin controls - mobile-responsive */}
+                    {user && (
+                        <div className="flex justify-start lg:justify-end">
+                            <EditPageMetaSheet
+                                pageMeta={pageMeta}
+                                pathname={pathname}
+                            />
+                        </div>
+                    )}
+                </div>
+                
+                {/* Mobile-optimized listings section */}
+                <div className="w-full">
+                    <Listings 
+                        offeringType={'commercial-sale'}
+                        searchParams={resolvedSearchParams}
+                        page={page}
                     />
                 </div>
 
-                {user && (
-                    <div className="flex justify-end mt-4 px-6">
-                        <EditPageMetaSheet
-                            pageMeta={pageMeta}
-                            pathname={pathname}
-                        />
+                {/* Mobile-responsive content section */}
+                {pageMeta?.content && (
+                    <div className="mt-8 sm:mt-12 lg:mt-16 bg-white rounded-lg p-4 sm:p-6 lg:p-8">
+                        <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
+                            <TipTapView content={pageMeta.content}/>
+                        </div>
                     </div>
                 )}
             </div>
-            
-            <Listings 
-                offeringType={'commercial-sale'}
-                searchParams={resolvedSearchParams}
-                page={page}
-            />
-
-            {pageMeta?.content && (
-                <div className="max-w-7xl bg-white mx-auto px-4 py-8">
-                    <TipTapView content={pageMeta.content}/>
-                </div>
-            )}
         </div>
     );
 }

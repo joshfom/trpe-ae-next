@@ -81,10 +81,6 @@ async function PropertyForRentPage({searchParams} : Props) {
 
     return (
         <div className={' bg-slate-100 pb-8'}>
-            <div className="hidden lg:block py-12 bg-black">
-
-            </div>
-
             <PropertyPageSearchFilter offeringType='for-rent'/>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">

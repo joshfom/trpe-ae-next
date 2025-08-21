@@ -423,14 +423,30 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                     }}
                     {...(typeof window !== 'undefined' && { 'data-gtm-disabled': 'true' })}
                     suppressHydrationWarning={true}
-                    className={'mx-auto mt-6 w-full   flex flex-col items-center bg-white py-3 justify-center'}>
+                    className={'mx-auto mt-4 w-full flex flex-col items-center bg-white py-4 justify-center'}>
 
-                    <div className="hidden lg:block w-full  ">
-                        <div
-                            className={' relative w-full lg:max-w-7xl items-center mx-auto '}>
+                    {/* Mobile-First Search Bar */}
+                    <div className="w-full px-4 mb-4 lg:hidden">
+                        <div className="relative">
+                            <Input
+                                onFocus={(e) => {
+                                    setOpenMobileSearch(true);
+                                    // Prevent GTM form tracking
+                                    e.stopPropagation();
+                                    (e.nativeEvent as Event).stopImmediatePropagation?.();
+                                }}
+                                placeholder="Area, Property or Development"
+                                className="w-full rounded-full border px-6 py-4 text-base min-h-[44px] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                suppressHydrationWarning={true}
+                            />
+                            <Search className="absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 stroke-2 text-gray-400"/>
+                        </div>
+                    </div>
 
-
-                            <div className={'hidden lg:flex  rounded-full gap-6 items-center'}>
+                    {/* Desktop Search - Hidden on Mobile */}
+                    <div className="hidden lg:block w-full">
+                        <div className="relative w-full lg:max-w-7xl items-center mx-auto">
+                            <div className={'lg:flex rounded-full gap-6 items-center'}>
                                 <div>
                                     <FormField
                                         control={form.control}
@@ -585,7 +601,6 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
 
 
                                 {/*FILTERS SHEET OVERLAY */}
-
                                 <PropertyFilterSlideOver
                                     form={form}
                                     showFilters={showFilters}
@@ -595,47 +610,10 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                                     onSubmit={onSubmit}
                                     filtersCount={countActiveFilters(form, selectedCommunities).total}/>
                             </div>
-
-                            {/*MOBILE SEARCH*/}
-
-                            <div className={'lg:hidden'}>
-                                <div onClick={() => setIsOpen(true)}
-                                     className="flex flex-col justify-center items-center">
-                                    <div className="relative w-full">
-                                        <Input className={'w-full rounded-full px-8 py-3'}
-                                               placeholder="Search Properties"
-                                               onFocus={(e) => {
-                                                   e.stopPropagation();
-                                                   (e.nativeEvent as Event).stopImmediatePropagation?.();
-                                               }}
-                                               suppressHydrationWarning={true}
-                                        />
-                                        <Search className={'absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700'}/>
-                                    </div>
-                                </div>
-                            </div>
-
-
                         </div>
                     </div>
 
-                    <div className="lg:hidden  w-[95%]">
-
-                        <Input
-                            onFocus={(e) => {
-                                setOpenMobileSearch(true);
-                                // Prevent GTM form tracking
-                                e.stopPropagation();
-                                (e.nativeEvent as Event).stopImmediatePropagation?.();
-                            }}
-                            placeholder="Area, Property or Development"
-                            className="grow rounded-3xl border w-full "
-                            suppressHydrationWarning={true}
-                        />
-                    </div>
-
-                    {/*MOBILE SEARCH*/}
-
+                    {/*MOBILE SEARCH COMPONENT*/}
                 </form>
             </Form>
 
@@ -648,11 +626,7 @@ function PropertyPageSearchFilter({offeringType , propertyType}: PropertyPageSea
                 //@ts-ignore
                 onSubmit={onSubmit}
             />
-
-
-
         </>
-
     );
 }
 

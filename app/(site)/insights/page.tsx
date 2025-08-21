@@ -46,7 +46,6 @@ export default async function InsightPage({
             <script type="application/ld+json">
                 {JSON.stringify(insightJsonLd)}
             </script>
-            <div className="py-12 bg-black hidden lg:block"></div>
             <div className="py-12 bg-white max-w-7xl mx-auto px-4 sm:px-6 min-h-[500px]">
                 <div className={'py-6 '}>
                     <h1 className={'text-3xl font-semibold'}>Insights</h1>

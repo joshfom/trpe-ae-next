@@ -32,10 +32,6 @@ async function CommunityPropertiesPage(props: CommunityPropertiesPageProps) {
 
     return (
         <div className={' bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
-
-            </div>
-
             <Listings offeringType={'for-sale'}/>
 
             {

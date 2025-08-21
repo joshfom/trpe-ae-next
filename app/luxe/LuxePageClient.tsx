@@ -234,11 +234,11 @@ export default function LuxePageClient({
   const footerY = useTransform(footerProgress, [0, 1], ["0%", "-15%"]);
   return (
     <div className="min-h-screen bg-white">
-      {/* Full-width Hero Section with Parallax */}
+      {/* Mobile-First Hero Section with Parallax */}
     <section 
       ref={heroRef}
       className="relative w-full overflow-hidden"
-      style={{ height: 'calc(100vh - 340px)' }} // Subtract approximate search section height
+      style={{ height: 'calc(100vh - 200px)' }} // Mobile-optimized height calculation
     >
       {/* Background Image with Parallax */}
       <motion.div 
@@ -258,14 +258,14 @@ export default function LuxePageClient({
         style={{ opacity: overlayOpacity }}
       />
       
-      {/* Hero Content */}
+      {/* Mobile-First Hero Content */}
       <motion.div 
-        className="relative z-10 h-full flex items-center justify-center text-center px-4"
+        className="relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8"
         style={{ y: textY }}
       >
         <div className="max-w-4xl">
         <motion.h1
-          className="text-4xl md:text-5xl font-playfair text-white mb-6 "
+          className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair text-white mb-4 sm:mb-6 leading-tight"
           initial={{ opacity: 0, y: 100 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
@@ -277,21 +277,21 @@ export default function LuxePageClient({
         </div>
       </motion.div>
       
-      {/* Scroll indicator */}
+      {/* Mobile-First Scroll indicator */}
       <motion.div 
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
+        className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 text-white"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8, duration: 0.6 }}
         style={{ opacity: useTransform(scrollYProgress, [0, 0.3], [1, 0]) }}
       >
         <div className="flex flex-col items-center">
-        <span className="text-sm mb-2">Scroll to explore</span>
+        <span className="text-xs sm:text-sm mb-1 sm:mb-2">Scroll to explore</span>
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <ChevronDown className="h-6 w-6" />
+          <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
         </motion.div>
         </div>
       </motion.div>
@@ -301,10 +301,10 @@ export default function LuxePageClient({
       {/* Content sections with curtain effect */}
       <div className="relative z-20 bg-white">
         
-        {/* Main Search Section */}
+        {/* Mobile-First Search Section */}
         <motion.section
           ref={searchRef}
-          className="py-12 bg-white relative z-30"
+          className="py-8 sm:py-10 lg:py-12 bg-white relative z-30 px-4 sm:px-6 lg:px-8"
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
@@ -317,25 +317,25 @@ export default function LuxePageClient({
           <LuxeMainSearch />
         </motion.section>
 
-        {/* First Image + Content Section */}
+        {/* Mobile-First Image + Content Section */}
         <motion.section 
           ref={firstSectionRef}
-          className='w-full relative py-8 sm:py-12 bg-white z-30'
+          className='w-full relative py-6 sm:py-8 lg:py-12 bg-white z-30 px-4 sm:px-6 lg:px-8'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-150px" }}
           variants={animationVariants.staggerContainer}
           style={{ y: firstY }}
         >
-          {/* Mobile: Image container */}
+          {/* Mobile-First: Image container */}
           <motion.div 
-            className='w-full lg:w-1/2 lg:hidden'
+            className='w-full lg:w-1/2 lg:hidden mb-6'
             variants={animationVariants.fadeInScale}
           >
             <motion.img 
               src="/assets/luxryprop.webp" 
               alt="Luxury Property" 
-              className="w-full h-64 sm:h-96 object-cover"
+              className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover rounded-lg"
               whileHover={{ 
                 scale: 1.02,
                 transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
@@ -360,14 +360,14 @@ export default function LuxePageClient({
             />
           </motion.div>
           
-          {/* Mobile: Content below image */}
+          {/* Mobile-First: Content below image */}
           <motion.div 
-            className='lg:hidden px-4 sm:px-6 py-8'
+            className='lg:hidden px-4 sm:px-6 py-6 sm:py-8'
             variants={animationVariants.fadeInUp}
           >
             <div className='text-center'>
               <motion.h2 
-                className='font-playfair text-2xl sm:text-3xl font-bold mb-4 sm:mb-6'
+                className='font-playfair text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6'
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ amount: 0.8 }}
@@ -376,7 +376,7 @@ export default function LuxePageClient({
                 Discover Luxury Living
               </motion.h2>
               <motion.p 
-                className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 text-justify leading-relaxed'
+                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8 text-justify leading-relaxed'
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ amount: 0.8 }}
@@ -390,7 +390,7 @@ timeless architecture converge, creating a life that feels
 both grounded and extraordinary.
               </motion.p>
               <motion.p 
-                className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed text-justify'
+                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed text-justify'
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ amount: 0.8 }}
@@ -411,7 +411,7 @@ defined by exclusivity, originality and sophistication.
                   whileTap={{ scale: 0.98 }}
                   transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                 >
-                  <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                  <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
                     View Property 
                   </Link>
                 </motion.div>
@@ -490,10 +490,10 @@ defined by exclusivity, originality and sophistication.
           </div>
         </motion.section>
 
-        {/* Second Image + Content Section with Background Overlay */}
+        {/* Mobile-First Image + Content Section with Background Overlay */}
         <motion.section 
           ref={secondSectionRef}
-          className='w-full relative  bg-white z-30'
+          className='w-full relative bg-white z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
@@ -501,7 +501,7 @@ defined by exclusivity, originality and sophistication.
           style={{ y: secondY }}
         >
           <motion.div 
-            className='w-full max-h-[400px] sm:max-h-[600px] lg:max-h-[800px] overflow-hidden'
+            className='w-full h-48 sm:h-64 md:h-80 lg:h-96 xl:h-[500px] overflow-hidden'
             variants={animationVariants.fadeInScale}
           >
             <motion.img 
@@ -522,8 +522,8 @@ defined by exclusivity, originality and sophistication.
             transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           ></motion.div>
           <div className="absolute inset-0">
-            <div className='max-w-7xl py-8 sm:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]'>
-              {/* Left side - Content */}
+            <div className='max-w-7xl py-6 sm:py-8 lg:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[300px] sm:min-h-[400px] lg:min-h-[600px]'>
+              {/* Mobile-First Content */}
               <motion.div 
             className='w-full lg:w-1/2 flex flex-col'
             variants={animationVariants.slideInLeft}
@@ -531,7 +531,7 @@ defined by exclusivity, originality and sophistication.
             <div className='flex-grow flex flex-col justify-center'>
               <div className='lg:pr-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
             <motion.h2 
-              className='font-playfair text-white text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6'
+              className='font-playfair text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6'
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{}}
@@ -540,7 +540,7 @@ defined by exclusivity, originality and sophistication.
               Premium Properties
             </motion.h2>
             <motion.p 
-              className='text-base sm:text-lg text-gray-200 mb-6 sm:mb-8 leading-relaxed'
+              className='text-sm sm:text-base lg:text-lg text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{}}
@@ -568,10 +568,10 @@ defined by exclusivity, originality and sophistication.
           </div>
         </motion.section>
 
-        {/* Featured Listings Section */}
+        {/* Mobile-First Featured Listings Section */}
         <motion.section 
           ref={featuredRef}
-          className='w-full py-8 sm:py-12 bg-white relative z-30'
+          className='w-full py-6 sm:py-8 lg:py-12 bg-white relative z-30 px-4 sm:px-6 lg:px-8'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-100px" }}
@@ -583,25 +583,25 @@ defined by exclusivity, originality and sophistication.
           />
         </motion.section>
 
-        {/* Third Image + Content Section (Right aligned image) */}
+        {/* Mobile-First Image + Content Section (Right aligned image) */}
         <motion.section 
           ref={thirdSectionRef}
-          className='w-full relative py-8 sm:py-12 bg-white z-30'
+          className='w-full relative py-6 sm:py-8 lg:py-12 bg-white z-30 px-4 sm:px-6 lg:px-8'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
           variants={animationVariants.staggerContainer}
           style={{ y: thirdY }}
         >
-          {/* Mobile: Image container */}
+          {/* Mobile-First: Image container */}
           <motion.div 
-            className='w-full lg:w-1/2 lg:ml-auto lg:hidden'
+            className='w-full lg:w-1/2 lg:ml-auto lg:hidden mb-6'
             variants={animationVariants.fadeInScale}
           >
             <motion.img 
               src="https://images.unsplash.com/photo-1734437406517-f2f731579114?q=80&w=4140&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMJA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" 
               alt="Luxury Property" 
-              className="w-full h-64 sm:h-80 object-cover"
+              className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-lg"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.4 }}
             />
@@ -621,14 +621,14 @@ defined by exclusivity, originality and sophistication.
             />
           </motion.div>
           
-          {/* Mobile: Content below image */}
+          {/* Mobile-First: Content below image */}
           <motion.div 
-            className='lg:hidden px-4 sm:px-6 py-8'
+            className='lg:hidden'
             variants={animationVariants.fadeInUp}
           >
             <div className='text-center'>
               <motion.h2 
-                className='font-playfair text-2xl sm:text-3xl font-bold mb-4 sm:mb-6'
+                className='font-playfair text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6'
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{}}
@@ -637,7 +637,7 @@ defined by exclusivity, originality and sophistication.
                 Exclusive Properties
               </motion.h2>
               <motion.p 
-                className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
+                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{}}
@@ -646,7 +646,7 @@ defined by exclusivity, originality and sophistication.
                 Discover rare opportunities in Dubai&apos;s most coveted neighborhoods. These exclusive properties offer privacy, prestige, and unmatched luxury amenities.
               </motion.p>
               <motion.p 
-                className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
+                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed'
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{}}
@@ -665,7 +665,7 @@ defined by exclusivity, originality and sophistication.
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Link href="/properties" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                  <Link href="/properties" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
                     Explore Properties
                   </Link>
                 </motion.div>
@@ -737,10 +737,10 @@ defined by exclusivity, originality and sophistication.
           </div>
         </motion.section>
 
-        {/* Dark Section with Centered Content */}
+        {/* Mobile-First Dark Section with Centered Content */}
         <motion.section 
           ref={darkSectionRef}
-          className='w-full py-12 sm:py-16 lg:py-20 bg-slate-900 mb-8 relative z-40'
+          className='w-full py-8 sm:py-12 lg:py-16 xl:py-20 bg-slate-900 mb-6 sm:mb-8 relative z-40'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-100px" }}
@@ -748,17 +748,17 @@ defined by exclusivity, originality and sophistication.
           style={{ y: darkY }}
         >
           <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
-            {/* H2 Title */}
+            {/* Mobile-First Section Labels */}
             <motion.p 
-              className='text-gray-400 text-xs sm:text-sm uppercase tracking-wider mb-3 sm:mb-4'
+              className='text-gray-400 text-xs sm:text-sm uppercase tracking-wider mb-2 sm:mb-3 lg:mb-4'
               variants={animationVariants.fadeInUp}
             >
               Premium Collection
             </motion.p>
             
-            {/* Main Title */}
+            {/* Mobile-First Main Title */}
             <motion.h2 
-              className='text-white text-2xl sm:text-4xl lg:text-6xl font-playfair font-light mb-6 sm:mb-8 leading-tight'
+              className='text-white text-xl sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl font-playfair font-light mb-4 sm:mb-6 lg:mb-8 leading-tight'
               variants={animationVariants.fadeInUp}
               transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
               whileHover={{ scale: 1.01 }}
@@ -766,9 +766,9 @@ defined by exclusivity, originality and sophistication.
               Extraordinary Living Spaces
             </motion.h2>
             
-            {/* Description */}
+            {/* Mobile-First Description */}
             <motion.p 
-              className='text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto'
+              className='text-gray-300 text-sm sm:text-base lg:text-lg leading-relaxed max-w-3xl mx-auto'
               variants={animationVariants.fadeInUp}
               transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             >
@@ -777,10 +777,10 @@ defined by exclusivity, originality and sophistication.
           </div>
         </motion.section>
 
-        {/* Luxury Communities Section */}
+        {/* Mobile-First Luxury Communities Section */}
         <motion.section 
           ref={luxuryCommunitiesRef}
-          className="w-full relative z-40"
+          className="w-full relative z-40 px-4 sm:px-6 lg:px-8"
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-100px" }}
@@ -790,10 +790,10 @@ defined by exclusivity, originality and sophistication.
           <LuxuryCommunities communities={featuredCommunities} />
         </motion.section>
 
-        {/* Special and Different Villa Section */}
+        {/* Mobile-First Villa Section */}
         <motion.section 
           ref={villasSectionRef}
-          className='w-full relative h-[600px] lg:h-[700px] mb-8 overflow-hidden z-30'
+          className='w-full relative h-64 sm:h-80 md:h-96 lg:h-[600px] xl:h-[700px] mb-6 sm:mb-8 overflow-hidden z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-100px" }}
@@ -817,15 +817,15 @@ defined by exclusivity, originality and sophistication.
             transition={{ duration: 1.8, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
           ></motion.div>
           
-          {/* Content - Text on Left */}
+          {/* Content - Mobile-First Text Layout */}
           <div className='absolute inset-0 flex items-center'>
-            <div className='max-w-7xl mx-auto px-4 w-full'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'>
               <motion.div 
-                className='max-w-xl text-white'
+                className='max-w-xl text-white text-center lg:text-left'
                 variants={animationVariants.slideInLeft}
               >
                 <motion.h2 
-                  className='text-4xl lg:text-6xl font-playfair font-light mb-6'
+                  className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-playfair font-light mb-3 sm:mb-4 lg:mb-6'
                   initial={{ opacity: 0, y: 60 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.8 }}
@@ -834,7 +834,7 @@ defined by exclusivity, originality and sophistication.
                   Special & Different Villas
                 </motion.h2>
                 <motion.p 
-                  className='text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed'
+                  className='text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ amount: 0.8 }}
@@ -853,10 +853,10 @@ defined by exclusivity, originality and sophistication.
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                   >
-                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
+                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium text-sm sm:text-base min-h-[44px]'>
                       Explore Special Villas
                       <motion.svg 
-                        className='ml-2 w-5 h-5' 
+                        className='ml-2 w-4 h-4 sm:w-5 sm:h-5' 
                         fill='none' 
                         stroke='currentColor' 
                         viewBox='0 0 24 24'
@@ -873,10 +873,10 @@ defined by exclusivity, originality and sophistication.
           </div>
         </motion.section>
 
-        {/* Apartment with Unique Designs Section */}
+        {/* Mobile-First Apartment Section */}
         <motion.section 
           ref={apartmentsSectionRef}
-          className='w-full relative h-[600px] lg:h-[700px]  mb-8 overflow-hidden z-30'
+          className='w-full relative h-64 sm:h-80 md:h-96 lg:h-[600px] xl:h-[700px] mb-6 sm:mb-8 overflow-hidden z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
@@ -900,15 +900,15 @@ defined by exclusivity, originality and sophistication.
             transition={{ duration: 1, delay: 0.3 }}
           ></motion.div>
           
-          {/* Content - Text on Right */}
+          {/* Content - Mobile-First Text Layout */}
           <div className='absolute inset-0 flex items-center'>
-            <div className='max-w-7xl mx-auto px-4 w-full'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'>
               <motion.div 
-                className='max-w-xl ml-auto text-white text-right'
+                className='max-w-xl ml-auto text-white text-center lg:text-right'
                 variants={animationVariants.slideInRight}
               >
                 <motion.h2 
-                  className='text-4xl lg:text-6xl font-playfair font-light mb-6'
+                  className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-playfair font-light mb-3 sm:mb-4 lg:mb-6'
                   initial={{ opacity: 0, y: 40 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{}}
@@ -917,7 +917,7 @@ defined by exclusivity, originality and sophistication.
                   Apartments with Unique Designs
                 </motion.h2>
                 <motion.p 
-                  className='text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed'
+                  className='text-sm sm:text-base md:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{}}
@@ -936,10 +936,10 @@ defined by exclusivity, originality and sophistication.
                     whileTap={{ scale: 0.95 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-8 py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium'>
+                    <Link href="/luxe/dubai/properties" className='inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-white text-black rounded-3xl hover:bg-gray-100 transition-colors font-medium text-sm sm:text-base min-h-[44px]'>
                       Discover Unique Apartments
                       <motion.svg 
-                        className='ml-2 w-5 h-5' 
+                        className='ml-2 w-4 h-4 sm:w-5 sm:h-5' 
                         fill='none' 
                         stroke='currentColor' 
                         viewBox='0 0 24 24'
@@ -958,42 +958,42 @@ defined by exclusivity, originality and sophistication.
         
         
         
-             {/* Built on Trust Section with Simple Animations */}
+             {/* Mobile-First Built on Trust Section */}
         <motion.section 
           ref={trustSectionRef}
-          className='w-full bg-black text-white py-6 lg:py-12 relative z-30'
+          className='w-full bg-black text-white py-6 sm:py-8 lg:py-12 relative z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
           variants={animationVariants.staggerContainer}
           style={{ y: trustY }}
         >
-          {/* Background image left aligned - full width */}
-            <div className="absolute inset-0 ">
+          {/* Background image - mobile-optimized */}
+            <div className="absolute inset-0">
             <img 
               src="/assets/head.webp" 
               alt="" 
-              className="w-full h-full object-left scale-[0.6] -ml-24 object-none "
+              className="w-full h-full object-left scale-50 sm:scale-60 lg:scale-75 -ml-12 sm:-ml-16 lg:-ml-24 object-none"
             />
             {/* Gradient overlay for blending with black background */}
             <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40"></div>
             </div>
 
-            {/* Section Title */}
-            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16 lg:mb-20 relative z-10'>
+            {/* Mobile-First Section Title */}
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12 lg:mb-16 xl:mb-20 relative z-10'>
               <motion.div 
                 className='text-center'
                 variants={animationVariants.fadeInUp}
               >
-                <h2 className='text-3xl sm:text-4xl lg:text-5xl font-playfair font-light text-white mb-6 leading-tight'>
+                <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-playfair font-light text-white mb-4 sm:mb-6 leading-tight'>
                   Built on Trust. Grown Through Resilience.
                 </h2>
               </motion.div>
             </div>
 
-            {/* Timeline Content */}
+            {/* Mobile-First Timeline Content */}
             <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10'>
-              <div className='grid lg:grid-cols-2 gap-12 lg:gap-20 items-start'>
+              <div className='grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-start'>
 
                
                 {/* Left Section - Fixed Story Content */}
@@ -1018,7 +1018,7 @@ defined by exclusivity, originality and sophistication.
                       When Dubai opened its doors to global ambition, we brought the same mindset to a new skyline. We didn&apos;t follow trends, we followed trust. TRPE Luxe was never built to compete. It was built to belong. This is our story. Not in headlines but in homes.
                     </p>
                     
-                    {/* CTA Button */}
+                    {/* Mobile-First CTA Button */}
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       whileInView={{ opacity: 1, scale: 1 }}
@@ -1030,7 +1030,7 @@ defined by exclusivity, originality and sophistication.
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                       >
-                        <Link href="/luxe/about-us" className='inline-flex items-center px-6 py-3 bg-white text-gray-900 rounded-3xl hover:bg-gray-100 transition-colors text-base'>
+                        <Link href="/luxe/about-us" className='inline-flex items-center px-6 py-3 bg-white text-gray-900 rounded-3xl hover:bg-gray-100 transition-colors text-sm sm:text-base min-h-[44px]'>
                           Discover Our Story
                         </Link>
                       </motion.div>
@@ -1038,14 +1038,14 @@ defined by exclusivity, originality and sophistication.
                   </motion.div>
                 </motion.div>
 
-                {/* Right Section - Simple Timeline Animation */}
+                {/* Mobile-First Timeline Section */}
                 <motion.div 
-                  className='relative'
+                  className='relative ml-4 sm:ml-6 lg:ml-8'
                   variants={animationVariants.slideInRight}
                 >
-                  {/* Vertical timeline line */}
+                  {/* Mobile-First Vertical timeline line */}
                   <motion.div 
-                    className='absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-300 via-gray-500 to-gray-300'
+                    className='absolute left-4 sm:left-6 lg:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gray-300 via-gray-500 to-gray-300'
                     initial={{ scaleY: 0, opacity: 0 }}
                     whileInView={{ scaleY: 1, opacity: 1 }}
                     viewport={{ amount: 0.3 }}
@@ -1057,8 +1057,8 @@ defined by exclusivity, originality and sophistication.
                     style={{ transformOrigin: 'top' }}
                   />
 
-                  {/* Timeline Cards - Simple Staggered Animation */}
-                  <div className='relative pl-20 space-y-8'>
+                  {/* Mobile-First Timeline Cards */}
+                  <div className='relative pl-12 sm:pl-16 lg:pl-20 space-y-6 sm:space-y-8'>
                     {[
                       {
                         year: "2006",
@@ -1124,9 +1124,9 @@ defined by exclusivity, originality and sophistication.
                           ease: [0.25, 0.46, 0.45, 0.94]
                         }}
                       >
-                        {/* Timeline dot indicator */}
+                        {/* Mobile-First Timeline dot indicator */}
                         <motion.div 
-                          className={`absolute -left-[5.5rem] top-8 w-12 h-12 bg-gradient-to-br ${item.color} rounded-3xl border-2 border-gray-200 flex items-center justify-center`}
+                          className={`absolute -left-16 sm:-left-20 lg:-left-[5.5rem] top-4 sm:top-6 lg:top-8 min-w-8 min-h-8 sm:min-w-10 sm:min-h-10 lg:min-w-12 lg:min-h-12 px-2 sm:px-3 lg:px-4 py-1 sm:py-2 lg:py-2 bg-gradient-to-br ${item.color} rounded-3xl border-2 border-gray-200 flex items-center justify-center`}
                           initial={{ scale: 0, rotate: -180 }}
                           whileInView={{ scale: 1, rotate: 0 }}
                           viewport={{}}
@@ -1140,12 +1140,12 @@ defined by exclusivity, originality and sophistication.
                             transition: { duration: 0.3 }
                           }}
                         >
-                          <span className='text-white font-bold text-sm'>{item.year}</span>
+                          <span className='text-white font-bold text-xs sm:text-sm whitespace-nowrap'>{item.year}</span>
                         </motion.div>
 
-                        {/* Card Content */}
+                        {/* Mobile-First Card Content */}
                         <motion.div
-                          className='bg-white rounded-3xl p-6 border border-gray-200 transform-gpu relative overflow-hidden'
+                          className='bg-white rounded-3xl p-4 sm:p-6 border border-gray-200 transform-gpu relative overflow-hidden'
                           whileHover={{
                             y: -8,
                             scale: 1.02,
@@ -1188,10 +1188,10 @@ defined by exclusivity, originality and sophistication.
                             {item.year}
                           </motion.div>
                           
-                          {/* Content */}
+                          {/* Mobile-First Content */}
                           <div className='relative z-10'>
                             <motion.h3 
-                              className='text-xl font-playfair font-medium text-gray-900 mb-3'
+                              className='text-lg sm:text-xl font-playfair font-medium text-gray-900 mb-2 sm:mb-3'
                               initial={{ opacity: 0, y: 20 }}
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{}}
@@ -1204,7 +1204,7 @@ defined by exclusivity, originality and sophistication.
                               {item.title}
                             </motion.h3>
                             <motion.p 
-                              className='text-gray-600 leading-relaxed'
+                              className='text-sm sm:text-base text-gray-600 leading-relaxed'
                               initial={{ opacity: 0, y: 20 }}
                               whileInView={{ opacity: 1, y: 0 }}
                               viewport={{}}
@@ -1226,19 +1226,19 @@ defined by exclusivity, originality and sophistication.
             </div>
           </motion.section>
 
-        {/* Latest Blog Section */}
+        {/* Mobile-First Latest Blog Section */}
         <motion.div
           ref={blogSectionRef}
-          className="relative z-35"
+          className="relative z-35 px-4 sm:px-6 lg:px-8"
           style={{ y: blogY }}
         >
           <LuxeBlogSection posts={featuredInsights} />
         </motion.div>
 
-        {/* Dubai Cityscape Section */}
+        {/* Mobile-First Dubai Cityscape Section */}
         <motion.section 
           ref={dubaiSectionRef}
-          className='w-full relative h-[500px] lg:h-[600px] overflow-hidden mb-8 z-40'
+          className='w-full relative h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px] overflow-hidden mb-6 sm:mb-8 z-40'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-50px" }}
@@ -1262,20 +1262,20 @@ defined by exclusivity, originality and sophistication.
             transition={{ duration: 0.8, delay: 0.2 }}
           ></motion.div>
           
-          {/* Content Container */}
+          {/* Mobile-First Content Container */}
           <div className='absolute inset-0 flex items-center'>
-            <div className='max-w-7xl mx-auto px-4 w-full'>
+            <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full'>
               <motion.div 
-                className='flex flex-col lg:flex-row items-center justify-between'
+                className='flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-0'
                 variants={animationVariants.staggerContainer}
               >
-                {/* Left Side - Text Content */}
+                {/* Mobile-First Text Content */}
                 <motion.div 
-                  className='max-w-2xl mb-8 lg:mb-0'
+                  className='max-w-2xl mb-4 sm:mb-6 lg:mb-0 text-center lg:text-left'
                   variants={animationVariants.slideInLeft}
                 >
                   <motion.h2 
-                    className='text-3xl lg:text-5xl font-playfair font-light text-slate-800 mb-6 leading-tight'
+                    className='text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-5xl font-playfair font-light text-slate-800 mb-3 sm:mb-4 lg:mb-6 leading-tight'
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{}}
@@ -1283,12 +1283,12 @@ defined by exclusivity, originality and sophistication.
                     whileHover={{ scale: 1.02 }}
                   >
                     Discover Dubai&apos;s Most Prestigious Developments
-                    <br />
-                    Where Luxury Meets Innovation
+                    <br className='hidden sm:block' />
+                    <span className='sm:hidden'> </span>Where Luxury Meets Innovation
                   </motion.h2>
                 </motion.div>
                 
-                {/* Right Side - Button */}
+                {/* Mobile-First Button */}
                 <motion.div 
                   className='flex-shrink-0'
                   variants={animationVariants.slideInRight}
@@ -1300,7 +1300,7 @@ defined by exclusivity, originality and sophistication.
                   >
                     <Link 
                       href="/luxe/dubai/properties" 
-                      className='inline-flex items-center px-12 py-4 bg-slate-900 text-white rounded-3xl hover:bg-slate-800 transition-colors font-medium text-lg'
+                      className='inline-flex items-center px-6 sm:px-8 lg:px-12 py-3 sm:py-4 bg-slate-900 text-white rounded-3xl hover:bg-slate-800 transition-colors font-medium text-sm sm:text-base lg:text-lg min-h-[44px]'
                     >
                       View All Properties
                     </Link>

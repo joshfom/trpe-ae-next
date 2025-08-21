@@ -146,10 +146,6 @@ async function PropertyTypeOfferingPage(props: PropertyTypeOfferingPageProps) {
 
     return (
         <div className={' bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
-
-            </div>
-
             <PropertyPageSearchFilter
                 offeringType={params?.offeringType}
                 propertyType={params?.propertyType}

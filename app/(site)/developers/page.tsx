@@ -71,9 +71,6 @@ async function DevelopersPage() {
 
     return (
         <>
-            <div className="py-12 bg-black hidden lg:block">
-
-            </div>
             <div className="py-12 px-6 max-w-7xl mx-auto">
                 <h1 className="text-3xl font-semibold">
                     Real Estate Developers in Dubai

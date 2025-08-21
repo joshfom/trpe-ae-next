@@ -12,6 +12,7 @@ import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageM
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
+import { generateMobileSEO, generateMobileViewport } from "@/lib/mobile/mobile-seo-optimization";
 
 export async function generateMetadata(): Promise<Metadata> {
     const headersList = await headers();
@@ -34,16 +35,46 @@ export async function generateMetadata(): Promise<Metadata> {
         description = pageMeta.metaDescription;
     }
 
+    // Generate mobile-optimized SEO
+    const mobileViewport = generateMobileViewport('property-search');
+    const baseUrl = process.env.NEXT_PUBLIC_URL || '';
+
     return {
         title,
         description,
         alternates: {
-            canonical: `${process.env.NEXT_PUBLIC_URL}/dubai/properties/residential/for-sale`,
+            canonical: `${baseUrl}/dubai/properties/residential/for-sale`,
         },
         robots: {
             index: pageMeta?.noIndex === true ? false : undefined,
             follow: pageMeta?.noFollow === true ? false : undefined,
         },
+        viewport: {
+            width: mobileViewport.width,
+            initialScale: mobileViewport.initialScale,
+            minimumScale: mobileViewport.minimumScale,
+            maximumScale: mobileViewport.maximumScale,
+            userScalable: mobileViewport.userScalable,
+            viewportFit: mobileViewport.viewportFit,
+        },
+        openGraph: {
+            title,
+            description,
+            type: 'website',
+            url: `${baseUrl}/dubai/properties/residential/for-sale`,
+            images: [{
+                url: `${baseUrl}/dubai-properties-og.webp`,
+                width: 1200,
+                height: 630,
+                alt: 'Properties for sale in Dubai'
+            }]
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [`${baseUrl}/dubai-properties-twitter.webp`]
+        }
     };
 }
 
@@ -75,21 +106,20 @@ async function PropertySearchPage({ searchParams }: Props) {
     }
 
     return (
-        <div className={'bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
-
-            </div>
+        <div className={'bg-slate-50 min-h-screen'}>
+            {/* Mobile-optimized search filter */}
             <PropertyPageSearchFilter offeringType='for-sale' />
             
-            <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
-                <div className="flex space-x-2 items-center">
+            {/* Mobile-first heading and meta section */}
+            <div className="flex flex-col lg:flex-row justify-between py-4 lg:py-6 items-start lg:items-center pt-6 lg:pt-12 max-w-7xl px-4 sm:px-6 lg:px-0 mx-auto gap-4">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 items-start sm:items-center w-full lg:w-auto">
                     <SearchPageH1Heading
                         heading={pageTitle}
                     />
                 </div>
 
                 {user && (
-                    <div className="flex justify-end mt-4 px-6">
+                    <div className="flex justify-start lg:justify-end w-full lg:w-auto">
                         <EditPageMetaSheet
                             pageMeta={pageMeta}
                             pathname={pathname}
@@ -98,17 +128,21 @@ async function PropertySearchPage({ searchParams }: Props) {
                 )}
             </div>
             
-            <Listings 
-                offeringType={'for-sale'}
-                searchParams={resolvedSearchParams}
-                page={page}
-            />
+            {/* Mobile-optimized listings section */}
+            <div className="px-4 sm:px-6 lg:px-0">
+                <Listings 
+                    offeringType={'for-sale'}
+                    searchParams={resolvedSearchParams}
+                    page={page}
+                />
+            </div>
 
-            {
-                <div className="max-w-7xl bg-white mx-auto px-4 py-8">
+            {/* Mobile-first content section */}
+            {pageMeta?.content && (
+                <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-4 py-6 lg:py-8 mt-4 rounded-t-lg lg:rounded-lg shadow-sm">
                     <TipTapView content={pageMeta?.content}/>
                 </div>
-            }
+            )}
         </div>
     );
 }

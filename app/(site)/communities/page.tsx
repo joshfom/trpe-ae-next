@@ -98,7 +98,6 @@ CommunityList.displayName = 'CommunityList';
 // Loading component
 const CommunitiesLoading = memo(() => (
     <>
-        <div className="py-12 bg-black hidden lg:block"></div>
         <div className="py-12 max-w-7xl mx-auto">
             <div className="h-8 w-64 bg-gray-200 rounded animate-pulse"></div>
         </div>
@@ -121,7 +120,6 @@ async function CommunitiesPage() {
 
     return (
         <>
-            <div className="py-12 bg-black hidden lg:block"></div>
             <Suspense fallback={<CommunitiesLoading />}>
                 <CommunityList communities={communities} />
             </Suspense>

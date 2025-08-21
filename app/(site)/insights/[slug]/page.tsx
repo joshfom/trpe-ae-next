@@ -117,10 +117,6 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
 
     return (
         <div className={' pb-12'}>
-            <div className="py-12 bg-black hidden lg:block">
-
-            </div>
-
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(insightJsonLd) }}

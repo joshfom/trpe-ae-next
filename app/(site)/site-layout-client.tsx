@@ -13,7 +13,10 @@ function SiteLayoutClient({ children }: ClientLayoutProps) {
     return (
         <>
             <SiteTopNavigation />
-            {children}
+            {/* Use custom mobile navigation offset utility */}
+            <div className="mobile-content-offset">
+                {children}
+            </div>
             <SiteFooter />
         </>
     );

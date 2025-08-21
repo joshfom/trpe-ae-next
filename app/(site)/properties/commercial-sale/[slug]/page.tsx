@@ -107,10 +107,6 @@ async function ListingViewPage(props: ListingViewPageProps) {
 
     return (
         <div>
-            <div className="hidden lg:block h-20 bg-black">
-
-            </div>
-
             <ListingDetailView property={property} />
             <SimilarProperties properties={similarProperties} />
         </div>

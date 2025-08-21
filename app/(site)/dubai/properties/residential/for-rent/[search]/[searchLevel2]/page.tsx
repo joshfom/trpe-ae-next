@@ -236,9 +236,6 @@ async function PropertySearchPage({ searchParams, params }: Props) {
     
     return (
         <div className={'bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
-
-            </div>
             <PropertyPageSearchFilter offeringType='for-rent' />
             
             {/* Filter Summary */}

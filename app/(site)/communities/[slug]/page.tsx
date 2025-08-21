@@ -85,9 +85,6 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
 
     return (
         (<div className={''}>
-            <div className="py-12 bg-black hidden lg:block">
-
-            </div>
             <div className=" py-8 ">
                 <div className="flex justify-between items-center px-6 pb-4 max-w-7xl mx-auto">
                     <h1 className="text-2xl">

@@ -14,8 +14,6 @@ import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
-import SiteFooter from '@/components/site-footer';
-import SiteTopNavigation from '@/components/site-top-navigation';
 
 // Dynamic imports for better code splitting - SSR compatible
 const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
@@ -163,7 +161,7 @@ export default async function Home() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{__html: JSON.stringify(webpageJsonLD)}}
             />
-<SiteTopNavigation />
+
             {/* Main content with mobile-first hero section */}
             <main className="flex min-h-screen flex-col">
                 {/* Mobile-first hero section */}
@@ -346,7 +344,6 @@ export default async function Home() {
 
 
             </main>
-           <SiteFooter />
         </div>
     );
 }

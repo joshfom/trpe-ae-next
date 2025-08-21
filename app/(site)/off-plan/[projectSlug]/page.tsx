@@ -86,9 +86,6 @@ async function ShowProjectPage(props: ShowProjectPageProps) {
 
     return (
         <div>
-            <div className="hidden lg:block h-20 bg-black">
-            </div>
-
             <ProjectDetailViewServer project={project} />
         </div>
     );

@@ -8,6 +8,7 @@ import currencyConverter from "@/lib/currency-converter";
 import unitConverter from "@/lib/unit-converter";
 import { prepareExcerpt } from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
+import { getOptimalImageConfig } from "@/lib/mobile/image-optimization";
 
 interface PropertyCardProps {
     property: PropertyType,
@@ -21,6 +22,9 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
         property.images && property.images.length > 0 ? property.images[0].s3Url : null, 
         [property.images]
     );
+    
+    // Mobile-optimized image configuration
+    const imageConfig = useMemo(() => getOptimalImageConfig('property-card', false), []);
     
     const propertyLinks = useMemo(() => ({
         propertyDetail: property.offeringType ? `/properties/${property.offeringType.slug}/${property.slug}` : "#",
@@ -47,101 +51,110 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
 
 
     return (
-        <div className={'rounded-xl shadow-xs bg-white'}>
+        <div className={'rounded-xl shadow-sm bg-white border border-gray-100 hover:shadow-md transition-shadow duration-200'}>
             <div className="relative">
                 <div className="relative">
                     {firstImageUrl && (
-                        <div className="h-96 relative">
+                        <div className="h-64 sm:h-80 md:h-96 relative">
                             <Image
                                 src={firstImageUrl}
                                 alt={property.name || 'Property Image'}
                                 fill
-                                className="pointer-events-none object-cover rounded-xl"
-                                loading="lazy"
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                                placeholder="blur"
-                                blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                                className="pointer-events-none object-cover rounded-t-xl"
+                                loading={imageConfig.loading}
+                                sizes={imageConfig.sizes}
+                                placeholder={imageConfig.placeholder}
+                                blurDataURL={imageConfig.blurDataURL}
+                                quality={imageConfig.quality}
                             />
                         </div>
                     )}
                 </div>
-                <div className="absolute top-2 right-2 z-10 flex space-x-3">
+                
+                {/* Mobile-optimized badges with better touch targets */}
+                <div className="absolute top-3 right-3 z-10 flex flex-col gap-2">
                     {property.type && (
                         <Link 
                             href={propertyLinks.typeDetail}
-                            className="text-white rounded-full text-xs px-4 bg-[#141414] py-1"
+                            className="text-white rounded-full text-xs sm:text-sm px-3 py-1.5 bg-[#141414] hover:bg-gray-800 transition-colors min-h-[32px] flex items-center justify-center"
                         >
                             {property.type.name}
                         </Link>
                     )}
                 </div>
             </div>
-            <div className="p-3 pt-8 border-b border-x text-slate-700 rounded-b-xl border-white/20 relative">
-                <div className="flex flex-col space-y-2 text-lg justify-center">
-                    <Link 
-                        href={propertyLinks.propertyDetail}
-                        className={'hover:underline'}
-                    >
-                        {formattedValues.title}
-                    </Link>
-                </div>
-                <div className="py-2">
-                    <Link 
-                        href={propertyLinks.propertyDetail}
-                        className={'text-sm '}
-                    >
-                        {formattedValues.description}
-                    </Link>
-                </div>
-                <div className="absolute z-20 text-white -top-4 left-4">
+            
+            <div className="p-4 sm:p-5 border-b border-x text-slate-700 rounded-b-xl border-white/20 relative">
+                {/* Mobile-optimized offering type badge */}
+                <div className="absolute z-20 text-white -top-6 left-4">
                     {displayLogic.showOfferingType && property.offeringType && (
                         <Link 
                             href={propertyLinks.offeringType}
-                            className={'rounded-full bg-[#141414] border-b py-1 px-3 text-center border-t border-white border-x text-white text-sm'}
+                            className={'rounded-full bg-[#141414] border-b py-2 px-4 text-center border-t border-white border-x text-white text-sm hover:bg-gray-800 transition-colors min-h-[36px] flex items-center'}
                         >
                             <span className="sr-only">Property Details</span>
                             {property.offeringType.name}
                         </Link>
                     )}
                 </div>
-                <div className="py-3 flex flex-wrap gap-4 justify-start">
+                
+                {/* Mobile-optimized title and description */}
+                <div className="flex flex-col space-y-3 text-base sm:text-lg justify-center pt-4">
+                    <Link 
+                        href={propertyLinks.propertyDetail}
+                        className={'hover:underline font-medium leading-tight'}
+                    >
+                        {formattedValues.title}
+                    </Link>
+                </div>
+                
+                <div className="py-3">
+                    <Link 
+                        href={propertyLinks.propertyDetail}
+                        className={'text-sm text-gray-600 leading-relaxed'}
+                    >
+                        {formattedValues.description}
+                    </Link>
+                </div>
+                
+                {/* Mobile-optimized property details with better spacing */}
+                <div className="py-3 flex flex-wrap gap-3 sm:gap-4 justify-start text-sm">
                     {displayLogic.showBedrooms && (
-                        <div className="flex justify-center items-center">
-                            <Dot size={18}/>
+                        <div className="flex items-center min-h-[32px]">
+                            <Dot size={18} className="text-gray-400"/>
                             {property.bedrooms < 1 ? 'Studio' : (
-                                <p>
-                                    Bed
-                                    <span className="ml-2">
-                                        {property.bedrooms}
-                                    </span>
+                                <p className="flex items-center gap-1">
+                                    <span>Bed</span>
+                                    <span className="font-medium">{property.bedrooms}</span>
                                 </p>
                             )}
                         </div>
                     )}
-                    <div className="flex justify-center items-center">
-                        <Dot size={18}/>
-                        Bath
-                        <p className="ml-2">
-                            {property.bathrooms}
+                    <div className="flex items-center min-h-[32px]">
+                        <Dot size={18} className="text-gray-400"/>
+                        <p className="flex items-center gap-1">
+                            <span>Bath</span>
+                            <span className="font-medium">{property.bathrooms}</span>
                         </p>
                     </div>
-
-                    <div className="flex grow justify-center items-center">
-                        <Dot size={18}/>
-                        <span className="">Size</span>
-                        <p className="ml-2 ">
-                            {formattedValues.size}
+                    <div className="flex items-center min-h-[32px]">
+                        <Dot size={18} className="text-gray-400"/>
+                        <p className="flex items-center gap-1">
+                            <span>Size</span>
+                            <span className="font-medium">{formattedValues.size}</span>
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-col-reverse lg:flex-row gap-2 lg:gap-4 items-center space-x-2 py-2 justify-between">
+                
+                {/* Mobile-optimized CTA section with better touch targets */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4 items-stretch sm:items-center py-3 justify-between">
                     <Link
-                        className={'py-1.5 px-5 rounded-full hover:bg-black hover:text-white text-sm border '}
+                        className={'py-3 px-6 rounded-full hover:bg-black hover:text-white text-sm border border-gray-300 hover:border-black transition-all duration-200 text-center font-medium min-h-[44px] flex items-center justify-center flex-1 sm:flex-none'}
                         href={propertyLinks.propertyDetail}
                     >
                         View Property
                     </Link>
-                    <p className={'text-lg font-semibold'}>
+                    <p className={'text-lg sm:text-xl font-semibold text-center sm:text-right'}>
                         {formattedValues.price}
                     </p>
                 </div>

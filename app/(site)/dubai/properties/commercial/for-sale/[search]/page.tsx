@@ -15,6 +15,7 @@ import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import {headers} from "next/headers";
 import FilterSummary from "@/features/search/components/FilterSummary";
+import { generateMobileSEO, generateMobileViewport } from "@/lib/mobile/mobile-seo-optimization";
 
 type CommunityType = {
     name: string;
@@ -103,6 +104,32 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
         alternates: {
             canonical: `${process.env.NEXT_PUBLIC_URL}/dubai/properties/commercial/for-sale/${slug}`,
         },
+        viewport: {
+            width: 'device-width',
+            initialScale: 1,
+            minimumScale: 1,
+            maximumScale: 5,
+            userScalable: true,
+            viewportFit: 'cover',
+        },
+        openGraph: {
+            title,
+            description,
+            type: 'website',
+            url: `${process.env.NEXT_PUBLIC_URL}/dubai/properties/commercial/for-sale/${slug}`,
+            images: [{
+                url: `${process.env.NEXT_PUBLIC_URL}/dubai-commercial-sale-properties-og.webp`,
+                width: 1200,
+                height: 630,
+                alt: title
+            }]
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [`${process.env.NEXT_PUBLIC_URL}/dubai-commercial-sale-properties-twitter.webp`]
+        }
     };
 }
 
@@ -161,47 +188,65 @@ async function PropertySearchPage({ searchParams, params }: Props) {
     }
 
     return (
-        <div className={'bg-slate-100'}>
-            <div className="hidden lg:block py-12 bg-black">
+        <div className="min-h-screen bg-gray-50">
+            {/* Mobile-first container with responsive padding */}
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+                {/* Mobile-optimized search filter */}
+                <div className="mb-6 sm:mb-8">
+                    <div className="w-full">
+                        <PropertyPageSearchFilter 
+                            offeringType='commercial-sale'
+                        />
+                    </div>
+                </div>
+                
+                {/* Mobile-first filter summary */}
+                <div className="mb-4 sm:mb-6">
+                    <FilterSummary 
+                        selectedCommunities={[]} 
+                        searchParams={new URLSearchParams(Object.entries(resolvedSearchParams).map(([key, value]) => [key, String(value)]))} 
+                    />
+                </div>
+                
+                {/* Mobile-first header section */}
+                <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8">
+                    <div className="flex-1">
+                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
+                            <SearchPageH1Heading
+                                heading={pageTitle}
+                            />
+                        </div>
+                    </div>
 
-            </div>
-            <PropertyPageSearchFilter offeringType='commercial-sale' />
-            
-            {/* Filter Summary */}
-            <FilterSummary 
-                selectedCommunities={[]} 
-                searchParams={new URLSearchParams(Object.entries(resolvedSearchParams).map(([key, value]) => [key, String(value)]))} 
-            />
-            
-            <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
-                <div className="flex space-x-2 items-center">
-                    <SearchPageH1Heading
-                        heading={pageTitle}
+                    {/* Admin controls - mobile-responsive */}
+                    {user && (
+                        <div className="flex justify-start sm:justify-end">
+                            <EditPageMetaSheet
+                                pageMeta={pageMeta}
+                                pathname={pathname}
+                            />
+                        </div>
+                    )}
+                </div>
+                
+                {/* Mobile-optimized listings */}
+                <div className="w-full">
+                    <Listings 
+                        offeringType={'commercial-sale'}
+                        searchParams={resolvedSearchParams}
+                        page={page}
                     />
                 </div>
 
-                {user && (
-                    <div className="flex justify-end mt-4 px-6">
-                        <EditPageMetaSheet
-                            pageMeta={pageMeta}
-                            pathname={pathname}
-                        />
+                {/* Mobile-responsive content section */}
+                {pageMeta?.content && (
+                    <div className="mt-8 sm:mt-12 lg:mt-16 bg-white rounded-lg p-4 sm:p-6 lg:p-8">
+                        <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
+                            <TipTapView content={pageMeta.content}/>
+                        </div>
                     </div>
                 )}
             </div>
-            
-            <Listings 
-                offeringType={'commercial-sale'}
-                searchParams={resolvedSearchParams}
-                page={page}
-            />
-
-
-            {pageMeta?.content && (
-                <div className="max-w-7xl bg-white mx-auto px-4 py-8">
-                    <TipTapView content={pageMeta.content}/>
-                </div>
-            )}
         </div>
     );
 }

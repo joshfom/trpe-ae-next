@@ -55,8 +55,8 @@ async function Listings({offeringType, propertyType, searchParams = {}, isLandin
     const error = data.error;
 
     return (
-        <div className='pb-8'>
-            <div className={'max-w-7xl lg:px-0 mx-auto grid px-4 pb-6 lg:pb-12 '}>
+        <div className='pb-6 lg:pb-8'>
+            <div className={'max-w-7xl mx-auto grid sm:px-6 lg:px-0 pb-4 lg:pb-12'}>
                 {listings && listings.length > 0 ? (
                     <ListingsGrid listings={listings}/>
                 ) : null}
@@ -68,20 +68,20 @@ async function Listings({offeringType, propertyType, searchParams = {}, isLandin
                 )}
 
                 {error && (
-                    <div className={'h-[300px] lg:h-[600px] flex flex-col justify-center items-center'}>
-                        <p className="text-lg text-center text-gray-500">
+                    <div className={'h-[200px] sm:h-[300px] lg:h-[600px] flex flex-col justify-center items-center px-4'}>
+                        <p className="text-base lg:text-lg text-center text-gray-500">
                             Oops! Something went wrong from our end. Please try again later.
                         </p>
                     </div>
                 )}
 
                 {!error && listings && listings.length === 0 && (
-                    <div className={'h-[300px] lg:h-[600px] flex flex-col gap-8 justify-center items-center'}>
-                        <p className="text-2xl text-center text-gray-500">
+                    <div className={'h-[200px] sm:h-[300px] lg:h-[600px] flex flex-col gap-4 lg:gap-8 justify-center items-center px-4'}>
+                        <p className="text-xl lg:text-2xl text-center text-gray-500">
                             No properties found
                         </p>
 
-                        <p>
+                        <p className="text-sm lg:text-base text-center text-gray-400">
                             Please try changing your search criteria or check back later.
                         </p>
                     </div>
