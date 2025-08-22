@@ -21,8 +21,8 @@ interface CircuitBreakerState {
 
 class ResilientApiClient {
   private circuitBreakers = new Map<string, CircuitBreakerState>();
-  private readonly failureThreshold = 5;
-  private readonly recoveryTimeout = 30000; // 30 seconds
+  private readonly failureThreshold = 8; // Increase failure threshold
+  private readonly recoveryTimeout = 60000; // 60 seconds recovery timeout
 
   /**
    * Execute an API call with retry logic and circuit breaker protection
@@ -34,8 +34,8 @@ class ResilientApiClient {
   ): Promise<T> {
     const {
       maxRetries = 3,
-      baseDelay = 1000,
-      maxDelay = 10000,
+      baseDelay = 2000, // Increase base delay
+      maxDelay = 20000, // Increase max delay
       backoffMultiplier = 2,
       retryCondition = this.defaultRetryCondition,
     } = options;
@@ -100,7 +100,7 @@ class ResilientApiClient {
   async executeWithTimeout<T>(
     operation: () => Promise<T>,
     operationName: string,
-    timeoutMs: number = 15000
+    timeoutMs: number = process.env.NODE_ENV === 'production' ? 30000 : 15000 // Dynamic timeout
   ): Promise<T> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
@@ -131,7 +131,7 @@ class ResilientApiClient {
     operationName: string,
     options: RetryOptions & { timeoutMs?: number } = {}
   ): Promise<T> {
-    const { timeoutMs = 15000, ...retryOptions } = options;
+    const { timeoutMs = process.env.NODE_ENV === 'production' ? 30000 : 15000, ...retryOptions } = options;
     
     return this.executeWithRetry(
       () => this.executeWithTimeout(operation, operationName, timeoutMs),

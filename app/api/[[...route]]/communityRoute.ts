@@ -40,49 +40,105 @@ const app = new Hono()
         .get("/list",
             async (c) => {
                 try {
-                    const [rentType, saleType, commercialRentType, commercialSaleType] = await Promise.all([
-                        db.query.offeringTypeTable.findFirst({
-                            where: eq(offeringTypeTable.slug, "for-rent"),
-                        }),
-                        db.query.offeringTypeTable.findFirst({
-                            where: eq(offeringTypeTable.slug, "for-sale"),
-                        }),
-                        db.query.offeringTypeTable.findFirst({
-                            where: eq(offeringTypeTable.slug, "commercial-rent"),
-                        }),
-                        db.query.offeringTypeTable.findFirst({
-                            where: eq(offeringTypeTable.slug, "commercial-sale"),
-                        })
-                    ]);
-
-                    // Get all communities first
-                    const baseCommunities = await db.select({
+                    // Set response headers for caching
+                    c.header('Cache-Control', 'public, s-maxage=300, stale-while-revalidate=600'); // 5 min cache, 10 min stale
+                    
+                    // Step 1: Get all communities (simple query first)
+                    const allCommunities = await db.select({
+                        id: communityTable.id,
                         name: communityTable.name,
                         slug: communityTable.slug,
                         shortName: communityTable.shortName,
-                        id: communityTable.id,
                     }).from(communityTable);
 
-                    // Then calculate counts for each community
-                    const communities = await Promise.all(baseCommunities.map(async (community) => {
-                        const [propertyCount, rentCount, saleCount, commercialRentCount, commercialSaleCount] = await Promise.all([
-                            db.$count(propertyTable, eq(propertyTable.communityId, community.id)),
-                            rentType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, rentType.id))) : Promise.resolve(0),
-                            saleType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, saleType.id))) : Promise.resolve(0),
-                            commercialRentType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, commercialRentType.id))) : Promise.resolve(0),
-                            commercialSaleType ? db.$count(propertyTable, and(eq(propertyTable.communityId, community.id), eq(propertyTable.offeringTypeId, commercialSaleType.id))) : Promise.resolve(0),
-                        ]);
+                    if (allCommunities.length === 0) {
+                        return c.json({communities: []});
+                    }
 
-                        return {
-                            name: community.name,
-                            slug: community.slug,
-                            shortName: community.shortName,
-                            propertyCount,
-                            rentCount,
-                            saleCount,
-                            commercialRentCount,
-                            commercialSaleCount,
-                        };
+                    // Step 2: Get offering types (optimized to only fetch IDs)
+                    const [rentType, saleType, commercialRentType, commercialSaleType] = await Promise.all([
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "for-rent"),
+                            columns: { id: true }
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "for-sale"),
+                            columns: { id: true }
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "commercial-rent"),
+                            columns: { id: true }
+                        }),
+                        db.query.offeringTypeTable.findFirst({
+                            where: eq(offeringTypeTable.slug, "commercial-sale"),
+                            columns: { id: true }
+                        })
+                    ]);
+
+                    // Step 3: Get property counts separately for each type to avoid complex subqueries
+                    const [totalCounts, rentCounts, saleCounts, commercialRentCounts, commercialSaleCounts] = await Promise.all([
+                        // Total property counts per community
+                        db.select({
+                            communityId: propertyTable.communityId,
+                            count: db.$count(propertyTable)
+                        })
+                        .from(propertyTable)
+                        .groupBy(propertyTable.communityId),
+                        
+                        // Rent property counts
+                        rentType ? db.select({
+                            communityId: propertyTable.communityId,
+                            count: db.$count(propertyTable)
+                        })
+                        .from(propertyTable)
+                        .where(eq(propertyTable.offeringTypeId, rentType.id))
+                        .groupBy(propertyTable.communityId) : [],
+                        
+                        // Sale property counts
+                        saleType ? db.select({
+                            communityId: propertyTable.communityId,
+                            count: db.$count(propertyTable)
+                        })
+                        .from(propertyTable)
+                        .where(eq(propertyTable.offeringTypeId, saleType.id))
+                        .groupBy(propertyTable.communityId) : [],
+                        
+                        // Commercial rent property counts
+                        commercialRentType ? db.select({
+                            communityId: propertyTable.communityId,
+                            count: db.$count(propertyTable)
+                        })
+                        .from(propertyTable)
+                        .where(eq(propertyTable.offeringTypeId, commercialRentType.id))
+                        .groupBy(propertyTable.communityId) : [],
+                        
+                        // Commercial sale property counts
+                        commercialSaleType ? db.select({
+                            communityId: propertyTable.communityId,
+                            count: db.$count(propertyTable)
+                        })
+                        .from(propertyTable)
+                        .where(eq(propertyTable.offeringTypeId, commercialSaleType.id))
+                        .groupBy(propertyTable.communityId) : []
+                    ]);
+
+                    // Step 4: Create lookup maps for efficient data access
+                    const totalCountsMap = new Map(totalCounts.map(item => [item.communityId, item.count || 0]));
+                    const rentCountsMap = new Map(rentCounts.map(item => [item.communityId, item.count || 0]));
+                    const saleCountsMap = new Map(saleCounts.map(item => [item.communityId, item.count || 0]));
+                    const commercialRentCountsMap = new Map(commercialRentCounts.map(item => [item.communityId, item.count || 0]));
+                    const commercialSaleCountsMap = new Map(commercialSaleCounts.map(item => [item.communityId, item.count || 0]));
+
+                    // Step 5: Build final communities array
+                    const communities = allCommunities.map(community => ({
+                        name: community.name,
+                        slug: community.slug,
+                        shortName: community.shortName,
+                        propertyCount: totalCountsMap.get(community.id) || 0,
+                        rentCount: rentCountsMap.get(community.id) || 0,
+                        saleCount: saleCountsMap.get(community.id) || 0,
+                        commercialRentCount: commercialRentCountsMap.get(community.id) || 0,
+                        commercialSaleCount: commercialSaleCountsMap.get(community.id) || 0,
                     }));
                   
                     // Return the communities data as a JSON response

@@ -15,8 +15,9 @@ export async function getCommunitiesAction() {
             'getCommunities',
             {
                 maxRetries: 2,
-                timeoutMs: 8000, // 8 seconds
-                baseDelay: 1000,
+                timeoutMs: process.env.NODE_ENV === 'production' ? 30000 : 8000, // 30 seconds in production, 8 seconds in dev
+                baseDelay: 2000, // Increase base delay
+                maxDelay: 15000, // Increase max delay
             }
         );
 
