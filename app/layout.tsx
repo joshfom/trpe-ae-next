@@ -322,6 +322,65 @@ export default function RootLayout({
       />
 
       <CookieConsentMinimal />
+      
+      {/* Production Error Handler - Must be imported dynamically to avoid SSR issues */}
+      <Script id="production-error-handler" strategy="afterInteractive" dangerouslySetInnerHTML={{
+        __html: `
+          // Handle clientModules errors and runtime issues
+          if (typeof window !== 'undefined') {
+            // Override console.error to catch clientModules errors
+            const originalConsoleError = console.error;
+            console.error = function(...args) {
+              const errorMessage = args.join(' ');
+              
+              if (errorMessage.includes('clientModules') || 
+                  errorMessage.includes('Cannot read properties of undefined')) {
+                
+                // Track for analytics but don't spam console
+                if (window.gtag) {
+                  window.gtag('event', 'client_modules_error', {
+                    error_message: errorMessage,
+                    timestamp: new Date().toISOString(),
+                  });
+                }
+                return; // Suppress the error
+              }
+              
+              // Call original console.error for other errors
+              originalConsoleError.apply(console, args);
+            };
+            
+            // Handle unhandled promise rejections
+            window.addEventListener('unhandledrejection', function(event) {
+              const error = event.reason;
+              
+              if (error?.message?.includes('An unexpected response was received from the server') ||
+                  error?.message?.includes('500')) {
+                
+                console.warn('Server action error handled gracefully:', error.message);
+                
+                if (window.gtag) {
+                  window.gtag('event', 'server_action_error', {
+                    error_message: error.message,
+                    timestamp: new Date().toISOString(),
+                  });
+                }
+                
+                event.preventDefault();
+                return;
+              }
+            });
+            
+            // Handle runtime errors
+            window.addEventListener('error', function(event) {
+              if (event.error?.message?.includes('clientModules')) {
+                event.preventDefault();
+                console.warn('ClientModules error prevented from breaking UI');
+              }
+            });
+          }
+        `
+      }} />
 
       </body>
 
