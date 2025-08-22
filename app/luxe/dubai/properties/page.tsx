@@ -3,6 +3,7 @@ import {eq} from "drizzle-orm";
 import {propertyTable} from "@/db/schema/property-table";
 import LuxePropertySearch from "@/components/luxe/LuxePropertySearch";
 import LuxePropCard from "@/components/luxe/LuxePropCard";
+import LuxePropCardSSR from "@/components/luxe/LuxePropCardSSR";
 import {PropertyType} from "@/types/property";
 
 export default async function LuxePropertiesPage() {
@@ -103,10 +104,11 @@ export default async function LuxePropertiesPage() {
               </div>
             ) : (
               <>
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12'>
+                {/* SSR Version - Always renders first */}
+                <div id="ssr-properties" className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12'>
                   {transformedProperties.map((property) => (
-                    <LuxePropCard 
-                      key={property.id}
+                    <LuxePropCardSSR 
+                      key={`ssr-${property.id}`}
                       id={property.id}
                       title={property.title}
                       location={property.location}
@@ -120,6 +122,45 @@ export default async function LuxePropertiesPage() {
                     />
                   ))}
                 </div>
+
+                {/* Client-Side Version - Will hydrate and replace SSR version when JS loads */}
+                <div id="csr-properties" style={{ display: 'none' }} className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12'>
+                  {transformedProperties.map((property) => (
+                    <LuxePropCard 
+                      key={`csr-${property.id}`}
+                      id={property.id}
+                      title={property.title}
+                      location={property.location}
+                      slug={property.slug}
+                      price={property.price}
+                      beds={property.beds}
+                      baths={property.baths}
+                      sqft={property.sqft}
+                      imageUrl={property.imageUrl}
+                      className='bg-white shadow-sm hover:shadow-lg transition-shadow'
+                    />
+                  ))}
+                </div>
+
+                {/* Enhancement Script */}
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `
+                      document.addEventListener('DOMContentLoaded', function() {
+                        // Switch from SSR to CSR version
+                        const ssrElement = document.getElementById('ssr-properties');
+                        const csrElement = document.getElementById('csr-properties');
+                        
+                        if (ssrElement && csrElement) {
+                          // Hide SSR version
+                          ssrElement.style.display = 'none';
+                          // Show CSR version
+                          csrElement.style.display = 'grid';
+                        }
+                      });
+                    `
+                  }}
+                />
 
                 {/* Note: Pagination functionality requires client-side state management */}
                 {transformedProperties.length > 12 && (

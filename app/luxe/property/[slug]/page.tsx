@@ -5,6 +5,7 @@ import {propertyTable} from '@/db/schema/property-table';
 import {and, eq} from 'drizzle-orm';
 import {PropertyType} from '@/types/property';
 import OptimizedLuxePropertyDetail from './OptimizedLuxePropertyDetail';
+import LuxePropertyDetailSSR from './LuxePropertyDetailSSR';
 
 interface LuxePropertyPageProps {
     params: Promise<{ slug: string }>;
@@ -75,7 +76,39 @@ export default async function LuxePropertyPage({ params }: LuxePropertyPageProps
             notFound();
         }
 
-        return <OptimizedLuxePropertyDetail property={property} />;
+        return (
+            <>
+                {/* SSR Version - Always renders first for SEO and no-JS users */}
+                <div id="ssr-property">
+                    <LuxePropertyDetailSSR property={property} />
+                </div>
+                
+                {/* Client-Side Version - Will hydrate and replace SSR version when JS loads */}
+                <div id="csr-property" style={{ display: 'none' }}>
+                    <OptimizedLuxePropertyDetail property={property} />
+                </div>
+
+                {/* Enhancement Script */}
+                <script
+                    dangerouslySetInnerHTML={{
+                        __html: `
+                            document.addEventListener('DOMContentLoaded', function() {
+                                // Switch from SSR to CSR version
+                                const ssrElement = document.getElementById('ssr-property');
+                                const csrElement = document.getElementById('csr-property');
+                                
+                                if (ssrElement && csrElement) {
+                                    // Hide SSR version
+                                    ssrElement.style.display = 'none';
+                                    // Show CSR version
+                                    csrElement.style.display = 'block';
+                                }
+                            });
+                        `
+                    }}
+                />
+            </>
+        );
         
     } catch (error) {
         console.error('Error fetching property:', error);

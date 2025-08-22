@@ -51,64 +51,94 @@ export default function LuxePageSSR({
 }: LuxePageSSRProps) {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative min-h-screen bg-gray-900 flex items-center justify-center overflow-hidden">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: "url('https://www.nakheelcommunities.com/images/nakheelcommunitieslibraries/communities/palm-jumeirah2801cfc3-6328-423b-b735-3d3bb2a5c39c.jpg?sfvrsn=74da3db1_2')"
-          }}
-        />
-        <div className="absolute inset-0 bg-black/50" />
+      {/* Hero Section - Matching CSR design exactly */}
+      <section 
+        className="relative w-full overflow-hidden"
+        style={{ height: 'calc(100vh - 200px)' }}
+      >
+        {/* Background Image - Static version (no parallax) */}
+        <div className="absolute inset-0 w-full h-[120vh]">
+          <img
+            src="https://www.nakheelcommunities.com/images/nakheelcommunitieslibraries/communities/palm-jumeirah2801cfc3-6328-423b-b735-3d3bb2a5c39c.jpg?sfvrsn=74da3db1_2"
+            alt="Luxury workspace"
+            className="w-full h-full object-cover"
+          />
+        </div>
         
-        <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-4xl">
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            Luxury Real Estate
-          </h1>
-          <p className="text-xl sm:text-2xl lg:text-3xl mb-8 opacity-90">
-            Discover Dubai&apos;s Most Exclusive Properties
-          </p>
-          <p className="text-lg sm:text-xl mb-12 max-w-2xl mx-auto opacity-80">
-            From stunning penthouses to waterfront mansions, explore luxury living redefined in the heart of Dubai.
-          </p>
-          
-          {/* Static Search Form */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 max-w-2xl mx-auto">
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <select className="bg-white/20 text-white placeholder-white/70 rounded-lg px-4 py-3 border border-white/30">
-                  <option value="">Property Type</option>
-                  <option value="apartment">Apartment</option>
-                  <option value="villa">Villa</option>
-                  <option value="penthouse">Penthouse</option>
-                </select>
-                <select className="bg-white/20 text-white placeholder-white/70 rounded-lg px-4 py-3 border border-white/30">
-                  <option value="">Location</option>
-                  <option value="downtown">Downtown Dubai</option>
-                  <option value="marina">Dubai Marina</option>
-                  <option value="palm">Palm Jumeirah</option>
-                </select>
-                <select className="bg-white/20 text-white placeholder-white/70 rounded-lg px-4 py-3 border border-white/30">
-                  <option value="">Price Range</option>
-                  <option value="1-5m">1M - 5M AED</option>
-                  <option value="5-10m">5M - 10M AED</option>
-                  <option value="10m+">10M+ AED</option>
-                </select>
-              </div>
-              <button 
-                type="submit"
-                className="w-full bg-white text-gray-900 font-semibold py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
-              >
-                <Search className="w-5 h-5" />
-                Search Luxury Properties
-              </button>
-            </form>
+        {/* Overlay - Static version */}
+        <div className="absolute inset-0 bg-black opacity-40" />
+        
+        {/* Hero Content - Matching CSR layout */}
+        <div className="relative z-10 h-full flex items-center justify-center text-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair text-white mb-4 sm:mb-6 leading-tight">
+              Elevate  
+              Your Living!
+            </h1>
           </div>
         </div>
         
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white">
-          <ChevronDown className="w-8 h-8 animate-bounce" />
+        {/* Scroll indicator - Static version */}
+        <div className="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 transform -translate-x-1/2 text-white">
+          <div className="flex flex-col items-center">
+            <span className="text-xs sm:text-sm mb-1 sm:mb-2">Scroll to explore</span>
+            <ChevronDown className="h-5 w-5 sm:h-6 sm:w-6" />
+          </div>
+        </div>
+      </section>
+
+      {/* Search Section - Moved below hero */}
+      <section className="py-8 sm:py-10 lg:py-12 bg-white relative z-30 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Search Mode Toggle - Static version */}
+          <div className="flex items-center justify-center mb-6 sm:mb-8">
+            <div className="flex items-center space-x-4 sm:space-x-8">
+              <button className="relative pb-2 text-base sm:text-lg text-gray-900">
+                Buy
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              </button>
+              <button className="relative pb-2 text-base sm:text-lg text-gray-500">
+                Rent
+              </button>
+            </div>
+          </div>
+
+          {/* Search Bar - Static version */}
+          <div className="relative">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center bg-white border border-gray-200 rounded-2xl sm:rounded-full overflow-hidden shadow-lg">
+              <input
+                type="text"
+                placeholder="Search for properties, locations, or keywords..."
+                className="flex-1 border-0 text-base sm:text-lg py-4 sm:py-6 px-4 sm:px-6 bg-transparent text-gray-900 placeholder-gray-500 focus:outline-none"
+                disabled
+              />
+              
+              {/* Separator and Actions */}
+              <div className="flex items-center justify-between sm:justify-end px-4 sm:pr-4 py-3 sm:py-0 border-t sm:border-t-0 sm:border-l border-gray-200">
+                {/* Filter Button - Static */}
+                <button className="flex items-center space-x-2 text-gray-600 px-3 py-2 cursor-not-allowed opacity-75">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z" />
+                  </svg>
+                  <span className="text-sm sm:text-base">Filter</span>
+                </button>
+
+                <div className="h-6 w-px bg-gray-200 mx-3" />
+
+                {/* Search Button - Static */}
+                <button className="flex items-center space-x-2 px-4 py-2 cursor-not-allowed opacity-75">
+                  <ArrowRight className="w-6 h-6 text-gray-600" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Search Mode Context Text */}
+          <div className="text-center mt-4">
+            <p className="text-sm text-gray-600">
+              Find your perfect property to purchase
+            </p>
+          </div>
         </div>
       </section>
 
@@ -157,7 +187,7 @@ export default function LuxePageSSR({
               </div>
               <div className="w-1/2 flex flex-col justify-center px-8 xl:px-12 py-12 bg-gray-50 rounded-r-lg">
                 <div className="max-w-xl">
-                  <h2 className="text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-6 xl:mb-8 text-black">
+                  <h2 className="font-playfair text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-6 xl:mb-8 text-black">
                     Discover Luxury Living
                   </h2>
                   <p className="text-base xl:text-lg text-gray-600 mb-6 xl:mb-8 leading-relaxed">
@@ -192,7 +222,7 @@ export default function LuxePageSSR({
             <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row items-center h-full">
                 <div className="w-full lg:w-1/2 text-center lg:text-left">
-                  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
+                  <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
                     Premium Properties
                   </h2>
                   <p className="text-base sm:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed">
@@ -213,7 +243,7 @@ export default function LuxePageSSR({
       <section className="w-full py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Featured Luxury Properties
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -276,7 +306,7 @@ export default function LuxePageSSR({
       <section className="w-full py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Dubai&apos;s Most Coveted Corners
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
@@ -311,7 +341,7 @@ export default function LuxePageSSR({
       <section className="w-full py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Luxury Market Insights
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">

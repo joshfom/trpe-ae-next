@@ -8,14 +8,14 @@ import { authorTable } from "@/db/schema/author-table";
 import { Metadata, ResolvingMetadata } from "next";
 import { truncateText } from "@/lib/truncate-text";
 import LuxeAdvisorClient from './LuxeAdvisorClient';
+import LuxeAdvisorSSR from './LuxeAdvisorSSR';
 
 type Props = {
     params: Promise<{ slug: string }>
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-    { params, searchParams }: Props,
+    { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     // read route params
@@ -157,10 +157,43 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
     }
 
     return (
-        <LuxeAdvisorClient 
-            advisor={advisor as any} 
-            journalArticles={journalArticles as any} 
-        />
+        <>
+            {/* SSR Version */}
+            <div id="ssr-advisor">
+                <LuxeAdvisorSSR 
+                    advisor={advisor as any}
+                    journalArticles={journalArticles as any}
+                />
+            </div>
+
+            {/* CSR Version - Hidden by default, shown after JS loads */}
+            <div id="csr-advisor" style={{ display: 'none' }}>
+                <LuxeAdvisorClient 
+                    advisor={advisor as any} 
+                    journalArticles={journalArticles as any} 
+                />
+            </div>
+
+            {/* Enhancement Script */}
+            <script
+                dangerouslySetInnerHTML={{
+                    __html: `
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Switch from SSR to CSR version
+                            const ssrElement = document.getElementById('ssr-advisor');
+                            const csrElement = document.getElementById('csr-advisor');
+                            
+                            if (ssrElement && csrElement) {
+                                // Hide SSR version
+                                ssrElement.style.display = 'none';
+                                // Show CSR version
+                                csrElement.style.display = 'block';
+                            }
+                        });
+                    `
+                }}
+            />
+        </>
     );
 }
 

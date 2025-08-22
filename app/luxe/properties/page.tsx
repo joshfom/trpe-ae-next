@@ -1,12 +1,35 @@
 import React from 'react';
 import { Metadata } from 'next';
+import { db } from '@/db/drizzle';
+import { propertyTable } from '@/db/schema/property-table';
+import { eq } from 'drizzle-orm';
+import { PropertyType } from '@/types/property';
+import LuxePropCardSSR from '@/components/luxe/LuxePropCardSSR';
+import LuxePropCard from '@/components/luxe/LuxePropCard';
+
+// Force dynamic rendering to handle database queries
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Luxe Properties | TRPE',
   description: 'Explore our exclusive collection of luxury properties in Dubai.',
 };
 
-export default function LuxePropertiesPage() {
+export default async function LuxePropertiesPage() {
+  // Fetch luxe properties from database
+  const properties = await db.query.propertyTable.findMany({
+    where: eq(propertyTable.isLuxe, true),
+    with: {
+      community: true,
+      city: true,
+      offeringType: true,
+      images: true,
+      type: true,
+    },
+    limit: 20,
+    orderBy: (properties, { desc }) => [desc(properties.createdAt)],
+  }) as unknown as PropertyType[];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Mobile-First Hero Section */}
@@ -32,70 +55,89 @@ export default function LuxePropertiesPage() {
         </div>
       </section>
 
-      {/* Mobile-First Content Section */}
+      {/* Properties Grid Section */}
       <section className='w-full py-8 sm:py-12 lg:py-16'>
-        <div className='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center'>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-playfair font-light text-gray-900 mb-4 sm:mb-6">
-            Coming Soon
-          </h2>
-          <p className="text-base sm:text-lg text-gray-600 leading-relaxed mb-6 sm:mb-8">
-            Our curated collection of Dubai&apos;s finest luxury properties is being prepared for you. 
-            Each property represents the pinnacle of sophisticated living and investment excellence.
-          </p>
-          <p className="text-sm sm:text-base text-gray-500 mb-8 sm:mb-12">
-            Stay tuned for an extraordinary showcase of premium real estate opportunities.
-          </p>
-          
-          {/* Mobile-First CTA */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <a
-              href="/luxe/contact-us"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 bg-black text-white rounded-full hover:bg-gray-800 transition-colors text-sm sm:text-base min-h-[44px] flex items-center justify-center"
-            >
-              Contact Our Advisors
-            </a>
-            <a
-              href="/luxe"
-              className="w-full sm:w-auto px-6 sm:px-8 py-3 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors text-sm sm:text-base min-h-[44px] flex items-center justify-center"
-            >
-              Explore Luxe
-            </a>
+        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+          <div className="mb-8 sm:mb-12 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-playfair font-light text-gray-900 mb-4 sm:mb-6">
+              {properties.length} Luxe Properties found
+            </h2>
+            <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
+              Exclusive luxury collection
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* Mobile-First Features Section */}
-      <section className='w-full py-8 sm:py-12 lg:py-16 bg-gray-50'>
-        <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8'>
-            {[
-              {
-                title: 'Exclusive Listings',
-                description: 'Access to off-market and pre-launch luxury properties',
-                icon: '🏆'
-              },
-              {
-                title: 'Expert Guidance',
-                description: 'Personalized service from Dubai luxury property specialists',
-                icon: '👥'
-              },
-              {
-                title: 'Premium Locations',
-                description: 'Properties in Dubai\'s most sought-after neighborhoods',
-                icon: '📍'
-              }
-            ].map((feature, index) => (
-              <div key={index} className='text-center p-6 bg-white rounded-lg shadow-sm'>
-                <div className='text-3xl sm:text-4xl mb-4'>{feature.icon}</div>
-                <h3 className='text-lg sm:text-xl font-medium text-gray-900 mb-3'>
-                  {feature.title}
-                </h3>
-                <p className='text-sm sm:text-base text-gray-600 leading-relaxed'>
-                  {feature.description}
-                </p>
-              </div>
-            ))}
+          {/* SSR Version - Always renders first */}
+          <div id="ssr-properties" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {properties.map((property) => {
+              const primaryImage = property.images?.[0]?.crmUrl || property.images?.[0]?.image;
+              const price = property.price ? parseFloat(property.price) : 0;
+              
+              return (
+                <LuxePropCardSSR
+                  key={`ssr-${property.id}`}
+                  id={property.id}
+                  slug={property.slug}
+                  title={property.title}
+                  location={`${property.community?.name || ''}, ${property.city?.name || 'Dubai'}`}
+                  price={price}
+                  currency="AED"
+                  beds={property.bedrooms || 0}
+                  baths={property.bathrooms || 0}
+                  sqft={property.size || 0}
+                  imageUrl={primaryImage || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop'}
+                  status={property.offeringType?.name as "For Sale" | "For Rent" | "Sold" || "For Sale"}
+                  showPrice={true}
+                />
+              );
+            })}
           </div>
+
+          {/* Client-Side Version - Will hydrate and replace SSR version when JS loads */}
+          <div id="csr-properties" style={{ display: 'none' }} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {properties.map((property) => {
+              const primaryImage = property.images?.[0]?.crmUrl || property.images?.[0]?.image;
+              const price = property.price ? parseFloat(property.price) : 0;
+              
+              return (
+                <LuxePropCard
+                  key={`csr-${property.id}`}
+                  id={property.id}
+                  slug={property.slug}
+                  title={property.title}
+                  location={`${property.community?.name || ''}, ${property.city?.name || 'Dubai'}`}
+                  price={price}
+                  currency="AED"
+                  beds={property.bedrooms || 0}
+                  baths={property.bathrooms || 0}
+                  sqft={property.size || 0}
+                  imageUrl={primaryImage || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop'}
+                  status={property.offeringType?.name as "For Sale" | "For Rent" | "Sold" || "For Sale"}
+                  showPrice={true}
+                />
+              );
+            })}
+          </div>
+
+          {/* Enhancement Script */}
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                document.addEventListener('DOMContentLoaded', function() {
+                  // Switch from SSR to CSR version
+                  const ssrElement = document.getElementById('ssr-properties');
+                  const csrElement = document.getElementById('csr-properties');
+                  
+                  if (ssrElement && csrElement) {
+                    // Hide SSR version
+                    ssrElement.style.display = 'none';
+                    // Show CSR version
+                    csrElement.style.display = 'grid';
+                  }
+                });
+              `
+            }}
+          />
         </div>
       </section>
     </div>

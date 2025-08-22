@@ -1,7 +1,23 @@
 "use client"
 
 import {motion} from "framer-motion";
-import {AboutHero, AboutStory, TypesOfEstate} from '@/components/luxe';
+import {AboutHero, AboutStory} from '@/components/luxe';
+import {OurAgentsClient} from '@/components/luxe/OurAgentsClient';
+
+interface Agent {
+  id: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  title?: string | null;
+  avatarUrl?: string | null;
+  bio?: string | null;
+  phone?: string | null;
+  email?: string | null;
+}
+
+interface AboutUsClientProps {
+  agents: Agent[];
+}
 
 // Mobile-friendly animation variants
 const fadeInUp = {
@@ -19,7 +35,7 @@ const staggerContainer = {
   }
 };
 
-export default function AboutUsClient() {
+export default function AboutUsClient({ agents }: AboutUsClientProps) {
   return (
     <motion.div 
       className="min-h-screen bg-white"
@@ -32,9 +48,6 @@ export default function AboutUsClient() {
       
       {/* Our Story Section */}
       <AboutStory />
-
-      {/* Types of Estate Section */}
-      <TypesOfEstate />
 
       {/* Dark Section with Centered Content - Mobile Optimized */}
       <motion.section 
@@ -80,6 +93,9 @@ export default function AboutUsClient() {
           </motion.p>
         </div>
       </motion.section>
+
+      {/* Our Agents Section */}
+      <OurAgentsClient agents={agents} />
     </motion.div>
   );
 }

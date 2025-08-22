@@ -129,10 +129,60 @@ export default async function LuxePage() {
   }));
 
   return (
-    <LuxePageSSR 
-      featuredProperties={transformedProperties}
-      featuredCommunities={transformedCommunities}
-      featuredInsights={transformedInsights}
-    />
+    <>
+      {/* SSR Version - Always renders first for SEO and no-JS users */}
+      <div className="ssr-version">
+        <LuxePageSSR 
+          featuredProperties={transformedProperties}
+          featuredCommunities={transformedCommunities}
+          featuredInsights={transformedInsights}
+        />
+      </div>
+      
+      {/* Client-Side Version - Will hydrate and replace SSR version when JS loads */}
+      <div style={{ display: 'none' }} className="js-enhanced">
+        <LuxePageClient 
+          featuredProperties={transformedProperties}
+          featuredCommunities={transformedCommunities}
+          featuredInsights={transformedInsights}
+        />
+      </div>
+      
+      {/* Script to show enhanced version when JS is available - using useEffect approach to avoid hydration issues */}
+      <script 
+        dangerouslySetInnerHTML={{
+          __html: `
+            (function() {
+              // Wait for DOM to be ready
+              if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', switchToClientVersion);
+              } else {
+                switchToClientVersion();
+              }
+              
+              function switchToClientVersion() {
+                try {
+                  const ssrElement = document.querySelector('.ssr-version');
+                  const jsElement = document.querySelector('.js-enhanced');
+                  
+                  if (ssrElement && jsElement) {
+                    // Hide SSR version
+                    ssrElement.style.display = 'none';
+                    // Show client version
+                    jsElement.style.display = 'block';
+                    
+                    // Add a class to indicate JS is active
+                    document.documentElement.classList.add('js-enabled');
+                  }
+                } catch (error) {
+                  console.warn('Failed to switch to client version:', error);
+                  // If anything fails, keep SSR version visible
+                }
+              }
+            })();
+          `
+        }} 
+      />
+    </>
   );
 }
