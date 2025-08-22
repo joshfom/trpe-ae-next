@@ -23,9 +23,9 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
         : 'Search properties, communities, or locations...';
 
     return (
-        <div data-server-search className="w-full max-w-4xl mx-auto">
+        <div data-server-search className="w-full lg:w-[70%] max-w-4xl mx-auto">
             <div className="relative">
-                <div className="flex flex-col sm:flex-row gap-2 bg-white rounded-lg shadow-lg p-2">
+                <div className="hidden lg:flex gap-6 bg-white rounded-full shadow-lg p-3 pl-8 items-center">
                     <SearchInputTracker 
                         placeholder={placeholderText}
                         searchLocation="homepage"
@@ -34,12 +34,26 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
                     <Link href={`/properties/${mode === 'rental' ? 'for-rent' : mode === 'sale' ? 'for-sale' : 'for-sale'}`}>
                         <Button 
                             size="lg" 
-                            className="w-full sm:w-auto h-12 px-8 bg-slate-900 hover:bg-slate-800"
+                            className="bg-black text-white py-3 w-40"
                         >
-                            <Search className="w-5 h-5 mr-2" />
+                            <Search className="h-5 w-5 text-white stroke-1 mr-2"/>
                             Search
                         </Button>
                     </Link>
+                </div>
+                
+                {/* Mobile search - matches CSR design */}
+                <div className="lg:hidden">
+                    <div className="flex flex-col justify-center items-center">
+                        <div className="relative w-full">
+                            <Input
+                                placeholder="Search Properties"
+                                className="w-full rounded-full px-8 py-3 border-0 focus-visible:ring-0"
+                                disabled
+                            />
+                            <Search className="absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700"/>
+                        </div>
+                    </div>
                 </div>
                 
                 {/* Popular searches - server rendered */}

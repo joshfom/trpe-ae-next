@@ -1,8 +1,4 @@
 {
   "servers": {
-    "Sentry": {
-      "url": "https://mcp.sentry.dev/mcp/real-estate-97/javascript-nextjs",
-      "type": "http"
-    }
   }
 }

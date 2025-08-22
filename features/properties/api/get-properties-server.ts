@@ -368,22 +368,38 @@ export async function getPropertiesServer({
 
 // Helper functions for batch loading and caching
 
+// Helper function to map property type slugs (plural) to unit type slugs (singular)
+function mapPropertyTypeToUnitType(propertyTypeSlug: string): string {
+    const propertyToUnitMapping: Record<string, string> = {
+        'villas': 'villa',
+        'apartments': 'apartments', // This one is already correct
+        'townhouses': 'townhouses', // This one is already correct
+        'offices': 'offices', // This one is already correct
+        'penthouses': 'penthouses' // Add other mappings as needed
+    };
+    
+    return propertyToUnitMapping[propertyTypeSlug] || propertyTypeSlug;
+}
+
 // Get unit type ID by slug, with caching
 async function getUnitTypeId(slug: string): Promise<string | null> {
+    // Map property type slug to unit type slug if needed
+    const unitTypeSlug = mapPropertyTypeToUnitType(slug);
+    
     // Check cache first
-    if (unitTypeCache.has(slug)) {
-        return unitTypeCache.get(slug) || null;
+    if (unitTypeCache.has(unitTypeSlug)) {
+        return unitTypeCache.get(unitTypeSlug) || null;
     }
     
     const result = await db
         .select({ id: unitTypeTable.id })
         .from(unitTypeTable)
-        .where(eq(unitTypeTable.slug, slug));
+        .where(eq(unitTypeTable.slug, unitTypeSlug));
         
     const id = result.length > 0 ? result[0].id : null;
     
     // Cache the result
-    if (id) unitTypeCache.set(slug, id);
+    if (id) unitTypeCache.set(unitTypeSlug, id);
     
     return id;
 }

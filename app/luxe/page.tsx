@@ -6,6 +6,7 @@ import {communityTable} from '@/db/schema/community-table';
 import {insightTable} from '@/db/schema/insight-table';
 import {PropertyType} from '@/types/property';
 import LuxePageClient from './LuxePageClient';
+import LuxePageSSR from './LuxePageSSR';
 
 // Server-side data fetching functions
 async function getFeaturedLuxeProperties() {
@@ -128,10 +129,38 @@ export default async function LuxePage() {
   }));
 
   return (
-    <LuxePageClient 
-      featuredProperties={transformedProperties}
-      featuredCommunities={transformedCommunities}
-      featuredInsights={transformedInsights}
-    />
+    <>
+      {/* SSR Version - Always renders first for SEO and no-JS users */}
+      <div className="ssr-version">
+        <LuxePageSSR 
+          featuredProperties={transformedProperties}
+          featuredCommunities={transformedCommunities}
+          featuredInsights={transformedInsights}
+        />
+      </div>
+      
+      {/* Client-Side Version - Will hydrate and replace SSR version */}
+      <div style={{ display: 'none' }} className="js-enhanced">
+        <LuxePageClient 
+          featuredProperties={transformedProperties}
+          featuredCommunities={transformedCommunities}
+          featuredInsights={transformedInsights}
+        />
+      </div>
+      
+      {/* Script to show enhanced version when JS is available */}
+      <script dangerouslySetInnerHTML={{
+        __html: `
+          (function() {
+            const ssrElement = document.querySelector('.ssr-version');
+            const jsElement = document.querySelector('.js-enhanced');
+            if (ssrElement && jsElement) {
+              ssrElement.style.display = 'none';
+              jsElement.style.display = 'block';
+            }
+          })();
+        `
+      }} />
+    </>
   );
 }

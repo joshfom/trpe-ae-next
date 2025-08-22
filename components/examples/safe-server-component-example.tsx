@@ -5,7 +5,6 @@
 
 import React from 'react';
 import { createSafeServerComponent, createSafeDbQuery } from '@/lib/server-component-utils';
-import { ProductionErrorBoundary } from '@/components/production-error-boundary';
 import { db } from '@/db/drizzle';
 import { communityTable } from '@/db/schema/community-table';
 import { asc, eq } from 'drizzle-orm';
@@ -104,18 +103,19 @@ export default async function SafeServerComponentWithBoundary(
   try {
     const Component = await SafeServerComponentExample(props);
     
-    // Wrap with error boundary for runtime errors
-    return (
-      <ProductionErrorBoundary
-        fallback={
-          <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-            <p className="text-gray-600">Unable to load content at this time.</p>
-          </div>
-        }
-      >
-        {Component}
-      </ProductionErrorBoundary>
-    );
+    // Handle the case where Component might be null (production error handling)
+    if (Component === null) {
+      return (
+        <div className="p-4 border border-red-200 rounded-lg bg-red-50">
+          <p className="text-red-600 text-sm">
+            Failed to load communities
+          </p>
+        </div>
+      );
+    }
+    
+    // Return the component directly
+    return Component;
   } catch (error) {
     console.error('Safe Server Component Error:', error);
     

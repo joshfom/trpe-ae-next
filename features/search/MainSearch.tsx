@@ -519,7 +519,7 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                                     autoComplete='off'
                                     value={searchInput}
                                     placeholder="Area, Property or Development"
-                                    className="grow border-t-0 border-l-0 py-1 -mt-1 border-r-0 rounded-none focus-visible:ring-0 border-white bg-transparent"
+                                    className="grow border-t-0 border-l-0 py-1 -mt-1 border-r-0 rounded-none focus-visible:ring-0 focus-visible:outline-none focus:ring-0 focus:outline-none border-white bg-transparent"
                                     suppressHydrationWarning={true}
                                 />
                             </div>

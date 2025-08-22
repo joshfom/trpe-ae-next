@@ -69,6 +69,30 @@ app.onError((err, c) =>
     return c.json({err: "An Internal Error Occurred"}, 500);
 })
 
+// Health check endpoint
+app.get("/health", (c) => {
+    try {
+        return c.json({
+            status: "healthy",
+            timestamp: new Date().toISOString(),
+            service: "trpe-api",
+            version: process.env.npm_package_version || "unknown",
+            uptime: process.uptime(),
+            checks: {
+                api: true,
+                // Add more checks here as needed
+            }
+        });
+    } catch (error) {
+        return c.json({
+            status: "unhealthy",
+            timestamp: new Date().toISOString(),
+            service: "trpe-api",
+            error: error instanceof Error ? error.message : "Unknown error"
+        }, 500);
+    }
+});
+
 
 const routes = app
     //User Routes

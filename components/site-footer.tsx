@@ -27,7 +27,7 @@ const MobileSearch = dynamic(
 const FooterCommunitiesClient = dynamic(
     () => import("@/features/site/components/FooterCommunitiesClient"), 
     { 
-        ssr: true, // Enable SSR for footer communities
+        ssr: false, // Disable SSR to prevent clientModules errors
         loading: () => <div className="animate-pulse bg-gray-100 h-20 rounded" aria-label="Loading communities..." />
     }
 );

@@ -52,15 +52,19 @@ export default function SearchInputTracker({ placeholder, searchLocation, mode }
     };
 
     return (
-        <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-            <Input
-                placeholder={placeholder}
-                className="pl-10 border-0 focus:ring-0 text-lg h-12"
-                disabled // Disabled in server version - will be enhanced client-side
-                onFocus={handleFocus}
-                onChange={handleInput}
-            />
+        <div className="w-full grow relative">
+            <div className="flex flex-col">
+                <div className="text-gray-700 px-3 text-sm">
+                    Search
+                </div>
+                <Input
+                    placeholder={placeholder}
+                    className="grow border-t-0 border-l-0 py-1 -mt-1 border-r-0 rounded-none focus-visible:ring-0 border-white bg-transparent text-lg"
+                    disabled // Disabled in server version - will be enhanced client-side
+                    onFocus={handleFocus}
+                    onChange={handleInput}
+                />
+            </div>
         </div>
     );
 }

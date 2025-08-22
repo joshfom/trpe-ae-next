@@ -45,7 +45,7 @@ export const MenuItem = React.memo(({
                     transition={transition}
                 >
                     {active === slug && (
-                        <div className="absolute pt-6 left-0 transform -translate-x-0">
+                        <div className="absolute pt-6 left-0 transform -translate-x-0 z-[99999]">
                             <motion.div
                                 transition={transition}
                                 layoutId="active" // layoutId ensures smooth animation

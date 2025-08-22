@@ -13,8 +13,19 @@ export const useGetAdminCommunities = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
     const [error, setError] = useState<Error | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    // Ensure component is mounted before making API calls
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const fetchData = async () => {
+        // Only run on client side after mounting
+        if (!mounted || typeof window === 'undefined') {
+            return;
+        }
+
         try {
             setIsLoading(true);
             setIsError(false);
@@ -30,10 +41,15 @@ export const useGetAdminCommunities = () => {
             setIsError(true);
             const errorObj = err instanceof Error ? err : new Error("An unknown error occurred");
             setError(errorObj);
-            toast.error('An error occurred while fetching communities');
-            console.error("Fetch error:", err);
+            console.warn('useGetAdminCommunities: Error fetching communities:', err);
+            // Don't show toast on repeated errors
+            if (mounted) {
+                toast.error('An error occurred while fetching communities');
+            }
         } finally {
-            setIsLoading(false);
+            if (mounted) {
+                setIsLoading(false);
+            }
         }
     };
 
@@ -43,8 +59,10 @@ export const useGetAdminCommunities = () => {
     };
 
     useEffect(() => {
-        fetchData();
-    }, []);
+        if (mounted) {
+            fetchData();
+        }
+    }, [mounted]);
 
     return {
         data,

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Suspense } from 'react';
-import ErrorBoundary from '@/components/ErrorBoundary';
 import { PropertyType } from '@/types/property';
 
 // Optimized loading component for Suspense boundary
@@ -72,17 +71,8 @@ interface ListingsWrapperProps {
 
 export default function ListingsWrapper({ children }: ListingsWrapperProps) {
     return (
-        <ErrorBoundary
-            FallbackComponent={({ error, resetErrorBoundary }: { error: Error; resetErrorBoundary: () => void }) => (
-                <ListingsError error={error} resetErrorBoundary={resetErrorBoundary} />
-            )}
-            onError={(error: Error, errorInfo: React.ErrorInfo) => {
-                console.error('Listings error:', error, errorInfo);
-            }}
-        >
-            <Suspense fallback={<ListingsLoading />}>
-                {children}
-            </Suspense>
-        </ErrorBoundary>
+        <Suspense fallback={<ListingsLoading />}>
+            {children}
+        </Suspense>
     );
 }

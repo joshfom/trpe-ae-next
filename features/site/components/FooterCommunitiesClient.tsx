@@ -21,13 +21,27 @@ export default function FooterCommunitiesClient() {
     const [communities, setCommunities] = useState<Community[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    // Ensure component is mounted before making API calls
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
+        // Only run on client side after mounting
+        if (!mounted || typeof window === 'undefined') {
+            return;
+        }
+
         // Use an AbortController to handle component unmounting
         const controller = new AbortController();
         
         async function fetchCommunities() {
             try {
+                // Add a small delay to ensure the component is fully mounted
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
                 const response = await client.api.communities.list.$get({
                     signal: controller.signal
                 });
@@ -36,9 +50,8 @@ export default function FooterCommunitiesClient() {
                     const data = await response.json();
                     
                     // Check if we got data in the expected format
-                    if (!data.communities) {
-                        console.error("Client: Unexpected API response format:", data);
-                        setError("Unexpected data format from API");
+                    if (!data || !data.communities) {
+                        console.warn("FooterCommunitiesClient: Unexpected API response format:", data);
                         setCommunities([]);
                         return;
                     }
@@ -51,12 +64,14 @@ export default function FooterCommunitiesClient() {
                     // Limit to 16 communities
                     setCommunities(withProperties.slice(0, 16));
                 } else {
-                    setError(`Failed to fetch communities: ${response.status}`);
+                    console.warn(`FooterCommunitiesClient: Failed to fetch communities: ${response.status}`);
+                    setCommunities([]);
                 }
             } catch (error) {
                 // Only log errors if they're not from aborting the request
                 if (!controller.signal.aborted) {
-                    setError("Error fetching communities");
+                    console.warn("FooterCommunitiesClient: Error fetching communities:", error);
+                    setCommunities([]);
                 }
             } finally {
                 if (!controller.signal.aborted) {
@@ -71,14 +86,19 @@ export default function FooterCommunitiesClient() {
         return () => {
             controller.abort();
         };
-    }, []); // Empty dependency array means this runs once on mount
+    }, [mounted]); // Depend on mounted state
+
+    // Don't render anything during SSR
+    if (!mounted) {
+        return <div className="pt-2 flex text-sm flex-col">Loading...</div>;
+    }
 
     if (isLoading) {
         return <div className="pt-2 flex text-sm flex-col">Loading...</div>;
     }
     
     if (error) {
-        console.error("Client rendering error:", error);
+        console.warn("FooterCommunitiesClient rendering error:", error);
         return null; // Don't show error to users, just render nothing
     }
 

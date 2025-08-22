@@ -45,7 +45,7 @@ export const MenuItem = memo(({
                     transition={transition}
                 >
                     {active === slug && (
-                        <div className="absolute pt-6 left-0 transform -translate-x-0">
+                        <div className="absolute pt-6 left-0 transform -translate-x-0 z-[99999]">
                             <motion.div
                                 transition={transition}
                                 layoutId="active" // layoutId ensures smooth animation
@@ -83,7 +83,7 @@ export const Menu = memo(({
     return (
         <nav
             onMouseLeave={handleMouseLeave} // resets the state
-            className="relative mx-auto text-white boder border-transparent dark:bg-black dark:border-white/[0.2] shadow-input flex justify-betwen items-center space-x-4 pr-4 py-2"
+            className="relative z-[99999] mx-auto text-white boder border-transparent dark:bg-black dark:border-white/[0.2] shadow-input flex justify-betwen items-center space-x-4 pr-4 py-2"
         >
             {children}
         </nav>

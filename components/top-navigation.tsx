@@ -12,7 +12,7 @@ function TopNavigation() {
 
     return (
         <>
-            <div className={' hidden lg:flex text-white px-3'}>
+            <div className={' hidden lg:flex text-white px-3 relative z-[99999]'}>
                 <Menu
                     setActive={setActive}
                 >

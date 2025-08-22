@@ -317,124 +317,116 @@ export default function LuxePageClient({
           <LuxeMainSearch />
         </motion.section>
 
-        {/* Mobile-First Image + Content Section */}
+        {/* Discover Luxury Living - Full Height Section */}
         <motion.section 
           ref={firstSectionRef}
-          className='w-full relative py-6 sm:py-8 lg:py-12 bg-white z-30 px-4 sm:px-6 lg:px-8'
+          className='w-full relative bg-white z-30'
           initial="hidden"
           whileInView="visible"
           viewport={{ margin: "-150px" }}
           variants={animationVariants.staggerContainer}
           style={{ y: firstY }}
         >
-          {/* Mobile-First: Image container */}
-          <motion.div 
-            className='w-full lg:w-1/2 lg:hidden mb-6'
-            variants={animationVariants.fadeInScale}
-          >
-            <motion.img 
-              src="/assets/luxryprop.webp" 
-              alt="Luxury Property" 
-              className="w-full h-48 sm:h-64 md:h-80 lg:h-96 object-cover rounded-lg"
-              whileHover={{ 
-                scale: 1.02,
-                transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
-              }}
-            />
-          </motion.div>
-          
-          {/* Desktop: Image container */}
-          <motion.div 
-            className='w-full lg:w-1/2 hidden lg:block'
-            variants={animationVariants.slideInLeft}
-          >
-            <motion.img 
-              src="/assets/luxryprop.webp" 
-              alt="Luxury Property" 
-              className="w-full h-auto object-cover rounded-r-3xl"
-              whileHover={{ 
-                scale: 1.01, 
-                rotateY: 1,
-                transition: { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }
-              }}
-            />
-          </motion.div>
-          
-          {/* Mobile-First: Content below image */}
-          <motion.div 
-            className='lg:hidden px-4 sm:px-6 py-6 sm:py-8'
-            variants={animationVariants.fadeInUp}
-          >
-            <div className='text-center'>
-              <motion.h2 
-                className='font-playfair text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6'
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ amount: 0.8 }}
-                transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+          {/* Container with max-width for content */}
+          <div className="max-w-7xl mx-auto">
+            {/* Mobile Layout - Stacked */}
+            <div className="lg:hidden">
+              {/* Mobile Image */}
+              <motion.div 
+                className='w-full aspect-[4/3] overflow-hidden'
+                variants={animationVariants.fadeInScale}
               >
-                Discover Luxury Living
-              </motion.h2>
-              <motion.p 
-                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8 text-justify leading-relaxed'
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ amount: 0.8 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                <motion.img 
+                  src="/assets/luxryprop.webp" 
+                  alt="Luxury Property" 
+                  className="w-full h-full object-cover"
+                  whileHover={{ 
+                    scale: 1.02,
+                    transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }
+                  }}
+                />
+              </motion.div>
+              
+              {/* Mobile Content */}
+              <motion.div 
+                className='px-4 sm:px-6 py-8 sm:py-12'
+                variants={animationVariants.fadeInUp}
               >
-                From stunning gardens to carefully curated interiors, each
-villa is a sanctuary made for inward reflection and outward
-beauty. The Ocean Mansions at Jumeirah Asora Bay
-embody a transformative experience, where nature and
-timeless architecture converge, creating a life that feels
-both grounded and extraordinary.
-              </motion.p>
-              <motion.p 
-                className='text-sm sm:text-base lg:text-lg text-gray-600 mb-6 sm:mb-8 leading-relaxed text-justify'
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ amount: 0.8 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                Jumeirah Residences represent an ultra-luxurious and
-serviced residential development brand, offering a lifestyle
-defined by exclusivity, originality and sophistication.
- </motion.p>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ amount: 0.8 }}
-                transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-              >
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-                >
-                  <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
-                    View Property 
-                  </Link>
-                </motion.div>
+                <div className='text-center max-w-2xl mx-auto'>
+                  <motion.h2 
+                    className='font-playfair text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6'
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ amount: 0.8 }}
+                    transition={{ duration: 0.6, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    Discover Luxury Living
+                  </motion.h2>
+                  <motion.p 
+                    className='text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed text-left'
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ amount: 0.8 }}
+                    transition={{ duration: 0.6, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    From stunning gardens to carefully curated interiors, each villa is a sanctuary made for inward reflection and outward beauty. The Ocean Mansions at Jumeirah Asora Bay embody a transformative experience, where nature and timeless architecture converge, creating a life that feels both grounded and extraordinary.
+                  </motion.p>
+                  <motion.p 
+                    className='text-sm sm:text-base text-gray-600 mb-6 sm:mb-8 leading-relaxed text-left'
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ amount: 0.8 }}
+                    transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    Jumeirah Residences represent an ultra-luxurious and serviced residential development brand, offering a lifestyle defined by exclusivity, originality and sophistication.
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ amount: 0.8 }}
+                    transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  >
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -1 }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    >
+                      <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
+                        View Property 
+                      </Link>
+                    </motion.div>
+                  </motion.div>
+                </div>
               </motion.div>
             </div>
-          </motion.div>
-          
-          {/* Desktop: Absolute positioned content over image */}
-          <div className="absolute inset-0 hidden lg:block">
-            <div className='max-w-7xl py-8 sm:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[400px] sm:min-h-[500px] lg:min-h-[600px]'>
-              {/* Left side - Full width image on desktop, hidden on mobile */}
-              <div className='relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px]'>
-              </div>
-              
-              {/* Right side - Content */}
-              <motion.div 
-                className='w-full lg:w-1/2 flex flex-col'
-                variants={animationVariants.slideInRight}
-              >
-                <div className='flex-grow flex flex-col justify-center'>
-                  <div className='lg:pl-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
+
+            {/* Desktop Layout - Side by Side with Equal Heights */}
+            <div className="hidden lg:block">
+              <div className='flex min-h-[600px] xl:min-h-[700px]'>
+                {/* Left side - Image */}
+                <motion.div 
+                  className='w-1/2 overflow-hidden'
+                  variants={animationVariants.slideInLeft}
+                >
+                  <motion.img 
+                    src="/assets/luxryprop.webp" 
+                    alt="Luxury Property" 
+                    className="w-full h-full object-cover"
+                    whileHover={{ 
+                      scale: 1.02, 
+                      transition: { duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94] }
+                    }}
+                  />
+                </motion.div>
+                
+                {/* Right side - Content */}
+                <motion.div 
+                  className='w-1/2 flex flex-col justify-center px-8 xl:px-12 py-8'
+                  variants={animationVariants.slideInRight}
+                >
+                  <div className='max-w-xl'>
                     <motion.h2 
-                      className='font-playfair text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 sm:mb-6 text-black'
+                      className='font-playfair text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-6 xl:mb-8 text-black'
                       initial={{ opacity: 0, y: 50 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ amount: 0.8 }}
@@ -443,30 +435,23 @@ defined by exclusivity, originality and sophistication.
                       Discover Luxury Living
                     </motion.h2>
                     <motion.p 
-                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 text-justify leading-relaxed'
+                      className='text-base xl:text-lg text-gray-600 mb-6 xl:mb-8 leading-relaxed'
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ amount: 0.8 }}
                       transition={{ duration: 1.0, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                       From stunning gardens to carefully curated interiors, each
-villa is a sanctuary made for inward reflection and outward
-beauty. The Ocean Mansions at Jumeirah Asora Bay
-embody a transformative experience, where nature and
-timeless architecture converge, creating a life that feels
-both grounded and extraordinary.
- </motion.p>
+                      From stunning gardens to carefully curated interiors, each villa is a sanctuary made for inward reflection and outward beauty. The Ocean Mansions at Jumeirah Asora Bay embody a transformative experience, where nature and timeless architecture converge, creating a life that feels both grounded and extraordinary.
+                    </motion.p>
                     <motion.p 
-                      className='text-base sm:text-lg text-gray-600 mb-6 sm:mb-8 text-justify leading-relaxed'
+                      className='text-base xl:text-lg text-gray-600 mb-8 xl:mb-10 leading-relaxed'
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ amount: 0.8 }}
                       transition={{ duration: 1.0, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
-                      Jumeirah Residences represent an ultra-luxurious and
-serviced residential development brand, offering a lifestyle
-defined by exclusivity, originality and sophistication.
- </motion.p>
+                      Jumeirah Residences represent an ultra-luxurious and serviced residential development brand, offering a lifestyle defined by exclusivity, originality and sophistication.
+                    </motion.p>
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       whileInView={{ opacity: 1, scale: 1 }}
@@ -474,23 +459,23 @@ defined by exclusivity, originality and sophistication.
                       transition={{ duration: 1.0, delay: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
                       <motion.div
-                        whileHover={{ scale: 1.02, y: -1 }}
+                        whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
                       >
-                        <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base'>
+                        <Link href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" className='inline-flex items-center px-6 xl:px-8 py-3 xl:py-4 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-base xl:text-lg font-medium'>
                           View Property
                         </Link>
                       </motion.div>
                     </motion.div>
                   </div>
-                </div>
-              </motion.div>
+                </motion.div>
+              </div>
             </div>
           </div>
         </motion.section>
 
-        {/* Mobile-First Image + Content Section with Background Overlay */}
+        {/* Premium Properties - Full Height Section with Background Overlay */}
         <motion.section 
           ref={secondSectionRef}
           className='w-full relative bg-white z-30'
@@ -521,48 +506,47 @@ defined by exclusivity, originality and sophistication.
             viewport={{}}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           ></motion.div>
-          <div className="absolute inset-0">
-            <div className='max-w-7xl py-6 sm:py-8 lg:py-12 mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row min-h-[300px] sm:min-h-[400px] lg:min-h-[600px]'>
-              {/* Mobile-First Content */}
-              <motion.div 
-            className='w-full lg:w-1/2 flex flex-col'
-            variants={animationVariants.slideInLeft}
-              >
-            <div className='flex-grow flex flex-col justify-center'>
-              <div className='lg:pr-12 flex flex-col gap-2 sm:gap-4 text-center lg:text-left'>
-            <motion.h2 
-              className='font-playfair text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 lg:mb-6'
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{}}
-              transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              Premium Properties
-            </motion.h2>
-            <motion.p 
-              className='text-sm sm:text-base lg:text-lg text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{}}
-              transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              Explore cutting-edge architectural masterpieces that define Dubai&apos;s skyline. Each development represents innovation in luxury living with world-class amenities.
-            </motion.p>
-            <motion.p 
-              className='text-base sm:text-lg text-gray-200 mb-6 sm:mb-8 leading-relaxed'
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{}}
-              transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            >
-              From sustainable smart homes to iconic waterfront towers, discover properties that set new standards for modern living.
-            </motion.p>
-              </div>
-            </div>
-              </motion.div>
+          <div className="absolute inset-0 flex items-center">
+            <div className='max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8'>
+              <div className='flex flex-col lg:flex-row items-center h-full'>
+                {/* Content - Properly Centered */}
+                <motion.div 
+                  className='w-full lg:w-1/2 flex flex-col justify-center'
+                  variants={animationVariants.slideInLeft}
+                >
+                  <div className='lg:pr-12 text-center lg:text-left'>
+                    <motion.h2 
+                      className='font-playfair text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 lg:mb-8'
+                      initial={{ opacity: 0, y: 30 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{}}
+                      transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    >
+                      Premium Properties
+                    </motion.h2>
+                    <motion.p 
+                      className='text-base sm:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed'
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{}}
+                      transition={{ duration: 0.6, delay: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    >
+                      Explore cutting-edge architectural masterpieces that define Dubai&apos;s skyline. Each development represents innovation in luxury living with world-class amenities.
+                    </motion.p>
+                    <motion.p 
+                      className='text-base sm:text-lg lg:text-xl text-gray-200 leading-relaxed'
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{}}
+                      transition={{ duration: 0.6, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    >
+                      From sustainable smart homes to iconic waterfront towers, discover properties that set new standards for modern living.
+                    </motion.p>
+                  </div>
+                </motion.div>
 
-              {/* Right side - Image placeholder (hidden on mobile) */}
-              <div className='relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-full min-h-[300px] sm:min-h-[400px] lg:min-h-[600px] lg:block hidden'>
+                {/* Right side spacer for desktop layout */}
+                <div className='hidden lg:block lg:w-1/2'></div>
               </div>
             </div>
           </div>
@@ -778,17 +762,12 @@ defined by exclusivity, originality and sophistication.
         </motion.section>
 
         {/* Mobile-First Luxury Communities Section */}
-        <motion.section 
+        <section 
           ref={luxuryCommunitiesRef}
-          className="w-full relative z-40 px-4 sm:px-6 lg:px-8"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ margin: "-100px" }}
-          variants={animationVariants.staggerContainer}
-          style={{ y: luxuryY }}
+          className="w-full relative z-40"
         >
           <LuxuryCommunities communities={featuredCommunities} />
-        </motion.section>
+        </section>
 
         {/* Mobile-First Villa Section */}
         <motion.section 
