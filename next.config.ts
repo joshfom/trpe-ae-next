@@ -104,10 +104,29 @@ const nextConfig: NextConfig = {
                         key: 'Referrer-Policy',
                         value: 'origin-when-cross-origin',
                     },
-                    // Ensure scripts can load properly
+                    // Enhanced Content Security Policy
                     {
                         key: 'Content-Security-Policy',
-                        value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' *.vercel.app vercel.app *.trpe.ae trpe.ae *.googletagmanager.com googletagmanager.com *.google-analytics.com google-analytics.com *.facebook.net facebook.net connect.facebook.net *.doubleclick.net doubleclick.net *.googleadservices.com googleadservices.com *.clarity.ms clarity.ms *.google.com google.com; style-src 'self' 'unsafe-inline'; img-src * data:; font-src 'self' data:; connect-src *; frame-src 'self' *.googletagmanager.com googletagmanager.com *.doubleclick.net doubleclick.net *.facebook.com facebook.com;",
+                        value: [
+                            "default-src 'self'",
+                            "script-src 'self' 'unsafe-eval' 'unsafe-inline' 'wasm-unsafe-eval' 'inline-speculation-rules'",
+                            "*.vercel.app vercel.app *.trpe.ae trpe.ae",
+                            "*.googletagmanager.com googletagmanager.com",
+                            "*.google-analytics.com google-analytics.com",
+                            "*.facebook.net facebook.net connect.facebook.net",
+                            "*.doubleclick.net doubleclick.net",
+                            "*.googleadservices.com googleadservices.com",
+                            "*.clarity.ms clarity.ms",
+                            "*.google.com google.com",
+                            "*.cloudflareinsights.com cloudflareinsights.com",
+                            "static.cloudflareinsights.com",
+                            "chrome-extension: moz-extension:",
+                            "style-src 'self' 'unsafe-inline'",
+                            "img-src * data: blob:",
+                            "font-src 'self' data:",
+                            "connect-src *",
+                            "frame-src 'self' *.googletagmanager.com googletagmanager.com *.doubleclick.net doubleclick.net *.facebook.com facebook.com"
+                        ].join('; ') + ';',
                     },
                 ],
             },

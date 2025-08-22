@@ -10,36 +10,102 @@ import { withResilience } from "@/lib/resilient-api";
  */
 export async function getCommunitiesAction() {
     try {
-        const response = await withResilience(
-            () => client.api.communities.list.$get(),
-            'getCommunities',
-            {
-                maxRetries: 2,
-                timeoutMs: process.env.NODE_ENV === 'production' ? 30000 : 8000, // 30 seconds in production, 8 seconds in dev
-                baseDelay: 2000, // Increase base delay
-                maxDelay: 15000, // Increase max delay
-            }
-        );
+        // First try to get from cache or use direct database query as fallback
+        return await unstable_cache(
+            async () => {
+                try {
+                    // Try the API endpoint first
+                    const response = await withResilience(
+                        () => client.api.communities.list.$get(),
+                        'getCommunities',
+                        {
+                            maxRetries: 1,
+                            timeoutMs: 5000, // Shorter timeout
+                            baseDelay: 1000,
+                            maxDelay: 3000,
+                        }
+                    );
 
-        if (!response.ok) {
-            const errorMessage = `Failed to fetch communities: ${response.status} ${response.statusText}`;
-            console.error(errorMessage);
-            
-            throw new Error(errorMessage);
+                    if (response.ok) {
+                        const {communities} = await response.json();
+                        return communities;
+                    } else {
+                        throw new Error(`API responded with ${response.status}`);
+                    }
+                } catch (apiError) {
+                    console.warn('API call failed, falling back to direct database query:', apiError);
+                    
+                    // Fallback to direct database query
+                    return await getCommunitiesFromDatabase();
+                }
+            },
+            ['communities-list'],
+            {
+                revalidate: 300, // 5 minutes
+                tags: ['communities']
+            }
+        )();
+    } catch (error) {
+        console.error('Error in getCommunitiesAction:', error);
+        
+        // Final fallback: try direct database query one more time
+        try {
+            return await getCommunitiesFromDatabase();
+        } catch (dbError) {
+            console.error('Database fallback also failed:', dbError);
+            return []; // Return empty array to prevent breaking the UI
+        }
+    }
+}
+
+/**
+ * Direct database query fallback for communities
+ */
+async function getCommunitiesFromDatabase() {
+    const { communityTable } = await import("@/db/schema/community-table");
+    const { propertyTable } = await import("@/db/schema/property-table");
+    const { offeringTypeTable } = await import("@/db/schema/offering-type-table");
+    const { eq } = await import("drizzle-orm");
+    
+    try {
+        // Get all communities (simple query first)
+        const allCommunities = await db.select({
+            id: communityTable.id,
+            name: communityTable.name,
+            slug: communityTable.slug,
+            shortName: communityTable.shortName,
+        }).from(communityTable);
+
+        if (allCommunities.length === 0) {
+            return [];
         }
 
-        const {communities} = await response.json();
+        // Get total property counts per community
+        const totalCounts = await db.select({
+            communityId: propertyTable.communityId,
+            count: db.$count(propertyTable)
+        })
+        .from(propertyTable)
+        .groupBy(propertyTable.communityId);
+
+        // Create lookup map for efficient data access
+        const totalCountsMap = new Map(totalCounts.map(item => [item.communityId, item.count || 0]));
+
+        // Build final communities array with basic counts
+        const communities = allCommunities.map(community => ({
+            name: community.name,
+            slug: community.slug,
+            shortName: community.shortName,
+            propertyCount: totalCountsMap.get(community.id) || 0,
+            rentCount: 0, // Simplified for fallback
+            saleCount: 0, // Simplified for fallback
+            commercialRentCount: 0, // Simplified for fallback
+            commercialSaleCount: 0, // Simplified for fallback
+        }));
+
         return communities;
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Error fetching communities:', error);
-        
-        // Return fallback empty array instead of throwing in production
-        if (process.env.NODE_ENV === 'production') {
-            console.warn('Returning fallback empty communities array');
-            return []; // Return empty array as fallback
-        }
-        
+        console.error('Direct database query failed:', error);
         throw error;
     }
 }

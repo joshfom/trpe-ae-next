@@ -113,18 +113,29 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
 
     const [communities, setCommunities] = useState<CommunityFilterType[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [hasError, setHasError] = useState(false)
 
     // Fetch communities on component mount
     useEffect(() => {
         const fetchCommunities = async () => {
             setIsLoading(true)
+            setHasError(false)
+            
             try {
                 const communitiesData = await getClientCommunities()
+                
+                // Ensure we have valid data
+                if (!communitiesData || !Array.isArray(communitiesData)) {
+                    console.warn('Invalid communities data received, using empty array');
+                    setCommunities([]);
+                    return;
+                }
+                
                 // Transform the data to ensure it matches CommunityFilterType
-                const typedCommunities: CommunityFilterType[] = (communitiesData || []).map(community => ({
-                    id: community.slug || '',  // Use slug as id if not present
-                    slug: community.slug,
-                    name: community.name,
+                const typedCommunities: CommunityFilterType[] = communitiesData.map(community => ({
+                    id: community.slug || '',  // Use slug as id
+                    slug: community.slug || '',
+                    name: community.name || 'Unknown Community',
                     shortName: community.shortName || null,
                     propertyCount: community.propertyCount || 0,
                     rentCount: community.rentCount || 0,
@@ -132,9 +143,21 @@ function MainSearch({mode = 'general'}: MainSearchProps) {
                     commercialRentCount: community.commercialRentCount || 0,
                     commercialSaleCount: community.commercialSaleCount || 0
                 }));
+                
                 setCommunities(typedCommunities)
+                console.log('Successfully loaded', typedCommunities.length, 'communities');
             } catch (error) {
                 console.error('Error fetching communities:', error)
+                setHasError(true)
+                setCommunities([]) // Ensure we have an empty array on error
+                
+                // Track error in GTM for analytics
+                pushToDataLayer({
+                    event: 'communities_fetch_error',
+                    error_message: error instanceof Error ? error.message : 'Unknown error',
+                    component: 'MainSearch',
+                    timestamp: new Date().toISOString()
+                });
             } finally {
                 setIsLoading(false)
             }
