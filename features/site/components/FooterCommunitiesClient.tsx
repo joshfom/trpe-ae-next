@@ -42,9 +42,15 @@ export default function FooterCommunitiesClient() {
                 // Add a small delay to ensure the component is fully mounted
                 await new Promise(resolve => setTimeout(resolve, 100));
                 
+                // Create a longer timeout specifically for this request
+                const timeoutController = new AbortController();
+                const timeoutId = setTimeout(() => timeoutController.abort(), 30000); // 30 seconds timeout
+                
                 const response = await client.api.communities.list.$get({
-                    signal: controller.signal
+                    signal: timeoutController.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 if (response.ok) {
                     const data = await response.json();
@@ -53,6 +59,7 @@ export default function FooterCommunitiesClient() {
                     if (!data || !data.communities) {
                         console.warn("FooterCommunitiesClient: Unexpected API response format:", data);
                         setCommunities([]);
+                        setError("Invalid response format");
                         return;
                     }
                     
@@ -63,15 +70,24 @@ export default function FooterCommunitiesClient() {
                     
                     // Limit to 16 communities
                     setCommunities(withProperties.slice(0, 16));
+                    setError(null);
                 } else {
-                    console.warn(`FooterCommunitiesClient: Failed to fetch communities: ${response.status}`);
+                    const errorMsg = `Failed to fetch communities: ${response.status}`;
+                    console.warn(`FooterCommunitiesClient: ${errorMsg}`);
                     setCommunities([]);
+                    setError(errorMsg);
                 }
-            } catch (error) {
+            } catch (error: any) {
                 // Only log errors if they're not from aborting the request
-                if (!controller.signal.aborted) {
+                if (!controller.signal.aborted && error.name !== 'AbortError') {
                     console.warn("FooterCommunitiesClient: Error fetching communities:", error);
+                    setError(error.message || 'Failed to fetch communities');
                     setCommunities([]);
+                } else if (error.name === 'AbortError') {
+                    // Handle timeout gracefully
+                    console.warn("FooterCommunitiesClient: Request timed out, showing fallback");
+                    setCommunities([]);
+                    setError(null); // Don't show error for timeout
                 }
             } finally {
                 if (!controller.signal.aborted) {
