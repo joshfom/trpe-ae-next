@@ -138,12 +138,43 @@ const app = new Hono()
         zValidator("param", z.object({
             communityId: z.string().min(1, "Community ID is required")
         })),
-        zValidator("json", CommunityFormSchema),
+        zValidator("json", CommunityFormSchema, (result, c) => {
+            console.log('=== API VALIDATION DEBUG ===');
+            console.log('Raw request body:', JSON.stringify(c.req.raw, null, 2));
+            
+            // Try to get the raw JSON from request
+            const requestClone = c.req.raw.clone();
+            requestClone.json().then(rawJson => {
+                console.log('Raw JSON received:', JSON.stringify(rawJson, null, 2));
+                console.log('Raw JSON name field:', rawJson?.name);
+                console.log('Raw JSON name type:', typeof rawJson?.name);
+                console.log('Raw JSON name length:', rawJson?.name?.length);
+            }).catch(e => console.log('Could not parse raw JSON:', e));
+            
+            console.log('Validation result success:', result.success);
+            if (!result.success) {
+                console.error('API Validation error for community update:', result.error.flatten());
+                console.error('Validation error details:', JSON.stringify(result.error.issues, null, 2));
+                console.log('=== END API DEBUG ===');
+                return c.json({
+                    error: "Validation failed",
+                    details: result.error.flatten()
+                }, 400);
+            }
+            console.log('Validation successful, data:', JSON.stringify(result.data, null, 2));
+            console.log('=== END API DEBUG ===');
+        }),
         async (c) => {
             try {
                 // Validate and extract request data
                 const {communityId} = c.req.valid('param');
-                const {name, about, image, metaTitle, metaDesc, featured, displayOrder, isLuxe} = c.req.valid('json');
+                const validatedData = c.req.valid('json');
+                const {name, about, image, metaTitle, metaDesc, featured, displayOrder, isLuxe} = validatedData;
+
+                console.log('Update community request:', {
+                    communityId,
+                    data: validatedData
+                });
 
                 if (!communityId) {
                     return c.json({
@@ -168,10 +199,10 @@ const app = new Hono()
                 const [updatedCommunity] = await db.update(communityTable)
                     .set({
                         name,
-                        about,
-                        image,
-                        metaTitle,
-                        metaDesc,
+                        about: about || null,
+                        image: image || null,
+                        metaTitle: metaTitle || null,
+                        metaDesc: metaDesc || null,
                         featured,
                         displayOrder,
                         isLuxe,

@@ -45,7 +45,7 @@ const CookieConsentMinimal = () => {
             <p className="text-sm text-foreground mb-2">
               <span className="font-medium">🍪 This site uses cookies</span> for analytics to improve your experience.
             </p>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 text-xs text-gray-600">
               <span>By continuing, you agree.</span>
               <Link href="/cookie-settings" className="text-primary hover:underline">
                 Settings
@@ -66,6 +66,7 @@ const CookieConsentMinimal = () => {
               size="sm"
               onClick={() => setIsVisible(false)}
               className="h-7 w-7 p-0"
+              aria-label="Dismiss cookie notice"
             >
               <X className="h-3 w-3" />
             </Button>

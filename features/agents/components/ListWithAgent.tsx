@@ -31,12 +31,12 @@ function ListWithAgent({agent}: ListWithAgentProps) {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div>
                             <Label className={'ml-4'} htmlFor={"first_name"}>First Name</Label>
-                            <Input name={'first_name'} type="text" placeholder="First Name"
+                            <Input id="first_name" name={'first_name'} type="text" placeholder="First Name"
                                    className="w-full text-slate-600"/>
                         </div>
                         <div>
                             <Label className={'ml-4'} htmlFor={"last_name"}>Last Name</Label>
-                            <Input type="text" placeholder="Last Name" className="w-full text-slate-600"/>
+                            <Input id="last_name" name="last_name" type="text" placeholder="Last Name" className="w-full text-slate-600"/>
                         </div>
                     </div>
 
@@ -55,7 +55,7 @@ function ListWithAgent({agent}: ListWithAgentProps) {
                         </div>
                         <div>
                             <Label className={'ml-4'} htmlFor={"email"}>Email</Label>
-                            <Input type="email" placeholder="example@email.com" className="w-full text-slate-600"/>
+                            <Input id="email" name="email" type="email" placeholder="example@email.com" className="w-full text-slate-600"/>
                         </div>
                     </div>
 

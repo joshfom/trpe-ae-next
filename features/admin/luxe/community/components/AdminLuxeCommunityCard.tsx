@@ -127,7 +127,7 @@ const AdminLuxeCommunityCard = memo(({community}: AdminLuxeCommunityCardProps) =
                     <img
                         className={'rounded-xl h-60 object-cover w-full hover:zoom-in-50 ease-in-out transition-all duration-150'}
                         src={community.luxeImageUrl || community.image}
-                        alt={community.name}/>
+                        alt={community.name || 'Community image'}/>
                     {community.isLuxe && (
                         <div className="absolute top-2 right-2 bg-yellow-500 text-white p-1 rounded-full">
                             <Crown size={16} />

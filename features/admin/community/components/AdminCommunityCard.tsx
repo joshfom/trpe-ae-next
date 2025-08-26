@@ -1,369 +1,91 @@
 "use client"
-import React, {useEffect, memo, useCallback, useMemo} from 'react';
-import {Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle} from "@/components/ui/sheet";
-import {useForm} from "react-hook-form";
-import {Form, FormField, FormItem, FormLabel, FormControl} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Switch} from "@/components/ui/switch";
-import {SingleImageDropzone} from "@/components/single-image-dropzone";
-import {useEdgeStore} from "@/db/edgestore";
-import {z} from "zod";
-import {useUpdateCommunity} from "@/features/admin/community/api/use-update-community";
-import {CommunityFormSchema} from '../form-schema/community-form-schema';
-import {Textarea} from '@/components/ui/textarea';
-import {X, Crown} from "lucide-react";
-import {TipTapEditor} from "@/components/TiptapEditor";
+import React, {memo, useCallback} from 'react';
+import {Crown} from "lucide-react";
+import { useRouter } from 'next/navigation';
 
 interface AdminCommunityCardProps {
     community: CommunityType
 }
 
-const formSchema = CommunityFormSchema
-
-type formValues = z.infer<typeof formSchema>
-
 const AdminCommunityCard = memo(({community}: AdminCommunityCardProps) => {
-    const [isOpen, setIsOpen] = React.useState(false);
-    const [file, setFile] = React.useState<File | undefined>(undefined);
-    const [hasDefaultImage, setHasDefaultImage] = React.useState(false);
-    const {edgestore} = useEdgeStore();
-
-    const mutation = useUpdateCommunity(community.id)
-
-    // Memoize form default values
-    const defaultValues = useMemo(() => ({
-        name: community.name,
-        image: community.image || '',
-        about: community.about || '',
-        metaTitle: community.metaTitle || '',
-        metaDesc: community.metaDesc || '',
-        featured: community.featured || false,
-        displayOrder: community.displayOrder || 0,
-        isLuxe: community.isLuxe || false,
-    }), [community.name, community.image, community.about, community.metaTitle, community.metaDesc, community.featured, community.displayOrder, community.isLuxe]);
-
-    const form = useForm({
-        mode: "onChange",
-        defaultValues,
-    });
-
-    // Memoize callback functions
-    const updateAvtar = useCallback(async (file: File | undefined) => {
-        if (file) {
-            const res = await edgestore.publicFiles.upload({
-                file,
-                onProgressChange: (progress) => {
-                    // you can use this to show a progress bar
-                    console.log(progress);
-                },
-            });
-
-            setFile(file);
-            form.setValue('image', res.url)
-        }
-    }, [edgestore, form]);
-
-    const onSubmit = useCallback((values: formValues) => {
-        mutation.mutate(values, {
-            onSuccess: () => {
-                setIsOpen(false)
-                form.reset()
-            }
-        })
-    }, [mutation, form]);
+    const router = useRouter();
 
     const handleEditClick = useCallback(() => {
-        setIsOpen(true);
-    }, []);
+        router.push(`/admin/communities/${community.id}/edit`);
+    }, [community.id, router]);
 
-    const handleSheetChange = useCallback((open: boolean) => {
-        setIsOpen(open);
-    }, []);
-
-    const handleCancelClick = useCallback(() => {
-        setIsOpen(false);
-    }, []);
-
-    const handleRemoveImage = useCallback(() => {
-        setHasDefaultImage(false);
-    }, []);
-
-    const handleToggleLuxe = useCallback(() => {
-        const newLuxeStatus = !community.isLuxe;
-        mutation.mutate({
-            name: community.name,
-            image: community.image || '',
-            about: community.about || '',
-            metaTitle: community.metaTitle || '',
-            metaDesc: community.metaDesc || '',
-            featured: community.featured || false,
-            displayOrder: community.displayOrder || 0,
-            isLuxe: newLuxeStatus,
-        });
-    }, [mutation, community]);
-
-    useEffect(() => {
-        if (community.image) {
-            setHasDefaultImage(true)
-        }
-    }, [community.image])
+    const handleLuxeToggle = useCallback(() => {
+        // This can be implemented later as a separate quick action
+        console.log('Toggle luxe for community:', community.id);
+    }, [community.id]);
 
     return (
-        <div className="bg-white rounded-xl border flex flex-col justify-between">
-            <div className="flex flex-col">
-                <div className={'relative h-60'}>
-                    <img
-                        className={'rounded-xl h-60 object-cover w-full hover:zoom-in-50 ease-in-out transition-all duration-150'}
-                        src={community.image}
-                        alt={community.name}/>
-                </div>
-                <div className="px-4 py-3">
-                    <h2 className=" font-bold">{community.name}</h2>
-                    <div className="flex items-center gap-2 mt-2">
-                        {community.isLuxe && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                <Crown className="w-3 h-3 mr-1" />
-                                Luxe
-                            </span>
-                        )}
-                        {community.featured && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                Featured
-                            </span>
-                        )}
+        <div className={'bg-white p-4 rounded-lg shadow-sm border'}>
+            <div className="relative">
+                {community.image && (
+                    <img 
+                        src={community.image} 
+                        alt={community.name || 'Community image'}
+                        className={'h-60 w-full object-cover rounded-lg'}
+                    />
+                )}
+                {!community.image && (
+                    <div className={'h-60 w-full bg-gray-200 rounded-lg flex items-center justify-center'}>
+                        <span className={'text-gray-500'}>No Image</span>
                     </div>
+                )}
+                
+                {community.featured && (
+                    <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium">
+                        Featured
+                    </div>
+                )}
+                
+                {community.isLuxe && (
+                    <div className="absolute top-2 left-2 bg-purple-600 text-white px-2 py-1 rounded text-xs font-medium flex items-center gap-1">
+                        <Crown size={12} />
+                        Luxe
+                    </div>
+                )}
+            </div>
+
+            <div className="mt-4">
+                <h3 className={'text-lg font-semibold mb-2'}>{community.name}</h3>
+                
+                {community.metaDesc && (
+                    <p className={'text-sm text-gray-600 mb-4 line-clamp-2'}>
+                        {community.metaDesc}
+                    </p>
+                )}
+
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span>Order: {community.displayOrder}</span>
+                    <span className={`px-2 py-1 rounded text-xs ${
+                        community.isLuxe ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'
+                    }`}>
+                        {community.isLuxe ? 'Luxe' : 'Standard'}
+                    </span>
                 </div>
-                <div className={'flex justify-between items-end px-4 pb-4'}>
+
+                <div className={'flex gap-2'}>
                     <button 
-                        onClick={handleToggleLuxe} 
+                        onClick={handleLuxeToggle}
                         className={`text-sm py-1 px-3 border rounded-2xl transition-colors ${
                             community.isLuxe 
-                                ? 'bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200' 
-                                : 'border-gray-300 text-gray-600 hover:bg-gray-50'
+                                ? 'border-purple-300 text-purple-700 hover:bg-purple-50' 
+                                : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                     >
                         {community.isLuxe ? 'Disable Luxe' : 'Enable Luxe'}
                     </button>
-                    <button onClick={handleEditClick} className={'text-sm py-1 px-3 border rounded-2xl'}>
+                    <button 
+                        onClick={handleEditClick} 
+                        className={'text-sm py-1 px-3 border border-blue-300 text-blue-700 rounded-2xl hover:bg-blue-50 transition-colors'}
+                    >
                         Edit
                     </button>
                 </div>
             </div>
-
-            <Sheet open={isOpen} onOpenChange={handleSheetChange}>
-                <SheetContent className={'bg-white max-w-7xl h-screen flex flex-col'}>
-                    <SheetHeader className={'p-4 px-6'}>
-                        <SheetTitle>
-                            Edit - {community.name}
-                        </SheetTitle>
-                    </SheetHeader>
-                    <SheetDescription className={'h-full flex flex-col'}>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className={' h-full flex pb-12 flex-col'}>
-                                <div className="flex-1 overflow-y-auto space-y-6  p-6">
-                                    <div className="">
-                                        <FormField
-                                            name={'name'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Name</FormLabel>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder={'Community Name'}
-                                                        className={'input'}/>
-                                                </FormItem>
-                                            )}/>
-
-                                    </div>
-
-                                    <div className="">
-                                        <FormField
-                                            name={'metaTitle'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Meta Title</FormLabel>
-                                                    <Input
-                                                        {...field}
-
-                                                        placeholder={`${form.watch('name')} - is default`}
-                                                        className={'input'}/>
-                                                </FormItem>
-                                            )}/>
-
-                                    </div>
-
-
-                                    <div className="">
-                                        <FormField
-                                            name={'metaDesc'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Meta Description</FormLabel>
-                                                    <Textarea
-                                                        {...field}
-                                                        placeholder={'Meta Description'}
-                                                        className={'input'}/>
-                                                </FormItem>
-                                            )}/>
-
-                                    </div>
-
-                                    <div className="">
-                                        <FormField
-                                            name={'featured'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                                    <div className="space-y-0.5">
-                                                        <FormLabel className="text-base">
-                                                            Featured Community
-                                                        </FormLabel>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            Display this community on the homepage
-                                                        </div>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Switch
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}/>
-                                    </div>
-
-                                    {/* Enable Luxe Toggle */}
-                                    <div className="">
-                                        <FormField
-                                            name={'isLuxe'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                                                    <div className="space-y-0.5">
-                                                        <FormLabel className="text-base">
-                                                            Enable Luxe
-                                                        </FormLabel>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            Make this community available in the Luxe section
-                                                        </div>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Switch
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}/>
-                                    </div>
-
-                                    <div className="">
-                                        <FormField
-                                            name={'displayOrder'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Display Order</FormLabel>
-                                                    <Input
-                                                        {...field}
-                                                        type="number"
-                                                        placeholder="0"
-                                                        className={'input'}
-                                                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                                                    />
-                                                    <div className="text-sm text-muted-foreground">
-                                                        Lower numbers display first (0 = highest priority)
-                                                    </div>
-                                                </FormItem>
-                                            )}/>
-                                    </div>
-
-                                    <div>
-                                        <FormField
-                                            name={'about'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>About - {form.watch('name')}</FormLabel>
-                                                    <TipTapEditor
-                                                        name="about"
-                                                        control={form.control}
-                                                    />
-                                                </FormItem>
-                                            )}/>
-                                    </div>
-                                    <div>
-                                        <FormField
-                                            name={'image'}
-                                            control={form.control}
-                                            render={({field}) => (
-                                                <FormItem>
-                                                    <FormLabel>Cover Image</FormLabel>
-
-                                                    {
-                                                        hasDefaultImage ? (
-                                                            <div className={'flex space-x-4 relative'}>
-                                                                <div className="relative">
-                                                                    <img
-                                                                        className={'rounded-xl h-40 w-60 object-cover'}
-                                                                        src={form.watch('image')}
-                                                                        alt={form.watch('name')}
-                                                                    />
-                                                                    <Button
-                                                                        className={'absolute  -top-4 -right-4'}
-                                                                        onClick={handleRemoveImage}
-                                                                        variant={'destructive'}
-                                                                        size={'icon'}
-                                                                    >
-                                                                        <X className={'w-6 h-6'}/>
-                                                                    </Button>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <SingleImageDropzone
-                                                                width={200}
-                                                                height={200}
-                                                                value={file}
-                                                                onChange={(file) => {
-                                                                    updateAvtar(file)
-                                                                }}
-                                                            />
-                                                        )
-                                                    }
-
-                                                </FormItem>
-                                            )}/>
-
-                                    </div>
-                                </div>
-
-                                <div
-                                    className="flex border border-t justify-between pt-6 pb-10 px-6 items-center space-x-4">
-
-                                    <Button
-                                        variant={'destructive'}
-                                        onClick={handleCancelClick}
-                                        type={'button'}
-                                        className={'btn btn-secondary'}>
-                                        Cancel
-                                    </Button>
-                                    <Button
-                                        type={'submit'}
-                                        loading={mutation.isPending}
-                                        className={'btn btn-primary'}>
-                                        Save
-                                    </Button>
-                                </div>
-                            </form>
-                        </Form>
-                    </SheetDescription>
-                </SheetContent>
-            </Sheet>
-
         </div>
     );
 });

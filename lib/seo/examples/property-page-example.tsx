@@ -37,7 +37,15 @@ export default async function PropertyDetailPage({ params }: { params: { slug: s
   const { structuredData } = await generatePropertySEO(property);
   
   // Generate breadcrumbs
-  const breadcrumbs = generatePropertyBreadcrumbs(property);
+  const breadcrumbs = generatePropertyBreadcrumbs({
+    title: property.title,
+    slug: property.slug,
+    offeringType: property.offeringType,
+    community: property.community ? {
+      name: property.community.name || '',
+      slug: property.community.slug
+    } : undefined
+  });
 
   return (
     <>

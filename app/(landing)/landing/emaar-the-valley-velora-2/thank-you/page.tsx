@@ -35,7 +35,7 @@ function DamaIslandThankYou() {
             <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
                 <div className={'w-full py-6'}>
                     <div className="h-[400px] max-w-7xl flex items-center mx-auto rounded-3xl overflow-hidden">
-                        <img src="/assets/golf-point-lunch-hero.webp" className={'h-[400px] w-full object-cover'} alt="" />
+                        <img src="/assets/golf-point-lunch-hero.webp" className={'h-[400px] w-full object-cover'} alt="Golf Point luxury property development" />
                     </div>
                 </div>
                 <div className="px-6 lg:px-0 max-w-7xl min-h-[400px] mx-auto flex items-center py-12 justify-between flex-col sm:flex-row gap-8">

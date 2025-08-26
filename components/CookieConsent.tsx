@@ -71,6 +71,7 @@ const CookieConsent = () => {
                 size="sm"
                 onClick={() => setIsVisible(false)}
                 className="h-6 w-6 p-0"
+                aria-label="Close cookie settings"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -84,7 +85,7 @@ const CookieConsent = () => {
             {!showDetails ? (
               // Simple view
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   By continuing to use our website, you consent to our use of cookies for analytics and essential functionality.
                 </p>
                 

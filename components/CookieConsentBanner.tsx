@@ -76,6 +76,7 @@ const CookieConsentBanner = () => {
               size="sm"
               onClick={() => setIsVisible(false)}
               className="h-8 w-8 p-0 ml-2"
+              aria-label="Close cookie consent banner"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -83,7 +84,7 @@ const CookieConsentBanner = () => {
         </div>
         
         <div className="mt-2">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-gray-600">
             By continuing to browse, you agree to our use of analytics cookies. Auto-accepts in 15s.
           </p>
         </div>

@@ -112,7 +112,7 @@ export function PropertyPageSEOHead({ property, locale = 'en' }: PropertyPagePro
           <meta name="property:price" content={property.price?.toString()} />
           <meta name="property:bedrooms" content={property.bedrooms?.toString()} />
           <meta name="property:type" content={property.type?.name} />
-          <meta name="property:community" content={property.community?.name} />
+          <meta name="property:community" content={property.community?.name || undefined} />
           
           {/* Real estate specific Open Graph tags */}
           <meta property="product:price:amount" content={property.price?.toString()} />

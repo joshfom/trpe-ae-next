@@ -309,14 +309,14 @@ export default async function Home() {
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/emirate-towers.webp"
+                                                    src="https://cdn.trpe.ae/emirate-towers%20(1).webp"
                                                     alt="Dubai Emirates Towers"
                                                 />
                                             </div>
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/burj-arab.webp"
+                                                    src="https://cdn.trpe.ae/burj-arab_compressed%20(1).webp"
                                                     alt="Burj Al Arab"
                                                 />
                                             </div>
@@ -325,14 +325,14 @@ export default async function Home() {
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/home-3.jpg"
+                                                    src="https://cdn.trpe.ae/home-3%20(1).webp"
                                                     alt="Dubai Real Estate"
                                                 />
                                             </div>
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/bur-khalifa.webp"
+                                                    src="https://cdn.trpe.ae/bur-khalifa-trpe.webp"
                                                     alt="Burj Khalifa"
                                                 />
                                             </div>

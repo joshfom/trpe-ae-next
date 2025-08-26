@@ -298,7 +298,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-slate-100 xl:px-0')}>
+      <body className={cn(poppins.className, playfairDisplay.variable, 'bg-gray-50 xl:px-0')}>
 
       {/* GDPR-Compliant GTM with Consent Mode */}
       <GTMConsentScript />

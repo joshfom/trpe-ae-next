@@ -100,16 +100,17 @@ export class PropertyStructuredData {
     }
 
     // Enhanced location data with Place schema
-    if (property.community) {
+    if (property.community && property.community.name) {
+      const communityName = property.community.name;
       schema.location = {
         '@type': 'Place',
-        '@id': `${this.config.baseUrl}/communities/${property.community.slug || property.community.name.toLowerCase().replace(/\s+/g, '-')}`,
-        name: property.community.name,
-        description: `${property.community.name} community in Dubai`,
+        '@id': `${this.config.baseUrl}/communities/${property.community.slug || communityName.toLowerCase().replace(/\s+/g, '-')}`,
+        name: communityName,
+        description: `${communityName} community in Dubai`,
         address: {
           '@type': 'PostalAddress',
-          streetAddress: property.community.name,
-          addressLocality: property.community.name,
+          streetAddress: communityName,
+          addressLocality: communityName,
           addressRegion: property.city?.name || 'Dubai',
           addressCountry: 'AE',
           postalCode: '00000'
@@ -270,39 +271,33 @@ export class PropertyStructuredData {
   }
 
   /**
-   * Generate Place schema for property location
+   * Generate Place schema for a property's community location
    */
   generatePlaceSchema(property: PropertyType): any {
-    if (!property.community) return null;
+    if (!property.community || !property.community.name) return null;
 
-    const placeUrl = `${this.config.baseUrl}/communities/${property.community.slug || property.community.name.toLowerCase().replace(/\s+/g, '-')}`;
+    const communityName = property.community.name;
+    const placeUrl = `${this.config.baseUrl}/communities/${property.community.slug || communityName.toLowerCase().replace(/\s+/g, '-')}`;
 
     return {
       '@context': 'https://schema.org',
       '@type': 'Place',
       '@id': placeUrl,
-      name: property.community.name,
-      description: `${property.community.name} is a premium residential and commercial community in Dubai`,
+      name: communityName,
+      description: `${communityName} is a premium residential and commercial community in Dubai`,
       url: placeUrl,
       address: {
         '@type': 'PostalAddress',
-        streetAddress: property.community.name,
-        addressLocality: property.community.name,
+        streetAddress: communityName,
+        addressLocality: communityName,
         addressRegion: property.city?.name || 'Dubai',
         addressCountry: 'AE'
       },
       geo: property.latitude && property.longitude ? {
         '@type': 'GeoCoordinates',
-        latitude: parseFloat(property.latitude),
-        longitude: parseFloat(property.longitude)
-      } : undefined,
-      containedInPlace: {
-        '@type': 'City',
-        name: property.city?.name || 'Dubai',
-        addressCountry: 'AE'
-      },
-      hasMap: `${placeUrl}#map`,
-      additionalProperty: this.generateLocationFeatures(property)
+        latitude: property.latitude,
+        longitude: property.longitude
+      } : undefined
     };
   }
 
@@ -527,7 +522,7 @@ export class PropertyStructuredData {
   private generateLocationFeatures(property: PropertyType): any[] {
     const features = [];
     
-    if (property.community) {
+    if (property.community && property.community.name) {
       features.push({
         '@type': 'PropertyValue',
         name: 'Community',

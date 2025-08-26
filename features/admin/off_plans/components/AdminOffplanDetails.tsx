@@ -52,7 +52,7 @@ function AdminOffplanDetails({offplan}: AdminOffplanDetailsProps) {
 
 
                     <Button variant={'outline'} className={'py-2'} onClick={() => setAddingQrCode(!addingQrCode)}>
-                        Edit
+                        Edit Off-plan
                     </Button>
 
                 </nav>
@@ -148,7 +148,7 @@ function AdminOffplanDetails({offplan}: AdminOffplanDetailsProps) {
                 {
                     offplan.qrCode && (
                         <div>
-                            <img className={'h-16 w-16'} src={offplan.qrCode} alt=""/>
+                            <img className={'h-16 w-16'} src={offplan.qrCode} alt="QR code for off-plan property"/>
                         </div>
                     )
                 }

@@ -9,7 +9,9 @@ import {truncateText} from "@/lib/truncate-text";
 import {TipTapView} from "@/components/TiptapView";
 import {validateRequest} from "@/actions/auth-session";
 import {PropertyType} from "@/types/property";
-import {EditCommunitySheet} from "@/features/community/components/EditCommunitySheet";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Edit2 } from "lucide-react";
 
 interface ShowCommunityPageProps {
     params: Promise<{
@@ -37,7 +39,7 @@ export async function generateMetadata(
     const previousImages = (await parent).openGraph?.images || []
 
     const metaTitle = `${community?.name} | Real Estate Communities in Dubai, UAE`
-    const metaDesc = community?.metaDesc || truncateText(community?.about, 150)
+    const metaDesc = community?.metaDesc || truncateText(community?.about || undefined, 150)
     const metaDescription = `${ metaDesc ?  metaDesc : community.name + ' - Explore our real estate communities, where buyers, sellers, and investors connect. Stay updated on the latest property listings, and valuable resources to help you make informed decisions in buying and selling real estate.'} `
 
     return {
@@ -92,7 +94,12 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
                     </h1>
                     
                     {user && (
-                        <EditCommunitySheet community={community} />
+                        <Link href={`/admin/communities/${community.id}/edit`}>
+                            <Button variant="outline" className="flex items-center gap-2">
+                                <Edit2 className="h-4 w-4" />
+                                Edit Community
+                            </Button>
+                        </Link>
                     )}
                 </div>
                 <div

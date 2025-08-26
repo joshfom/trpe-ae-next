@@ -56,6 +56,8 @@ export async function updateCommunity(communityId: string, data: RequestType): P
       } as UpdateCommunityErrorResult;
     }
     
+    console.log('Updating community:', { communityId, data });
+    
     // Update community through API
     const response = await client.api.admin.communities[":communityId"]["$patch"]({
       param: { communityId },
@@ -63,7 +65,21 @@ export async function updateCommunity(communityId: string, data: RequestType): P
     });
     
     if (!response.ok) {
-      throw new Error(`Failed to update community: ${response.statusText}`);
+      // Try to get more detailed error information
+      let errorMessage = `Failed to update community: ${response.statusText}`;
+      try {
+        const errorBody = await response.json() as any;
+        if (errorBody && typeof errorBody === 'object' && 'error' in errorBody) {
+          errorMessage = `Failed to update community: ${errorBody.error}`;
+          if ('details' in errorBody && errorBody.details) {
+            console.error('Validation details:', errorBody.details);
+            errorMessage += ` - Validation errors: ${JSON.stringify(errorBody.details)}`;
+          }
+        }
+      } catch (e) {
+        // If we can't parse the error body, use the status text
+      }
+      throw new Error(errorMessage);
     }
     
     const responseData = await response.json() as ResponseType;

@@ -74,7 +74,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium ${
                 activeTab === id
-                    ? 'bg-gradient-to-r from-gold to-yellow-600 text-black shadow-lg'
+                    ? 'bg-gradient-to-r text-black shadow-lg'
                     : 'border border-gold/30 text-gold hover:border-gold/60 hover:bg-gold/10'
             }`}
         >
@@ -142,7 +142,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                     Check back soon for expert commentary on Dubai&apos;s luxury real estate market.
                 </p>
                 <div className="mt-8">
-                    <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold to-yellow-600 text-black font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300">
+                    <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r text-white font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300">
                         <Mail className="mr-2" size={16} />
                         Get Notified
                     </button>
@@ -164,7 +164,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 <div className="py-6">
                     <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] shadow-lg rounded-xl p-6 flex items-center justify-center flex-col gap-4 border border-gold/20">
                         <div className="flex flex-col gap-2">
-                            <h1 className="text-3xl text-center font-semibold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
+                            <h1 className="text-3xl text-center font-semibold bg-gradient-to-r  bg-clip-text text-white">
                                 {advisor?.firstName + ' ' + advisor?.lastName}
                             </h1>
                             <div className="flex justify-between items-center">
@@ -191,7 +191,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                         <div className="flex flex-col w-full lg:w-[90%] justify-between">
                             <div className="flex justify-between gap-4">
                                 <a 
-                                    className="inline-flex items-center justify-center bg-gradient-to-r from-gold to-yellow-600 text-black font-semibold w-1/2 py-2 rounded-3xl px-4 hover:from-yellow-400 hover:to-gold transition-all duration-300" 
+                                    className="inline-flex items-center justify-center bg-gradient-to-r text-black font-semibold w-1/2 py-2 rounded-3xl px-4 hover:from-yellow-400 hover:to-gold transition-all duration-300" 
                                     href={`tel:${advisor.phone || '+971 50 523 2712'}`}
                                 >
                                     <Phone className="mr-2" size={20}/>
@@ -314,7 +314,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                                     <div className="mt-8 flex gap-4 justify-center">
                                         <a 
                                             href={`tel:${advisor.phone || '+971 50 523 2712'}`}
-                                            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold to-yellow-600 text-black font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300"
+                                            className="inline-flex items-center px-6 py-3 bg-gradient-to-r text-black font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300"
                                         >
                                             <Phone className="mr-2" size={16} />
                                             Call Now

@@ -79,6 +79,7 @@ const CookieConsentNonBlocking = () => {
                 size="sm"
                 onClick={() => setIsVisible(false)}
                 className="h-6 w-6 p-0"
+                aria-label="Close cookie notice"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -89,7 +90,7 @@ const CookieConsentNonBlocking = () => {
             {!showDetails ? (
               // Simple notice
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-600">
                   By continuing to use our site, you agree to our use of cookies for analytics to improve your experience.
                 </p>
                 

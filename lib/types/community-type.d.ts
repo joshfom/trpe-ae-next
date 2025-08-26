@@ -1,12 +1,12 @@
 type CommunityType = {
     id: string;
-    name: string;
+    name: string | null;
     label: string;
     image: string;
     propertyCount: number;
-    metaTitle: string;
-    metaDesc: string;
-    about: string;
+    metaTitle: string | null;
+    metaDesc: string | null;
+    about: string | null;
     cityId?: string;
     city?: CityType;
     properties?: PropertyType[];

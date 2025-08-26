@@ -32,7 +32,7 @@ const List = ({item, className, index, activeItem, ...props}: ImageProps) => {
                 {item.image && item.image.trim() !== "" ? (
                     <img
                         src={item.image}
-                        alt={item.name}
+                        alt={item.name || 'Community image'}
                         className={cn("object-cover absolute inset-0 w-full h-full", {
                             // "blur-[1px]": index !== activeItem,
                         })}
@@ -51,7 +51,7 @@ const List = ({item, className, index, activeItem, ...props}: ImageProps) => {
                         <WaveReveal
                             duration="1000ms"
                             className="items-start justify-start text-xl sm:text-2xl md:text-4xl"
-                            text={item.name}
+                            text={item.name || 'Community'}
                             direction="up"
                         />
                     </Link>

@@ -62,6 +62,7 @@ export default function LuxePagination({
             ? "border-gray-200 text-gray-400 cursor-not-allowed"
             : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
         )}
+        aria-label="Go to previous page"
       >
         <ChevronLeft className="w-5 h-5" />
       </button>
@@ -80,6 +81,8 @@ export default function LuxePagination({
               ? "text-gray-400 cursor-default"
               : "text-gray-600 hover:bg-gray-50 hover:text-black"
           )}
+          aria-label={page === '...' ? 'More pages' : `Go to page ${page}`}
+          aria-current={page === currentPage ? 'page' : undefined}
         >
           {page}
         </button>
@@ -95,6 +98,7 @@ export default function LuxePagination({
             ? "border-gray-200 text-gray-400 cursor-not-allowed"
             : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
         )}
+        aria-label="Go to next page"
       >
         <ChevronRight className="w-5 h-5" />
       </button>
