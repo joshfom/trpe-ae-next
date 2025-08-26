@@ -7,6 +7,7 @@ import {insightTable} from '@/db/schema/insight-table';
 import {PropertyType} from '@/types/property';
 import LuxePageClient from './LuxePageClient';
 import LuxePageSSR from './LuxePageSSR';
+import SSRToCSRSwitcher from './components/SSRToCSRSwitcher';
 
 // Server-side data fetching functions
 async function getFeaturedLuxeProperties() {
@@ -148,41 +149,8 @@ export default async function LuxePage() {
         />
       </div>
       
-      {/* Script to show enhanced version when JS is available - using useEffect approach to avoid hydration issues */}
-      <script 
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              // Wait for DOM to be ready
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', switchToClientVersion);
-              } else {
-                switchToClientVersion();
-              }
-              
-              function switchToClientVersion() {
-                try {
-                  const ssrElement = document.querySelector('.ssr-version');
-                  const jsElement = document.querySelector('.js-enhanced');
-                  
-                  if (ssrElement && jsElement) {
-                    // Hide SSR version
-                    ssrElement.style.display = 'none';
-                    // Show client version
-                    jsElement.style.display = 'block';
-                    
-                    // Add a class to indicate JS is active
-                    document.documentElement.classList.add('js-enabled');
-                  }
-                } catch (error) {
-                  console.warn('Failed to switch to client version:', error);
-                  // If anything fails, keep SSR version visible
-                }
-              }
-            })();
-          `
-        }} 
-      />
+      {/* Component to handle SSR to CSR switching */}
+      <SSRToCSRSwitcher ssrSelector=".ssr-version" csrSelector=".js-enhanced" />
     </>
   );
 }

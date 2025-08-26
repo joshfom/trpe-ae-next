@@ -32,7 +32,7 @@ function HeroSectionSSR() {
         <div className="text-center flex flex-col items-center justify-center h-full">
           <h1 className="text-3xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 sm:mb-6 font-playfair leading-tight">
             Meet Our
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+            <span className="block text-white">
               Advisors
             </span>
           </h1>
@@ -49,9 +49,9 @@ function HeroSectionSSR() {
         </div>
       </div>
       
-      {/* Decorative Elements - Static */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-yellow-300/20 rounded-full blur-xl"></div>
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-amber-400/10 to-yellow-300/10 rounded-full blur-xl"></div>
+      {/* Decorative Elements */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-white/20 to-gray-300/20 rounded-full blur-xl"></div>
+      <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-white/10 to-gray-300/10 rounded-full blur-xl"></div>
     </div>
   );
 }
@@ -62,12 +62,12 @@ function ExcellenceSectionSSR() {
     <div className="bg-gradient-to-br from-slate-900 via-gray-900 to-black py-12 sm:py-16 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-4xl mx-auto">
-          <h3 className="text-sm sm:text-lg md:text-xl text-amber-400 font-medium mb-3 sm:mb-4 tracking-wide uppercase">
+          <h3 className="text-sm sm:text-lg md:text-xl text-white font-medium mb-3 sm:mb-4 tracking-wide uppercase">
             Unmatched Excellence
           </h3>
           <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 sm:mb-8 font-playfair leading-tight">
             Luxury Real Estate
-            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+            <span className="block text-white">
               Redefined
             </span>
           </h2>
@@ -84,15 +84,15 @@ function ExcellenceSectionSSR() {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">$2.5B+</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">$2.5B+</div>
               <div className="text-gray-300 text-base sm:text-lg">Total Sales Volume</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">500+</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">500+</div>
               <div className="text-gray-300 text-base sm:text-lg">Luxury Properties Sold</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">25+</div>
+              <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">25+</div>
               <div className="text-gray-300 text-base sm:text-lg">Years Combined Experience</div>
             </div>
           </div>
@@ -101,8 +101,8 @@ function ExcellenceSectionSSR() {
       
       {/* Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-amber-400/5 to-yellow-300/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-amber-400/3 to-yellow-300/3 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-white/5 to-gray-300/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-white/3 to-gray-300/3 rounded-full blur-3xl"></div>
       </div>
     </div>
   );
@@ -127,7 +127,7 @@ function CTASectionSSR() {
           <div className="flex-1 text-center lg:text-left">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
               Ready to Find Your
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+              <span className="block text-white">
                 Dream Property?
               </span>
             </h2>
@@ -199,7 +199,7 @@ const LuxeAdvisorsSSR: React.FC<LuxeAdvisorsSSRProps> = ({ agents }) => {
                     <h3 className="text-3xl font-bold text-gray-900 mb-2">
                       {agent.name}
                     </h3>
-                    <p className="text-xl text-primary-600 mb-4">
+                    <p className="text-xl text-black mb-4">
                       {agent.title}
                     </p>
                     <p className="text-gray-600 leading-relaxed">
@@ -214,7 +214,7 @@ const LuxeAdvisorsSSR: React.FC<LuxeAdvisorsSSRProps> = ({ agents }) => {
                         <span className="font-medium">Phone:</span>{' '}
                         <a 
                           href={`tel:${agent.phone}`}
-                          className="text-primary-600 hover:text-primary-700"
+                          className="text-black hover:text-gray-700"
                         >
                           {agent.phone}
                         </a>
@@ -225,7 +225,7 @@ const LuxeAdvisorsSSR: React.FC<LuxeAdvisorsSSRProps> = ({ agents }) => {
                         <span className="font-medium">Email:</span>{' '}
                         <a 
                           href={`mailto:${agent.email}`}
-                          className="text-primary-600 hover:text-primary-700"
+                          className="text-black hover:text-gray-700"
                         >
                           {agent.email}
                         </a>
@@ -236,7 +236,7 @@ const LuxeAdvisorsSSR: React.FC<LuxeAdvisorsSSRProps> = ({ agents }) => {
                         <span className="font-medium">LinkedIn:</span>{' '}
                         <a 
                           href={agent.linkedin}
-                          className="text-primary-600 hover:text-primary-700"
+                          className="text-black hover:text-gray-700"
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -251,7 +251,7 @@ const LuxeAdvisorsSSR: React.FC<LuxeAdvisorsSSRProps> = ({ agents }) => {
                     <div className="pt-4">
                       <Link
                         href={`/luxe/advisors/${agent.slug}`}
-                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-black hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
                       >
                         View Full Profile
                       </Link>

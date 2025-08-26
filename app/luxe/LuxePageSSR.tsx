@@ -167,7 +167,7 @@ export default function LuxePageSSR({
                 </p>
                 <Link 
                   href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" 
-                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-3xl hover:bg-blue-700 transition-colors text-sm sm:text-base min-h-[44px]"
+                  className="inline-flex items-center px-6 py-3 bg-black text-white rounded-3xl hover:bg-gray-900 transition-colors text-sm sm:text-base min-h-[44px]"
                 >
                   View Property 
                 </Link>
@@ -198,7 +198,7 @@ export default function LuxePageSSR({
                   </p>
                   <Link 
                     href="/luxe/property/7-bedrooms-jumeirah-asora-bay-jumeirah-dubai-dxb-trpe-402" 
-                    className="inline-flex items-center px-6 xl:px-8 py-3 xl:py-4 bg-blue-600 text-white rounded-3xl hover:bg-blue-700 transition-colors text-base xl:text-lg font-medium"
+                    className="inline-flex items-center px-6 xl:px-8 py-3 xl:py-4 bg-black text-white rounded-3xl hover:bg-gray-900 transition-colors text-base xl:text-lg font-medium"
                   >
                     View Property
                   </Link>
@@ -265,7 +265,7 @@ export default function LuxePageSSR({
                   <div className="p-6">
                     <div className="flex items-center justify-between mb-2">
                       <span className={`px-2 py-1 text-xs font-medium rounded ${
-                        property.status === 'For Sale' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                        property.status === 'For Sale' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                       }`}>
                         {property.status}
                       </span>
@@ -362,7 +362,7 @@ export default function LuxePageSSR({
                   </div>
                   <div className="p-6">
                     <div className="mb-2">
-                      <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded">
+                      <span className="text-xs font-medium text-black bg-gray-100 px-2 py-1 rounded">
                         {insight.category}
                       </span>
                     </div>

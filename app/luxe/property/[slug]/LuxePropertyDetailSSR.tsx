@@ -129,7 +129,7 @@ const LuxePropertyDetailSSR: React.FC<LuxePropertyDetailSSRProps> = ({ property 
                         <p className="text-gray-600 mb-4">The requested property could not be loaded.</p>
                         <Link
                             href="/luxe/properties"
-                            className="inline-flex items-center text-sm text-blue-600 hover:text-blue-800"
+                            className="inline-flex items-center text-sm text-black hover:text-gray-700"
                         >
                             ← Back to Luxe Properties
                         </Link>

@@ -50,15 +50,15 @@ const TabButtonSSR = ({
         disabled
         className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium cursor-not-allowed ${
             isActive
-                ? 'bg-gradient-to-r from-gold to-yellow-600 text-black shadow-lg opacity-75'
-                : 'border border-gold/30 text-gold opacity-75'
+                ? 'bg-black text-white shadow-lg opacity-75'
+                : 'border border-gray-500/30 text-gray-500 opacity-75'
         }`}
     >
         <Icon size={18} />
         <span>{label}</span>
         {count !== undefined && (
             <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${
-                isActive ? 'bg-black/20' : 'bg-gold/20'
+                isActive ? 'bg-white/20' : 'bg-gray-500/20'
             }`}>
                 {count}
             </span>
@@ -68,7 +68,7 @@ const TabButtonSSR = ({
 
 // SSR-compatible Journal Card
 const JournalCardSSR = ({ article }: { article: JournalArticle }) => (
-    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl overflow-hidden border border-gold/20">
+    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl overflow-hidden border border-white/20">
         {article.coverUrl && (
             <div className="relative h-48 overflow-hidden">
                 <img 
@@ -86,12 +86,12 @@ const JournalCardSSR = ({ article }: { article: JournalArticle }) => (
                 {article.metaDescription || 'Luxury real estate insights and market analysis.'}
             </p>
             <div className="flex items-center justify-between">
-                <span className="text-sm text-gold">
+                <span className="text-sm text-white">
                     {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : 'Recently published'}
                 </span>
                 <Link 
                     href={`/luxe/insights/${article.slug}`}
-                    className="text-gold hover:text-yellow-400 transition-colors text-sm font-medium"
+                    className="text-black hover:text-gray-700 transition-colors text-sm font-medium"
                 >
                     Read More →
                 </Link>
@@ -134,9 +134,9 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
             <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
-                    <div className="absolute inset-0 bg-gradient-to-br from-gold/10 via-transparent to-gold/5"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-white/5"></div>
                     <div className="w-full h-full" style={{
-                        backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(234, 179, 8, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(234, 179, 8, 0.05) 0%, transparent 50%)'
+                        backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.05) 0%, transparent 50%)'
                     }}></div>
                 </div>
 
@@ -145,7 +145,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                         {/* Left - Content */}
                         <div className="lg:col-span-3 text-center lg:text-left">
                             <div className="mb-6">
-                                <span className="inline-block px-4 py-2 bg-gradient-to-r from-gold/20 to-yellow-600/20 text-gold rounded-full text-sm font-medium tracking-wide uppercase">
+                                <span className="inline-block px-4 py-2 bg-gradient-to-r from-white/20 to-gray-300/20 text-white rounded-full text-sm font-medium tracking-wide uppercase">
                                     Luxury Property Advisor
                                 </span>
                             </div>
@@ -154,7 +154,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 {advisor?.firstName} {advisor?.lastName}
                             </h1>
                             
-                            <h2 className="text-xl sm:text-2xl lg:text-3xl text-gold mb-8 font-medium">
+                            <h2 className="text-xl sm:text-2xl lg:text-3xl text-white mb-8 font-medium">
                                 {advisor?.title || 'Luxury Property Specialist'}
                             </h2>
                             
@@ -169,7 +169,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 {advisor?.email && (
                                     <a 
                                         href={`mailto:${advisor.email}`}
-                                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-600/20 text-white rounded-full hover:from-gold/30 hover:to-yellow-600/30 transition-all duration-300 border border-gold/30"
+                                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-white/20 to-gray-300/20 text-white rounded-full hover:from-white/30 hover:to-gray-300/30 transition-all duration-300 border border-white/30"
                                     >
                                         <Mail size={18} />
                                         <span>Email</span>
@@ -178,7 +178,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 {advisor?.phone && (
                                     <a 
                                         href={`tel:${advisor.phone}`}
-                                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-600/20 text-white rounded-full hover:from-gold/30 hover:to-yellow-600/30 transition-all duration-300 border border-gold/30"
+                                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-white/20 to-gray-300/20 text-white rounded-full hover:from-white/30 hover:to-gray-300/30 transition-all duration-300 border border-white/30"
                                     >
                                         <Phone size={18} />
                                         <span>Call</span>
@@ -186,7 +186,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 )}
                                 <button 
                                     disabled
-                                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-gold/20 to-yellow-600/20 text-white rounded-full border border-gold/30 opacity-75 cursor-not-allowed"
+                                    className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-white/20 to-gray-300/20 text-white rounded-full border border-white/30 opacity-75 cursor-not-allowed"
                                 >
                                     <Calendar size={18} />
                                     <span>Schedule</span>
@@ -197,7 +197,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                             {advisor?.rera && (
                                 <div className="text-center lg:text-left">
                                     <span className="text-sm text-gray-400">
-                                        RERA License: <span className="text-gold font-mono">{advisor.rera}</span>
+                                        RERA License: <span className="text-white font-mono">{advisor.rera}</span>
                                     </span>
                                 </div>
                             )}
@@ -206,7 +206,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                         {/* Right - Image */}
                         <div className="lg:col-span-2">
                             <div className="relative">
-                                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-gold/20 to-yellow-600/20 border border-gold/30">
+                                <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-white/20 to-gray-300/20 border border-white/30">
                                     {advisor?.avatarUrl ? (
                                         <img 
                                             src={advisor.avatarUrl} 
@@ -215,14 +215,14 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                         />
                                     ) : (
                                         <div className="w-full h-full flex items-center justify-center">
-                                            <User size={120} className="text-gold/50" />
+                                            <User size={120} className="text-white/50" />
                                         </div>
                                     )}
                                 </div>
                                 
                                 {/* Decorative elements */}
-                                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-gold/30 to-yellow-600/30 rounded-full blur-xl"></div>
-                                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-gold/20 to-yellow-600/20 rounded-full blur-xl"></div>
+                                <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-white/30 to-gray-300/30 rounded-full blur-xl"></div>
+                                <div className="absolute -bottom-4 -left-4 w-32 h-32 bg-gradient-to-br from-white/20 to-gray-300/20 rounded-full blur-xl"></div>
                             </div>
                         </div>
                     </div>
@@ -262,7 +262,7 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 </p>
                             ) : (
                                 <div className="text-center py-20">
-                                    <Home size={64} className="mx-auto text-gold/30 mb-4" />
+                                    <Home size={64} className="mx-auto text-white/30 mb-4" />
                                     <h4 className="text-xl font-medium text-white mb-2">No Current Listings</h4>
                                     <p className="text-gray-400">
                                         {advisor?.firstName} doesn&apos;t have any active listings at the moment.

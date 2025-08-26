@@ -5,6 +5,7 @@ import LuxePropertySearch from "@/components/luxe/LuxePropertySearch";
 import LuxePropCard from "@/components/luxe/LuxePropCard";
 import LuxePropCardSSR from "@/components/luxe/LuxePropCardSSR";
 import {PropertyType} from "@/types/property";
+import SSRToCSRSwitcher from "../../components/SSRToCSRSwitcher";
 
 export default async function LuxePropertiesPage() {
   // Fetch only luxe properties from the database
@@ -142,25 +143,8 @@ export default async function LuxePropertiesPage() {
                   ))}
                 </div>
 
-                {/* Enhancement Script */}
-                <script
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      document.addEventListener('DOMContentLoaded', function() {
-                        // Switch from SSR to CSR version
-                        const ssrElement = document.getElementById('ssr-properties');
-                        const csrElement = document.getElementById('csr-properties');
-                        
-                        if (ssrElement && csrElement) {
-                          // Hide SSR version
-                          ssrElement.style.display = 'none';
-                          // Show CSR version
-                          csrElement.style.display = 'grid';
-                        }
-                      });
-                    `
-                  }}
-                />
+                {/* Component to handle SSR to CSR switching */}
+                <SSRToCSRSwitcher ssrSelector="#ssr-properties" csrSelector="#csr-properties" />
 
                 {/* Note: Pagination functionality requires client-side state management */}
                 {transformedProperties.length > 12 && (

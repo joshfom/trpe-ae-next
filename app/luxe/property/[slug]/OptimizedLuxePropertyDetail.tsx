@@ -323,7 +323,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                                 <li>
                                     <Link 
                                         href={`/luxe/properties?community=${community?.slug}`}
-                                        className="hover:text-blue-600 hover:underline py-1"
+                                        className="hover:text-black hover:underline py-1"
                                     >
                                         Luxury Properties in {community?.name}
                                     </Link>
@@ -331,7 +331,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                                 <li>
                                     <Link 
                                         href={`/luxe/properties?type=${offeringType?.slug}`}
-                                        className="hover:text-blue-600 hover:underline py-1"
+                                        className="hover:text-black hover:underline py-1"
                                     >
                                         Luxury Properties {offeringType?.name}
                                     </Link>
@@ -339,7 +339,7 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
                                 <li>
                                     <Link 
                                         href="/luxe/properties"
-                                        className="hover:text-blue-600 hover:underline py-1"
+                                        className="hover:text-black hover:underline py-1"
                                     >
                                         All Luxury Properties
                                     </Link>

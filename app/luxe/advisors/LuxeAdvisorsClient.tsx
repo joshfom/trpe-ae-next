@@ -69,7 +69,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           Meet Our
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+          <span className="block text-white">
             Advisors
           </span>
         </motion.h1>
@@ -97,8 +97,8 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
         </div>
         
         {/* Decorative Elements */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-yellow-300/20 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-amber-400/10 to-yellow-300/10 rounded-full blur-xl"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-white/20 to-gray-300/20 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-white/10 to-gray-300/10 rounded-full blur-xl"></div>
       </motion.div>
 
       {/* Excellence & Experience Section */}
@@ -118,7 +118,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
             transition={{ duration: 0.6 }}
           >
             <motion.h3 
-              className="text-sm sm:text-lg md:text-xl text-amber-400 font-medium mb-3 sm:mb-4 tracking-wide uppercase"
+              className="text-sm sm:text-lg md:text-xl text-white font-medium mb-3 sm:mb-4 tracking-wide uppercase"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -134,7 +134,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               Luxury Real Estate
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+              <span className="block text-white">
                 Redefined
               </span>
             </motion.h2>
@@ -175,7 +175,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.6 }}
               >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">$2.5B+</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">$2.5B+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Total Sales Volume</div>
               </motion.div>
               <motion.div 
@@ -185,7 +185,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.7 }}
               >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">500+</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">500+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Luxury Properties Sold</div>
               </motion.div>
               <motion.div 
@@ -195,7 +195,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-amber-400 mb-2 font-playfair">25+</div>
+                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-playfair">25+</div>
                 <div className="text-gray-300 text-base sm:text-lg">Years Combined Experience</div>
               </motion.div>
             </motion.div>
@@ -204,8 +204,8 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
         
         {/* Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-amber-400/5 to-yellow-300/5 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-amber-400/3 to-yellow-300/3 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-white/5 to-gray-300/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-br from-white/3 to-gray-300/3 rounded-full blur-3xl"></div>
         </div>
       </motion.div>
 
@@ -246,7 +246,7 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
             <div className="flex-1 text-center lg:text-left">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
                 Ready to Find Your
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+                <span className="block text-white">
                   Dream Property?
                 </span>
               </h2>

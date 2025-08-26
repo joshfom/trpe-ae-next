@@ -3,6 +3,7 @@ import {getLuxeInsightsAction} from '@/actions/insights/get-luxe-insights-action
 import LuxeJournalsClient from './LuxeJournalsClient';
 import LuxeJournalsSSR from './LuxeJournalsSSR';
 import { Metadata } from 'next';
+import SSRToCSRSwitcher from '../components/SSRToCSRSwitcher';
 
 // Force dynamic rendering to handle searchParams properly
 export const dynamic = 'force-dynamic';
@@ -63,25 +64,8 @@ export default async function LuxeJournalsPage({ searchParams }: PageProps) {
         <LuxeJournalsClient insights={insights} pagination={pagination} />
       </div>
 
-      {/* Enhancement Script */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('DOMContentLoaded', function() {
-              // Switch from SSR to CSR version
-              const ssrElement = document.getElementById('ssr-journals');
-              const csrElement = document.getElementById('csr-journals');
-              
-              if (ssrElement && csrElement) {
-                // Hide SSR version
-                ssrElement.style.display = 'none';
-                // Show CSR version
-                csrElement.style.display = 'block';
-              }
-            });
-          `
-        }}
-      />
+      {/* Component to handle SSR to CSR switching */}
+      <SSRToCSRSwitcher ssrSelector="#ssr-journals" csrSelector="#csr-journals" />
     </>
   );
 }

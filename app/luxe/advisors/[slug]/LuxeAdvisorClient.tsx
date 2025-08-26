@@ -74,15 +74,15 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
             onClick={() => setActiveTab(id)}
             className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 font-medium ${
                 activeTab === id
-                    ? 'bg-gradient-to-r text-black shadow-lg'
-                    : 'border border-gold/30 text-gold hover:border-gold/60 hover:bg-gold/10'
+                    ? 'bg-black text-white shadow-lg'
+                    : 'border border-gray-500/30 text-gray-500 hover:border-gray-500/60 hover:bg-gray-500/10'
             }`}
         >
             <Icon size={18} />
             <span>{label}</span>
             {count !== undefined && (
                 <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${
-                    activeTab === id ? 'bg-black/20' : 'bg-gold/20'
+                    activeTab === id ? 'bg-white/20' : 'bg-gray-500/20'
                 }`}>
                     {count}
                 </span>
@@ -91,7 +91,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
     );
 
     const JournalCard = ({ article }: { article: JournalArticle }) => (
-        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl overflow-hidden border border-gold/20 hover:border-gold/40 transition-all duration-300 group">
+        <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl overflow-hidden border border-white/20 hover:border-white/40 transition-all duration-300 group">
             {article.coverUrl && (
                 <div className="relative h-48 overflow-hidden">
                     <img 
@@ -103,7 +103,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 </div>
             )}
             <div className="p-6">
-                <h4 className="text-xl font-semibold mb-3 text-white group-hover:text-gold transition-colors duration-300">
+                <h4 className="text-xl font-semibold mb-3 text-white group-hover:text-white transition-colors duration-300">
                     {article.title}
                 </h4>
                 {article.metaDescription && (
@@ -112,7 +112,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                     </p>
                 )}
                 {article.publishedAt && (
-                    <p className="text-gold text-sm">
+                    <p className="text-white text-sm">
                         {new Date(article.publishedAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'long',
@@ -122,7 +122,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 )}
                 <a 
                     href={`/luxe/journal/${article.slug}`}
-                    className="inline-block mt-4 text-gold hover:text-yellow-400 transition-colors duration-300 font-medium"
+                    className="inline-block mt-4 text-black hover:text-gray-700 transition-colors duration-300 font-medium"
                 >
                     Read More →
                 </a>
@@ -132,9 +132,9 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
 
     const JournalsEmptyState = () => (
         <div className="text-center py-16">
-            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-12 border border-gold/20 max-w-2xl mx-auto">
-                <BookOpen className="w-16 h-16 text-gold/60 mx-auto mb-6" />
-                <h4 className="text-2xl font-semibold text-gold mb-4">
+            <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-12 border border-white/20 max-w-2xl mx-auto">
+                <BookOpen className="w-16 h-16 text-white/60 mx-auto mb-6" />
+                <h4 className="text-2xl font-semibold text-white mb-4">
                     Journal Coming Soon
                 </h4>
                 <p className="text-gray-300 text-lg leading-relaxed">
@@ -142,7 +142,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                     Check back soon for expert commentary on Dubai&apos;s luxury real estate market.
                 </p>
                 <div className="mt-8">
-                    <button className="inline-flex items-center px-6 py-3 bg-gradient-to-r text-white font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300">
+                    <button className="inline-flex items-center px-6 py-3 bg-black text-white font-semibold rounded-full hover:bg-gray-900 transition-all duration-300">
                         <Mail className="mr-2" size={16} />
                         Get Notified
                     </button>
@@ -162,7 +162,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
             <div className="max-w-7xl mx-auto p-6 pt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Advisor Profile Card */}
                 <div className="py-6">
-                    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] shadow-lg rounded-xl p-6 flex items-center justify-center flex-col gap-4 border border-gold/20">
+                    <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] shadow-lg rounded-xl p-6 flex items-center justify-center flex-col gap-4 border border-white/20">
                         <div className="flex flex-col gap-2">
                             <h1 className="text-3xl text-center font-semibold bg-gradient-to-r  bg-clip-text text-white">
                                 {advisor?.firstName + ' ' + advisor?.lastName}
@@ -171,14 +171,14 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                                 <p className="text-center text-gray-300">Luxury Property Advisor</p>
                                 {advisor?.rera && (
                                     <p className="text-center pl-2 text-gray-400">
-                                        BRN: <span className="font-semibold text-gold">{advisor.rera}</span>
+                                        BRN: <span className="font-semibold text-white">{advisor.rera}</span>
                                     </p>
                                 )}
                             </div>
                         </div>
                         
                         <div className="w-full h-[500px] relative">
-                            <div className="relative h-[500px] w-full lg:w-[90%] mx-auto border border-gold/30 rounded-3xl overflow-hidden shadow-xl">
+                            <div className="relative h-[500px] w-full lg:w-[90%] mx-auto border border-white/30 rounded-3xl overflow-hidden shadow-xl">
                                 <img 
                                     className="object-cover absolute inset-0 w-full h-full" 
                                     src={advisor.avatarUrl || '/images/defaults/agent.jpg'} 
@@ -191,14 +191,14 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                         <div className="flex flex-col w-full lg:w-[90%] justify-between">
                             <div className="flex justify-between gap-4">
                                 <a 
-                                    className="inline-flex items-center justify-center bg-gradient-to-r text-black font-semibold w-1/2 py-2 rounded-3xl px-4 hover:from-yellow-400 hover:to-gold transition-all duration-300" 
+                                    className="inline-flex items-center justify-center bg-black text-white font-semibold w-1/2 py-2 rounded-3xl px-4 hover:bg-gray-900 transition-all duration-300" 
                                     href={`tel:${advisor.phone || '+971 50 523 2712'}`}
                                 >
                                     <Phone className="mr-2" size={20}/>
                                     <span className="text-lg">Call</span>
                                 </a>
                                 <a 
-                                    className="inline-flex items-center justify-center border border-gold/50 text-gold hover:bg-gold hover:text-black w-1/2 py-2 rounded-3xl px-4 transition-all duration-300" 
+                                    className="inline-flex items-center justify-center border border-white/50 text-white hover:bg-white hover:text-black w-1/2 py-2 rounded-3xl px-4 transition-all duration-300" 
                                     href={`mailto:${advisor.email || 'info@trpe.ae'}`}
                                 >
                                     <Mail className="mr-2" size={20}/>
@@ -212,7 +212,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 {/* About Section */}
                 <div className="col-span-1 lg:col-span-2 pt-6 lg:px-16 h-full justify-between flex flex-col">
                     <div className="space-y-4 flex-1">
-                        <h2 className="text-4xl font-semibold bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
+                        <h2 className="text-4xl font-semibold text-white">
                             About {advisor?.firstName}
                         </h2>
 
@@ -276,7 +276,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
             <div className="max-w-7xl mx-auto px-6 pb-12">
                 {activeTab === 'journals' && (
                     <div>
-                        <h3 className="text-4xl font-semibold mb-8 bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
+                        <h3 className="text-4xl font-semibold mb-8 text-white">
                             {advisor?.firstName}&apos;s Journal
                         </h3>
                         
@@ -294,7 +294,7 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
 
                 {activeTab === 'listings' && (
                     <div>
-                        <h3 className="text-4xl font-semibold mb-8 bg-gradient-to-r from-gold to-yellow-400 bg-clip-text text-transparent">
+                        <h3 className="text-4xl font-semibold mb-8 text-white">
                             {advisor?.firstName}&apos;s Luxury Listings
                         </h3>
 
@@ -302,9 +302,9 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                             <ListingsGridWithSkeleton listings={advisor?.properties as any}/>
                         ) : (
                             <div className="text-center py-16">
-                                <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-12 border border-gold/20 max-w-2xl mx-auto">
-                                    <Home className="w-16 h-16 text-gold/60 mx-auto mb-6" />
-                                    <h4 className="text-2xl font-semibold text-gold mb-4">
+                                <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] rounded-xl p-12 border border-white/20 max-w-2xl mx-auto">
+                                    <Home className="w-16 h-16 text-white/60 mx-auto mb-6" />
+                                    <h4 className="text-2xl font-semibold text-white mb-4">
                                         Curating Exclusive Properties
                                     </h4>
                                     <p className="text-gray-300 text-lg leading-relaxed">
@@ -314,14 +314,14 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                                     <div className="mt-8 flex gap-4 justify-center">
                                         <a 
                                             href={`tel:${advisor.phone || '+971 50 523 2712'}`}
-                                            className="inline-flex items-center px-6 py-3 bg-gradient-to-r text-black font-semibold rounded-full hover:from-yellow-400 hover:to-gold transition-all duration-300"
+                                            className="inline-flex items-center px-6 py-3 bg-black text-white font-semibold rounded-full hover:bg-gray-900 transition-all duration-300"
                                         >
                                             <Phone className="mr-2" size={16} />
                                             Call Now
                                         </a>
                                         <a 
                                             href={`mailto:${advisor.email || 'info@trpe.ae'}`}
-                                            className="inline-flex items-center px-6 py-3 border border-gold/50 text-gold hover:bg-gold hover:text-black rounded-full transition-all duration-300"
+                                            className="inline-flex items-center px-6 py-3 border border-white/50 text-white hover:bg-white hover:text-black rounded-full transition-all duration-300"
                                         >
                                             <Mail className="mr-2" size={16} />
                                             Email

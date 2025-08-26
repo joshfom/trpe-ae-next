@@ -2,6 +2,7 @@ import React from 'react';
 import {getLuxeAgentsAction} from '@/actions/agents/get-luxe-agents-action';
 import LuxeAdvisorsClient from './LuxeAdvisorsClient';
 import LuxeAdvisorsSSR from './LuxeAdvisorsSSR';
+import SSRToCSRSwitcher from '../components/SSRToCSRSwitcher';
 
 const OurTeamPage: React.FC = async () => {
   // Fetch real luxe agent data from the database
@@ -37,41 +38,8 @@ const OurTeamPage: React.FC = async () => {
         <LuxeAdvisorsClient agents={agents} />
       </div>
       
-      {/* Script to show enhanced version when JS is available */}
-      <script 
-        dangerouslySetInnerHTML={{
-          __html: `
-            (function() {
-              // Wait for DOM to be ready
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', switchToClientVersion);
-              } else {
-                switchToClientVersion();
-              }
-              
-              function switchToClientVersion() {
-                try {
-                  const ssrElement = document.querySelector('.ssr-version');
-                  const jsElement = document.querySelector('.js-enhanced');
-                  
-                  if (ssrElement && jsElement) {
-                    // Hide SSR version
-                    ssrElement.style.display = 'none';
-                    // Show client version
-                    jsElement.style.display = 'block';
-                    
-                    // Add a class to indicate JS is active
-                    document.documentElement.classList.add('js-enabled');
-                  }
-                } catch (error) {
-                  console.warn('Failed to switch to client version:', error);
-                  // If anything fails, keep SSR version visible
-                }
-              }
-            })();
-          `
-        }} 
-      />
+      {/* Component to handle SSR to CSR switching */}
+      <SSRToCSRSwitcher ssrSelector=".ssr-version" csrSelector=".js-enhanced" />
     </>
   );
 };

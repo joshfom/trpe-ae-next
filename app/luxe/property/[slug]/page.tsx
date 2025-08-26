@@ -6,6 +6,7 @@ import {and, eq} from 'drizzle-orm';
 import {PropertyType} from '@/types/property';
 import OptimizedLuxePropertyDetail from './OptimizedLuxePropertyDetail';
 import LuxePropertyDetailSSR from './LuxePropertyDetailSSR';
+import SSRToCSRSwitcher from '../../components/SSRToCSRSwitcher';
 
 interface LuxePropertyPageProps {
     params: Promise<{ slug: string }>;
@@ -88,25 +89,8 @@ export default async function LuxePropertyPage({ params }: LuxePropertyPageProps
                     <OptimizedLuxePropertyDetail property={property} />
                 </div>
 
-                {/* Enhancement Script */}
-                <script
-                    dangerouslySetInnerHTML={{
-                        __html: `
-                            document.addEventListener('DOMContentLoaded', function() {
-                                // Switch from SSR to CSR version
-                                const ssrElement = document.getElementById('ssr-property');
-                                const csrElement = document.getElementById('csr-property');
-                                
-                                if (ssrElement && csrElement) {
-                                    // Hide SSR version
-                                    ssrElement.style.display = 'none';
-                                    // Show CSR version
-                                    csrElement.style.display = 'block';
-                                }
-                            });
-                        `
-                    }}
-                />
+                {/* Component to handle SSR to CSR switching */}
+                <SSRToCSRSwitcher ssrSelector="#ssr-property" csrSelector="#csr-property" />
             </>
         );
         

@@ -9,6 +9,7 @@ import { Metadata, ResolvingMetadata } from "next";
 import { truncateText } from "@/lib/truncate-text";
 import LuxeAdvisorClient from './LuxeAdvisorClient';
 import LuxeAdvisorSSR from './LuxeAdvisorSSR';
+import SSRToCSRSwitcher from '../../components/SSRToCSRSwitcher';
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -174,25 +175,8 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
                 />
             </div>
 
-            {/* Enhancement Script */}
-            <script
-                dangerouslySetInnerHTML={{
-                    __html: `
-                        document.addEventListener('DOMContentLoaded', function() {
-                            // Switch from SSR to CSR version
-                            const ssrElement = document.getElementById('ssr-advisor');
-                            const csrElement = document.getElementById('csr-advisor');
-                            
-                            if (ssrElement && csrElement) {
-                                // Hide SSR version
-                                ssrElement.style.display = 'none';
-                                // Show CSR version
-                                csrElement.style.display = 'block';
-                            }
-                        });
-                    `
-                }}
-            />
+            {/* Component to handle SSR to CSR switching */}
+            <SSRToCSRSwitcher ssrSelector="#ssr-advisor" csrSelector="#csr-advisor" />
         </>
     );
 }
