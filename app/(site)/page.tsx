@@ -1,7 +1,6 @@
 import 'swiper/css';
 import MainSearchServer from "@/features/search/MainSearchServer";
 import MainSearchSSR from "@/components/main-search-ssr";
-import SearchEnhancer from "@/components/search-enhancer";
 import SearchEnhancement from "@/features/search/SearchEnhancement";
 import Link from "next/link";
 import HomeAboutSection from "@/components/home/home-about-section";
@@ -15,6 +14,13 @@ import React, { cache, Suspense } from "react";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
+import dynamic from 'next/dynamic';
+
+// Dynamically import client components to prevent SSR issues
+const SearchEnhancer = dynamic(() => import("@/components/search-enhancer"), {
+    ssr: false,
+    loading: () => null
+});
 
 // Add the CommunityType interface for the communities section
 interface CommunityType {
@@ -45,7 +51,11 @@ const getOfferingTypes = cache(async () => {
                 return { rentalType, saleType };
             } catch (error) {
                 console.error('Error fetching offering types:', error);
-                return { rentalType: null, saleType: null };
+                // Return default types if database fails
+                return { 
+                    rentalType: { id: 'for-rent', slug: 'for-rent' }, 
+                    saleType: { id: 'for-sale', slug: 'for-sale' } 
+                };
             }
         },
         ['offering-types'],
@@ -127,105 +137,125 @@ const getCommunities = cache(async () => {
 
 // Enable static generation with revalidation
 export const revalidate = 3600; // Revalidate every hour
+
 export default async function Home() {
-    // Use cached functions for better performance
-    const { rentalType, saleType } = await getOfferingTypes();
-    
-    if (!rentalType || !saleType) {
-        return <div>Error loading page data</div>;
-    }
+    try {
+        // Use cached functions for better performance
+        const { rentalType, saleType } = await getOfferingTypes();
+        
+        if (!rentalType || !saleType) {
+            console.warn('Missing offering types, using defaults');
+        }
 
-    // Fetch listings in parallel for better performance
-    const [rentalListings, saleListings, communities] = await Promise.all([
-        getListings(rentalType.id, 3),
-        getListings(saleType.id, 3),
-        getCommunities()
-    ]);
+        // Fetch listings in parallel for better performance with error handling
+        const [rentalListings, saleListings, communities] = await Promise.allSettled([
+            getListings(rentalType?.id || 'for-rent', 3),
+            getListings(saleType?.id || 'for-sale', 3),
+            getCommunities()
+        ]);
 
-    const webpageJsonLD = {
-        "@id": "https://trpe.ae#WebPage",
-        "url": "https://trpe.ae",
-        "description": "Discover your dream property for sale or rent in Dubai with TRPE. Expert insights, seamless transactions, and personalised service await you.",
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "TRPE Real Estate",
-        "logo": "https://trpe.ae/logo.png",
-        "contactPoint": [{
-            "@type": "ContactPoint",
-            "telephone": "+971 50 523 2712",
-            "contactType": "Customer Service",
-            "areaServed": "AE",
-            "availableLanguage": ["English", "Arabic"]
-        }],
-        "sameAs": [
-            "https://www.facebook.com/trpedubai",
-            "https://www.instagram.com/trpe.ae/",
-            "https://www.linkedin.com/company/trpedubai"
-        ]
-    }
-    return (
-        <div className={'relative min-h-screen'}>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{__html: JSON.stringify(webpageJsonLD)}}
-            />
+        // Extract successful results or use empty arrays as fallbacks
+        const finalRentalListings = rentalListings.status === 'fulfilled' ? rentalListings.value : [];
+        const finalSaleListings = saleListings.status === 'fulfilled' ? saleListings.value : [];
+        const finalCommunities = communities.status === 'fulfilled' ? communities.value : [];
 
-            {/* Main content with mobile-first hero section */}
-            <main className="flex min-h-screen flex-col">
-                {/* Mobile-first hero section */}
-                <section className={'relative w-full h-[100vh] min-h-[500px] max-h-[800px] lg:h-screen'}>
-                    <div className="relative w-full h-full">
-                        <img 
-                            className="object-cover absolute inset-0 w-full h-full" 
-                            src="/dubai-real-estate-agents-hero_result.webp" 
-                            alt="TRPE Home Image"
-                        />
+        // Log any errors but don't fail the page
+        if (rentalListings.status === 'rejected') {
+            console.error('Error fetching rental listings:', rentalListings.reason);
+        }
+        if (saleListings.status === 'rejected') {
+            console.error('Error fetching sale listings:', saleListings.reason);
+        }
+        if (communities.status === 'rejected') {
+            console.error('Error fetching communities:', communities.reason);
+        }
+
+        const webpageJsonLD = {
+            "@id": "https://trpe.ae#WebPage",
+            "url": "https://trpe.ae",
+            "description": "Discover your dream property for sale or rent in Dubai with TRPE. Expert insights, seamless transactions, and personalised service await you.",
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "TRPE Real Estate",
+            "logo": "https://trpe.ae/logo.png",
+            "contactPoint": [{
+                "@type": "ContactPoint",
+                "telephone": "+971 50 523 2712",
+                "contactType": "Customer Service",
+                "areaServed": "AE",
+                "availableLanguage": ["English", "Arabic"]
+            }],
+            "sameAs": [
+                "https://www.facebook.com/trpedubai",
+                "https://www.instagram.com/trpe.ae/",
+                "https://www.linkedin.com/company/trpedubai"
+            ]
+        }
+
+        return (
+            <div className={'relative min-h-screen'}>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{__html: JSON.stringify(webpageJsonLD)}}
+                />
+
+                {/* Main content with mobile-first hero section */}
+                <main className="flex min-h-screen flex-col">
+                    {/* Mobile-first hero section */}
+                    <section className={'relative w-full h-[100vh] min-h-[500px] max-h-[800px] lg:h-screen'}>
+                        <div className="relative w-full h-full">
+                            <img 
+                                className="object-cover absolute inset-0 w-full h-full" 
+                                src="/dubai-real-estate-agents-hero_result.webp" 
+                                alt="TRPE Home Image"
+                            />
+                        </div>
+                        <div className={'absolute z-10 inset-0 bg-black/30'}>
+                            <div className={'h-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8'}>
+                                {/* Mobile-first title section */}
+                                <div className={'text-center space-y-3 sm:space-y-4 lg:space-y-6 mb-6 sm:mb-8 lg:mb-12'}>
+                                    <h1 className="font-display text-center text-2xl sm:text-3xl lg:text-4xl xl:text-6xl font-semibold text-white">
+                                        The Real Property Experts
+                                    </h1>
+                    <div className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white">
+                        Your Gateway to Dubai&apos;s Real Estate Market
                     </div>
-                    <div className={'absolute z-10 inset-0 bg-black/30'}>
-                        <div className={'h-full flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8'}>
-                            {/* Mobile-first title section */}
-                            <div className={'text-center space-y-3 sm:space-y-4 lg:space-y-6 mb-6 sm:mb-8 lg:mb-12'}>
-                                <h1 className="font-display text-center text-2xl sm:text-3xl lg:text-4xl xl:text-6xl font-semibold text-white">
-                                    The Real Property Experts
-                                </h1>
-                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white">
-                    Your Gateway to Dubai&apos;s Real Estate Market
                 </div>
-            </div>
-            
-            {/* Mobile-optimized search */}
-            <div className="w-full max-w-4xl mx-auto">
-                {/* SSR Search - Works without JavaScript, hidden when JS loads */}
-                <div id="ssr-search">
-                    <MainSearchSSR />
-                </div>
-                {/* Client Enhancement - Shows interactive search with type switching and dropdowns */}
-                <div id="csr-search" className="hidden">
-                    <Suspense fallback={<SearchSkeleton />}>
-                        <MainSearchServer mode="general" />
-                        <SearchEnhancement mode="general" />
-                    </Suspense>
+                
+                {/* Mobile-optimized search */}
+                <div className="w-full max-w-4xl mx-auto">
+                    {/* SSR Search - Works without JavaScript, hidden when JS loads */}
+                    <div id="ssr-search">
+                        <MainSearchSSR />
+                    </div>
+                    {/* Client Enhancement - Shows interactive search with type switching and dropdowns */}
+                    <div id="csr-search" className="hidden">
+                        <Suspense fallback={<SearchSkeleton />}>
+                            <MainSearchServer mode="general" />
+                            <SearchEnhancement mode="general" />
+                        </Suspense>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-                {/* Mobile-first featured listings */}
-                <div className="w-full">
-                    <FeaturedListingsSectionServer
-                        saleListings={saleListings}
-                        rentalListings={rentalListings}
-                    />
-                </div>
+                    {/* Mobile-first featured listings */}
+                    <div className="w-full">
+                        <FeaturedListingsSectionServer
+                            saleListings={finalSaleListings}
+                            rentalListings={finalRentalListings}
+                        />
+                    </div>
 
-                {/* Mobile-first about section */}
-                <div className="w-full">
-                    <HomeAboutSection/>
-                </div>
+                    {/* Mobile-first about section */}
+                    <div className="w-full">
+                        <HomeAboutSection/>
+                    </div>
 
 
-                {/* Mobile-first communities section */}
+                    {/* Mobile-first communities section */}
+                                {/* Mobile-first communities section */}
                 <section className="w-full bg-white">
                     {/* Static communities grid - Works without JavaScript */}
                     <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
@@ -235,7 +265,7 @@ export default async function Home() {
                             </h3>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 lg:mt-8">
-                                {communities.slice(0, 8).map((community, index) => (
+                                {finalCommunities.slice(0, 8).map((community, index) => (
                                     <div key={community.id || index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg">
                                         <img 
                                             className="object-cover absolute w-full h-full"
@@ -292,7 +322,7 @@ export default async function Home() {
 
                                 {/* Mobile grid - Works without JavaScript */}
                                 <div className="grid grid-cols-1 md:hidden gap-4 sm:gap-6 mt-6 lg:mt-8">
-                                    {communities.map((community, index) => (
+                                    {finalCommunities.map((community, index) => (
                                         <div key={index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
                                             <img 
                                                 className="object-cover absolute w-full h-full"
@@ -327,9 +357,7 @@ export default async function Home() {
                             </div>
                         </div>
                     </div>
-                </section>
-
-                {/* Mobile-first "Why Invest in Dubai" section */}
+                </section>                {/* Mobile-first "Why Invest in Dubai" section */}
                 <section className="w-full bg-black">
                     <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
                         <div className="max-w-7xl mx-auto">
@@ -413,4 +441,19 @@ export default async function Home() {
            <SearchEnhancer />
         </div>
     );
+    } catch (error) {
+        console.error('Critical error in home page:', error);
+        // Return a fallback page
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold mb-4">Welcome to TRPE</h1>
+                    <p className="text-gray-600">We&apos;re experiencing some technical difficulties. Please try again later.</p>
+                    <Link href="/properties" className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded">
+                        View Properties
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 }
