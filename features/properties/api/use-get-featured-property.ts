@@ -3,16 +3,12 @@
 // while transitioning away from React Query
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { getClientFeaturedProperty } from './get-client-featured-property';
 
-export const useGetFeaturedProperty = (offeringTypeId: string) => {
+export const useGetFeaturedProperty = (offeringTypeId: string, limit: string = '1') => {
     const [data, setData] = useState<any>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<Error | null>(null);
-    
-    const params = useSearchParams();
-    const limit = params.get('limit') || '1';
     
     useEffect(() => {
         const fetchData = async () => {

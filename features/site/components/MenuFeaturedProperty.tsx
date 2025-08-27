@@ -13,7 +13,7 @@ interface MenuFeaturedPropertyProps {
 const MenuFeaturedProperty = memo(({offeringType}: MenuFeaturedPropertyProps) => {
     const [propertyImages, setPropertyImages] = useState<string[]>([]);
     const slug = offeringType.replace("/properties/", "");
-    const {data, isLoading, error} = useGetFeaturedProperty(slug);
+    const {data, isLoading, error} = useGetFeaturedProperty(slug, '1');
     
     // Extract the first property from the data array
     const property = data && Array.isArray(data) && data.length > 0 ? data[0] : null;
