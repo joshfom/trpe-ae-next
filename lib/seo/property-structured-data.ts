@@ -1,5 +1,3 @@
-"use server";
-
 import { PropertyType } from '@/types/property';
 
 export interface PropertyStructuredDataConfig {

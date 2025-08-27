@@ -26,7 +26,7 @@ export function BreadcrumbNav({
   className = '',
   showHome = true,
   showStructuredData = true,
-  separator = <ChevronRight className="h-4 w-4 text-gray-400" />
+  separator = <ChevronRight className="h-4 w-4 text-gray-500" />
 }: BreadcrumbNavProps) {
   // Prepare breadcrumb items with home if needed
   const breadcrumbItems = showHome 

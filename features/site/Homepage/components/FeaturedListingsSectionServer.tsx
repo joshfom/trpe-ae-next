@@ -52,7 +52,7 @@ function FeaturedListingsSectionServer({ saleListings, rentalListings }: Feature
                             <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 pr-4 sm:pr-6 border-b-4 border-black -mb-1.5 min-h-[44px] text-black font-medium">
                                 For Sale
                             </div>
-                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 px-6 sm:px-8 -mb-1.5 min-h-[44px] text-gray-400">
+                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 px-6 sm:px-8 -mb-1.5 min-h-[44px] text-gray-600 hover:text-gray-800 cursor-pointer">
                                 For Rent
                             </div>
                         </div>

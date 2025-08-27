@@ -22,7 +22,7 @@ export default function MainSearchSSR() {
                                 className="w-full h-12 bg-transparent text-gray-900 placeholder-gray-500 border-none outline-none text-lg"
                                 disabled
                             />
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                                 <Search size={24} />
                             </div>
                         </form>

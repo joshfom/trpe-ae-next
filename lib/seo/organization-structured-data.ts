@@ -1,5 +1,3 @@
-"use server";
-
 export interface OrganizationConfig {
   name: string;
   url: string;

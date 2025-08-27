@@ -4,6 +4,7 @@ import {InsightContent} from '@/components/luxe/InsightContent';
 import {InsightSidebar} from '@/components/luxe/InsightSidebar';
 import {Insight} from '@/types/insight';
 import {getLuxeInsightBySlugAction} from '@/actions/insights/get-luxe-insight-by-slug-action';
+import { LuxeJournalSEO } from '@/components/seo/LuxeSEO';
 
 // Transform database insight to UI format
 const transformInsightData = (dbInsight: any): Insight => {
@@ -85,14 +86,38 @@ interface InsightDetailPageProps {
 
 export default async function InsightDetailPage({ params }: InsightDetailPageProps) {
   const { slug } = await params;
-  const insight = await getInsightBySlug(slug);
-
-  if (!insight) {
+  const result = await getLuxeInsightBySlugAction(slug);
+  
+  if (!result.success || !result.data) {
     notFound();
   }
 
+  const dbInsight = result.data;
+  const insight = transformInsightData(dbInsight);
+
+  // Prepare journal data for SEO
+  const journalSEOData = {
+    title: insight.title,
+    slug: insight.slug,
+    description: insight.excerpt,
+    content: dbInsight.content || '',
+    publishedAt: dbInsight.publishedAt || dbInsight.createdAt,
+    updatedAt: dbInsight.updatedAt || undefined,
+    author: dbInsight.author ? {
+      name: dbInsight.author.name || 'TRPE Luxe Team',
+      slug: undefined // Author slug not available in current schema
+    } : undefined,
+    // Category not available in current schema
+    category: undefined,
+    image: insight.imageUrl,
+    keywords: ['luxury real estate', 'Dubai', 'premium properties', 'real estate insights']
+  };
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Luxe Journal SEO with structured data and breadcrumbs */}
+      <LuxeJournalSEO journal={journalSEOData} />
+      
       {/* Hero Image */}
       <InsightHeader insight={insight} />
 

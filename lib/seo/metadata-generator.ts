@@ -1,5 +1,3 @@
-"use server";
-
 import { Metadata } from 'next';
 import { PropertyType } from '@/types/property';
 import { getPageMetaByPath } from '@/actions/page-meta-actions';

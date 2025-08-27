@@ -1,5 +1,3 @@
-"use server";
-
 export interface BreadcrumbItem {
   name: string;
   url: string;
@@ -484,6 +482,193 @@ export class BreadcrumbStructuredData {
   }
 
   /**
+   * Generate luxe home page breadcrumb structured data
+   */
+  generateLuxeHomeBreadcrumbSchema(): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai',
+        current: true
+      }
+    ];
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe properties breadcrumb structured data
+   */
+  generateLuxePropertiesBreadcrumbSchema(): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Properties',
+        url: '/luxe/properties',
+        description: 'Luxury properties for sale and rent in Dubai',
+        current: true
+      }
+    ];
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe property detail breadcrumb structured data
+   */
+  generateLuxePropertyBreadcrumbSchema(property: PropertyBreadcrumbData): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Properties',
+        url: '/luxe/properties',
+        description: 'Luxury properties for sale and rent in Dubai'
+      }
+    ];
+
+    // Add offering type if available
+    if (property.offeringType) {
+      breadcrumbs.push({
+        name: `For ${property.offeringType.name}`,
+        url: `/luxe/properties/${property.offeringType.slug}`,
+        description: property.offeringType.description || `Luxury properties for ${property.offeringType.name.toLowerCase()}`
+      });
+    }
+
+    // Add current property
+    breadcrumbs.push({
+      name: property.title,
+      url: `/luxe/property/${property.slug}`,
+      description: property.description || `${property.title} - Luxury property details`,
+      image: property.image,
+      current: true
+    });
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe journals breadcrumb structured data
+   */
+  generateLuxeJournalsBreadcrumbSchema(): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Journals',
+        url: '/luxe/journals',
+        description: 'Exclusive insights and trends from Dubai\'s luxury real estate market',
+        current: true
+      }
+    ];
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe journal article breadcrumb structured data
+   */
+  generateLuxeJournalBreadcrumbSchema(journal: InsightBreadcrumbData): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Journals',
+        url: '/luxe/journals',
+        description: 'Exclusive insights and trends from Dubai\'s luxury real estate market'
+      }
+    ];
+
+    // Add category if available
+    if (journal.category) {
+      breadcrumbs.push({
+        name: journal.category.name,
+        url: `/luxe/journals/category/${journal.category.slug}`,
+        description: journal.category.description || `${journal.category.name} luxury real estate insights`
+      });
+    }
+
+    // Add current journal article
+    breadcrumbs.push({
+      name: journal.title,
+      url: `/luxe/journals/${journal.slug}`,
+      description: journal.description || `${journal.title} - Luxury real estate insight`,
+      image: journal.image,
+      current: true
+    });
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe advisors breadcrumb structured data
+   */
+  generateLuxeAdvisorsBreadcrumbSchema(): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Advisors',
+        url: '/luxe/advisors',
+        description: 'Expert luxury real estate advisors in Dubai',
+        current: true
+      }
+    ];
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
+   * Generate luxe advisor profile breadcrumb structured data
+   */
+  generateLuxeAdvisorBreadcrumbSchema(advisor: {
+    name: string;
+    slug: string;
+    description?: string;
+    image?: string;
+  }): BreadcrumbStructuredDataSchema {
+    const breadcrumbs: BreadcrumbItem[] = [
+      {
+        name: 'Luxe',
+        url: '/luxe',
+        description: 'Exclusive luxury real estate collection in Dubai'
+      },
+      {
+        name: 'Advisors',
+        url: '/luxe/advisors',
+        description: 'Expert luxury real estate advisors in Dubai'
+      },
+      {
+        name: advisor.name,
+        url: `/luxe/advisors/${advisor.slug}`,
+        description: advisor.description || `${advisor.name} - Luxury real estate advisor profile`,
+        image: advisor.image,
+        current: true
+      }
+    ];
+
+    return this.generateBreadcrumbSchema(breadcrumbs);
+  }
+
+  /**
    * Generate description for URL segment
    */
   private generateSegmentDescription(segment: string, name: string): string {
@@ -499,7 +684,10 @@ export class BreadcrumbStructuredData {
       'sale': 'Properties for sale in Dubai',
       'rent': 'Properties for rent in Dubai',
       'buy': 'Buy properties in Dubai',
-      'dubai': 'Dubai real estate market and properties'
+      'dubai': 'Dubai real estate market and properties',
+      'luxe': 'Exclusive luxury real estate collection in Dubai',
+      'journals': 'Exclusive insights and trends from Dubai\'s luxury real estate market',
+      'advisors': 'Expert luxury real estate advisors in Dubai'
     };
 
     return descriptions[segment] || `${name} - TRPE Global`;

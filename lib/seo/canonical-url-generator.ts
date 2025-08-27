@@ -1,4 +1,9 @@
-"use server";
+export interface CanonicalConfig {
+  baseUrl: string;
+  includeTrailingSlash?: boolean;
+  forceHttps?: boolean;
+  excludeParams?: string[];
+}
 
 export interface CanonicalURLConfig {
   baseUrl: string;
