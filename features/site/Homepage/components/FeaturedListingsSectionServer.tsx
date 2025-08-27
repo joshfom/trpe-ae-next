@@ -35,6 +35,10 @@ function PropertyGrid({ listings, offeringType }: { listings: PropertyType[], of
 
 // Server component for better SSR performance - shows only first tab (For Sale) content
 function FeaturedListingsSectionServer({ saleListings, rentalListings }: FeaturedListingsSectionServerProps) {
+    // Add safety checks for the data
+    const safeSaleListings = Array.isArray(saleListings) ? saleListings : [];
+    const safeRentalListings = Array.isArray(rentalListings) ? rentalListings : [];
+
     return (
         <section className="w-full">
             <div className="max-w-7xl mx-auto px-4 py-8 border-b border-gray-500 sm:px-6 lg:px-8 sm:py-12 lg:py-16">
@@ -60,7 +64,19 @@ function FeaturedListingsSectionServer({ saleListings, rentalListings }: Feature
                     
                     {/* Show only For Sale properties for SSR */}
                     <div className="">
-                        <PropertyGrid listings={saleListings} offeringType="for-sale" />
+                        {safeSaleListings.length > 0 ? (
+                            <PropertyGrid listings={safeSaleListings} offeringType="for-sale" />
+                        ) : (
+                            <div className="text-center py-8">
+                                <p className="text-gray-500">No featured properties available at the moment.</p>
+                                <Link 
+                                    href="/properties/for-sale"
+                                    className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+                                >
+                                    Browse All Properties
+                                </Link>
+                            </div>
+                        )}
                     </div>
                     
                     {/* Notice for users about tab functionality */}
