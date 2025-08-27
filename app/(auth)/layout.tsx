@@ -1,9 +1,9 @@
 import React from 'react';
 import {validateRequest} from "@/actions/auth-session";
 import {redirect} from "next/navigation";
-import SiteTopNavigation from "@/components/site-top-navigation";
+import SiteTopNavigationSSR from "@/components/site-top-navigation-ssr";
 import FooterMenuSection from "@/features/site/components/FooterMenuSection";
-import SiteFooter from "@/components/site-footer";
+import SiteFooterWrapper from "@/components/SiteFooterWrapper";
 
 // Force dynamic rendering for auth routes since they check authentication status
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,7 @@ async function GuestLayout(
     return (
         <div>
 
-            <SiteTopNavigation/>
+            <SiteTopNavigationSSR/>
 
             <div className="">
                 <div className="hidden lg:block h-20 bg-black">
@@ -37,7 +37,7 @@ async function GuestLayout(
 
             <FooterMenuSection/>
 
-            <SiteFooter/>
+            <SiteFooterWrapper/>
         </div>
     );
 }

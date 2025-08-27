@@ -1,5 +1,7 @@
 import 'swiper/css';
 import MainSearchServer from "@/features/search/MainSearchServer";
+import MainSearchSSR from "@/components/main-search-ssr";
+import SearchEnhancer from "@/components/search-enhancer";
 import SearchEnhancement from "@/features/search/SearchEnhancement";
 import Link from "next/link";
 import HomeAboutSection from "@/components/home/home-about-section";
@@ -10,16 +12,22 @@ import {asc, eq} from "drizzle-orm";
 import FeaturedListingsSectionServer from "@/features/site/Homepage/components/FeaturedListingsSectionServer";
 import {communityTable} from "@/db/schema/community-table";
 import React, { cache, Suspense } from "react";
-import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
 
-// Dynamic imports for better code splitting - SSR compatible
-const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
-    loading: () => <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>,
-    ssr: true
-});
+// Add the CommunityType interface for the communities section
+interface CommunityType {
+    id: string;
+    name: string | null;
+    label: string;
+    image: string;
+    slug: string;
+    featured?: boolean;
+    displayOrder?: number;
+    propertyCount?: number;
+    properties?: Array<{ id: string }>;
+}
 
 // Cached database queries with Next.js cache for better performance and SSR optimization
 const getOfferingTypes = cache(async () => {
@@ -180,30 +188,35 @@ export default async function Home() {
                                 <h1 className="font-display text-center text-2xl sm:text-3xl lg:text-4xl xl:text-6xl font-semibold text-white">
                                     The Real Property Experts
                                 </h1>
-                                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white">
-                                    Your Gateway to Dubai&apos;s Real Estate Market
-                                </div>
-                            </div>
-                            
-                            {/* Mobile-optimized search */}
-                            <div className="w-full max-w-4xl mx-auto">
-                                <Suspense fallback={<SearchSkeleton />}>
-                                    <MainSearchServer mode="general" />
-                                    <SearchEnhancement mode="general" />
-                                </Suspense>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <div className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white">
+                    Your Gateway to Dubai&apos;s Real Estate Market
+                </div>
+            </div>
+            
+            {/* Mobile-optimized search */}
+            <div className="w-full max-w-4xl mx-auto">
+                {/* SSR Search - Works without JavaScript, hidden when JS loads */}
+                <div id="ssr-search">
+                    <MainSearchSSR />
+                </div>
+                {/* Client Enhancement - Shows interactive search with type switching and dropdowns */}
+                <div id="csr-search" className="hidden">
+                    <Suspense fallback={<SearchSkeleton />}>
+                        <MainSearchServer mode="general" />
+                        <SearchEnhancement mode="general" />
+                    </Suspense>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
                 {/* Mobile-first featured listings */}
                 <div className="w-full">
-                    <Suspense fallback={<FeaturedListingsSkeleton />}>
-                        <FeaturedListingsSectionServer
-                            saleListings={saleListings}
-                            rentalListings={rentalListings}
-                        />
-                    </Suspense>
+                    <FeaturedListingsSectionServer
+                        saleListings={saleListings}
+                        rentalListings={rentalListings}
+                    />
                 </div>
 
                 {/* Mobile-first about section */}
@@ -213,29 +226,27 @@ export default async function Home() {
 
 
                 {/* Mobile-first communities section */}
-                <section className="w-full bg-black">
+                <section className="w-full bg-white">
+                    {/* Static communities grid - Works without JavaScript */}
                     <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-                        <div className="max-w-7xl mx-auto text-white">
-                            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 lg:mb-8">
+                        <div className="max-w-7xl mx-auto">
+                            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 lg:mb-8 text-gray-900">
                                 Top Communities In Dubai
                             </h3>
 
-                            {/* Desktop expandable carousel */}
-                            <DynamicExpandable list={communities} className="w-full hidden md:flex min-w-72 mt-6 storybook-fix"/>
-
-                            {/* Mobile grid */}
-                            <div className="grid grid-cols-1 md:hidden gap-4 sm:gap-6 mt-6 lg:mt-8">
-                                {communities.map((community, index) => (
-                                    <div key={index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 lg:mt-8">
+                                {communities.slice(0, 8).map((community, index) => (
+                                    <div key={community.id || index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg">
                                         <img 
                                             className="object-cover absolute w-full h-full"
                                             src={community.image || 'https://trpe.ae/wp-content/uploads/2024/03/downtown-dxb_result.webp'}
-                                            alt={community.label}
+                                            alt={community.label || community.name || ''}
+                                            loading="lazy"
                                         />
                                         <div className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors"/>
                                         <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
                                             <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center">
-                                                {community.label}
+                                                {community.label || community.name}
                                             </h3>
                                             <Link 
                                                 href={`/communities/${community.slug}`}
@@ -248,21 +259,75 @@ export default async function Home() {
                                 ))}
                             </div>
 
-                            {/* Mobile-first CTA button */}
                             <div className="flex justify-center mt-6 lg:mt-8">
                                 <Link 
                                     href="/communities"
-                                    className="border rounded-full py-3 px-6 border-white hover:bg-white hover:text-black bg-transparent font-semibold transition-colors min-h-[44px] flex items-center"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition-colors min-h-[44px] flex items-center"
                                 >
                                     View All Communities
                                 </Link>
                             </div>
                         </div>
                     </div>
+                    {/* Client Enhancement - Adds carousel and interactions */}
+                    <div className="hidden" data-client-enhancement>
+                        <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+                            <div className="max-w-7xl mx-auto text-white">
+                                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 lg:mb-8">
+                                    Top Communities In Dubai
+                                </h3>
+
+                                {/* Desktop expandable carousel - Hidden for SSR, will be enhanced by client */}
+                                <div className="hidden md:flex">
+                                    <div className="text-center py-8">
+                                        <p className="text-gray-400 mb-4">Interactive community carousel requires JavaScript.</p>
+                                        <Link 
+                                            href="/communities"
+                                            className="text-blue-400 hover:text-blue-300 underline"
+                                        >
+                                            View all communities
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                {/* Mobile grid - Works without JavaScript */}
+                                <div className="grid grid-cols-1 md:hidden gap-4 sm:gap-6 mt-6 lg:mt-8">
+                                    {communities.map((community, index) => (
+                                        <div key={index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
+                                            <img 
+                                                className="object-cover absolute w-full h-full"
+                                                src={community.image || 'https://trpe.ae/wp-content/uploads/2024/03/downtown-dxb_result.webp'}
+                                                alt={community.label}
+                                            />
+                                            <div className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors"/>
+                                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                                                <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center">
+                                                    {community.label}
+                                                </h3>
+                                                <Link 
+                                                    href={`/communities/${community.slug}`}
+                                                    className="border rounded-full py-2 sm:py-3 px-4 sm:px-6 border-white hover:bg-white hover:text-black bg-transparent font-semibold transition-colors min-h-[44px] flex items-center"
+                                                >
+                                                    View Community
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Mobile-first CTA button */}
+                                <div className="flex justify-center mt-6 lg:mt-8">
+                                    <Link 
+                                        href="/communities"
+                                        className="border rounded-full py-3 px-6 border-white hover:bg-white hover:text-black bg-transparent font-semibold transition-colors min-h-[44px] flex items-center"
+                                    >
+                                        View All Communities
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
-
-
-
 
                 {/* Mobile-first "Why Invest in Dubai" section */}
                 <section className="w-full bg-black">
@@ -344,6 +409,8 @@ export default async function Home() {
 
 
             </main>
+           {/* Progressive enhancement for search functionality */}
+           <SearchEnhancer />
         </div>
     );
 }

@@ -14,6 +14,7 @@ import {usePathname, useRouter} from "next/navigation";
 import {Drawer, DrawerContent} from "@/components/ui/drawer";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
+import FooterCommunitiesSSR from "@/components/footer-communities-ssr";
 
 // Use dynamic import with SSR enabled for better performance where possible
 const MobileSearch = dynamic(
@@ -24,19 +25,25 @@ const MobileSearch = dynamic(
     }
 );
 
-const FooterCommunitiesClient = dynamic(
-    () => import("@/features/site/components/FooterCommunitiesClient"), 
-    { 
-        ssr: false, // Disable SSR to prevent clientModules errors
-        loading: () => <div className="animate-pulse bg-gray-100 h-20 rounded" aria-label="Loading communities..." />
-    }
-);
+// Define Community interface to match the API response format
+interface Community {
+  id?: string;
+  name: string | null;
+  slug: string;
+  shortName?: string | null;
+  propertyCount?: number;
+  rentCount?: number;
+  saleCount?: number;
+  commercialRentCount?: number;
+  commercialSaleCount?: number;
+}
 
 interface SiteFooterProps {
     showAbout?: boolean;
+    communities?: Community[];
 }
 
-function SiteFooter({showAbout = true}: SiteFooterProps) {
+function SiteFooter({showAbout = true, communities}: SiteFooterProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [openSearch, setOpenSearch] = useState(false)
     const [openLocation, setOpenLocation] = useState(false)
@@ -217,7 +224,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                             <p className="text-xl px-4">
                                 Neighbourhoods
                             </p>
-                            <FooterCommunitiesClient/>
+                            <FooterCommunitiesSSR communities={communities || []} />
                         </div>
                         <div>
                             <div>
@@ -641,7 +648,7 @@ function SiteFooter({showAbout = true}: SiteFooterProps) {
                                         <Image
                                             src="/trpe-logo.webp"
                                             alt="TRPE Logo" 
-                                            width={213}
+                                            width={152}
                                             height={40}
                                             priority
                                         />

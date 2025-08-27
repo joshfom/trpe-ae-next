@@ -58,7 +58,7 @@ const AgentDetailItem: React.FC<AgentDetailItemProps> = ({
           
           {slug && (
             <div className="mt-4">
-              <span className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gold-500 to-yellow-600 text-white font-semibold rounded-full transition-all duration-300 group-hover:from-gold-600 group-hover:to-yellow-700 group-hover:shadow-lg">
+              <span className="inline-flex items-center px-6 py-3 bg-black text-white font-semibold rounded-full transition-all duration-300 hover:bg-gray-800 hover:shadow-lg">
                 View Profile
                 <svg className="ml-2 w-5 h-5 transform transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />

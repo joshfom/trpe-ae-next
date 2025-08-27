@@ -143,7 +143,7 @@ function CTASectionSSR() {
 
           {/* Right CTA */}
           <div className="flex-shrink-0 text-center lg:text-right">
-            <button className="inline-flex items-center justify-center px-12 py-4 bg-black text-white font-semibold text-lg rounded-full hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 shadow-2xl cursor-not-allowed opacity-75">
+            <button className="inline-flex items-center justify-center px-12 py-4 bg-black text-white font-semibold text-lg rounded-full hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-2xl">
               Contact Our Team
             </button>
             <p className="text-white/70 text-sm mt-4 max-w-xs">

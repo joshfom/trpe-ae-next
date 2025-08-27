@@ -1,44 +1,15 @@
-"use client"
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import dynamic from 'next/dynamic';
+import React from 'react';
 import Image from 'next/image';
-// Use dynamic import with SSR enabled for better performance
-const TopNavigation = dynamic(() => import("@/components/top-navigation"), { 
-    ssr: true,
-    loading: () => <div className="h-16 bg-black animate-pulse" aria-label="Loading navigation" />
-});
 import Link from "next/link";
-import {usePathname} from 'next/navigation'
 import {Phone} from 'lucide-react';
+import TopNavigationSSR from "@/components/top-navigation-ssr";
+import SiteTopNavigationClient from "@/components/site-top-navigation-client";
 
-function SiteTopNavigation() {
-    const [scroll, setScroll] = useState(0)
-    const [isHomePage, setIsHomePage] = useState(false)
-    const pathname = usePathname()
-
-    // Memoize the check for homepage
-    useEffect(() => {
-        setIsHomePage(pathname === '/')
-    }, [pathname])
-    
-    // Memoize scroll handler to prevent recreation on each render
-    const handleScroll = useCallback(() => {
-        setScroll(window.scrollY)
-    }, [])
-
-    // Setup and cleanup the event listener
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, [handleScroll])
-
+function SiteTopNavigationSSR() {
     return (
         <>
             {/* Mobile-First Header - No gaps, full width, handles safe areas */}
-            <div className={`mobile-nav-sticky transition-all duration-300 bg-black`}>
+            <div className="mobile-nav-sticky transition-all duration-300 bg-black">
                 <div className="py-3 px-4 sm:px-6">
                     <div className={'max-w-7xl mx-auto'}>
                         <div className={'relative flex justify-between items-center'}>
@@ -79,7 +50,7 @@ function SiteTopNavigation() {
                                             fill="white"></path>
                                     </svg>
                                 </Link>
-                                <TopNavigation/>
+                                <TopNavigationSSR/>
                             </div>
 
                             {/* Desktop CTA Buttons - Hidden on Mobile */}
@@ -98,9 +69,11 @@ function SiteTopNavigation() {
                     </div>
                 </div>
             </div>
+            
+            {/* Client-side enhancements - will hydrate on the client */}
+            <SiteTopNavigationClient />
         </>
     );
 }
 
-// Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(SiteTopNavigation);
+export default SiteTopNavigationSSR;

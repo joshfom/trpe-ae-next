@@ -1,8 +1,9 @@
 'use client'
 
 import React from 'react';
-import SiteFooter from "@/components/site-footer";
+
 import SiteTopNavigation from "@/components/site-top-navigation";
+import SiteFooterWrapper from "@/components/SiteFooterWrapper";
 
 interface ClientLayoutProps {
     children: React.ReactNode
@@ -17,7 +18,7 @@ function SiteLayoutClient({ children }: ClientLayoutProps) {
             <div className="mobile-content-offset">
                 {children}
             </div>
-            <SiteFooter />
+            <SiteFooterWrapper />
         </>
     );
 }

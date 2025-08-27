@@ -4,9 +4,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { CommunityFilterType } from '@/types/community';
-import { pushToDataLayer } from '@/lib/gtm';
 import PopularSearchLink from './components/PopularSearchLink';
-import SearchInputTracker from './components/SearchInputTracker';
 
 interface MainSearchServerProps {
     mode?: 'rental' | 'sale' | 'general' | 'off-plan';
@@ -25,11 +23,12 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
     return (
         <div data-server-search className="w-full lg:w-[70%] max-w-4xl mx-auto">
             <div className="relative">
+                {/* Desktop search - disabled for SSR with notice */}
                 <div className="hidden lg:flex gap-6 bg-white rounded-full shadow-lg p-3 pl-8 items-center">
-                    <SearchInputTracker 
+                    <Input
                         placeholder={placeholderText}
-                        searchLocation="homepage"
-                        mode={mode}
+                        className="flex-1 border-0 bg-transparent text-lg focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-500"
+                        disabled
                     />
                     <Link href={`/properties/${mode === 'rental' ? 'for-rent' : mode === 'sale' ? 'for-sale' : 'for-sale'}`}>
                         <Button 
@@ -42,7 +41,7 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
                     </Link>
                 </div>
                 
-                {/* Mobile search - matches CSR design */}
+                {/* Mobile search - disabled for SSR with notice */}
                 <div className="lg:hidden">
                     <div className="flex flex-col justify-center items-center">
                         <div className="relative w-full">
@@ -51,39 +50,42 @@ function MainSearchServer({ mode = 'general' }: MainSearchServerProps) {
                                 className="w-full rounded-full px-8 py-3 border-0 focus-visible:ring-0"
                                 disabled
                             />
-                            <Search className="absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-700"/>
+                            <Search className="absolute top-3 right-4 h-6 w-6 stroke-1 text-gray-400"/>
                         </div>
+                        <p className="text-xs text-gray-500 mt-2 text-center">
+                            Search functionality requires JavaScript
+                        </p>
                     </div>
                 </div>
                 
-                {/* Popular searches - server rendered */}
+                {/* Popular searches - server rendered and functional */}
                 <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600 mb-2">Popular searches:</p>
+                    <p className="text-sm text-gray-200 mb-2">Popular searches:</p>
                     <div className="flex flex-wrap justify-center gap-2">
                         <PopularSearchLink 
                             href="/properties/for-sale?community=downtown-dubai" 
-                            className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            className="text-sm bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition-colors"
                             searchTerm="Downtown Dubai"
                         >
                             Downtown Dubai
                         </PopularSearchLink>
                         <PopularSearchLink 
                             href="/properties/for-sale?community=dubai-marina" 
-                            className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            className="text-sm bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition-colors"
                             searchTerm="Dubai Marina"
                         >
                             Dubai Marina
                         </PopularSearchLink>
                         <PopularSearchLink 
                             href="/properties/for-sale?community=jumeirah-beach-residence" 
-                            className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            className="text-sm bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition-colors"
                             searchTerm="JBR"
                         >
                             JBR
                         </PopularSearchLink>
                         <PopularSearchLink 
                             href="/properties/for-sale?community=palm-jumeirah" 
-                            className="text-sm bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded-full transition-colors"
+                            className="text-sm bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full transition-colors"
                             searchTerm="Palm Jumeirah"
                         >
                             Palm Jumeirah

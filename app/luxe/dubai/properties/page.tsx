@@ -138,7 +138,7 @@ export default async function LuxePropertiesPage() {
                       baths={property.baths}
                       sqft={property.sqft}
                       imageUrl={property.imageUrl}
-                      className='bg-white shadow-sm hover:shadow-lg transition-shadow'
+                      className='bg-white shadow-sm hover:shadow-lg transition-shadow w-full'
                     />
                   ))}
                 </div>

@@ -17,8 +17,9 @@ const SSRToCSRSwitcher: React.FC<SSRToCSRSwitcherProps> = ({ ssrSelector, csrSel
         if (ssrElement && csrElement) {
           // Hide SSR version
           (ssrElement as HTMLElement).style.display = 'none';
-          // Show CSR version
-          (csrElement as HTMLElement).style.display = 'block';
+          // Show CSR version with proper grid display
+          (csrElement as HTMLElement).style.display = '';
+          (csrElement as HTMLElement).style.removeProperty('display');
           
           // Add a class to indicate JS is active
           document.documentElement.classList.add('js-enabled');

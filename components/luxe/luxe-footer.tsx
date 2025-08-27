@@ -2,7 +2,7 @@ import React from 'react';
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
-import LuxeFooterCommunities from './LuxeFooterCommunities';
+import LuxeFooterCommunitiesServer from './LuxeFooterCommunitiesServer';
 import { Separator } from '../ui/separator';
 
 interface LuxeFooterProps {
@@ -73,7 +73,7 @@ export default function LuxeFooter({showAbout = true}: LuxeFooterProps) {
                             <p className="text-lg sm:text-xl px-4 font-medium mb-3">
                                 Neighbourhoods
                             </p>
-                            {/* <LuxeFooterCommunities /> */}
+                            <LuxeFooterCommunitiesServer />
                         </div>
                         
                         <div className="pb-6 sm:pb-8 lg:pb-0 space-y-4 sm:space-y-6">

@@ -48,8 +48,8 @@ function SiteTopNavigation() {
                                 <Image
                                     src={'/trpe-logo.webp'} 
                                     alt="TRPE Logo" 
-                                    width={160} 
-                                    height={30}
+                                    width={121} 
+                                    height={32}
                                     priority
                                     className="h-8 w-auto"
                                     placeholder="blur"

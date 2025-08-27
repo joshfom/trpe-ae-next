@@ -1,6 +1,5 @@
 import React from 'react';
 import 'swiper/css';
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import PropertyCard from "@/components/property-card";
 import Link from "next/link";
 import {PropertyType} from "@/types/property";
@@ -34,7 +33,7 @@ function PropertyGrid({ listings, offeringType }: { listings: PropertyType[], of
     );
 }
 
-// Server component for better SSR performance
+// Server component for better SSR performance - shows only first tab (For Sale) content
 function FeaturedListingsSectionServer({ saleListings, rentalListings }: FeaturedListingsSectionServerProps) {
     return (
         <section className="w-full">
@@ -45,32 +44,38 @@ function FeaturedListingsSectionServer({ saleListings, rentalListings }: Feature
                     </h2>
                 </div>
 
-                <Tabs defaultValue="for-sale" className="w-full space-y-3 sm:space-y-4 bg-transparent">
-                    <TabsList
-                        className="bg-transparent border-b mb-3 sm:mb-4 border-gray-500 rounded-none w-full justify-start"
-                    >
-                        <TabsTrigger
-                            className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 pr-4 sm:pr-6 border-b-4 rounded-none -mb-1.5 min-h-[44px]"
-                            value="for-sale"
-                        >
-                            For Sale
-                        </TabsTrigger>
-                        <TabsTrigger
-                            className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 px-6 sm:px-8 border-b-4 rounded-none -mb-1.5 min-h-[44px]"
-                            value="for-rent"
-                        >
-                            For Rent
-                        </TabsTrigger>
-                    </TabsList>
+                {/* SSR Version - Shows For Sale properties without tab functionality */}
+                <div className="w-full space-y-3 sm:space-y-4 bg-transparent">
+                    {/* Static tab header for visual consistency */}
+                    <div className="bg-transparent border-b mb-3 sm:mb-4 border-gray-500 w-full">
+                        <div className="flex">
+                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 pr-4 sm:pr-6 border-b-4 border-black -mb-1.5 min-h-[44px] text-black font-medium">
+                                For Sale
+                            </div>
+                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 px-6 sm:px-8 -mb-1.5 min-h-[44px] text-gray-400">
+                                For Rent
+                            </div>
+                        </div>
+                    </div>
                     
-                    <TabsContent className="" value="for-sale">
+                    {/* Show only For Sale properties for SSR */}
+                    <div className="">
                         <PropertyGrid listings={saleListings} offeringType="for-sale" />
-                    </TabsContent>
+                    </div>
                     
-                    <TabsContent className="" value="for-rent">
-                        <PropertyGrid listings={rentalListings} offeringType="for-rent" />
-                    </TabsContent>
-                </Tabs>
+                    {/* Notice for users about tab functionality */}
+                    <div className="text-center py-4">
+                        <p className="text-sm text-gray-500 mb-2">
+                            Tab switching requires JavaScript. 
+                        </p>
+                        <Link 
+                            href="/properties/for-rent"
+                            className="text-sm text-blue-600 hover:text-blue-800 underline"
+                        >
+                            View rental properties here
+                        </Link>
+                    </div>
+                </div>
             </div>
         </section>
     );

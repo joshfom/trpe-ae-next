@@ -15,7 +15,10 @@ import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
 import SiteFooter from '@/components/site-footer';
-import SiteTopNavigation from '@/components/site-top-navigation';
+import SiteTopNavigationSSR from '@/components/site-top-navigation-ssr';
+import MainSearchSSR from "@/components/main-search-ssr";
+import SearchEnhancer from "@/components/search-enhancer";
+import { getFooterCommunities } from '@/actions/get-footer-communities-action';
 
 // Dynamic imports for better code splitting - SSR compatible
 const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
@@ -130,10 +133,11 @@ export default async function Home() {
     }
 
     // Fetch listings in parallel for better performance
-    const [rentalListings, saleListings, communities] = await Promise.all([
+    const [rentalListings, saleListings, communities, footerCommunities] = await Promise.all([
         getListings(rentalType.id, 3),
         getListings(saleType.id, 3),
-        getCommunities()
+        getCommunities(),
+        getFooterCommunities()
     ]);
 
     const webpageJsonLD = {
@@ -163,7 +167,7 @@ export default async function Home() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{__html: JSON.stringify(webpageJsonLD)}}
             />
-<SiteTopNavigation />
+<SiteTopNavigationSSR />
             {/* Main content with mobile-first hero section */}
             <main className="flex min-h-screen flex-col">
                 {/* Mobile-first hero section */}
@@ -185,27 +189,30 @@ export default async function Home() {
                                 <div className="text-base sm:text-lg lg:text-xl xl:text-2xl text-white">
                                     Your Gateway to Dubai&apos;s Real Estate Market
                                 </div>
-                            </div>
-                            
-                            {/* Mobile-optimized search */}
-                            <div className="w-full max-w-4xl mx-auto">
-                                <Suspense fallback={<SearchSkeleton />}>
-                                    <MainSearchServer mode="general" />
-                                    <SearchEnhancement mode="general" />
-                                </Suspense>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {/* Mobile-first featured listings */}
-                <div className="w-full">
-                    <Suspense fallback={<FeaturedListingsSkeleton />}>
-                        <FeaturedListingsSectionServer
-                            saleListings={saleListings}
-                            rentalListings={rentalListings}
-                        />
+            </div>
+            
+            {/* Mobile-optimized search */}
+            <div className="w-full max-w-4xl mx-auto">
+                {/* SSR Search - Works without JavaScript, hidden when JS loads */}
+                <div id="ssr-search">
+                    <MainSearchSSR />
+                </div>
+                {/* Client Enhancement - Shows interactive search with type switching and dropdowns */}
+                <div id="csr-search" className="hidden">
+                    <Suspense fallback={<SearchSkeleton />}>
+                        <MainSearchServer mode="general" />
+                        <SearchEnhancement mode="general" />
                     </Suspense>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>                {/* Mobile-first featured listings */}
+                <div className="w-full">
+                    <FeaturedListingsSectionServer
+                        saleListings={saleListings}
+                        rentalListings={rentalListings}
+                    />
                 </div>
 
                 {/* Mobile-first about section */}
@@ -346,7 +353,9 @@ export default async function Home() {
 
 
             </main>
-           <SiteFooter />
+           <SiteFooter communities={footerCommunities} />
+           {/* Progressive enhancement for search functionality */}
+           <SearchEnhancer />
         </div>
     );
 }
