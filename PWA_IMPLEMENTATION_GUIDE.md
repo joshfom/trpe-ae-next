@@ -3,6 +3,18 @@
 ## Overview
 Full Progressive Web App (PWA) capabilities, optimized specifically for property browsing, offline access, and mobile engagement.
 
+## 🚨 Production Issues & Fixes
+
+### Known Issues in Next.js 15.5.x
+- **clientReferenceManifest Bug**: Next.js 15.5.x has a bug with standalone output causing "Expected clientReferenceManifest to be defined" errors in production
+- **Breadcrumb Schema Errors**: Null reference errors when property data is incomplete
+
+### Applied Fixes
+1. **Disabled standalone output** temporarily until Next.js fixes the bug
+2. **Added null checks** in breadcrumb schema generation
+3. **Alternative build configurations** for production deployment
+4. **Environment-specific configurations** to handle different deployment scenarios
+
 ## ✅ What's Implemented
 
 ### Core PWA Features
