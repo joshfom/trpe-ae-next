@@ -51,7 +51,7 @@ const app = new Hono()
         }
 
         // Query the database to find properties associated with the offering type
-        const [data] = await db.query.propertyTable.findMany({
+        const data = await db.query.propertyTable.findMany({
             where: and(
                 eq(propertyTable.offeringTypeId, offeringType.id),
             ),

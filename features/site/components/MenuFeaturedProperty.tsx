@@ -13,7 +13,22 @@ interface MenuFeaturedPropertyProps {
 const MenuFeaturedProperty = memo(({offeringType}: MenuFeaturedPropertyProps) => {
     const [propertyImages, setPropertyImages] = useState<string[]>([]);
     const slug = offeringType.replace("/properties/", "");
-    const {data: property, isLoading} = useGetFeaturedProperty(slug);
+    const {data, isLoading, error} = useGetFeaturedProperty(slug);
+    
+    // Extract the first property from the data array
+    const property = data && Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+    // Debug logging
+    React.useEffect(() => {
+        console.log('MenuFeaturedProperty debug:', {
+            offeringType,
+            slug,
+            data,
+            property,
+            isLoading,
+            error
+        });
+    }, [offeringType, slug, data, property, isLoading, error]);
 
     // Memoize computed values
     const computedValues = useMemo(() => {
@@ -27,12 +42,19 @@ const MenuFeaturedProperty = memo(({offeringType}: MenuFeaturedPropertyProps) =>
     }, [property]);
 
     useEffect(() => {
-        if (property && property.images.length) {
-            // Filter out any null values
-            setPropertyImages(property.images
-                .map((image: { s3Url: string | null }) => image.s3Url)
-                .filter((url: string | null): url is string => url !== null)
-            )
+        try {
+            if (property && property.images && Array.isArray(property.images) && property.images.length) {
+                // Filter out any null values
+                setPropertyImages(property.images
+                    .map((image: { s3Url: string | null }) => image.s3Url)
+                    .filter((url: string | null): url is string => url !== null)
+                )
+            } else {
+                setPropertyImages([]);
+            }
+        } catch (err) {
+            console.error('Error processing property images:', err);
+            setPropertyImages([]);
         }
     }, [property])
 
