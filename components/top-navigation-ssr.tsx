@@ -20,9 +20,14 @@ function TopNavigationSSR() {
                     Rent
                 </Link>
 
-                {/* Commercial */}
-                <Link href="/properties/commercial" className="hover:text-slate-300 transition-colors">
-                    Commercial
+                {/* Communities */}
+                <Link href="/communities" className="hover:text-slate-300 transition-colors">
+                    Communities
+                </Link>
+
+                {/* New Projects */}
+                <Link href="/off-plan" className="hover:text-slate-300 transition-colors">
+                    New Projects
                 </Link>
 
                 {/* Insights */}
@@ -30,14 +35,9 @@ function TopNavigationSSR() {
                     Insights
                 </Link>
 
-                {/* Services */}
-                <Link href="/services" className="hover:text-slate-300 transition-colors">
-                    Services
-                </Link>
-
-                {/* About */}
-                <Link href="/about" className="hover:text-slate-300 transition-colors">
-                    About
+                {/* Luxe by TRPE */}
+                <Link href="/luxe" className="hover:text-slate-300 transition-colors">
+                    Luxe by TRPE
                 </Link>
             </nav>
             

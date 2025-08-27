@@ -3,13 +3,13 @@ import Image from 'next/image';
 import Link from "next/link";
 import {Phone} from 'lucide-react';
 import TopNavigationSSR from "@/components/top-navigation-ssr";
-import SiteTopNavigationClient from "@/components/site-top-navigation-client";
+import NavigationEnhancer from "@/components/navigation-enhancer";
 
 function SiteTopNavigationSSR() {
     return (
         <>
             {/* Mobile-First Header - No gaps, full width, handles safe areas */}
-            <div className="mobile-nav-sticky transition-all duration-300 bg-black">
+            <div className="mobile-nav-sticky transition-all duration-300 bg-black" data-ssr-nav>
                 <div className="py-3 px-4 sm:px-6">
                     <div className={'max-w-7xl mx-auto'}>
                         <div className={'relative flex justify-between items-center'}>
@@ -70,8 +70,8 @@ function SiteTopNavigationSSR() {
                 </div>
             </div>
             
-            {/* Client-side enhancements - will hydrate on the client */}
-            <SiteTopNavigationClient />
+            {/* CSR Navigation with full dropdown functionality - client-side enhancement */}
+            <NavigationEnhancer />
         </>
     );
 }
