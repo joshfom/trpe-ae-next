@@ -1,29 +1,28 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+// Production configuration to work around Next.js 15.5.x bugs
+const productionConfig: NextConfig = {
   /* config options here */
-    // Temporarily disable standalone to fix clientReferenceManifest bug
-    // output: 'standalone', // Commented out due to Next.js 15.5.x bug
-    poweredByHeader: false, // Remove X-Powered-By header for security
-    reactStrictMode: true, // Helps catch bugs early
-    crossOrigin: 'anonymous', // Set CORS headers
+    // Use export instead of standalone for production until bug is fixed
+    output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
+    trailingSlash: process.env.NODE_ENV === 'production' ? true : false,
+    poweredByHeader: false,
+    reactStrictMode: true,
+    crossOrigin: 'anonymous',
     
-    // Add worker process limits to prevent runaway processes
     experimental: {
         optimizePackageImports: ['lucide-react', '@radix-ui/react-*', '@tiptap/react'],
-        // Limit worker processes to prevent infinite loops
         workerThreads: false,
-        cpus: Math.min(4, require('os').cpus().length), // Limit CPU usage
-        // Workaround for Next.js 15.5.x clientReferenceManifest bug
+        cpus: Math.min(4, require('os').cpus().length),
+        // Disable features that cause issues in production
         clientRouterFilter: false,
         clientRouterFilterAllowedRate: 0,
     },
     
-    // Note: NODE_OPTIONS should be set in package.json scripts instead
     images: {
         loader: 'custom',
         loaderFile: './scripts/loader.js',
-        unoptimized: false, // Ensure images are optimized
+        unoptimized: process.env.NODE_ENV === 'production', // Disable optimization for export
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },
             { protocol: 'https', hostname: "crm.trpeglobal.com" },
@@ -33,23 +32,28 @@ const nextConfig: NextConfig = {
             { protocol: 'https', hostname: "trpe-ae.s3.me-central-1.amazonaws.com" },
             { protocol: 'https', hostname: "assets.aceternity.com" }
         ],
-        formats: ['image/webp', 'image/avif'], // Enable modern formats
+        formats: ['image/webp', 'image/avif'],
         deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
         imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-        minimumCacheTTL: 31536000, // 1 year cache for images
+        minimumCacheTTL: 31536000,
     },
-    // Move serverComponentsExternalPackages to root level as per Next.js 15
+    
     serverExternalPackages: ['sharp', 'onnxruntime-node'],
-    // Enable compression
     compress: true,
     
-    // Simplified webpack configuration (Turbopack compatible)
     webpack: (config, { dev, isServer }) => {
-        // Remove optimization settings that conflict with Turbopack
+        // Additional workarounds for production build issues
+        if (!dev && !isServer) {
+            config.resolve.fallback = {
+                ...config.resolve.fallback,
+                fs: false,
+                net: false,
+                tls: false,
+            };
+        }
         return config;
     },
     
-    // Headers for better caching and security
     async headers() {
         return [
             {
@@ -61,7 +65,6 @@ const nextConfig: NextConfig = {
                     },
                 ],
             },
-            // Luxe routes optimization
             {
                 source: '/luxe/:path*',
                 headers: [
@@ -75,7 +78,6 @@ const nextConfig: NextConfig = {
                     },
                 ],
             },
-            // API routes should not be cached
             {
                 source: '/api/:path*',
                 headers: [
@@ -108,7 +110,6 @@ const nextConfig: NextConfig = {
                         key: 'Referrer-Policy',
                         value: 'origin-when-cross-origin',
                     },
-                    // Fixed Content Security Policy
                     {
                         key: 'Content-Security-Policy',
                         value: [
@@ -127,4 +128,4 @@ const nextConfig: NextConfig = {
     },
 };
 
-export default nextConfig;
+export default productionConfig;

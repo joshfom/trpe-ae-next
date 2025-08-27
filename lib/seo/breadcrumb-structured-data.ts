@@ -190,7 +190,7 @@ export class BreadcrumbStructuredData {
     ];
 
     // Add offering type (Sale/Rent)
-    if (property.offeringType) {
+    if (property.offeringType && property.offeringType.name) {
       breadcrumbs.push({
         name: property.offeringType.name,
         url: `/properties/${property.offeringType.slug}`,
@@ -199,7 +199,7 @@ export class BreadcrumbStructuredData {
     }
 
     // Add property type if different from offering type
-    if (property.propertyType && property.offeringType) {
+    if (property.propertyType && property.propertyType.name && property.offeringType && property.offeringType.name) {
       breadcrumbs.push({
         name: property.propertyType.name,
         url: `/properties/${property.offeringType.slug}/${property.propertyType.slug}`,
@@ -536,7 +536,7 @@ export class BreadcrumbStructuredData {
     ];
 
     // Add offering type if available
-    if (property.offeringType) {
+    if (property.offeringType && property.offeringType.name) {
       breadcrumbs.push({
         name: `For ${property.offeringType.name}`,
         url: `/luxe/properties/${property.offeringType.slug}`,
