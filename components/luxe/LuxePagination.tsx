@@ -59,7 +59,7 @@ export default function LuxePagination({
         className={cn(
           "flex items-center justify-center w-10 h-10 rounded-full border transition-colors",
           currentPage === 1
-            ? "border-gray-200 text-gray-400 cursor-not-allowed"
+            ? "border-gray-200 text-gray-500 cursor-not-allowed"
             : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
         )}
         aria-label="Go to previous page"
@@ -78,7 +78,7 @@ export default function LuxePagination({
             page === currentPage
               ? "bg-black text-white"
               : page === '...'
-              ? "text-gray-400 cursor-default"
+              ? "text-gray-500 cursor-default"
               : "text-gray-600 hover:bg-gray-50 hover:text-black"
           )}
           aria-label={page === '...' ? 'More pages' : `Go to page ${page}`}
@@ -95,7 +95,7 @@ export default function LuxePagination({
         className={cn(
           "flex items-center justify-center w-10 h-10 rounded-full border transition-colors",
           currentPage === totalPages
-            ? "border-gray-200 text-gray-400 cursor-not-allowed"
+            ? "border-gray-200 text-gray-500 cursor-not-allowed"
             : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
         )}
         aria-label="Go to next page"

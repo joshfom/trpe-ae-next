@@ -8,6 +8,7 @@ import {PropertyType} from '@/types/property';
 import LuxePageClient from './LuxePageClient';
 import LuxePageSSR from './LuxePageSSR';
 import SSRToCSRSwitcher from './components/SSRToCSRSwitcher';
+import { LuxeHomeSEO } from '@/components/seo/LuxeSEO';
 
 // Server-side data fetching functions
 async function getFeaturedLuxeProperties() {
@@ -131,6 +132,9 @@ export default async function LuxePage() {
 
   return (
     <>
+      {/* Luxe SEO with structured data and breadcrumbs */}
+      <LuxeHomeSEO />
+      
       {/* SSR Version - Always renders first for SEO and no-JS users */}
       <div className="ssr-version">
         <LuxePageSSR 

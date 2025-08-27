@@ -10,6 +10,7 @@ import { truncateText } from "@/lib/truncate-text";
 import LuxeAdvisorClient from './LuxeAdvisorClient';
 import LuxeAdvisorSSR from './LuxeAdvisorSSR';
 import SSRToCSRSwitcher from '../../components/SSRToCSRSwitcher';
+import { LuxeAdvisorSEO } from '@/components/seo/LuxeSEO';
 
 type Props = {
     params: Promise<{ slug: string }>
@@ -159,6 +160,19 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
 
     return (
         <>
+            {/* Luxe Advisor SEO with structured data and breadcrumbs */}
+            <LuxeAdvisorSEO 
+                advisor={{
+                    name: `${advisor.firstName} ${advisor.lastName}`,
+                    slug: advisor.slug,
+                    title: advisor.title || 'Luxury Real Estate Advisor',
+                    bio: advisor.bio || undefined,
+                    email: advisor.email || undefined,
+                    phone: advisor.phone || undefined,
+                    avatarUrl: advisor.avatarUrl || undefined
+                }}
+            />
+            
             {/* SSR Version */}
             <div id="ssr-advisor">
                 <LuxeAdvisorSSR 

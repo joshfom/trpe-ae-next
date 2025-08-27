@@ -15,6 +15,7 @@ import {cn} from "@/lib/utils";
 // import CookieConsentBanner from "@/components/CookieConsentBanner"; // Bottom banner
 import CookieConsentMinimal from "@/components/CookieConsentMinimal"; // Minimal notice
 import GTMConsentScript from "@/components/GTMConsentScript";
+import PWAManager from "@/components/PWAManager";
 
 const poppins = Poppins({
   weight: ['400', '500', '600'],
@@ -40,6 +41,16 @@ export const metadata: Metadata = {
     alternates: {
         canonical: `${process.env.NEXT_PUBLIC_URL}/`,
     },
+    manifest: '/site.webmanifest',
+    other: {
+      'mobile-web-app-capable': 'yes',
+      'apple-mobile-web-app-capable': 'yes',
+      'apple-mobile-web-app-status-bar-style': 'default',
+      'apple-mobile-web-app-title': 'TRPE Global',
+      'theme-color': '#2563eb',
+      'msapplication-TileColor': '#2563eb',
+      'msapplication-config': '/browserconfig.xml'
+    }
 };
 
 export default function RootLayout({
@@ -285,6 +296,28 @@ export default function RootLayout({
           
         {/* End Google Tag Manager */}
         <meta name="google-site-verification" content="1PdN9Ng2af8MbSlor1keRIIXn_sM3nHkj2JPsWnyB1o"/>
+        
+        {/* PWA Meta Tags */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="TRPE Global" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="msapplication-TileColor" content="#2563eb" />
+        
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/site.webmanifest" />
+        
+        {/* Apple Touch Icons */}
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
+        
+        {/* Favicon */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png" />
+        
         <meta name="next-head-count" content="3"/>
         <style dangerouslySetInnerHTML={{ 
           __html: `
@@ -322,6 +355,9 @@ export default function RootLayout({
       />
 
       <CookieConsentMinimal />
+      
+      {/* PWA Manager */}
+      <PWAManager />
       
       {/* Production Error Handler - Must be imported dynamically to avoid SSR issues */}
       <Script id="production-error-handler" strategy="afterInteractive" dangerouslySetInnerHTML={{

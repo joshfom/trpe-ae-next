@@ -1,5 +1,3 @@
-"use server";
-
 export interface MetaTag {
   name?: string;
   property?: string;

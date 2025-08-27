@@ -4,6 +4,7 @@ import LuxeJournalsClient from './LuxeJournalsClient';
 import LuxeJournalsSSR from './LuxeJournalsSSR';
 import { Metadata } from 'next';
 import SSRToCSRSwitcher from '../components/SSRToCSRSwitcher';
+import { LuxeJournalsSEO } from '@/components/seo/LuxeSEO';
 
 // Force dynamic rendering to handle searchParams properly
 export const dynamic = 'force-dynamic';
@@ -54,6 +55,9 @@ export default async function LuxeJournalsPage({ searchParams }: PageProps) {
 
   return (
     <>
+      {/* Luxe Journals SEO with structured data and breadcrumbs */}
+      <LuxeJournalsSEO journals={insights} />
+      
       {/* SSR Version - Always renders first for SEO and no-JS users */}
       <div id="ssr-journals">
         <LuxeJournalsSSR insights={insights} pagination={pagination} />

@@ -7,6 +7,7 @@ import {PropertyType} from '@/types/property';
 import OptimizedLuxePropertyDetail from './OptimizedLuxePropertyDetail';
 import LuxePropertyDetailSSR from './LuxePropertyDetailSSR';
 import SSRToCSRSwitcher from '../../components/SSRToCSRSwitcher';
+import { LuxePropertySEO } from '@/components/seo/LuxeSEO';
 
 interface LuxePropertyPageProps {
     params: Promise<{ slug: string }>;
@@ -79,6 +80,9 @@ export default async function LuxePropertyPage({ params }: LuxePropertyPageProps
 
         return (
             <>
+                {/* Luxe Property SEO with structured data and breadcrumbs */}
+                <LuxePropertySEO property={property} />
+                
                 {/* SSR Version - Always renders first for SEO and no-JS users */}
                 <div id="ssr-property">
                     <LuxePropertyDetailSSR property={property} />

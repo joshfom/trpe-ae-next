@@ -1,5 +1,3 @@
-"use server";
-
 import { Metadata } from 'next';
 import { seoMetadataGenerator, PageContext } from './metadata-generator';
 import { structuredDataGenerator, StructuredDataSchema } from './structured-data-generator';

@@ -1,5 +1,3 @@
-"use server";
-
 export interface RobotsMetaConfig {
   index: boolean;
   follow: boolean;

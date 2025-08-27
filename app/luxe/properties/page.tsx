@@ -6,6 +6,7 @@ import { eq } from 'drizzle-orm';
 import { PropertyType } from '@/types/property';
 import LuxePropCardSSR from '@/components/luxe/LuxePropCardSSR';
 import LuxePropCard from '@/components/luxe/LuxePropCard';
+import { LuxePropertiesSEO } from '@/components/seo/LuxeSEO';
 
 // Force dynamic rendering to handle database queries
 export const dynamic = 'force-dynamic';
@@ -32,6 +33,12 @@ export default async function LuxePropertiesPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Luxe Properties SEO with structured data and breadcrumbs */}
+      <LuxePropertiesSEO 
+        properties={properties} 
+        breadcrumbClassName="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4"
+      />
+      
       {/* Mobile-First Hero Section */}
       <section className='w-full relative h-[50vh] sm:h-[60vh] lg:h-[70vh]'>
         {/* Background Image */}

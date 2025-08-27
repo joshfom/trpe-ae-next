@@ -3,6 +3,7 @@ import {getLuxeAgentsAction} from '@/actions/agents/get-luxe-agents-action';
 import LuxeAdvisorsClient from './LuxeAdvisorsClient';
 import LuxeAdvisorsSSR from './LuxeAdvisorsSSR';
 import SSRToCSRSwitcher from '../components/SSRToCSRSwitcher';
+import { LuxeAdvisorsSEO } from '@/components/seo/LuxeSEO';
 
 const OurTeamPage: React.FC = async () => {
   // Fetch real luxe agent data from the database
@@ -28,6 +29,9 @@ const OurTeamPage: React.FC = async () => {
 
   return (
     <>
+      {/* Luxe Advisors SEO with structured data and breadcrumbs */}
+      <LuxeAdvisorsSEO advisors={agents} />
+      
       {/* SSR Version - Always renders first for SEO and no-JS users */}
       <div className="ssr-version">
         <LuxeAdvisorsSSR agents={agents} />

@@ -133,7 +133,7 @@ export function LuxeNewsGrid({ itemsPerPage = 9 }: LuxeNewsGridProps) {
             disabled={currentPage === 1}
             className={`px-4 py-2 rounded-lg transition-colors ${
               currentPage === 1
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
             }`}
           >
@@ -161,7 +161,7 @@ export function LuxeNewsGrid({ itemsPerPage = 9 }: LuxeNewsGridProps) {
             disabled={currentPage === totalPages}
             className={`px-4 py-2 rounded-lg transition-colors ${
               currentPage === totalPages
-                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
                 : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
             }`}
           >

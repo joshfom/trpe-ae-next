@@ -158,7 +158,7 @@ export default function LuxePropertySearch({
               className="w-full p-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent text-sm"
               suppressHydrationWarning={true}
             />
-            <span className="text-gray-400">-</span>
+            <span className="text-gray-600">-</span>
             <input
               type="text"
               placeholder="to"
