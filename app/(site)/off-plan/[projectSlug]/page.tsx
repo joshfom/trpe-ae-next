@@ -8,6 +8,23 @@ import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import {offplanTable} from "@/db/schema/offplan-table";
 import ProjectDetailViewServer from "@/features/offplans/components/ProjectDetailViewServer";
 
+// Generate static params for off-plan projects
+export async function generateStaticParams() {
+    try {
+        const projects = await db.query.offplanTable.findMany({
+            columns: { slug: true },
+            limit: 50 // Limit to top 50 projects
+        });
+        
+        return projects.map(project => ({
+            projectSlug: project.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
+
 type Props = {
     params: Promise<{ projectSlug: string }>
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>

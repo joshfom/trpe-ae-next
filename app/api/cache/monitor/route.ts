@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CacheHealthMonitor } from '@/lib/monitored-cache';
 
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

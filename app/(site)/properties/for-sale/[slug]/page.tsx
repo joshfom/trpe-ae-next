@@ -1,6 +1,7 @@
 import React from 'react';
 import {Metadata, ResolvingMetadata} from "next";
 import {propertyTable} from "@/db/schema/property-table";
+import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {db} from "@/db/drizzle";
 import {and, eq, ne} from "drizzle-orm";
 import {notFound} from "next/navigation";
@@ -8,6 +9,30 @@ import ListingDetailView from "@/features/properties/components/ListingDetailVie
 import SimilarProperties from "@/features/properties/components/SimilarProperties";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import {PropertyType} from "@/lib/types/property-type";
+
+// Generate static params for properties
+export async function generateStaticParams() {
+    try {
+        const offeringType = await db.query.offeringTypeTable.findFirst({
+            where: eq(offeringTypeTable.slug, "for-sale")
+        });
+        
+        if (!offeringType) return [];
+        
+        const properties = await db.query.propertyTable.findMany({
+            columns: { slug: true },
+            where: eq(propertyTable.offeringTypeId, offeringType.id),
+            limit: 100 // Limit to top 100 properties
+        });
+        
+        return properties.map(property => ({
+            slug: property.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
 
 
 type Props = {

@@ -3,7 +3,7 @@ import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {communityTable} from "@/db/schema/community-table";
 import {notFound} from "next/navigation";
-import PropertyCard from "@/components/property-card";
+import PropertyCardServer from "@/components/property-card-server";
 import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import {TipTapView} from "@/components/TiptapView";
@@ -12,6 +12,22 @@ import {PropertyType} from "@/types/property";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Edit2 } from "lucide-react";
+
+// Generate static params for all communities
+export async function generateStaticParams() {
+    try {
+        const communities = await db.query.communityTable.findMany({
+            columns: { slug: true }
+        });
+        
+        return communities.map((community) => ({
+            slug: community.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params for communities:', error);
+        return [];
+    }
+}
 
 interface ShowCommunityPageProps {
     params: Promise<{
@@ -112,7 +128,7 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
                                     {
                                         properties?.map((listing) => (
                                             // @ts-ignore
-                                            (<PropertyCard key={listing.id} property={listing}/>)
+                                            (<PropertyCardServer key={listing.id} property={listing}/>)
                                         ))}
                                 </div>
                             ) : (

@@ -9,6 +9,23 @@ import {employeeTable} from "@/db/schema/employee-table";
 import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 
+// Generate static params for team members
+export async function generateStaticParams() {
+    try {
+        const agents = await db.query.employeeTable.findMany({
+            columns: { slug: true },
+            limit: 50 // Limit to top 50 agents
+        });
+        
+        return agents.map(agent => ({
+            slug: agent.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
+
 
 type Props = {
     params: Promise<{ slug: string }>

@@ -1,14 +1,14 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import PropertyListingsSection from "@/components/PropertyListingsSection";
 import {Metadata} from "next";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
-import {TipTapView} from "@/components/TiptapView";
+import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import {TipTapViewServer} from "@/components/TiptapViewServer";
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
-import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {EditPageMetaSheetServer} from "@/features/admin/page-meta/components/EditPageMetaSheetServer";
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
@@ -91,7 +91,6 @@ async function PropertySearchPage({ searchParams }: Props) {
     const headersList = await headers();
     const pathname = headersList.get("x-pathname") || "";
 
-
     const pageMeta = await db.query.pageMetaTable.findFirst({
         where: eq(pageMetaTable.path, pathname)
     }) as unknown as PageMetaType;
@@ -100,6 +99,37 @@ async function PropertySearchPage({ searchParams }: Props) {
         where: eq(offeringTypeTable.slug, offering),
     });
 
+    // Fetch properties data directly on the server
+    const urlSearchParams = new URLSearchParams();
+    Object.entries(resolvedSearchParams).forEach(([key, value]) => {
+        if (typeof value === 'string') {
+            urlSearchParams.append(key, value);
+        }
+    });
+
+    // Import and use the server data fetching function
+    const { getPropertiesServer } = await import("@/features/properties/api/get-properties-server");
+    
+    let propertiesData;
+    try {
+        propertiesData = await getPropertiesServer({
+            offeringType: offering,
+            propertyType: 'residential',
+            searchParams: urlSearchParams,
+            pathname,
+            page
+        });
+    } catch (error) {
+        console.error('Error fetching properties:', error);
+        propertiesData = {
+            properties: [],
+            totalCount: 0,
+            pages: [],
+            metaLinks: null,
+            error: 'Failed to load properties'
+        };
+    }
+
     let pageTitle = "Properties for sale in Dubai";
     if (offeringType?.pageTitle) {
         pageTitle = offeringType.pageTitle;
@@ -107,8 +137,12 @@ async function PropertySearchPage({ searchParams }: Props) {
 
     return (
         <div className={'bg-slate-50 min-h-screen'}>
-            {/* Mobile-optimized search filter */}
-            <PropertyPageSearchFilter offeringType='for-sale' />
+            {/* Mobile-optimized search filter - Server Side Rendered */}
+            <PropertyPageSearchFilterServer 
+                offeringType='for-sale' 
+                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
+                pathname={pathname}
+            />
             
             {/* Mobile-first heading and meta section */}
             <div className="flex flex-col lg:flex-row justify-between py-4 lg:py-6 items-start lg:items-center pt-6 lg:pt-12 max-w-7xl px-4 sm:px-6 lg:px-0 mx-auto gap-4">
@@ -120,7 +154,7 @@ async function PropertySearchPage({ searchParams }: Props) {
 
                 {user && (
                     <div className="flex justify-start lg:justify-end w-full lg:w-auto">
-                        <EditPageMetaSheet
+                        <EditPageMetaSheetServer
                             pageMeta={pageMeta}
                             pathname={pathname}
                         />
@@ -128,19 +162,23 @@ async function PropertySearchPage({ searchParams }: Props) {
                 )}
             </div>
             
-            {/* Mobile-optimized listings section */}
+            {/* Mobile-optimized listings section - Server Side Rendered */}
             <div className="px-4 sm:px-6 lg:px-0">
-                <Listings 
-                    offeringType={'for-sale'}
-                    searchParams={resolvedSearchParams}
-                    page={page}
+                <PropertyListingsSection 
+                    properties={propertiesData.properties || []}
+                    metaLinks={propertiesData.metaLinks}
+                    error={propertiesData.error}
+                    pathname={pathname}
+                    searchParams={urlSearchParams}
                 />
             </div>
 
             {/* Mobile-first content section */}
             {pageMeta?.content && (
-                <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-4 py-6 lg:py-8 mt-4 rounded-t-lg lg:rounded-lg shadow-sm">
-                    <TipTapView content={pageMeta?.content}/>
+                <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-4 py-8 lg:py-12 mt-4 mb-8 rounded-t-lg lg:rounded-lg shadow-sm min-h-[400px] flex flex-col justify-center">
+                    <div className="py-4 lg:py-8">
+                        <TipTapViewServer content={pageMeta?.content}/>
+                    </div>
                 </div>
             )}
         </div>

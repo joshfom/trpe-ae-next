@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 interface WebVitalMetric {
   id: string;
   name: string;

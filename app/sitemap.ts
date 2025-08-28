@@ -5,6 +5,10 @@ import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {insightTable} from "@/db/schema/insight-table";
 import {propertyTable} from "@/db/schema/property-table";
 
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   
   try {

@@ -1,6 +1,10 @@
 import { db } from "@/db/drizzle";
 import { NextResponse } from "next/server";
 
+// For static export compatibility - generate at build time
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 // Define type for PromiseSettledResult
 type PromiseSettledResultType<T> = PromiseSettledResult<T>; 
 

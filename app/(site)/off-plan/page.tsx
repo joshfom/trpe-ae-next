@@ -24,14 +24,16 @@ const ProjectCardSkeleton = React.memo(() => (
 ));
 ProjectCardSkeleton.displayName = 'ProjectCardSkeleton';
 
-// Cached project fetching function
-const getProjects = cache(async (): Promise<ProjectType[]> => {
+// Cached project fetching function using unstable_cache for better SSR
+const getProjects = cache(async (): Promise<any[]> => {
     try {
+        // Server-side data fetching without client dependency
         const response = await client.api.projects.$get();
         if (response.ok) {
             const { data } = await response.json();
-            return data as unknown as ProjectType[];
+            return data as any[];
         }
+        console.warn("Failed to fetch projects from API");
         return [];
     } catch (error) {
         console.error("Error fetching projects:", error);
@@ -43,8 +45,19 @@ export const metadata: Metadata = {
     title: "Off-Plan Properties in Dubai | New Projects for Sale - TRPE AE",
     description: "Discover exclusive off-plan properties in Dubai with TRPE. Expert guidance and tailored solutions for your investment journey await you!",
     alternates: {
-        canonical: `/off-plan`,
+        canonical: `${process.env.NEXT_PUBLIC_URL}/off-plan`,
     },
+    openGraph: {
+        title: "Off-Plan Properties in Dubai | New Projects for Sale - TRPE AE",
+        description: "Discover exclusive off-plan properties in Dubai with TRPE. Expert guidance and tailored solutions for your investment journey await you!",
+        type: 'website',
+        url: `${process.env.NEXT_PUBLIC_URL}/off-plan`,
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title: "Off-Plan Properties in Dubai | New Projects for Sale - TRPE AE",
+        description: "Discover exclusive off-plan properties in Dubai with TRPE. Expert guidance and tailored solutions for your investment journey await you!",
+    }
 };
 
 async function NewProjectsPage() {

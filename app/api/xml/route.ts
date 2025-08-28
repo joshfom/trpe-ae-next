@@ -4,6 +4,10 @@ import fetch from 'node-fetch';
 import { parseStringPromise } from 'xml2js';
 import { parsePropertyDescription, extractFeaturesList, extractSearchableText } from '@/lib/property-description-parser';
 
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 /**
  * Process listings to enhance descriptions
  */

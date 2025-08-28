@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { get410UrlsAction } from "@/actions/get-redirects-action";
 
-export const dynamic = 'force-dynamic'; // Ensures this is not statically optimized
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
 
 export async function GET() {
   try {
