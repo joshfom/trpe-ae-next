@@ -1,6 +1,6 @@
 import React from 'react';
 import 'swiper/css';
-import PropertyCard from "@/components/property-card";
+import PropertyCardServer from "@/components/property-card-server";
 import Link from "next/link";
 import {PropertyType} from "@/types/property";
 
@@ -18,7 +18,7 @@ function PropertyGrid({ listings, offeringType }: { listings: PropertyType[], of
         <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {listings.map((property) => (
-                    <PropertyCard key={property.id} property={property} offeringType={offeringType} />
+                    <PropertyCardServer key={property.id} property={property} offeringType={offeringType} />
                 ))}
             </div>
             <div className="py-4 sm:py-6 flex items-center mt-6 sm:mt-8 justify-center">

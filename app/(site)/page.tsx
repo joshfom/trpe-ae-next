@@ -6,21 +6,15 @@ import Link from "next/link";
 import HomeAboutSection from "@/components/home/home-about-section";
 import {db} from "@/db/drizzle";
 import {propertyTable} from "@/db/schema/property-table";
+import {propertyImagesTable} from "@/db/schema/property-images-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
-import {asc, eq} from "drizzle-orm";
+import {asc, eq, and, desc} from "drizzle-orm";
 import FeaturedListingsSectionServer from "@/features/site/Homepage/components/FeaturedListingsSectionServer";
 import {communityTable} from "@/db/schema/community-table";
-import React, { cache, Suspense } from "react";
+import React, { Suspense } from "react";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
-import dynamic from 'next/dynamic';
-
-// Dynamically import client components to prevent SSR issues
-const SearchEnhancer = dynamic(() => import("@/components/search-enhancer"), {
-    ssr: false,
-    loading: () => null
-});
 
 // Add the CommunityType interface for the communities section
 interface CommunityType {
@@ -35,105 +29,148 @@ interface CommunityType {
     properties?: Array<{ id: string }>;
 }
 
-// Cached database queries with Next.js cache for better performance and SSR optimization
-const getOfferingTypes = cache(async () => {
-    return unstable_cache(
-        async () => {
-            try {
-                const [rentalType] = await db.select().from(offeringTypeTable).where(
-                    eq(offeringTypeTable.slug, 'for-rent')
-                ).limit(1);
+// Cached database queries with proper SSR optimization
+const getOfferingTypes = unstable_cache(
+    async () => {
+        try {
+            const [rentalType] = await db.select().from(offeringTypeTable).where(
+                eq(offeringTypeTable.slug, 'for-rent')
+            ).limit(1);
 
-                const [saleType] = await db.select().from(offeringTypeTable).where(
-                    eq(offeringTypeTable.slug, 'for-sale')
-                ).limit(1);
+            const [saleType] = await db.select().from(offeringTypeTable).where(
+                eq(offeringTypeTable.slug, 'for-sale')
+            ).limit(1);
 
-                return { rentalType, saleType };
-            } catch (error) {
-                console.error('Error fetching offering types:', error);
-                // Return default types if database fails
-                return { 
-                    rentalType: { id: 'for-rent', slug: 'for-rent' }, 
-                    saleType: { id: 'for-sale', slug: 'for-sale' } 
-                };
-            }
-        },
-        ['offering-types'],
-        {
-            revalidate: 3600, // Revalidate every hour
-            tags: ['offering-types']
+            return { rentalType, saleType };
+        } catch (error) {
+            console.error('Error fetching offering types:', error);
+            // Return default types if database fails
+            return { 
+                rentalType: { id: 'for-rent', slug: 'for-rent' }, 
+                saleType: { id: 'for-sale', slug: 'for-sale' } 
+            };
         }
-    )();
-});
+    },
+    ['offering-types'],
+    {
+        revalidate: 3600, // Revalidate every hour
+        tags: ['offering-types']
+    }
+);
 
-const getListings = cache(async (offeringTypeId: string, limit: number = 3): Promise<PropertyType[]> => {
-    return unstable_cache(
-        async (offeringTypeId: string, limit: number) => {
-            try {
-                return await db.query.propertyTable.findMany({
-                    where: eq(propertyTable.offeringTypeId, offeringTypeId),
-                    limit,
-                    with: {
-                        images: true,
-                        agent: true,
-                        community: true,
-                        city: true,
-                        subCommunity: true,
-                        offeringType: true,
-                        type: true,
-                    }
-                }) as unknown as PropertyType[];
-            } catch (error) {
-                console.error('Error fetching listings:', error);
-                return [];
-            }
-        },
-        [`listings-${offeringTypeId}-${limit}`],
-        {
-            revalidate: 1800, // Revalidate every 30 minutes
-            tags: ['listings', `offerings-${offeringTypeId}`]
+// Create specific cached functions for each listing type
+const getRentalListings = unstable_cache(
+    async () => {
+        try {
+            return await db.query.propertyTable.findMany({
+                where: and(
+                    eq(propertyTable.offeringTypeId, 'for-rent'),
+                    eq(propertyTable.isFeatured, true),
+                    eq(propertyTable.status, 'published')
+                ),
+                orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
+                limit: 3,
+                with: {
+                    images: {
+                        limit: 1,
+                        orderBy: [asc(propertyImagesTable.order)],
+                    },
+                    amenities: true,
+                    developer: true,
+                    community: true,
+                    offeringType: true,
+                    type: true,
+                    city: true,
+                    agent: true,
+                    subCommunity: true,
+                },
+            });
+        } catch (error) {
+            console.error('Error fetching rental listings:', error);
+            return [];
         }
-    )(offeringTypeId, limit);
-});
+    },
+    ['homepage-rental-listings'],
+    {
+        revalidate: 1800, // Revalidate every 30 minutes
+        tags: ['properties', 'rental', 'featured']
+    }
+);
 
-const getCommunities = cache(async () => {
-    return unstable_cache(
-        async () => {
-            try {
-                // Fetch featured communities only, ordered by displayOrder
-                const communities = await db.query.communityTable.findMany({
-                    where: eq(communityTable.featured, true),
-                    orderBy: [asc(communityTable.displayOrder), asc(communityTable.name)],
-                    limit: 10,
-                    with: {
-                        properties: {
-                            // Just to count them, we don't need the full property data
-                            columns: {
-                                id: true,
-                            },
+const getSaleListings = unstable_cache(
+    async () => {
+        try {
+            return await db.query.propertyTable.findMany({
+                where: and(
+                    eq(propertyTable.offeringTypeId, 'for-sale'),
+                    eq(propertyTable.isFeatured, true),
+                    eq(propertyTable.status, 'published')
+                ),
+                orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
+                limit: 3,
+                with: {
+                    images: {
+                        limit: 1,
+                        orderBy: [asc(propertyImagesTable.order)],
+                    },
+                    amenities: true,
+                    developer: true,
+                    community: true,
+                    offeringType: true,
+                    type: true,
+                    city: true,
+                    agent: true,
+                    subCommunity: true,
+                },
+            });
+        } catch (error) {
+            console.error('Error fetching sale listings:', error);
+            return [];
+        }
+    },
+    ['homepage-sale-listings'],
+    {
+        revalidate: 1800, // Revalidate every 30 minutes
+        tags: ['properties', 'sale', 'featured']
+    }
+);
+
+const getCommunities = unstable_cache(
+    async () => {
+        try {
+            // Fetch featured communities only, ordered by displayOrder
+            const communities = await db.query.communityTable.findMany({
+                where: eq(communityTable.featured, true),
+                orderBy: [asc(communityTable.displayOrder), asc(communityTable.name)],
+                limit: 10,
+                with: {
+                    properties: {
+                        // Just to count them, we don't need the full property data
+                        columns: {
+                            id: true,
                         },
                     },
-                });
+                },
+            });
 
-                // Transform to match CommunityType by adding propertyCount
-                return communities.map(community => ({
-                    ...community,
-                    propertyCount: community.properties ? community.properties.length : 0,
-                    // Remove the properties array since we just needed it for counting
-                    properties: undefined
-                })) as unknown as CommunityType[];
-            } catch (error) {
-                console.error('Error fetching communities:', error);
-                return [];
-            }
-        },
-        ['homepage-featured-communities'],
-        {
-            revalidate: 3600, // Revalidate every hour
-            tags: ['communities', 'homepage', 'featured']
+            // Transform to match CommunityType by adding propertyCount
+            return communities.map(community => ({
+                ...community,
+                propertyCount: community.properties ? community.properties.length : 0,
+                // Remove the properties array since we just needed it for counting
+                properties: undefined
+            })) as unknown as CommunityType[];
+        } catch (error) {
+            console.error('Error fetching communities:', error);
+            return [];
         }
-    )();
-});
+    },
+    ['homepage-featured-communities'],
+    {
+        revalidate: 3600, // Revalidate every hour
+        tags: ['communities', 'homepage', 'featured']
+    }
+);
 
 // Enable static generation with revalidation
 export const revalidate = 3600; // Revalidate every hour
@@ -149,8 +186,8 @@ export default async function Home() {
 
         // Fetch listings in parallel for better performance with error handling
         const [rentalListings, saleListings, communities] = await Promise.allSettled([
-            getListings(rentalType?.id || 'for-rent', 3),
-            getListings(saleType?.id || 'for-sale', 3),
+            getRentalListings(),
+            getSaleListings(),
             getCommunities()
         ]);
 
@@ -224,16 +261,9 @@ export default async function Home() {
                 
                 {/* Mobile-optimized search */}
                 <div className="w-full max-w-4xl mx-auto">
-                    {/* SSR Search - Works without JavaScript, hidden when JS loads */}
-                    <div id="ssr-search">
+                    {/* SSR Search - Always visible for SSR */}
+                    <div data-server-search>
                         <MainSearchSSR />
-                    </div>
-                    {/* Client Enhancement - Shows interactive search with type switching and dropdowns */}
-                    <div id="csr-search" className="hidden">
-                        <Suspense fallback={<SearchSkeleton />}>
-                            <MainSearchServer mode="general" />
-                            <SearchEnhancement mode="general" />
-                        </Suspense>
                     </div>
                 </div>
             </div>
@@ -243,8 +273,8 @@ export default async function Home() {
                     {/* Mobile-first featured listings */}
                     <div className="w-full">
                         <FeaturedListingsSectionServer
-                            saleListings={finalSaleListings}
-                            rentalListings={finalRentalListings}
+                            saleListings={finalSaleListings as any}
+                            rentalListings={finalRentalListings as any}
                         />
                     </div>
 
@@ -438,7 +468,7 @@ export default async function Home() {
 
             </main>
            {/* Progressive enhancement for search functionality */}
-           <SearchEnhancer />
+           <SearchEnhancement />
         </div>
     );
     } catch (error) {

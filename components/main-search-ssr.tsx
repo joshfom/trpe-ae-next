@@ -14,25 +14,25 @@ export default function MainSearchSSR() {
                 {/* Desktop Search */}
                 <div className="hidden lg:flex gap-6 bg-white rounded-full shadow-lg p-3 pl-8 items-center">
                     <div className="flex-1 relative">
-                        <form action="/properties/for-sale" method="GET" className="w-full">
+                        <form id="desktop-search-form" action="/properties/for-sale" method="GET" className="w-full">
                             <input
                                 type="text"
                                 name="search"
                                 placeholder="Search properties by location, property type, or developer..."
                                 className="w-full h-12 bg-transparent text-gray-900 placeholder-gray-500 border-none outline-none text-lg"
-                                disabled
                             />
                             <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500">
                                 <Search size={24} />
                             </div>
                         </form>
                     </div>
-                    <Link 
-                        href="/properties/for-sale"
+                    <button 
+                        type="submit"
+                        form="desktop-search-form"
                         className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-3 rounded-full font-semibold transition-colors min-h-[48px] flex items-center"
                     >
                         Search
-                    </Link>
+                    </button>
                 </div>
                 
                 {/* Mobile Search */}
@@ -44,11 +44,10 @@ export default function MainSearchSSR() {
                                 name="search"
                                 placeholder="Search properties..."
                                 className="w-full h-12 bg-white text-gray-900 placeholder-gray-500 rounded-full px-6 pr-12 shadow-lg border-none outline-none"
-                                disabled
                             />
                             <button 
                                 type="submit"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                             >
                                 <Search size={20} />
                             </button>
