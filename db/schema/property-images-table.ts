@@ -27,10 +27,10 @@ export const propertyImagesSelectSchema = createSelectSchema(propertyImagesTable
 export const propertyImagesInsertSchema = createInsertSchema(propertyImagesTable);
 export const propertyImagesUpdateSchema = createUpdateSchema(propertyImagesTable);
 
-// Export type definitions derived from the schemas
-export type PropertyImagesSelect = typeof propertyImagesSelectSchema._type;
-export type PropertyImagesInsert = typeof propertyImagesInsertSchema._type;
-export type PropertyImagesUpdate = typeof propertyImagesUpdateSchema._type;
+// Export type definitions derived from the table
+export type PropertyImagesSelect = typeof propertyImagesTable.$inferSelect;
+export type PropertyImagesInsert = typeof propertyImagesTable.$inferInsert;
+export type PropertyImagesUpdate = Partial<PropertyImagesInsert>;
 
 
 

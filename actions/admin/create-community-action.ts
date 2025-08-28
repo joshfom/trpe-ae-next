@@ -77,7 +77,7 @@ export async function createCommunityAction(communityData: CreateCommunityReques
       return {
         success: false,
         error: `Validation failed - ${error.message}`,
-        validationErrors: error.errors
+        validationErrors: error.issues
       };
     }
     

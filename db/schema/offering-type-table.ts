@@ -22,10 +22,10 @@ export const offeringTypeSelectSchema = createSelectSchema(offeringTypeTable);
 export const offeringTypeInsertSchema = createInsertSchema(offeringTypeTable);
 export const offeringTypeUpdateSchema = createUpdateSchema(offeringTypeTable);
 
-// Export type definitions derived from the schemas
-export type OfferingTypeSelect = typeof offeringTypeSelectSchema._type;
-export type OfferingTypeInsert = typeof offeringTypeInsertSchema._type;
-export type OfferingTypeUpdate = typeof offeringTypeUpdateSchema._type;
+// Export type definitions derived from the table
+export type OfferingTypeSelect = typeof offeringTypeTable.$inferSelect;
+export type OfferingTypeInsert = typeof offeringTypeTable.$inferInsert;
+export type OfferingTypeUpdate = Partial<OfferingTypeInsert>;
 
 export const offeringTypeRelations = relations(offeringTypeTable, ({ one, many }) => ({
     properties: many(propertyTable),

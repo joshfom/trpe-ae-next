@@ -97,7 +97,7 @@ export async function updateCommunityAction(communityId: string, communityData: 
       return {
         success: false,
         error: `Validation failed - ${error.message}`,
-        validationErrors: error.errors
+        validationErrors: error.issues
       };
     }
     

@@ -1,15 +1,13 @@
-'use client'
-
 import React from 'react';
-import SiteFooter from "@/components/site-footer";
+import SiteFooterWrapper from "@/components/SiteFooterWrapper";
 import SiteTopNavigation from "@/components/site-top-navigation";
 
 interface ClientLayoutProps {
     children: React.ReactNode
 }
 
-// This is a client component wrapper for layout elements that need client-side functionality
-function SiteLayoutClient({ children }: ClientLayoutProps) {
+// This is now a server component that uses server-side footer
+async function SiteLayoutClient({ children }: ClientLayoutProps) {
     return (
         <>
             <SiteTopNavigation />
@@ -17,10 +15,10 @@ function SiteLayoutClient({ children }: ClientLayoutProps) {
             <div className="mobile-content-offset">
                 {children}
             </div>
-            <SiteFooter />
+            <SiteFooterWrapper />
         </>
     );
 }
 
-// Memoize the entire component to prevent unnecessary re-renders
-export default React.memo(SiteLayoutClient);
+// Export as server component
+export default SiteLayoutClient;

@@ -17,10 +17,10 @@ export const unitTypeSelectSchema = createSelectSchema(unitTypeTable);
 export const unitTypeInsertSchema = createInsertSchema(unitTypeTable);
 export const unitTypeUpdateSchema = createUpdateSchema(unitTypeTable);
 
-// Export type definitions derived from the schemas
-export type UnitTypeSelect = typeof unitTypeSelectSchema._type;
-export type UnitTypeInsert = typeof unitTypeInsertSchema._type;
-export type UnitTypeUpdate = typeof unitTypeUpdateSchema._type;
+// Export type definitions derived from the table
+export type UnitTypeSelect = typeof unitTypeTable.$inferSelect;
+export type UnitTypeInsert = typeof unitTypeTable.$inferInsert;
+export type UnitTypeUpdate = Partial<UnitTypeInsert>;
 
 export const unitTypeRelations = relations(unitTypeTable, ({ many }) => ({
     properties: many(propertyTable),

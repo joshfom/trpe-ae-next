@@ -14,7 +14,7 @@ import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
-import SiteFooter from '@/components/site-footer';
+import SiteFooterWrapper from '@/components/SiteFooterWrapper';
 import SiteTopNavigation from '@/components/site-top-navigation';
 
 // Dynamic imports for better code splitting - SSR compatible
@@ -346,7 +346,7 @@ export default async function Home() {
 
 
             </main>
-           <SiteFooter />
+           <SiteFooterWrapper />
         </div>
     );
 }

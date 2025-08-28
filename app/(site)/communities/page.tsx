@@ -15,18 +15,24 @@ export const metadata: Metadata = {
     },
 };
 
-// Cached function to get communities with proper cache tags
+// Cached function to get communities with proper cache tags  
 const getCommunities = unstable_cache(
-    async (): Promise<(CommunitySelect & { properties: any[] })[]> => {
+    async (): Promise<(CommunitySelect & { properties: any[], propertyCount: number })[]> => {
         try {
             const communities = await db.query.communityTable.findMany({
                 with: {
-                    properties: {
-                        limit: 1 // Only get count, not all properties
-                    }
+                    properties: true // Get all properties to count them properly
                 }
             });
-            return communities;
+            
+            // Transform data to include property count and sort by it
+            const communitiesWithCount = communities.map(community => ({
+                ...community,
+                propertyCount: community.properties.length,
+                properties: community.properties.slice(0, 1) // Keep only first property for display
+            })).sort((a, b) => b.propertyCount - a.propertyCount);
+            
+            return communitiesWithCount;
         } catch (error) {
             console.error('Error fetching communities:', error);
             return [];
@@ -40,7 +46,7 @@ const getCommunities = unstable_cache(
 );
 
 // Memoized Community Card component
-const CommunityCard = memo(({ community }: { community: CommunitySelect & { properties: any[] } }) => (
+const CommunityCard = memo(({ community }: { community: CommunitySelect & { properties: any[], propertyCount: number } }) => (
     <article className={'bg-white'}>
         <div className={'relative w-full h-60 rounded-lg overflow-hidden'}>
             <Image
@@ -64,12 +70,7 @@ const CommunityCard = memo(({ community }: { community: CommunitySelect & { prop
 CommunityCard.displayName = 'CommunityCard';
 
 // Component for rendering community list
-const CommunityList = memo(({ communities }: { communities: (CommunitySelect & { properties: any[] })[] }) => {
-    // Only try to sort if we have communities data
-    const reOrderedCommunities = communities.length > 0 
-        ? communities.sort((a, b) => a.properties.length - b.properties.length).reverse()
-        : [];
-
+const CommunityList = memo(({ communities }: { communities: (CommunitySelect & { properties: any[], propertyCount: number })[] }) => {
     if (communities.length === 0) {
         return (
             <div className="py-12 max-w-7xl mx-auto">
@@ -87,7 +88,7 @@ const CommunityList = memo(({ communities }: { communities: (CommunitySelect & {
                 <h1 className="font-semibold text-3xl">Communities in Dubai</h1>
             </div>
             <div className={'max-w-7xl mx-auto lg:pb-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'}>
-                {reOrderedCommunities.map((community) => (
+                {communities.map((community) => (
                     <CommunityCard key={community.id} community={community} />
                 ))}
             </div>

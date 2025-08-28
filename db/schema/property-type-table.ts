@@ -25,10 +25,10 @@ export const propertyTypeSelectSchema = createSelectSchema(propertyTypeTable);
 export const propertyTypeInsertSchema = createInsertSchema(propertyTypeTable);
 export const propertyTypeUpdateSchema = createUpdateSchema(propertyTypeTable);
 
-// Export type definitions derived from the schemas
-export type PropertyTypeSelect = typeof propertyTypeSelectSchema._type;
-export type PropertyTypeInsert = typeof propertyTypeInsertSchema._type;
-export type PropertyTypeUpdate = typeof propertyTypeUpdateSchema._type;
+// Export type definitions derived from the table
+export type PropertyTypeSelect = typeof propertyTypeTable.$inferSelect;
+export type PropertyTypeInsert = typeof propertyTypeTable.$inferInsert;
+export type PropertyTypeUpdate = Partial<PropertyTypeInsert>;
 
 
 
