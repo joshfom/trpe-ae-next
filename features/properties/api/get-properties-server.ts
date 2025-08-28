@@ -83,8 +83,20 @@ export async function getPropertiesServer({
     pathname,
     page = '1'
 }: GetPropertiesParams): Promise<PropertySearchResponse> {
-    // Temporarily disable caching to ensure data fetching works correctly
-    return getPropertiesServerInternal({ offeringType, propertyType, searchParams, pathname, page });
+    // Create a cache key for this specific query
+    const cacheKey = createCacheKey({ offeringType, propertyType, searchParams, pathname, page });
+    
+    // Use unstable_cache for better SSR performance with 15-minute revalidation
+    const cachedGetProperties = unstable_cache(
+        async (params: GetPropertiesParams) => getPropertiesServerInternal(params),
+        [cacheKey, 'properties-search'],
+        {
+            revalidate: 900, // Cache for 15 minutes
+            tags: ['properties', 'properties-search', offeringType || 'all', propertyType || 'all']
+        }
+    );
+    
+    return cachedGetProperties({ offeringType, propertyType, searchParams, pathname, page });
 }
 
 async function getPropertiesServerInternal({
