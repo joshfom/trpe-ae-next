@@ -1,10 +1,26 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata} from "next";
 import {eq} from "drizzle-orm";
 import {db} from "@/db/drizzle";
 import {TipTapView} from "@/components/TiptapView";
 import {communityTable} from "@/db/schema/community-table";
+
+// Generate static params for all communities
+export async function generateStaticParams() {
+    try {
+        const communities = await db.query.communityTable.findMany({
+            columns: { slug: true }
+        });
+        
+        return communities.map((community) => ({
+            slug: community.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params for communities:', error);
+        return [];
+    }
+}
 
 export const metadata: Metadata = {
     title: "Properties for Sale in Dubai | Find Your Next Home",
@@ -17,12 +33,14 @@ export const metadata: Metadata = {
 interface CommunityPropertiesPageProps {
     params: Promise<{
         slug: string;
-    }>
+    }>,
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 
 async function CommunityPropertiesPage(props: CommunityPropertiesPageProps) {
     const params = await props.params;
+    const searchParams = await props.searchParams;
 
     const {slug} = params;
 
@@ -32,7 +50,11 @@ async function CommunityPropertiesPage(props: CommunityPropertiesPageProps) {
 
     return (
         <div className={' bg-slate-100'}>
-            <Listings offeringType={'for-sale'}/>
+            <ListingsServer 
+                offeringType={'for-sale'}
+                searchParams={searchParams}
+                page={typeof searchParams.page === 'string' ? searchParams.page : undefined}
+            />
 
             {
                 community?.about &&

@@ -1,14 +1,14 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
+import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
-import {TipTapView} from "@/components/TiptapView";
+import {TipTapViewServer} from "@/components/TiptapViewServer";
 import SearchPageH1Heading from "@/features/search/SearchPageH1Heading";
 import {validateRequest} from "@/actions/auth-session";
-import {EditPageMetaSheet} from "@/features/admin/page-meta/components/EditPageMetaSheet";
+import {EditPageMetaSheetServer} from "@/features/admin/page-meta/components/EditPageMetaSheetServer";
 import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
@@ -114,57 +114,50 @@ async function PropertySearchPage({searchParams}: Props) {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Mobile-first container with responsive padding */}
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-                {/* Mobile-optimized search filter */}
-                <div className="mb-6 sm:mb-8">
-                    <div className="w-full">
-                        <PropertyPageSearchFilter 
-                            offeringType='commercial-rent'
-                        />
-                    </div>
-                </div>
-                
-                {/* Mobile-first header section */}
-                <div className="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:items-center mb-6 sm:mb-8">
-                    <div className="flex-1">
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                            <SearchPageH1Heading
-                                heading={pageTitle}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Admin controls - mobile-responsive */}
-                    {user && (
-                        <div className="flex justify-start sm:justify-end">
-                            <EditPageMetaSheet
-                                pageMeta={pageMeta}
-                                pathname={pathname}
-                            />
-                        </div>
-                    )}
-                </div>
-                
-                {/* Mobile-optimized listings */}
-                <div className="w-full">
-                    <Listings
-                        offeringType={'commercial-rent'}
-                        searchParams={resolvedSearchParams}
-                        page={page}
+        <div className={'bg-slate-50 min-h-screen'}>
+            {/* Mobile-optimized search filter - Server Side Rendered */}
+            <PropertyPageSearchFilterServer 
+                offeringType='commercial-rent'
+                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
+                pathname={pathname}
+            />
+            
+            {/* Mobile-first heading and meta section */}
+            <div className="flex flex-col lg:flex-row justify-between py-4 lg:py-6 items-start lg:items-center pt-6 lg:pt-12 max-w-7xl px-4 sm:px-6 lg:px-0 mx-auto gap-4">
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 items-start sm:items-center w-full lg:w-auto">
+                    <SearchPageH1Heading
+                        heading={pageTitle}
                     />
                 </div>
 
-                {/* Mobile-responsive content section */}
-                {pageMeta?.content && (
-                    <div className="mt-8 sm:mt-12 lg:mt-16 bg-white rounded-lg p-4 sm:p-6 lg:p-8">
-                        <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
-                            <TipTapView content={pageMeta.content}/>
-                        </div>
+                {user && (
+                    <div className="flex justify-start lg:justify-end w-full lg:w-auto">
+                        <EditPageMetaSheetServer
+                            pageMeta={pageMeta}
+                            pathname={pathname}
+                        />
                     </div>
                 )}
             </div>
+            
+            {/* Mobile-optimized listings section - Server Side Rendered */}
+            <div className="px-4 sm:px-6 lg:px-0">
+                <ListingsServer
+                    offeringType={'commercial-rent'}
+                    searchParams={resolvedSearchParams}
+                    page={page}
+                    propertyType="commercial"
+                />
+            </div>
+
+            {/* Mobile-first content section */}
+            {pageMeta?.content && (
+                <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-4 py-8 lg:py-12 mt-4 mb-8 rounded-t-lg lg:rounded-lg shadow-sm min-h-[400px] flex flex-col justify-center">
+                    <div className="py-4 lg:py-8">
+                        <TipTapViewServer content={pageMeta.content}/>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

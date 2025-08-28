@@ -78,9 +78,9 @@ export const communitySelectSchema = createSelectSchema(communityTable);
 export const communityUpdateSchema = createUpdateSchema(communityTable);
 
 // Export type definitions derived from the schemas
-export type CommunitySelect = typeof communitySelectSchema._type;
-export type CommunityInsert = typeof communityCreateSchema._type;
-export type CommunityUpdate = typeof communityUpdateSchema._type;
+export type CommunitySelect = typeof communityTable.$inferSelect;
+export type CommunityInsert = typeof communityTable.$inferInsert;
+export type CommunityUpdate = Partial<CommunityInsert>;
 
 /**
  * Community table relationships

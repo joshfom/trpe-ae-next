@@ -103,7 +103,7 @@ async function PropertyForRentPage(props: PropertyTypePage) {
     }
 
     return (
-        <div className={'bg-black lg:pt-20'}>
+        <div className={' lg:pt-20'}>
             <Listings
                 propertyType={unitType.slug}
                 page={page}

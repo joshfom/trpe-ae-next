@@ -86,12 +86,23 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
             insights: {
                 where: and(
                     eq(insightTable.isLuxe, true),
-                    eq(insightTable.isPublished, 'true')
+                    eq(insightTable.isPublished, 'yes')
                 ),
                 orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
                 limit: 20
             },
-            author: true
+            author: {
+                with: {
+                    insights: {
+                        where: and(
+                            eq(insightTable.isLuxe, true),
+                            eq(insightTable.isPublished, 'yes')
+                        ),
+                        orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
+                        limit: 20
+                    }
+                }
+            }
         }
     })
 
@@ -99,63 +110,45 @@ async function LuxeAdvisorPage(props: LuxeAdvisorPageProps) {
         return notFound()
     }
 
-    // Use the insights from the relation, or fall back to author-based matching
-    let journalArticles = advisor.insights || []
+    // Get journal articles from the advisor's linked author
+    let journalArticles: any[] = []
     
-    // If no direct insights, try to find by agent ID
+    // Primary method: Get journals through the author relationship
+    if (advisor.author && advisor.author.insights) {
+        journalArticles = advisor.author.insights
+    }
+    
+    // Fallback 1: If no author relation but authorId exists, fetch directly
+    if (journalArticles.length === 0 && advisor.authorId) {
+        const authorInsights = await db.query.insightTable.findMany({
+            where: and(
+                eq(insightTable.isLuxe, true),
+                eq(insightTable.isPublished, 'yes'),
+                eq(insightTable.authorId, advisor.authorId)
+            ),
+            orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
+            limit: 20
+        })
+        journalArticles = authorInsights
+    }
+    
+    // Fallback 2: Get insights directly associated with this advisor/agent
+    if (journalArticles.length === 0 && advisor.insights) {
+        journalArticles = advisor.insights
+    }
+    
+    // Fallback 3: Search by agentId in insights table
     if (journalArticles.length === 0) {
         const agentInsights = await db.query.insightTable.findMany({
             where: and(
                 eq(insightTable.isLuxe, true),
-                eq(insightTable.isPublished, 'true'),
+                eq(insightTable.isPublished, 'yes'),
                 eq(insightTable.agentId, advisor.id)
             ),
             orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
             limit: 20
         })
-        if (agentInsights.length > 0) {
-            journalArticles = agentInsights
-        }
-    }
-    
-    // If still no insights and advisor has an author relation, try by author ID
-    if (journalArticles.length === 0 && advisor.author) {
-        const authorInsights = await db.query.insightTable.findMany({
-            where: and(
-                eq(insightTable.isLuxe, true),
-                eq(insightTable.isPublished, 'true'),
-                eq(insightTable.authorId, advisor.author.id)
-            ),
-            orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
-            limit: 20
-        })
-        if (authorInsights.length > 0) {
-            journalArticles = authorInsights
-        }
-    }
-    
-    // Final fallback: search by name matching in authorId field
-    if (journalArticles.length === 0) {
-        const allInsights = await db.query.insightTable.findMany({
-            where: and(
-                eq(insightTable.isLuxe, true),
-                eq(insightTable.isPublished, 'true')
-            ),
-            orderBy: (insights, { desc }) => [desc(insights.publishedAt)],
-            limit: 50
-        })
-
-        // Filter by matching author name in the authorId field (which seems to store names)
-        journalArticles = allInsights.filter(article => {
-            const authorName = article.authorId?.toLowerCase() || ''
-            const advisorFullName = `${advisor.firstName} ${advisor.lastName}`.toLowerCase()
-            const advisorFirstName = advisor.firstName?.toLowerCase() || ''
-            const advisorLastName = advisor.lastName?.toLowerCase() || ''
-            
-            return authorName.includes(advisorFirstName) || 
-                   authorName.includes(advisorLastName) ||
-                   authorName.includes(advisorFullName)
-        }).slice(0, 20)
+        journalArticles = agentInsights
     }
 
     return (

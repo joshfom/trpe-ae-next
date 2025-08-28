@@ -6,6 +6,22 @@ import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import {developerTable} from "@/db/schema/developer-table";
 
+// Generate static params for all developers
+export async function generateStaticParams() {
+    try {
+        const developers = await db.query.developerTable.findMany({
+            columns: { slug: true }
+        });
+        
+        return developers.map((developer) => ({
+            slug: developer.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params for developers:', error);
+        return [];
+    }
+}
+
 interface ShowDeveloperPageProps {
     params: Promise<{
         slug: string;

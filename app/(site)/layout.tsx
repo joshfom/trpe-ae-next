@@ -1,8 +1,6 @@
 // Server component that manages the layout with SSR optimization
 import React from 'react';
-import SiteTopNavigationSSR from '@/components/site-top-navigation-ssr';
-import SiteFooterWrapper from '@/components/SiteFooterWrapper';
-import ClientOnlyEnhancements from './client-only-enhancements';
+import SiteLayoutClient from './site-layout-client';
 
 interface LayoutProps {
     children: React.ReactNode
@@ -10,15 +8,11 @@ interface LayoutProps {
 
 function Layout({children}: LayoutProps) {
     return (
-        <>
-            <SiteTopNavigationSSR />
-            {/* Use custom mobile navigation offset utility */}
-            <div className="mobile-content-offset">
-                {children}
-            </div>
-            <SiteFooterWrapper />
-            <ClientOnlyEnhancements />
-        </>
+       <SiteLayoutClient>
+                <div className="">
+                    {children}
+                </div>
+        </SiteLayoutClient>
     );
 }
 

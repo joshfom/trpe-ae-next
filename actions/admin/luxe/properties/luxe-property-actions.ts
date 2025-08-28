@@ -94,7 +94,7 @@ export async function createLuxePropertyAction(values: FormValues) {
             return { 
                 success: false, 
                 message: 'Validation error', 
-                errors: error.errors 
+                errors: error.issues 
             };
         }
         return { 
@@ -283,7 +283,7 @@ export async function updateLuxePropertyAction(propertyId: string, values: FormV
             return { 
                 success: false, 
                 message: 'Validation error', 
-                errors: error.errors 
+                errors: error.issues 
             };
         }
         return { 

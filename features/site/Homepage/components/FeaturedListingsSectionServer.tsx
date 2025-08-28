@@ -78,19 +78,6 @@ function FeaturedListingsSectionServer({ saleListings, rentalListings }: Feature
                             </div>
                         )}
                     </div>
-                    
-                    {/* Notice for users about tab functionality */}
-                    <div className="text-center py-4">
-                        <p className="text-sm text-gray-500 mb-2">
-                            Tab switching requires JavaScript. 
-                        </p>
-                        <Link 
-                            href="/properties/for-rent"
-                            className="text-sm text-blue-600 hover:text-blue-800 underline"
-                        >
-                            View rental properties here
-                        </Link>
-                    </div>
                 </div>
             </div>
         </section>

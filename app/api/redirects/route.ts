@@ -6,6 +6,9 @@ import { eq } from "drizzle-orm";
 
 // Force this to run in Node.js runtime, not Edge
 export const runtime = "nodejs";
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
 
 export async function GET() {
   try {

@@ -1,7 +1,7 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
+import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {communityTable} from "@/db/schema/community-table";
@@ -16,6 +16,39 @@ import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import {headers} from "next/headers";
 import FilterSummary from "@/features/search/components/FilterSummary";
 import { generateMobileSEO, generateMobileViewport } from "@/lib/mobile/mobile-seo-optimization";
+
+// Generate static params for popular communities and property types
+export async function generateStaticParams() {
+    try {
+        const [communities, propertyTypes] = await Promise.all([
+            db.query.communityTable.findMany({
+                columns: { slug: true },
+                limit: 15 // Limit to top 15 communities
+            }),
+            db.query.propertyTypeTable.findMany({
+                columns: { slug: true },
+                limit: 8 // Limit to top 8 property types
+            })
+        ]);
+        
+        const params = [];
+        
+        // Add individual communities
+        for (const community of communities) {
+            params.push({ search: community.slug });
+        }
+        
+        // Add individual property types
+        for (const propertyType of propertyTypes) {
+            params.push({ search: propertyType.slug });
+        }
+        
+        return params;
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
 
 type CommunityType = {
     name: string;
@@ -194,8 +227,10 @@ async function PropertySearchPage({ searchParams, params }: Props) {
                 {/* Mobile-optimized search filter */}
                 <div className="mb-6 sm:mb-8">
                     <div className="w-full">
-                        <PropertyPageSearchFilter 
+                        <PropertyPageSearchFilterServer 
                             offeringType='commercial-sale'
+                            searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
+                            pathname={pathname}
                         />
                     </div>
                 </div>
@@ -231,10 +266,11 @@ async function PropertySearchPage({ searchParams, params }: Props) {
                 
                 {/* Mobile-optimized listings */}
                 <div className="w-full">
-                    <Listings 
+                    <ListingsServer 
                         offeringType={'commercial-sale'}
                         searchParams={resolvedSearchParams}
                         page={page}
+                        propertyType="commercial"
                     />
                 </div>
 

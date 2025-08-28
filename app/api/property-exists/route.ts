@@ -3,6 +3,10 @@ import { db } from "@/db/drizzle";
 import { propertyTable } from "@/db/schema/property-table";
 import { eq } from "drizzle-orm";
 
+// For static export compatibility
+export const dynamic = 'force-static';
+export const revalidate = 3600; // Revalidate every hour
+
 export async function GET(request: NextRequest) {
     const slug = request.nextUrl.searchParams.get('slug');
 

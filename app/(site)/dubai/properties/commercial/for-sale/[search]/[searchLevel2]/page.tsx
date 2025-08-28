@@ -1,7 +1,7 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
+import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
 import {db} from "@/db/drizzle";
 import {and, eq, sql} from "drizzle-orm";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
@@ -16,6 +16,39 @@ import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import {TipTapView} from "@/components/TiptapView";
+
+// Generate static params for popular community/property type combinations
+export async function generateStaticParams() {
+    try {
+        // Get top communities and property types
+        const communities = await db.query.communityTable.findMany({
+            columns: { slug: true },
+            limit: 10 // Limit to top 10 communities
+        });
+        
+        const propertyTypes = await db.query.propertyTypeTable.findMany({
+            columns: { slug: true },
+            limit: 5 // Limit to top 5 property types
+        });
+        
+        const params = [];
+        
+        // Generate combinations
+        for (const community of communities) {
+            for (const propertyType of propertyTypes) {
+                params.push({
+                    search: community.slug,
+                    searchLevel2: propertyType.slug,
+                });
+            }
+        }
+        
+        return params;
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
 
 type CommunityType = {
     id: string;
@@ -223,7 +256,11 @@ async function PropertySearchPage({ searchParams, params }: Props) {
     
     return (
         <div className="bg-slate-100">
-            <PropertyPageSearchFilter offeringType="commercial-sale" />
+            <PropertyPageSearchFilterServer 
+                offeringType="commercial-sale" 
+                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
+                pathname={pathname}
+            />
 
        <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
                 <div className="flex space-x-2 items-center">
@@ -242,10 +279,11 @@ async function PropertySearchPage({ searchParams, params }: Props) {
                 )}
             </div>
 
-            <Listings 
+            <ListingsServer 
                 offeringType="commercial-sale"
                 searchParams={resolvedSearchParams}
                 page={page}
+                propertyType="commercial"
             />
 
                {pageMeta?.content && (

@@ -9,6 +9,7 @@ import { propertyImagesTable, PropertyImagesSelect, propertyImagesSelectSchema }
 import { db } from "@/db/drizzle";
 import { z } from "zod";
 import { notFound } from "next/navigation";
+import { unstable_cache } from "next/cache";
 
 // Define Json type directly in this file to avoid module resolution issues
 type Json =
@@ -47,7 +48,7 @@ interface PropertySearchResponse {
 type PropertyTableSchema = z.infer<typeof propertyTableSchema>;
 
 // Define the interface for the enriched property with related data
-interface EnrichedProperty extends Omit<PropertyTableSchema, 'size'> {
+export interface EnrichedProperty extends Omit<PropertyTableSchema, 'size'> {
     community: CommunitySelect | null;
     type: PropertyTypeSelect | null;
     unitType: UnitTypeSelect | null;
@@ -68,7 +69,25 @@ const propertyTypeCache = new Map<string, string>();
 const unitTypeCache = new Map<string, string>();
 const communityCache = new Map<string, string>();
 
+// Create a cache key from search parameters
+function createCacheKey(params: GetPropertiesParams): string {
+    const { offeringType, propertyType, searchParams, pathname, page } = params;
+    const searchParamsString = searchParams.toString();
+    return `properties-${offeringType || 'all'}-${propertyType || 'all'}-${pathname}-${page}-${searchParamsString}`;
+}
+
 export async function getPropertiesServer({
+    offeringType,
+    propertyType,
+    searchParams,
+    pathname,
+    page = '1'
+}: GetPropertiesParams): Promise<PropertySearchResponse> {
+    // Temporarily disable caching to ensure data fetching works correctly
+    return getPropertiesServerInternal({ offeringType, propertyType, searchParams, pathname, page });
+}
+
+async function getPropertiesServerInternal({
     offeringType,
     propertyType,
     searchParams,
@@ -355,13 +374,18 @@ export async function getPropertiesServer({
             error: null
         };
     } catch (error) {
-        console.error("Failed to fetch properties:", error);
+        console.error('Error in getPropertiesServerInternal:', error);
         return {
             properties: [],
             totalCount: 0,
             pages: [],
-            metaLinks: null,
-            error: "Failed to fetch properties"
+            metaLinks: {
+                currentPage: pageNumber,
+                totalPages: 0,
+                hasNext: false,
+                hasPrev: false,
+            },
+            error: 'Failed to fetch properties'
         };
     }
 }
@@ -386,7 +410,7 @@ async function getUnitTypeId(slug: string): Promise<string | null> {
     // Map property type slug to unit type slug if needed
     const unitTypeSlug = mapPropertyTypeToUnitType(slug);
     
-    // Check cache first
+    // Check in-memory cache first
     if (unitTypeCache.has(unitTypeSlug)) {
         return unitTypeCache.get(unitTypeSlug) || null;
     }

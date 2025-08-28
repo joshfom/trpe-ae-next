@@ -13,6 +13,24 @@ import { Button } from '@/components/ui/button';
 import { Edit2 } from 'lucide-react';
 import type {InsightType} from '@/types/insights';
 
+// Generate static params for insights
+export async function generateStaticParams() {
+    try {
+        const insights = await db.query.insightTable.findMany({
+            columns: { slug: true },
+            where: eq(insightTable.isLuxe, false),
+            limit: 100 // Limit to top 100 insights
+        });
+        
+        return insights.map(insight => ({
+            slug: insight.slug,
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
+
 
 type Props = {
     params: Promise<{ slug: string }>

@@ -1,7 +1,7 @@
 import React from 'react';
-import Listings from "@/features/properties/components/Listings";
+import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
+import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
 import {db} from '@/db/drizzle';
 import {communityTable} from "@/db/schema/community-table";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
@@ -15,6 +15,39 @@ import {headers} from "next/headers";
 import {pageMetaTable} from "@/db/schema/page-meta-table";
 import {PageMetaType} from "@/features/admin/page-meta/types/page-meta-type";
 import FilterSummary from "@/features/search/components/FilterSummary";
+
+// Generate static params for popular communities and property types
+export async function generateStaticParams() {
+    try {
+        const [communities, propertyTypes] = await Promise.all([
+            db.query.communityTable.findMany({
+                columns: { slug: true },
+                limit: 15 // Limit to top 15 communities
+            }),
+            db.query.propertyTypeTable.findMany({
+                columns: { slug: true },
+                limit: 8 // Limit to top 8 property types
+            })
+        ]);
+        
+        const params = [];
+        
+        // Add individual communities
+        for (const community of communities) {
+            params.push({ search: community.slug });
+        }
+        
+        // Add individual property types
+        for (const propertyType of propertyTypes) {
+            params.push({ search: propertyType.slug });
+        }
+        
+        return params;
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
+}
 
 type CommunityType = {
     name: string;
@@ -191,7 +224,11 @@ async function PropertySearchPage({searchParams, params}: Props) {
 
     return (
         <div className={'bg-slate-100'}>
-            <PropertyPageSearchFilter offeringType='for-rent'/>
+            <PropertyPageSearchFilterServer 
+                offeringType='for-rent'
+                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
+                pathname={pathname}
+            />
 
             {/* Filter Summary */}
             <FilterSummary 
@@ -216,10 +253,11 @@ async function PropertySearchPage({searchParams, params}: Props) {
                 )}
             </div>
 
-            <Listings
+            <ListingsServer
                 offeringType={'for-rent'}
                 searchParams={resolvedSearchParams}
                 page={page}
+                propertyType="residential"
             />
 
             {
