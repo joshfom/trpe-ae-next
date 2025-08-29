@@ -1,15 +1,10 @@
 "use client"
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
-// Use dynamic import with SSR enabled for better performance
-const TopNavigation = dynamic(() => import("@/components/top-navigation"), { 
-    ssr: true,
-    loading: () => <div className="h-16 bg-black animate-pulse" aria-label="Loading navigation" />
-});
 import Link from "next/link";
 import {usePathname} from 'next/navigation'
 import {Phone} from 'lucide-react';
+import TopNavigationSSR from "@/components/top-navigation-ssr";
 
 function SiteTopNavigation() {
     const [scroll, setScroll] = useState(0)
@@ -78,7 +73,7 @@ function SiteTopNavigation() {
                                         fill="white"></path>
                                 </svg>
                             </Link>
-                            <TopNavigation/>
+                            <TopNavigationSSR/>
                         </div>
 
                         {/* Desktop CTA Buttons - Hidden on Mobile */}

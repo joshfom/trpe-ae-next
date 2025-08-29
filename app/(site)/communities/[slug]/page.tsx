@@ -7,11 +7,24 @@ import PropertyCardServer from "@/components/property-card-server";
 import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import {TipTapView} from "@/components/TiptapView";
-import {validateRequest} from "@/actions/auth-session";
 import {PropertyType} from "@/types/property";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Edit2 } from "lucide-react";
+import AdminEditButton from '@/components/admin-edit-button';
+
+// Allow static generation for this page
+export const dynamic = 'auto';
+export const revalidate = 3600; // Revalidate every hour
+
+// Import the community type
+type CommunityType = {
+    id: number;
+    name: string;
+    slug: string;
+    image: string;
+    about?: string;
+    metaTitle?: string;
+    metaDesc?: string;
+    properties: PropertyType[];
+};
 
 // Generate static params for all communities
 export async function generateStaticParams() {
@@ -75,7 +88,6 @@ export async function generateMetadata(
 
 async function ShowCommunityPage(props: ShowCommunityPageProps) {
     const params = await props.params;
-    const { user } = await validateRequest();
 
     const community = await db.query.communityTable.findFirst({
         where: eq(communityTable.slug, params.slug),
@@ -109,14 +121,10 @@ async function ShowCommunityPage(props: ShowCommunityPageProps) {
                         Properties in {community.name}
                     </h1>
                     
-                    {user && (
-                        <Link href={`/admin/communities/${community.id}/edit`}>
-                            <Button variant="outline" className="flex items-center gap-2">
-                                <Edit2 className="h-4 w-4" />
-                                Edit Community
-                            </Button>
-                        </Link>
-                    )}
+                    <AdminEditButton 
+                        href={`/admin/communities/${community.id}/edit`}
+                        label="Edit Community"
+                    />
                 </div>
                 <div
                     className={'max-w-7xl px-6 lg:px-0 mx-auto py-4 lg:p-6 lg:grid-cols-4  tex-slate-200'}>

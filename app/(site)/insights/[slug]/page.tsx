@@ -7,11 +7,15 @@ import {Metadata, ResolvingMetadata} from "next";
 import {truncateText} from "@/lib/truncate-text";
 import SimilarInsights from "@/features/insights/components/SimilarInsights";
 import {ServerProcessedTiptap} from "@/components/ServerProcessedTiptap";
-import {validateRequest} from "@/actions/auth-session";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Edit2 } from 'lucide-react';
 import type {InsightType} from '@/types/insights';
+import { AdminEditButton } from '@/components/admin-edit-button';
+
+// Static generation configuration
+export const dynamic = 'auto';
+export const revalidate = 3600; // Revalidate every hour
 
 // Generate static params for insights
 export async function generateStaticParams() {
@@ -107,7 +111,6 @@ interface InsightDetailPageProps {
 
 async function InsightDetailPage(props: InsightDetailPageProps) {
     const params = await props.params;
-    const { user } = await validateRequest();
 
     const post = await db.query.insightTable.findFirst({
         where: and(
@@ -159,16 +162,7 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
                     {post.title}
                 </h1>
                 
-                {user && (
-                    <div className="flex justify-end mt-4 px-6">
-                        <Link href={`/admin/insights/edit/${post.slug}`}>
-                            <Button variant="outline" className="flex items-center gap-2">
-                                <Edit2 className="h-4 w-4" />
-                                Edit Insight
-                            </Button>
-                        </Link>
-                    </div>
-                )}
+                <AdminEditButton editUrl={`/admin/insights/edit/${post.slug}`} />
             </div>
 
             <div className={'max-w-7xl mx-auto p-6 py-8'}>

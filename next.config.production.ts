@@ -2,27 +2,24 @@ import type { NextConfig } from "next";
 
 // Production configuration to work around Next.js 15.5.x bugs
 const productionConfig: NextConfig = {
-  /* config options here */
-    // Use export instead of standalone for production until bug is fixed
-    output: process.env.NODE_ENV === 'production' ? 'export' : undefined,
-    trailingSlash: process.env.NODE_ENV === 'production' ? true : false,
+    // CRITICAL: Use standalone mode instead of export to keep API routes working
+    output: 'standalone',
     poweredByHeader: false,
-    reactStrictMode: true,
+    reactStrictMode: false, // Disable strict mode in production to avoid double mounting
     crossOrigin: 'anonymous',
     
+    // Disable problematic experimental features that cause RSC issues
     experimental: {
-        optimizePackageImports: ['lucide-react', '@radix-ui/react-*', '@tiptap/react'],
-        workerThreads: false,
-        cpus: Math.min(4, require('os').cpus().length),
-        // Disable features that cause issues in production
+        optimizePackageImports: ['lucide-react'],
+        // Disable problematic features
         clientRouterFilter: false,
         clientRouterFilterAllowedRate: 0,
+        serverComponentsExternalPackages: ['sharp'], // Move sharp to external packages
     },
     
     images: {
-        loader: 'custom',
-        loaderFile: './scripts/loader.js',
-        unoptimized: process.env.NODE_ENV === 'production', // Disable optimization for export
+        // Keep default loader for standalone builds
+        unoptimized: false,
         remotePatterns: [
             { protocol: 'https', hostname: "images.unsplash.com" },
             { protocol: 'https', hostname: "crm.trpeglobal.com" },
@@ -42,7 +39,7 @@ const productionConfig: NextConfig = {
     compress: true,
     
     webpack: (config, { dev, isServer }) => {
-        // Additional workarounds for production build issues
+        // Critical fix for clientReferenceManifest bug
         if (!dev && !isServer) {
             config.resolve.fallback = {
                 ...config.resolve.fallback,
@@ -51,6 +48,15 @@ const productionConfig: NextConfig = {
                 tls: false,
             };
         }
+        
+        // Workaround for Next.js 15.5.x RSC issues
+        if (!dev) {
+            config.optimization = {
+                ...config.optimization,
+                realContentHash: false, // Disable real content hash in production
+            };
+        }
+        
         return config;
     },
     

@@ -1,7 +1,10 @@
 import React from 'react';
-import AgentList from "@/features/agents/components/AgentList";
+import AgentListServer from "@/components/agent-list-server";
 import type {Metadata} from "next";
 
+// Add static generation configuration
+export const dynamic = 'auto';
+export const revalidate = 3600; // Revalidate every hour
 
 export const metadata: Metadata = {
     title: "Meet our team | Dubai Real Estate | Buy, Sell or Rent Property in Dubai",
@@ -20,7 +23,7 @@ function AgentPage()
                 <div className={'py-6 '}>
                     <h1 className={'text-3xl font-semibold'}>TRPE Experts</h1>
                 </div>
-                <AgentList />
+                <AgentListServer />
             </div>
         </div>
     );
