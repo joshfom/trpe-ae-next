@@ -6,6 +6,28 @@ import LuxePropCard from "@/components/luxe/LuxePropCard";
 import LuxePropCardSSR from "@/components/luxe/LuxePropCardSSR";
 import {PropertyType} from "@/types/property";
 import SSRToCSRSwitcher from "../../components/SSRToCSRSwitcher";
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dubai Luxe Properties | Premium Real Estate Collection | TRPE',
+  description: 'Discover the finest luxury properties in Dubai. Exclusive collection of premium penthouses, villas, and luxury apartments in Dubai\'s most prestigious locations.',
+  openGraph: {
+    title: 'Dubai Luxe Properties | Premium Real Estate Collection | TRPE',
+    description: 'Discover the finest luxury properties in Dubai. Exclusive collection of premium penthouses, villas, and luxury apartments in Dubai\'s most prestigious locations.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        width: 1200,
+        height: 630,
+        alt: 'Dubai Luxe Properties - Premium Real Estate Collection',
+      },
+    ],
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/dubai/properties`,
+  },
+};
 
 export default async function LuxePropertiesPage() {
   // Fetch only luxe properties from the database
@@ -72,6 +94,16 @@ export default async function LuxePropertiesPage() {
         {/* Properties Grid Section */}
         <section className='w-full py-16 bg-gray-50'>
           <div className='max-w-7xl mx-auto px-4'>
+            {/* Page Title */}
+            <div className="text-center mb-12">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-playfair font-light text-gray-900 mb-4">
+                Dubai Luxe Properties
+              </h1>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Discover the finest luxury properties in Dubai&apos;s most prestigious locations
+              </p>
+            </div>
+            
             {/* Results Header */}
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center space-x-4">
@@ -163,9 +195,9 @@ export default async function LuxePropertiesPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-playfair font-medium text-gray-800 mb-4">
+          <h2 className="text-2xl font-playfair font-medium text-gray-800 mb-4">
             Unable to Load Luxe Properties
-          </h1>
+          </h2>
           <p className="text-gray-600 mb-4">
             We&apos;re experiencing technical difficulties. Please try again later.
           </p>

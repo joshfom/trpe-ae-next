@@ -125,7 +125,7 @@ const LuxePropertyDetailSSR: React.FC<LuxePropertyDetailSSRProps> = ({ property 
             <div className="bg-white min-h-screen">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h1>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Property Not Found</h2>
                         <p className="text-gray-600 mb-4">The requested property could not be loaded.</p>
                         <Link
                             href="/luxe/properties"
@@ -223,7 +223,7 @@ const LuxePropertyDetailSSR: React.FC<LuxePropertyDetailSSRProps> = ({ property 
                         {/* Property Description */}
                         {property.description && (
                             <div className="mb-8">
-                                <h2 className="text-xl font-semibold text-gray-900 mb-4">Description</h2>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4">Description</h3>
                                 <div className="prose prose-gray max-w-none">
                                     <TipTapView content={property.description} />
                                 </div>
@@ -232,7 +232,7 @@ const LuxePropertyDetailSSR: React.FC<LuxePropertyDetailSSRProps> = ({ property 
 
                         {/* Property Details */}
                         <div className="mb-8">
-                            <h2 className="text-xl font-semibold text-gray-900 mb-4">Property Details</h2>
+                            <h3 className="text-xl font-semibold text-gray-900 mb-4">Property Details</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {property.bedrooms && property.bedrooms > 0 && (
                                     <div className="flex justify-between py-2 border-b border-gray-200">

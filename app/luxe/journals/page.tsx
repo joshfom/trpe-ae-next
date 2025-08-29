@@ -10,23 +10,23 @@ import { LuxeJournalsSEO } from '@/components/seo/LuxeSEO';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Luxe Journals | The Real Property Experts',
-  description: 'Exclusive journals and trends from Dubai\'s luxury real estate market. Discover insights from Dubai\'s luxury real estate experts.',
+  title: 'Luxe Journals | Dubai Luxury Real Estate Insights | TRPE',
+  description: 'Exclusive journals and trends from Dubai\'s luxury real estate market. Expert insights, market analysis, and luxury property trends from Dubai\'s leading real estate experts.',
   openGraph: {
-    title: 'Luxe Journals | The Real Property Experts',
-    description: 'Exclusive journals and trends from Dubai\'s luxury real estate market.',
+    title: 'Luxe Journals | Dubai Luxury Real Estate Insights | TRPE',
+    description: 'Exclusive journals and trends from Dubai\'s luxury real estate market. Expert insights, market analysis, and luxury property trends.',
     images: [
       {
         url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
         width: 1200,
         height: 630,
-        alt: 'Luxe Journals - Dubai Luxury Real Estate',
+        alt: 'Luxe Journals - Dubai Luxury Real Estate Insights',
       },
     ],
     type: 'website',
   },
   alternates: {
-    canonical: '/luxe/journals',
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/journals`,
   },
 };
 

@@ -64,9 +64,9 @@ function CommitmentSectionSSR() {
         </p>
         
         {/* Main Title */}
-        <h2 className='text-white text-2xl sm:text-4xl lg:text-6xl font-playfair font-light mb-6 sm:mb-8 leading-tight'>
+        <h3 className='text-white text-2xl sm:text-4xl lg:text-6xl font-playfair font-light mb-6 sm:mb-8 leading-tight'>
           Excellence in Every Detail
-        </h2>
+        </h3>
         
         {/* Description */}
         <p className='text-gray-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto'>

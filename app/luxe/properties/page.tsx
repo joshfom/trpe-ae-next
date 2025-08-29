@@ -12,8 +12,24 @@ import { LuxePropertiesSEO } from '@/components/seo/LuxeSEO';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Luxe Properties | TRPE',
-  description: 'Explore our exclusive collection of luxury properties in Dubai.',
+  title: 'Luxe Properties | Premium Dubai Real Estate Collection | TRPE',
+  description: 'Explore our exclusive collection of luxury properties in Dubai. Premium penthouses, villas, and luxury apartments in the most prestigious locations.',
+  openGraph: {
+    title: 'Luxe Properties | Premium Dubai Real Estate Collection | TRPE',
+    description: 'Explore our exclusive collection of luxury properties in Dubai. Premium penthouses, villas, and luxury apartments in the most prestigious locations.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2069&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        width: 1200,
+        height: 630,
+        alt: 'Luxe Properties - Dubai Premium Real Estate Collection',
+      },
+    ],
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/properties`,
+  },
 };
 
 export default async function LuxePropertiesPage() {
@@ -66,9 +82,9 @@ export default async function LuxePropertiesPage() {
       <section className='w-full py-8 sm:py-12 lg:py-16'>
         <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
           <div className="mb-8 sm:mb-12 text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-playfair font-light text-gray-900 mb-4 sm:mb-6">
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-playfair font-light text-gray-900 mb-4 sm:mb-6">
               {properties.length} Luxe Properties found
-            </h2>
+            </h3>
             <p className="text-base sm:text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
               Exclusive luxury collection
             </p>

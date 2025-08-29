@@ -964,9 +964,9 @@ export default function LuxePageClient({
                 className='text-center'
                 variants={animationVariants.fadeInUp}
               >
-                <h2 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-playfair font-light text-white mb-4 sm:mb-6 leading-tight'>
+                <h3 className='text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-playfair font-light text-white mb-4 sm:mb-6 leading-tight'>
                   Built on Trust. Grown Through Resilience.
-                </h2>
+                </h3>
               </motion.div>
             </div>
 

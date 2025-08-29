@@ -156,9 +156,9 @@ export default function LuxePageSSR({
             </div>
             <div className="px-4 sm:px-6 py-8 sm:py-12">
               <div className="text-center max-w-2xl mx-auto">
-                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">
                   Discover Luxury Living
-                </h2>
+                </h3>
                 <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed text-left">
                   From stunning gardens to carefully curated interiors, each villa is a sanctuary made for inward reflection and outward beauty. The Ocean Mansions at Jumeirah Asora Bay embody a transformative experience, where nature and timeless architecture converge, creating a life that feels both grounded and extraordinary.
                 </p>
@@ -187,9 +187,9 @@ export default function LuxePageSSR({
               </div>
               <div className="w-1/2 flex flex-col justify-center px-8 xl:px-12 py-12 bg-gray-50 rounded-r-lg">
                 <div className="max-w-xl">
-                  <h2 className="font-playfair text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-6 xl:mb-8 text-black">
+                  <h3 className="font-playfair text-3xl xl:text-4xl 2xl:text-5xl font-bold mb-6 xl:mb-8 text-black">
                     Discover Luxury Living
-                  </h2>
+                  </h3>
                   <p className="text-base xl:text-lg text-gray-600 mb-6 xl:mb-8 leading-relaxed">
                     From stunning gardens to carefully curated interiors, each villa is a sanctuary made for inward reflection and outward beauty. The Ocean Mansions at Jumeirah Asora Bay embody a transformative experience, where nature and timeless architecture converge, creating a life that feels both grounded and extraordinary.
                   </p>
@@ -222,9 +222,9 @@ export default function LuxePageSSR({
             <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col lg:flex-row items-center h-full">
                 <div className="w-full lg:w-1/2 text-center lg:text-left">
-                  <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
+                  <h3 className="font-playfair text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
                     Premium Properties
-                  </h2>
+                  </h3>
                   <p className="text-base sm:text-lg lg:text-xl text-gray-200 mb-4 sm:mb-6 lg:mb-8 leading-relaxed">
                     Explore cutting-edge architectural masterpieces that define Dubai&apos;s skyline. Each development represents innovation in luxury living with world-class amenities.
                   </p>
@@ -243,9 +243,9 @@ export default function LuxePageSSR({
       <section className="w-full py-20 lg:py-24 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            <h3 className="font-playfair text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
               Featured Luxury Properties
-            </h2>
+            </h3>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
               Handpicked selection of the finest luxury properties in Dubai
             </p>

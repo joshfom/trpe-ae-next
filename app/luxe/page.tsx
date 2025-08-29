@@ -9,6 +9,28 @@ import LuxePageClient from './LuxePageClient';
 import LuxePageSSR from './LuxePageSSR';
 import SSRToCSRSwitcher from './components/SSRToCSRSwitcher';
 import { LuxeHomeSEO } from '@/components/seo/LuxeSEO';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Luxe Collection | Premium Dubai Real Estate | TRPE',
+  description: 'Discover Dubai\'s most exclusive luxury properties. Premium real estate collection featuring iconic penthouses, villas, and luxury apartments in prime locations.',
+  openGraph: {
+    title: 'Luxe Collection | Premium Dubai Real Estate | TRPE',
+    description: 'Discover Dubai\'s most exclusive luxury properties. Premium real estate collection featuring iconic penthouses, villas, and luxury apartments in prime locations.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        width: 1200,
+        height: 630,
+        alt: 'Luxe Collection - Dubai Premium Real Estate',
+      },
+    ],
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe`,
+  },
+};
 
 // Server-side data fetching functions
 async function getFeaturedLuxeProperties() {

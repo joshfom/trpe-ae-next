@@ -157,17 +157,26 @@ export async function generateMetadata({ params }: InsightDetailPageProps) {
 
   if (!insight) {
     return {
-      title: 'Insight Not Found',
+      title: 'Journal Not Found | Luxe Collection | TRPE',
+      description: 'The requested luxury real estate journal could not be found.',
+      alternates: {
+        canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/journals`,
+      },
     };
   }
 
   return {
-    title: insight.title,
+    title: `${insight.title} | Luxe Journals | TRPE`,
     description: insight.excerpt,
     openGraph: {
       title: insight.title,
       description: insight.excerpt,
       images: [insight.imageUrl],
+      type: 'article',
+      url: `${process.env.NEXT_PUBLIC_URL}/luxe/journals/${slug}`,
+    },
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/journals/${slug}`,
     },
   };
 }

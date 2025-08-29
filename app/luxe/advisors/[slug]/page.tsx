@@ -42,15 +42,15 @@ export async function generateMetadata(
     const previousImages = (await parent).openGraph?.images || []
 
     return {
-        title: `${advisor.firstName} ${advisor.lastName} | Luxe Advisor - The Real Property Experts`,
+        title: `${advisor.firstName} ${advisor.lastName} | Luxe Advisor | TRPE`,
         openGraph: {
             images: advisor.avatarUrl ? [advisor.avatarUrl, ...previousImages] : previousImages,
             type: 'article',
-            url: `/luxe/advisors/${advisor.slug}`
+            url: `${process.env.NEXT_PUBLIC_URL}/luxe/advisors/${advisor.slug}`
         },
         description: `${truncateText(advisor.bio || '', 150)} - Luxury property advisor specializing in premium real estate in Dubai`,
         alternates: {
-            canonical: `/luxe/advisors/${advisor.slug}`,
+            canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/advisors/${advisor.slug}`,
         },
     }
 }

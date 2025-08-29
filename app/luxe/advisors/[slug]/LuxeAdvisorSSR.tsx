@@ -154,9 +154,9 @@ const LuxeAdvisorSSR: React.FC<LuxeAdvisorSSRProps> = ({ advisor, journalArticle
                                 {advisor?.firstName} {advisor?.lastName}
                             </h1>
                             
-                            <h2 className="text-xl sm:text-2xl lg:text-3xl text-white mb-8 font-medium">
+                            <h3 className="text-xl sm:text-2xl lg:text-3xl text-white mb-8 font-medium">
                                 {advisor?.title || 'Luxury Property Specialist'}
-                            </h2>
+                            </h3>
                             
                             {advisor?.bio && (
                                 <p className="text-lg sm:text-xl text-gray-300 leading-relaxed mb-10 max-w-2xl">

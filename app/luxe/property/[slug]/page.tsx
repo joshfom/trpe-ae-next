@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: LuxePropertyPageProps): Promi
         }
 
         return {
-            title: `${property.title} | TRPE Luxe`,
+            title: `${property.title} | Luxe Collection | TRPE`,
             description: property.description 
                 ? property.description.substring(0, 160).replace(/<[^>]*>/g, '') + '...'
                 : `Luxury ${property.offeringType?.name || 'property'} in ${property.community?.name}, ${property.city?.name}`,
@@ -44,6 +44,10 @@ export async function generateMetadata({ params }: LuxePropertyPageProps): Promi
                 description: property.description?.substring(0, 160).replace(/<[^>]*>/g, '') + '...' || '',
                 images: property.images?.[0]?.crmUrl ? [property.images[0].crmUrl] : [],
                 type: 'website',
+                url: `${process.env.NEXT_PUBLIC_URL}/luxe/property/${property.slug}`,
+            },
+            alternates: {
+                canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/property/${property.slug}`,
             },
         };
     } catch (error) {

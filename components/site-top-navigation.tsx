@@ -9,11 +9,20 @@ const TopNavigation = dynamic(() => import("@/components/top-navigation"), {
 });
 import Link from "next/link";
 import {usePathname} from 'next/navigation'
-import {Phone} from 'lucide-react';
+import {Phone, Menu, X, ChevronRight} from 'lucide-react';
+import { 
+    Drawer, 
+    DrawerContent, 
+    DrawerHeader, 
+    DrawerTitle, 
+    DrawerTrigger,
+    DrawerClose 
+} from "@/components/ui/drawer";
 
 function SiteTopNavigation() {
     const [scroll, setScroll] = useState(0)
     const [isHomePage, setIsHomePage] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const pathname = usePathname()
 
     // Memoize the check for homepage
@@ -35,6 +44,66 @@ function SiteTopNavigation() {
         };
     }, [handleScroll])
 
+    // Close mobile menu when route changes
+    useEffect(() => {
+        setIsMobileMenuOpen(false)
+    }, [pathname])
+
+    // Navigation sections for mobile menu
+    const mobileNavSections = [
+        {
+            title: 'For Sale',
+            items: [
+                { href: '/properties/for-sale', label: 'All Properties for Sale' },
+                { href: '/property-types/apartments/for-sale', label: 'Apartments for Sale' },
+                { href: '/property-types/villas/for-sale', label: 'Villas for Sale' },
+                { href: '/property-types/townhouses/for-sale', label: 'Townhouses for Sale' },
+                { href: '/property-types/offices/commercial-sale', label: 'Offices for Sale' },
+                { href: '/property-types/retails/commercial-sale', label: 'Retail for Sale' },
+            ]
+        },
+        {
+            title: 'For Rent',
+            items: [
+                { href: '/properties/for-rent', label: 'All Properties for Rent' },
+                { href: '/property-types/apartments/for-rent', label: 'Apartments for Rent' },
+                { href: '/property-types/villas/for-rent', label: 'Villas for Rent' },
+                { href: '/property-types/townhouses/for-rent', label: 'Townhouses for Rent' },
+                { href: '/property-types/offices/commercial-rent', label: 'Offices for Rent' },
+                { href: '/property-types/retails/commercial-rent', label: 'Retail for Rent' },
+            ]
+        },
+        {
+            title: 'Off-Plan',
+            items: [
+                { href: '/off-plan', label: 'All Off-Plan Properties' },
+                { href: '/off-plan/apartments', label: 'Off-Plan Apartments' },
+                { href: '/off-plan/villas', label: 'Off-Plan Villas' },
+                { href: '/off-plan/townhouses', label: 'Off-Plan Townhouses' },
+            ]
+        },
+        {
+            title: 'Areas',
+            items: [
+                { href: '/communities', label: 'All Communities' },
+                { href: '/communities/dubai-marina', label: 'Dubai Marina' },
+                { href: '/communities/downtown-dubai', label: 'Downtown Dubai' },
+                { href: '/communities/dubai-hills-estate', label: 'Dubai Hills Estate' },
+                { href: '/communities/palm-jumeirah', label: 'Palm Jumeirah' },
+            ]
+        },
+        {
+            title: 'About',
+            items: [
+                { href: '/our-team', label: 'Our Team' },
+                { href: '/insights', label: 'Insights' },
+                { href: '/about-us', label: 'About Us' },
+                { href: '/contact-us', label: 'Contact Us' },
+                { href: '/list-with-us', label: 'List with Us' },
+            ]
+        }
+    ];
+
     return (
         <>
             {/* Mobile-First Header - No gaps, full width, handles safe areas */}
@@ -43,9 +112,90 @@ function SiteTopNavigation() {
                     <div className={'max-w-7xl mx-auto'}>
                         <div className={'relative flex justify-between items-center'}>
                             
-                            {/* Mobile Layout - Centered Logo */}
-                            <div className={'lg:hidden w-full flex items-center justify-center relative'}>
-                                <Link className={'flex-shrink-0'} href={'/'} aria-label={'TRPE Home'}>
+                            {/* Mobile Layout - Hamburger Menu on Left, Logo Centered, Contact on Right */}
+                            <div className={'lg:hidden w-full flex items-center justify-between relative'}>
+                                {/* Mobile Menu Drawer - Left Side */}
+                                <Drawer open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+                                    <DrawerTrigger asChild>
+                                        <button
+                                            className="text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
+                                            aria-label="Open menu"
+                                        >
+                                            <Menu size={24} />
+                                        </button>
+                                    </DrawerTrigger>
+                                    <DrawerContent className="bg-black border-gray-800 text-white rounded-t-3xl max-h-[85vh] overflow-hidden">
+                                        <DrawerHeader className="border-b border-gray-800 flex-shrink-0 pb-4">
+                                            <div className="flex items-center justify-between">
+                                                <Link href={'/'} onClick={() => setIsMobileMenuOpen(false)}>
+                                                    <Image
+                                                        src={'/trpe-logo.webp'} 
+                                                        alt="TRPE Logo" 
+                                                        width={160} 
+                                                        height={30}
+                                                        className="h-7 w-auto"
+                                                    />
+                                                </Link>
+                                                <DrawerClose asChild>
+                                                    <button
+                                                        className="text-white p-2 rounded-md hover:bg-white/10 transition-colors duration-200"
+                                                        aria-label="Close menu"
+                                                    >
+                                                        <X size={24} />
+                                                    </button>
+                                                </DrawerClose>
+                                            </div>
+                                        </DrawerHeader>
+
+                                        {/* Mobile Navigation Content - Scrollable */}
+                                        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                                            <nav className="py-4 px-4 space-y-6">
+                                                {mobileNavSections.map((section) => (
+                                                    <div key={section.title} className="space-y-3">
+                                                        <h3 className="text-lg font-semibold text-white border-b border-gray-800 pb-2">
+                                                            {section.title}
+                                                        </h3>
+                                                        <div className="space-y-1">
+                                                            {section.items.map((item) => (
+                                                                <Link
+                                                                    key={item.href}
+                                                                    href={item.href}
+                                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                                    className={`flex items-center justify-between px-3 py-3 text-sm rounded-xl transition-all duration-200 ${
+                                                                        pathname === item.href 
+                                                                            ? 'text-blue-400 bg-blue-400/10 border border-blue-400/30' 
+                                                                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                                                                    }`}
+                                                                >
+                                                                    <span>{item.label}</span>
+                                                                    <ChevronRight size={16} className="text-gray-500" />
+                                                                </Link>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                
+                                                {/* Luxe Collection Link */}
+                                                <div className="pt-4 border-t border-gray-800">
+                                                    <Link
+                                                        href="/luxe"
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                        className="flex items-center justify-between px-3 py-4 text-amber-400 bg-amber-400/10 border border-amber-400/30 rounded-xl transition-all duration-200 hover:bg-amber-400/20"
+                                                    >
+                                                        <span className="font-medium">Luxe Collection</span>
+                                                        <ChevronRight size={16} />
+                                                    </Link>
+                                                </div>
+                                                
+                                                {/* Bottom padding for safe area */}
+                                                <div className="h-8"></div>
+                                            </nav>
+                                        </div>
+                                    </DrawerContent>
+                                </Drawer>
+
+                                {/* Centered Logo */}
+                                <Link className={'flex-shrink-0 absolute left-1/2 transform -translate-x-1/2'} href={'/'} aria-label={'TRPE Home'}>
                                     <Image
                                         src={'/trpe-logo.webp'} 
                                         alt="TRPE Logo" 
@@ -62,7 +212,7 @@ function SiteTopNavigation() {
                                 <Link 
                                     href={'/contact-us'}
                                     aria-label={'Contact Us'}
-                                    className="absolute right-0 text-white border border-white rounded-full p-2.5 hover:text-black hover:bg-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+                                    className="text-white border border-white rounded-full p-2.5 hover:text-black hover:bg-white transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
                                 >
                                     <Phone size={20} className='stroke-1' />
                                 </Link>

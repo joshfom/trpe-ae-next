@@ -3,6 +3,7 @@
 import React from 'react';
 import {AgentDetails} from '@/components/luxe';
 import {motion} from "framer-motion";
+import Link from 'next/link';
 
 // Simplified, performance-optimized animation variants
 const fadeInUp = {
@@ -244,12 +245,12 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
           >
             {/* Left Content */}
             <div className="flex-1 text-center lg:text-left">
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
+              <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
                 Ready to Find Your
                 <span className="block text-white">
                   Dream Property?
                 </span>
-              </h2>
+              </h3>
               <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 max-w-2xl">
                 Connect with our luxury real estate experts today and discover exclusive properties 
                 that match your lifestyle and investment goals.
@@ -262,9 +263,9 @@ const LuxeAdvisorsClient: React.FC<LuxeAdvisorsClientProps> = ({ agents }) => {
 
             {/* Right CTA */}
             <div className="flex-shrink-0 text-center lg:text-right">
-              <button className="inline-flex items-center justify-center px-12 py-4 bg-black text-white font-semibold text-lg rounded-full hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 shadow-2xl">
+              <Link href="/luxe/contact-us" className="inline-flex items-center justify-center px-12 py-4 bg-black text-white font-semibold text-lg rounded-full hover:bg-gray-900 transition-all duration-300 transform hover:scale-105 shadow-2xl">
                 Contact Our Team
-              </button>
+              </Link>
               <p className="text-white/70 text-sm mt-4 max-w-xs">
                 Schedule a consultation with our luxury property specialists
               </p>

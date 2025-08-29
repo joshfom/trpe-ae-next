@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Edit2 } from 'lucide-react';
 import type {InsightType} from '@/types/insights';
-import { AdminEditButton } from '@/components/admin-edit-button';
+import AdminEditButton from '@/components/admin-edit-button';
 
 // Static generation configuration
 export const dynamic = 'auto';
@@ -162,7 +162,7 @@ async function InsightDetailPage(props: InsightDetailPageProps) {
                     {post.title}
                 </h1>
                 
-                <AdminEditButton editUrl={`/admin/insights/edit/${post.slug}`} />
+                <AdminEditButton href={`/admin/insights/edit/${post.slug}`} label="Edit Insight" />
             </div>
 
             <div className={'max-w-7xl mx-auto p-6 py-8'}>

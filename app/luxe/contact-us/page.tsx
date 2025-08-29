@@ -1,5 +1,27 @@
 import React from 'react';
 import LuxeContactForm from './components/LuxeContactForm';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Contact Luxe Collection | Dubai Luxury Real Estate | TRPE',
+  description: 'Get in touch with our luxury real estate experts. Contact us for premium properties, investment opportunities, and personalized service in Dubai.',
+  openGraph: {
+    title: 'Contact Luxe Collection | Dubai Luxury Real Estate | TRPE',
+    description: 'Get in touch with our luxury real estate experts. Contact us for premium properties, investment opportunities, and personalized service in Dubai.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+        width: 1200,
+        height: 630,
+        alt: 'Contact Luxe Collection - Dubai Luxury Real Estate',
+      },
+    ],
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/contact-us`,
+  },
+};
 
 export default function LuxeContactPage() {
     return (
@@ -45,9 +67,9 @@ export default function LuxeContactPage() {
 
                     {/* Contact Form */}
                     <div className='bg-white rounded-lg shadow-sm p-6 sm:p-8'>
-                        <h2 className='text-xl sm:text-2xl font-playfair mb-6 sm:mb-8 text-gray-800'>
+                        <h3 className='text-xl sm:text-2xl font-playfair mb-6 sm:mb-8 text-gray-800'>
                             Send us a message
-                        </h2>
+                        </h3>
 
                         <LuxeContactForm />
                     </div>

@@ -4,6 +4,28 @@ import LuxeAdvisorsClient from './LuxeAdvisorsClient';
 import LuxeAdvisorsSSR from './LuxeAdvisorsSSR';
 import SSRToCSRSwitcher from '../components/SSRToCSRSwitcher';
 import { LuxeAdvisorsSEO } from '@/components/seo/LuxeSEO';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Luxe Advisors | Dubai Luxury Real Estate Experts | TRPE',
+  description: 'Meet our exclusive team of luxury real estate advisors in Dubai. Expert guidance for premium properties, penthouses, and luxury investments.',
+  openGraph: {
+    title: 'Luxe Advisors | Dubai Luxury Real Estate Experts | TRPE',
+    description: 'Meet our exclusive team of luxury real estate advisors in Dubai. Expert guidance for premium properties, penthouses, and luxury investments.',
+    images: [
+      {
+        url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=3387&auto=format&fit=crop&w=1200&q=80',
+        width: 1200,
+        height: 630,
+        alt: 'Luxe Advisors - Dubai Luxury Real Estate Experts',
+      },
+    ],
+    type: 'website',
+  },
+  alternates: {
+    canonical: `${process.env.NEXT_PUBLIC_URL}/luxe/advisors`,
+  },
+};
 
 const OurTeamPage: React.FC = async () => {
   // Fetch real luxe agent data from the database

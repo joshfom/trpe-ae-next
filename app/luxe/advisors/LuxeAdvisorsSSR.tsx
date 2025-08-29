@@ -65,12 +65,12 @@ function ExcellenceSectionSSR() {
           <h3 className="text-sm sm:text-lg md:text-xl text-white font-medium mb-3 sm:mb-4 tracking-wide uppercase">
             Unmatched Excellence
           </h3>
-          <h2 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 sm:mb-8 font-playfair leading-tight">
+          <h3 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 sm:mb-8 font-playfair leading-tight">
             Luxury Real Estate
             <span className="block text-white">
               Redefined
             </span>
-          </h2>
+          </h3>
           <p className="text-lg sm:text-xl md:text-2xl text-gray-300 leading-relaxed mb-6 sm:mb-8">
             With decades of combined experience and billions in luxury property transactions, 
             our team represents the pinnacle of real estate excellence in Dubai&apos;s most exclusive markets.
@@ -125,12 +125,12 @@ function CTASectionSSR() {
         <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
           {/* Left Content */}
           <div className="flex-1 text-center lg:text-left">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
+            <h3 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-playfair leading-tight">
               Ready to Find Your
               <span className="block text-white">
                 Dream Property?
               </span>
-            </h2>
+            </h3>
             <p className="text-xl md:text-2xl text-white/90 leading-relaxed mb-8 max-w-2xl">
               Connect with our luxury real estate experts today and discover exclusive properties 
               that match your lifestyle and investment goals.

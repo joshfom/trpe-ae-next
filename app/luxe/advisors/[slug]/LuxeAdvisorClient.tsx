@@ -212,9 +212,9 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 {/* About Section */}
                 <div className="col-span-1 lg:col-span-2 pt-6 lg:px-16 h-full justify-between flex flex-col">
                     <div className="space-y-4 flex-1">
-                        <h2 className="text-4xl font-semibold text-white">
+                        <h3 className="text-4xl font-semibold text-white">
                             About {advisor?.firstName}
-                        </h2>
+                        </h3>
 
                         {advisor?.bio && (
                             <div className="space-y-2 text-gray-300 flex-1 overflow-y-auto mt-6 text-lg leading-relaxed" 
