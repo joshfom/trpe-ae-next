@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import 'swiper/css';
 import PropertyCardServer from "@/components/property-card-server";
 import Link from "next/link";
 import {PropertyType} from "@/types/property";
+import NextDynamic from "next/dynamic";
+
+// Dynamic import for client-side tabs
+const FeaturedListingsClientWrapper = NextDynamic(() => import('./FeaturedListingsClientWrapper'), {
+    loading: () => (
+        <div className="space-y-12">
+            {/* Loading state that matches server structure */}
+            <div className="space-y-6">
+                <div className="border-b border-gray-500 pb-3">
+                    <div className="h-8 bg-gray-200 animate-pulse rounded w-48"></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="h-64 bg-gray-200 animate-pulse rounded"></div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    )
+});
 
 interface FeaturedListingsSectionServerProps {
     saleListings: PropertyType[],
@@ -33,7 +53,7 @@ function PropertyGrid({ listings, offeringType }: { listings: PropertyType[], of
     );
 }
 
-// Server component for better SSR performance - shows only first tab (For Sale) content
+// Server component for better SSR performance - shows both sections initially, then hydrates to interactive tabs
 function FeaturedListingsSectionServer({ saleListings, rentalListings }: FeaturedListingsSectionServerProps) {
     // Add safety checks for the data
     const safeSaleListings = Array.isArray(saleListings) ? saleListings : [];
@@ -48,36 +68,12 @@ function FeaturedListingsSectionServer({ saleListings, rentalListings }: Feature
                     </h2>
                 </div>
 
-                {/* SSR Version - Shows For Sale properties without tab functionality */}
-                <div className="w-full space-y-3 sm:space-y-4 bg-transparent">
-                    {/* Static tab header for visual consistency */}
-                    <div className="bg-transparent border-b mb-3 sm:mb-4 border-gray-500 w-full">
-                        <div className="flex">
-                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 pr-4 sm:pr-6 border-b-4 border-black -mb-1.5 min-h-[44px] text-black font-medium">
-                                For Sale
-                            </div>
-                            <div className="text-lg sm:text-xl bg-transparent py-2 sm:py-3 pl-0 px-6 sm:px-8 -mb-1.5 min-h-[44px] text-gray-600 hover:text-gray-800 cursor-pointer">
-                                For Rent
-                            </div>
-                        </div>
-                    </div>
-                    
-                    {/* Show only For Sale properties for SSR */}
-                    <div className="">
-                        {safeSaleListings.length > 0 ? (
-                            <PropertyGrid listings={safeSaleListings} offeringType="for-sale" />
-                        ) : (
-                            <div className="text-center py-8">
-                                <p className="text-gray-500">No featured properties available at the moment.</p>
-                                <Link 
-                                    href="/properties/for-sale"
-                                    className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
-                                >
-                                    Browse All Properties
-                                </Link>
-                            </div>
-                        )}
-                    </div>
+                {/* Progressive Enhancement: Client-side interactive tabs */}
+                <div className="w-full">
+                    <FeaturedListingsClientWrapper 
+                        saleListings={safeSaleListings} 
+                        rentalListings={safeRentalListings} 
+                    />
                 </div>
             </div>
         </section>

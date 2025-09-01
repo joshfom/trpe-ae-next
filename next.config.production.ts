@@ -15,6 +15,11 @@ const productionConfig: NextConfig = {
         clientRouterFilter: false,
         clientRouterFilterAllowedRate: 0,
         serverComponentsExternalPackages: ['sharp'], // Move sharp to external packages
+        // Critical fixes for clientReferenceManifest error
+        forceSwcTransforms: true,
+        swcTraceProfiling: false,
+        // Disable problematic runtime features
+        serverSourceMaps: false,
     },
     
     images: {
@@ -49,12 +54,26 @@ const productionConfig: NextConfig = {
             };
         }
         
-        // Workaround for Next.js 15.5.x RSC issues
+        // Enhanced workaround for Next.js 15.5.x RSC issues
         if (!dev) {
             config.optimization = {
                 ...config.optimization,
                 realContentHash: false, // Disable real content hash in production
+                moduleIds: 'deterministic', // Ensure consistent module IDs
             };
+            
+            // Force proper client reference manifest generation
+            config.plugins = config.plugins || [];
+            config.plugins.push({
+                apply: (compiler: any) => {
+                    compiler.hooks.beforeCompile.tap('ClientReferenceManifestFix', () => {
+                        // Ensure proper client reference manifest initialization
+                        if (typeof globalThis !== 'undefined') {
+                            (globalThis as any).__webpack_require__ = (globalThis as any).__webpack_require__ || {};
+                        }
+                    });
+                }
+            });
         }
         
         return config;

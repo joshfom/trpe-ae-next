@@ -1,6 +1,7 @@
 import React from 'react';
 import SiteFooterWrapper from "@/components/SiteFooterWrapper";
 import SiteTopNavigation from "@/components/site-top-navigation";
+import ClientEnhancementWrapper from "./client-enhancement-wrapper";
 
 interface ClientLayoutProps {
     children: React.ReactNode
@@ -16,6 +17,8 @@ async function SiteLayoutClient({ children }: ClientLayoutProps) {
                 {children}
             </div>
             <SiteFooterWrapper />
+            {/* Client-side enhancements - Only loaded when JavaScript is available */}
+            <ClientEnhancementWrapper />
         </>
     );
 }

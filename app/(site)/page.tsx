@@ -1,7 +1,5 @@
 import 'swiper/css';
 import MainSearchServer from "@/features/search/MainSearchServer";
-import MainSearchSSR from "@/components/main-search-ssr";
-import SearchEnhancement from "@/features/search/SearchEnhancement";
 import Link from "next/link";
 import HomeAboutSection from "@/components/home/home-about-section";
 import {db} from "@/db/drizzle";
@@ -10,11 +8,40 @@ import {propertyImagesTable} from "@/db/schema/property-images-table";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {asc, eq, and, desc} from "drizzle-orm";
 import FeaturedListingsSectionServer from "@/features/site/Homepage/components/FeaturedListingsSectionServer";
-import {communityTable} from "@/db/schema/community-table";
+import {communityTable, type CommunitySelect} from "@/db/schema/community-table";
+
+// Local type for the homepage that matches CommunityType requirements
+type HomepageCommunityType = {
+    id: string;
+    name: string;
+    slug: string;
+    image: string;
+    label: string;
+    propertyCount: number;
+    metaTitle: string | null;
+    metaDesc: string | null;
+    about: string | null;
+    createdAt: string;
+    featured?: boolean;
+    displayOrder?: number;
+};
 import React, { Suspense } from "react";
+import NextDynamic from "next/dynamic";
 import { PropertyType } from "@/types/property";
 import { unstable_cache } from 'next/cache';
 import { SearchSkeleton, FeaturedListingsSkeleton } from '@/components/ssr-skeletons';
+import { SearchEnhancement } from './client-enhancement-wrapper';
+
+// Client-side enhancements - loaded only when JavaScript is available
+// Note: We'll render this in a client component wrapper
+const DynamicExpandable = NextDynamic(() => import("@/features/site/components/carousel/expandable"), {
+    loading: () => <div className="h-96 bg-gray-200 animate-pulse rounded-lg"></div>,
+    ssr: true
+});
+
+// Hybrid rendering approach - works with and without JavaScript
+export const dynamic = 'auto'; // Changed from 'force-static' to allow both SSR and CSR
+export const revalidate = 3600; // Revalidate every hour
 
 // Add the CommunityType interface for the communities section
 interface CommunityType {
@@ -29,7 +56,7 @@ interface CommunityType {
     properties?: Array<{ id: string }>;
 }
 
-// Cached database queries with proper SSR optimization
+// Enhanced cached database queries with better error handling and cache optimization
 const getOfferingTypes = unstable_cache(
     async () => {
         try {
@@ -44,10 +71,10 @@ const getOfferingTypes = unstable_cache(
             return { rentalType, saleType };
         } catch (error) {
             console.error('Error fetching offering types:', error);
-            // Return default types if database fails
+            // Return default types if database fails - ensures page still works
             return { 
-                rentalType: { id: 'for-rent', slug: 'for-rent' }, 
-                saleType: { id: 'for-sale', slug: 'for-sale' } 
+                rentalType: { id: 'for-rent', slug: 'for-rent', name: 'For Rent' }, 
+                saleType: { id: 'for-sale', slug: 'for-sale', name: 'For Sale' } 
             };
         }
     },
@@ -58,82 +85,67 @@ const getOfferingTypes = unstable_cache(
     }
 );
 
-// Create specific cached functions for each listing type
-const getRentalListings = unstable_cache(
-    async () => {
-        try {
-            return await db.query.propertyTable.findMany({
-                where: and(
-                    eq(propertyTable.offeringTypeId, 'for-rent'),
-                    eq(propertyTable.isFeatured, true),
-                    eq(propertyTable.status, 'published')
-                ),
-                orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
-                limit: 3,
-                with: {
-                    images: {
-                        limit: 1,
-                        orderBy: [asc(propertyImagesTable.order)],
-                    },
-                    amenities: true,
-                    developer: true,
-                    community: true,
-                    offeringType: true,
-                    type: true,
-                    city: true,
-                    agent: true,
-                    subCommunity: true,
-                },
-            });
-        } catch (error) {
-            console.error('Error fetching rental listings:', error);
-            return [];
-        }
-    },
-    ['homepage-rental-listings'],
-    {
-        revalidate: 1800, // Revalidate every 30 minutes
-        tags: ['properties', 'rental', 'featured']
-    }
-);
+// Unified listings function that works for both rental and sale
+const getListings = (offeringTypeId: string, limit: number = 3) => {
+    return unstable_cache(
+        async (offeringTypeId: string, limit: number) => {
+            try {
+                // First try to get featured properties
+                let listings = await db.query.propertyTable.findMany({
+                    where: and(
+                        eq(propertyTable.offeringTypeId, offeringTypeId),
+                        eq(propertyTable.isFeatured, true),
+                        eq(propertyTable.status, 'published')
+                    ),
+                    orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
+                    limit,
+                    with: {
+                        images: {
+                            limit: 1,
+                            orderBy: [asc(propertyImagesTable.order)],
+                        },
+                        developer: true,
+                        community: true,
+                        offeringType: true,
+                        type: true,
+                    }
+                });
 
-const getSaleListings = unstable_cache(
-    async () => {
-        try {
-            return await db.query.propertyTable.findMany({
-                where: and(
-                    eq(propertyTable.offeringTypeId, 'for-sale'),
-                    eq(propertyTable.isFeatured, true),
-                    eq(propertyTable.status, 'published')
-                ),
-                orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
-                limit: 3,
-                with: {
-                    images: {
-                        limit: 1,
-                        orderBy: [asc(propertyImagesTable.order)],
-                    },
-                    amenities: true,
-                    developer: true,
-                    community: true,
-                    offeringType: true,
-                    type: true,
-                    city: true,
-                    agent: true,
-                    subCommunity: true,
-                },
-            });
-        } catch (error) {
-            console.error('Error fetching sale listings:', error);
-            return [];
+                // If no featured properties found, get the first available properties
+                if (!listings || listings.length === 0) {
+                    listings = await db.query.propertyTable.findMany({
+                        where: and(
+                            eq(propertyTable.offeringTypeId, offeringTypeId),
+                            eq(propertyTable.status, 'published')
+                        ),
+                        orderBy: [desc(propertyTable.updatedAt), desc(propertyTable.createdAt)],
+                        limit,
+                        with: {
+                            images: {
+                                limit: 1,
+                                orderBy: [asc(propertyImagesTable.order)],
+                            },
+                            developer: true,
+                            community: true,
+                            offeringType: true,
+                            type: true,
+                        }
+                    });
+                }
+
+                return listings || [];
+            } catch (error) {
+                console.error(`Error fetching ${offeringTypeId} listings:`, error);
+                return [];
+            }
+        },
+        [`properties-${offeringTypeId}-${limit}`],
+        {
+            revalidate: 1800, // Revalidate every 30 minutes
+            tags: ['properties', `offering-${offeringTypeId}`, 'featured']
         }
-    },
-    ['homepage-sale-listings'],
-    {
-        revalidate: 1800, // Revalidate every 30 minutes
-        tags: ['properties', 'sale', 'featured']
-    }
-);
+    )(offeringTypeId, limit);
+};
 
 const getCommunities = unstable_cache(
     async () => {
@@ -153,13 +165,24 @@ const getCommunities = unstable_cache(
                 },
             });
 
-            // Transform to match CommunityType by adding propertyCount
-            return communities.map(community => ({
-                ...community,
-                propertyCount: community.properties ? community.properties.length : 0,
-                // Remove the properties array since we just needed it for counting
-                properties: undefined
-            })) as unknown as CommunityType[];
+            // Transform to match expandable component requirements (only needs name, slug, image)
+            return communities.map(community => {
+                const { properties, ...communityData } = community;
+                return {
+                    id: communityData.id,
+                    name: communityData.name || '',
+                    slug: communityData.slug,
+                    image: communityData.image || '',
+                    label: communityData.label || communityData.name || '',
+                    propertyCount: properties ? properties.length : 0,
+                    metaTitle: communityData.metaTitle,
+                    metaDesc: communityData.metaDesc,
+                    about: communityData.about,
+                    createdAt: communityData.createdAt || new Date().toISOString(),
+                    featured: communityData.featured ?? undefined,
+                    displayOrder: communityData.displayOrder ?? undefined,
+                } as HomepageCommunityType;
+            });
         } catch (error) {
             console.error('Error fetching communities:', error);
             return [];
@@ -172,9 +195,6 @@ const getCommunities = unstable_cache(
     }
 );
 
-// Enable static generation with revalidation
-export const revalidate = 3600; // Revalidate every hour
-
 export default async function Home() {
     try {
         // Use cached functions for better performance
@@ -184,10 +204,13 @@ export default async function Home() {
             console.warn('Missing offering types, using defaults');
         }
 
-        // Fetch listings in parallel for better performance with error handling
+        // Fetch listings in parallel for better performance with robust error handling
+        const rentalTypeId = rentalType?.id || 'k370xottdduadd5pmclg9vax';
+        const saleTypeId = saleType?.id || 'guwo8gsogptj5tj07exegp8g';
+        
         const [rentalListings, saleListings, communities] = await Promise.allSettled([
-            getRentalListings(),
-            getSaleListings(),
+            getListings(rentalTypeId, 3),
+            getListings(saleTypeId, 3),
             getCommunities()
         ]);
 
@@ -259,23 +282,29 @@ export default async function Home() {
                     </div>
                 </div>
                 
-                {/* Mobile-optimized search */}
+                {/* Mobile-optimized search - Works both with and without JavaScript */}
                 <div className="w-full max-w-4xl mx-auto">
-                    {/* SSR Search - Always visible for SSR */}
+                    {/* Suspense wrapper for better loading experience */}
                     <div data-server-search>
-                        <MainSearchSSR />
+                        <Suspense fallback={<SearchSkeleton />}>
+                            <MainSearchServer mode="general" />
+                        </Suspense>
                     </div>
+                    {/* Progressive enhancement for search functionality - positioned in hero */}
+                    <SearchEnhancement mode="general" />
                 </div>
             </div>
         </div>
     </section>
 
-                    {/* Mobile-first featured listings */}
+                    {/* Mobile-first featured listings with interactive tabs */}
                     <div className="w-full">
-                        <FeaturedListingsSectionServer
-                            saleListings={finalSaleListings as any}
-                            rentalListings={finalRentalListings as any}
-                        />
+                        <Suspense fallback={<FeaturedListingsSkeleton />}>
+                            <FeaturedListingsSectionServer
+                                saleListings={finalSaleListings as any}
+                                rentalListings={finalRentalListings as any}
+                            />
+                        </Suspense>
                     </div>
 
                     {/* Mobile-first about section */}
@@ -284,85 +313,36 @@ export default async function Home() {
                     </div>
 
 
-                    {/* Mobile-first communities section */}
-                                {/* Mobile-first communities section */}
-                <section className="w-full bg-white">
-                    {/* Static communities grid - Works without JavaScript */}
-                    <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-                        <div className="max-w-7xl mx-auto">
-                            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 lg:mb-8 text-gray-900">
-                                Top Communities In Dubai
-                            </h3>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mt-6 lg:mt-8">
-                                {finalCommunities.slice(0, 8).map((community, index) => (
-                                    <div key={community.id || index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg">
-                                        <img 
-                                            className="object-cover absolute w-full h-full"
-                                            src={community.image || 'https://trpe.ae/wp-content/uploads/2024/03/downtown-dxb_result.webp'}
-                                            alt={community.label || community.name || ''}
-                                            loading="lazy"
-                                        />
-                                        <div className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors"/>
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
-                                            <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center">
-                                                {community.label || community.name}
-                                            </h3>
-                                            <Link 
-                                                href={`/communities/${community.slug}`}
-                                                className="border rounded-full py-2 sm:py-3 px-4 sm:px-6 border-white hover:bg-white hover:text-black bg-transparent font-semibold transition-colors min-h-[44px] flex items-center"
-                                            >
-                                                View Community
-                                            </Link>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex justify-center mt-6 lg:mt-8">
-                                <Link 
-                                    href="/communities"
-                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition-colors min-h-[44px] flex items-center"
-                                >
-                                    View All Communities
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                    {/* Client Enhancement - Adds carousel and interactions */}
-                    <div className="hidden" data-client-enhancement>
+                    {/* Hybrid Communities Section - Works both SSR and CSR */}
+                    <section className="w-full bg-black">
                         <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
                             <div className="max-w-7xl mx-auto text-white">
                                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold mb-6 lg:mb-8">
                                     Top Communities In Dubai
                                 </h3>
 
-                                {/* Desktop expandable carousel - Hidden for SSR, will be enhanced by client */}
-                                <div className="hidden md:flex">
-                                    <div className="text-center py-8">
-                                        <p className="text-gray-400 mb-4">Interactive community carousel requires JavaScript.</p>
-                                        <Link 
-                                            href="/communities"
-                                            className="text-blue-400 hover:text-blue-300 underline"
-                                        >
-                                            View all communities
-                                        </Link>
-                                    </div>
+                                {/* Desktop expandable carousel - Enhanced by client-side JS */}
+                                <div className="hidden md:block">
+                                    <DynamicExpandable 
+                                        list={finalCommunities as any} 
+                                        className="w-full min-w-72 mt-6 storybook-fix"
+                                    />
                                 </div>
 
-                                {/* Mobile grid - Works without JavaScript */}
+                                {/* Mobile grid - Always works, enhanced by JavaScript */}
                                 <div className="grid grid-cols-1 md:hidden gap-4 sm:gap-6 mt-6 lg:mt-8">
-                                    {finalCommunities.map((community, index) => (
-                                        <div key={index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
+                                    {finalCommunities.slice(0, 6).map((community, index) => (
+                                        <div key={community.id || index} className="relative h-[300px] sm:h-[350px] lg:h-[400px] w-full bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden">
                                             <img 
                                                 className="object-cover absolute w-full h-full"
                                                 src={community.image || 'https://trpe.ae/wp-content/uploads/2024/03/downtown-dxb_result.webp'}
-                                                alt={community.label}
+                                                alt={community.label || community.name || ''}
+                                                loading="lazy"
                                             />
                                             <div className="absolute inset-0 bg-black/30 hover:bg-black/50 transition-colors"/>
                                             <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
                                                 <h3 className="text-xl sm:text-2xl font-semibold mb-3 sm:mb-4 text-center">
-                                                    {community.label}
+                                                    {community.label || community.name}
                                                 </h3>
                                                 <Link 
                                                     href={`/communities/${community.slug}`}
@@ -386,8 +366,7 @@ export default async function Home() {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>                {/* Mobile-first "Why Invest in Dubai" section */}
+                    </section>                {/* Mobile-first "Why Invest in Dubai" section */}
                 <section className="w-full bg-black">
                     <div className="px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
                         <div className="max-w-7xl mx-auto">
@@ -430,15 +409,17 @@ export default async function Home() {
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/emirate-towers.webp"
+                                                    src="https://cdn.trpe.ae/emirate-towers%20(1).webp"
                                                     alt="Dubai Emirates Towers"
+                                                    loading="lazy"
                                                 />
                                             </div>
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/burj-arab.webp"
+                                                    src="https://cdn.trpe.ae/burj-arab_compressed%20(1).webp"
                                                     alt="Burj Al Arab"
+                                                    loading="lazy"
                                                 />
                                             </div>
                                         </div>
@@ -446,15 +427,17 @@ export default async function Home() {
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/home-3.jpg"
+                                                    src="https://cdn.trpe.ae/home-3%20(1).webp"
                                                     alt="Dubai Real Estate"
+                                                    loading="lazy"
                                                 />
                                             </div>
                                             <div className="relative h-40 sm:h-52 lg:h-72 w-full">
                                                 <img 
                                                     className="object-cover rounded-lg sm:rounded-xl lg:rounded-2xl border border-white/20 absolute w-full h-full"
-                                                    src="/images/bur-khalifa.webp"
+                                                    src="https://cdn.trpe.ae/bur-khalifa-trpe.webp"
                                                     alt="Burj Khalifa"
+                                                    loading="lazy"
                                                 />
                                             </div>
                                         </div>
@@ -467,22 +450,58 @@ export default async function Home() {
 
 
             </main>
-           {/* Progressive enhancement for search functionality */}
-           <SearchEnhancement />
         </div>
     );
     } catch (error) {
         console.error('Critical error in home page:', error);
-        // Return a fallback page
+        // Return a robust fallback page that works without JavaScript
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold mb-4">Welcome to TRPE</h1>
-                    <p className="text-gray-600">We&apos;re experiencing some technical difficulties. Please try again later.</p>
-                    <Link href="/properties" className="mt-4 inline-block bg-blue-600 text-white px-6 py-2 rounded">
-                        View Properties
-                    </Link>
-                </div>
+            <div className="min-h-screen bg-white">
+                {/* Basic hero section fallback */}
+                <section className="relative w-full h-[60vh] min-h-[400px] bg-black">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center text-white px-4">
+                            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+                                The Real Property Experts
+                            </h1>
+                            <p className="text-lg md:text-xl mb-8">
+                                Your Gateway to Dubai&apos;s Real Estate Market
+                            </p>
+                            <div className="space-y-4 md:space-y-0 md:space-x-4">
+                                <Link 
+                                    href="/properties" 
+                                    className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition-colors"
+                                >
+                                    Browse Properties
+                                </Link>
+                                <Link 
+                                    href="/contact-us" 
+                                    className="inline-block border border-white text-white hover:bg-white hover:text-black font-semibold py-3 px-6 rounded-full transition-colors"
+                                >
+                                    Contact Us
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                {/* Basic content fallback */}
+                <section className="py-16 px-4">
+                    <div className="max-w-4xl mx-auto text-center">
+                        <h2 className="text-2xl font-bold mb-8">We&apos;re experiencing some technical difficulties</h2>
+                        <p className="text-gray-600 mb-8">Please try refreshing the page or browse our properties directly.</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Link href="/properties" className="block p-6 border rounded-lg hover:shadow-lg transition-shadow">
+                                <h3 className="text-xl font-semibold mb-2">Browse Properties</h3>
+                                <p className="text-gray-600">Explore our latest property listings</p>
+                            </Link>
+                            <Link href="/communities" className="block p-6 border rounded-lg hover:shadow-lg transition-shadow">
+                                <h3 className="text-xl font-semibold mb-2">Communities</h3>
+                                <p className="text-gray-600">Discover Dubai&apos;s top communities</p>
+                            </Link>
+                        </div>
+                    </div>
+                </section>
             </div>
         );
     }
