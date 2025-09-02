@@ -3,18 +3,8 @@ import { createEdgeStoreNextHandler } from '@edgestore/server/adapters/next/app'
 import {AzureProvider} from "@edgestore/server/providers/azure";
 import {AWSProvider} from "@edgestore/server/providers/aws";
 
-// For static export compatibility
-export const dynamic = 'force-static';
-export const revalidate = 3600; // Revalidate every hour
-
-// Generate static params for edgestore routes
-export async function generateStaticParams() {
-    return [
-        { edgestore: ['upload'] },
-        { edgestore: ['confirm'] },
-        { edgestore: ['delete'] },
-    ];
-}
+// EdgeStore requires dynamic routes for file uploads
+export const dynamic = 'force-dynamic';
 
 const es = initEdgeStore.create();
 
@@ -22,7 +12,14 @@ const es = initEdgeStore.create();
  * This is the main router for the Edge Store buckets.
  */
 const edgeStoreRouter = es.router({
-    publicFiles: es.fileBucket()
+    publicFiles: es.fileBucket({
+        maxSize: 1024 * 1024 * 50, // 50MB
+        accept: ['image/*', 'application/pdf'],
+    })
+        .beforeUpload(({ ctx, input }) => {
+            // Optional: Add authentication check here
+            return true; // allow upload
+        })
         .beforeDelete(({ ctx, fileInfo }) => {
             return true; // allow delete
         }),
@@ -30,7 +27,10 @@ const edgeStoreRouter = es.router({
 
 const handler = createEdgeStoreNextHandler({
     provider: AWSProvider({
-
+        accessKeyId: process.env.ES_AWS_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.ES_AWS_SECRET_ACCESS_KEY!,
+        region: process.env.ES_AWS_REGION!,
+        bucketName: process.env.ES_AWS_BUCKET_NAME!,
     }),
     router: edgeStoreRouter,
 });
