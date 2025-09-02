@@ -1,23 +1,15 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react"
-import {env} from "@/config/env";
 
 // Create a proper client-side auth client that makes API requests
-// rather than importing server-side database code
-const baseURL = process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_URL || 'https://trpe.ae';
-console.log('🔧 Better Auth Client baseURL:', baseURL);
+// Use localhost for development, production URL for production
+const baseURL = typeof window !== 'undefined' && window.location.hostname === 'localhost' 
+    ? `http://localhost:${window.location.port || 3000}`
+    : process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_URL || 'https://trpe.ae';
 
 export const authClient = createAuthClient({
     baseURL,
-    debug: true, // Enable debug logging
-    onError: (error: { code?: string; message?: string }) => {
-        console.error('Auth Client Error:', error);
-        // Add more specific diagnostics
-        if (error.code === 'ECONNREFUSED') {
-            console.error('Connection refused - check that your database is running and accessible');
-        }
-    },
     // Add retry logic to handle temporary connection issues
     retry: {
         retries: 3, // Retry 3 times
