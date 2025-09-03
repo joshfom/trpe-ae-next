@@ -223,7 +223,7 @@ export class LuxeStructuredDataGenerator {
         {
           '@type': 'PropertyValue',
           name: 'Size',
-          value: property.size ? `${property.size} sqft` : 'TBD'
+          value: property.size ? `${Math.round(property.size / 100)} sqft` : 'TBD'
         },
         {
           '@type': 'PropertyValue',

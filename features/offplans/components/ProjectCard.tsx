@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {truncateText} from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css';
@@ -27,7 +26,7 @@ const ProjectCard = memo<ProjectCardProps>(({ project }) => {
         title: truncateText(project.name, 35),
         description: prepareExcerpt(project.about, 200),
         fromPrice: currencyConverter(parseInt(`${project.fromPrice}`)),
-        toSize: unitConverter(parseInt(`${project.toSize}`) / 100)
+        toSize: `${(parseInt(`${project.toSize}`) / 100).toLocaleString()} sq.ft`
     }), [project.name, project.about, project.fromPrice, project.toSize]);
 
     const projectLink = useMemo(() => 

@@ -9,10 +9,10 @@ interface InsightContentProps {
 export function InsightContent({ insight }: InsightContentProps) {
   return (
     <article className="prose prose-sm max-w-none prose-p:my-1">
-      {/* Mobile Title */}
-      <h1 className="block lg:hidden text-2xl sm:text-3xl font-light text-gray-900 mb-6 leading-tight">
+      {/* Mobile Title - Changed from h1 to h2 since h1 is already in InsightHeader */}
+      <h2 className="block lg:hidden text-2xl sm:text-3xl font-light text-gray-900 mb-6 leading-tight">
         {insight.title}
-      </h1>
+      </h2>
 
       {/* Article Content - Use TipTapView for proper HTML rendering */}
       <div className="text-gray-700 leading-relaxed">

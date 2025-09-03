@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
 import { Dot } from "lucide-react";
-import unitConverter from "@/lib/unit-converter";
 import { PropertyType } from "@/types/property";
 
 interface PropertyListCardProps {
@@ -24,7 +23,7 @@ const PropertyListCard = memo<PropertyListCardProps>(({ listing }) => {
         title: truncateText(listing.title, 30),
         description: truncateText(listing.description, 95),
         price: currencyConverter(parseInt(listing.price)),
-        size: unitConverter(size)
+        size: size ? `${size.toLocaleString()} sq.ft` : null
     }), [listing.title, listing.description, listing.price, size]);
 
     const firstImage = useMemo(() => 

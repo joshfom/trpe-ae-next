@@ -5,7 +5,6 @@ import {headers} from "next/headers";
 import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
 import {notFound} from "next/navigation";
 
@@ -54,7 +53,7 @@ async function LuxeListings({ unitType, offeringType, searchParams = {}, page = 
         // Memoize computed values
         const computedValues = useMemo(() => ({
             price: currencyConverter(parseInt(`${property.price}`) || 0),
-            size: property.size ? unitConverter(property.size / 100) + ' ' : null,
+            size: property.size ? `${(property.size / 100).toLocaleString()} sq.ft` : null,
             bedroomText: property?.bedrooms != null && property.bedrooms < 1 ? 'Studio' : property.bedrooms,
             excerptText: prepareExcerpt(property.description || '', 90),
             titleText: truncateText(property.title || '', 35)

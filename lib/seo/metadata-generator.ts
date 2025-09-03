@@ -363,7 +363,7 @@ export class SEOMetadataGenerator {
     const baseTitle = `${property.title} | ${property.community?.name} | TRPE Global`;
     const title = this.truncateTitle(baseTitle);
     
-    const baseDescription = `${property.bedrooms} bedroom ${property.type?.name} for ${property.offeringType?.name?.toLowerCase()} in ${property.community?.name}, Dubai. ${property.size ? `${property.size} sqft` : ''} ${property.price ? `- AED ${property.price.toLocaleString()}` : ''}`;
+    const baseDescription = `${property.bedrooms} bedroom ${property.type?.name} for ${property.offeringType?.name?.toLowerCase()} in ${property.community?.name}, Dubai. ${property.size ? `${Math.round(property.size / 100)} sqft` : ''} ${property.price ? `- AED ${property.price.toLocaleString()}` : ''}`;
     const description = this.truncateDescription(baseDescription);
     
     const image = property.images?.[0]?.crmUrl || this.defaultImage;

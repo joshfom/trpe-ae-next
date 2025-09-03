@@ -1,7 +1,7 @@
 import React from 'react';
 import ListingsServer from "@/features/properties/components/ListingsServer";
-import {Metadata} from "next";
-import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import {Metadata, ResolvingMetadata} from "next";
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
 import {eq} from "drizzle-orm";
@@ -82,11 +82,7 @@ async function PropertySearchPage({ searchParams }: Props) {
     return (
         <div className={'bg-slate-50 min-h-screen'}>
             {/* Mobile-optimized search filter - Server Side Rendered */}
-            <PropertyPageSearchFilterServer 
-                offeringType='for-rent' 
-                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
-                pathname={pathname}
-            />
+                        <PropertyPageSearchFilter offeringType='for-rent'/>
             
             {/* Mobile-first heading and meta section */}
             <div className="flex flex-col lg:flex-row justify-between py-4 lg:py-6 items-start lg:items-center pt-6 lg:pt-12 max-w-7xl px-4 sm:px-6 lg:px-0 mx-auto gap-4">

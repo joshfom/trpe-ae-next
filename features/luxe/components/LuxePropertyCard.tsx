@@ -4,7 +4,6 @@ import {Dot} from "lucide-react";
 import Link from "next/link";
 import {truncateText} from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css';
@@ -17,7 +16,7 @@ interface LuxePropertyCardProps {
 
 const LuxePropertyCard = memo<LuxePropertyCardProps>(({property}) => {
     // Memoize computed values
-    const size = useMemo(() => property.size, [property.size]);
+    const size = useMemo(() => property.size ? property.size / 100 : 0, [property.size]);
     const imageUrls = useMemo(() => 
         property.images.map(image => image.s3Url), 
         [property.images]
@@ -40,7 +39,7 @@ const LuxePropertyCard = memo<LuxePropertyCardProps>(({property}) => {
         title: truncateText(property.title, 60),
         description: prepareExcerpt(property.description, 90),
         price: currencyConverter(parseInt(property.price)),
-        size: unitConverter(size)
+        size: size ? `${size.toLocaleString()} sq.ft` : null
     }), [property.title, property.description, property.price, size]);
 
     const firstImageUrl = useMemo(() => 

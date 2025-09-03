@@ -2,7 +2,6 @@
 import React, {memo, useEffect, useMemo, useState} from 'react';
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import {useGetFeaturedProperty} from "@/features/properties/api/use-get-featured-property";
-import unitConverter from "@/lib/unit-converter";
 import currencyConverter from "@/lib/currency-converter";
 import Link from "next/link";
 
@@ -35,7 +34,7 @@ const MenuFeaturedProperty = memo(({offeringType}: MenuFeaturedPropertyProps) =>
         if (!property) return null;
         
         return {
-            size: unitConverter(property?.size ? Number(property.size) : null),
+            size: property?.size ? `${(Number(property.size) / 100).toLocaleString()} sq.ft` : null,
             price: currencyConverter(property?.price ? Number(property.price) : null),
             propertyUrl: `/properties/${property?.offeringType?.slug}/${property.slug}`
         };

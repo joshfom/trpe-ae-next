@@ -9,7 +9,6 @@ import currencyConverter from "@/lib/currency-converter";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {ShareSocial} from "react-share-social";
 import {usePathname} from 'next/navigation'
-import unitConverter from "@/lib/unit-converter";
 import {ImageSwiperOptimized} from "@/features/properties/components/ImageSwiperOptimized";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -52,10 +51,10 @@ const ListingDetailViewOptimized = React.memo<ListingDetailViewProps>(({property
         [property?.price]
     );
 
-    const formattedSize = useMemo(() => 
-        unitConverter(property?.size), 
-        [property?.size]
-    );
+    const formattedSize = useMemo(() => {
+        const sqft = property?.size ? property.size / 100 : null;
+        return sqft ? `${sqft.toLocaleString()} sq.ft` : null;
+    }, [property?.size]);
 
     const displayBedrooms = useMemo(() => 
         property?.type?.slug !== 'commercial' && property?.bedrooms, 

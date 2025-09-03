@@ -1,7 +1,7 @@
 import React from 'react';
 import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
@@ -108,61 +108,38 @@ async function PropertySearchPage({ searchParams }: Props) {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Mobile-first container - no extra spacing needed as layout handles it */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                
-                {/* Mobile-optimized search filter */}
-                <div className="mb-6 sm:mb-8">
-                    <div className="w-full">
-                        <PropertyPageSearchFilterServer 
-                            offeringType='commercial-sale'
-                            searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
-                            pathname={pathname}
-                        />
-                    </div>
-                </div>
-                
-                {/* Mobile-first heading and meta section */}
-                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4">
-                    <div className="flex-1">
-                        <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
-                            <SearchPageH1Heading
-                                heading={pageTitle}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Admin controls - mobile-responsive */}
-                    {user && (
-                        <div className="flex justify-start lg:justify-end">
-                            <EditPageMetaSheetServer
-                                pageMeta={pageMeta}
-                                pathname={pathname}
-                            />
-                        </div>
-                    )}
-                </div>
-                
-                {/* Mobile-optimized listings section */}
-                <div className="w-full">
-                    <ListingsServer 
-                        offeringType={'commercial-sale'}
-                        searchParams={resolvedSearchParams}
-                        page={page}
-                        propertyType="commercial"
+        <div className={'bg-slate-100'}>
+            <PropertyPageSearchFilter offeringType='commercial-sale'/>
+            
+            <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
+                <div className="flex space-x-2 items-center ">
+                    <SearchPageH1Heading
+                        heading={pageTitle}
                     />
                 </div>
 
-                {/* Mobile-responsive content section */}
-                {pageMeta?.content && (
-                    <div className="mt-8 sm:mt-12 lg:mt-16 bg-white rounded-lg p-4 sm:p-6 lg:p-8">
-                        <div className="prose prose-sm sm:prose lg:prose-lg max-w-none">
-                            <TipTapViewServer content={pageMeta.content}/>
-                        </div>
+                {user && (
+                    <div className="flex justify-end mt-4 px-6">
+                        <EditPageMetaSheetServer
+                            pageMeta={pageMeta}
+                            pathname={pathname}
+                        />
                     </div>
                 )}
             </div>
+            
+            <ListingsServer
+                offeringType={'commercial-sale'}
+                searchParams={resolvedSearchParams}
+                page={page}
+                propertyType="commercial"
+            />
+
+            {pageMeta?.content && (
+                <div className="max-w-7xl bg-white mx-auto px-4 py-8">
+                    <TipTapViewServer content={pageMeta.content}/>
+                </div>
+            )}
         </div>
     );
 }

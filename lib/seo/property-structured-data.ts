@@ -319,7 +319,7 @@ export class PropertyStructuredData {
     }
     
     if (property.size) {
-      parts.push(`spanning ${property.size} sqft`);
+      parts.push(`spanning ${Math.round(property.size / 100)} sqft`);
     }
     
     // Location

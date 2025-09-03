@@ -1,7 +1,7 @@
 import React from 'react';
 import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {communityTable} from "@/db/schema/community-table";
@@ -227,11 +227,7 @@ async function PropertySearchPage({ searchParams, params }: Props) {
                 {/* Mobile-optimized search filter */}
                 <div className="mb-6 sm:mb-8">
                     <div className="w-full">
-                        <PropertyPageSearchFilterServer 
-                            offeringType='commercial-sale'
-                            searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
-                            pathname={pathname}
-                        />
+                        <PropertyPageSearchFilter offeringType='commercial-sale'/>
                     </div>
                 </div>
                 

@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import { prepareExcerpt } from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
 import { getOptimalImageConfig } from "@/lib/mobile/image-optimization";
@@ -46,7 +45,7 @@ const PropertyCard = memo<PropertyCardProps>(({ property, offeringType }) => {
         title: truncateText(property.title, 35),
         description: prepareExcerpt(property.description, 90),
         price: currencyConverter(parseInt(property.price)),
-        size: unitConverter(size)
+        size: size ? `${size.toLocaleString()} sq.ft` : null
     }), [property.title, property.description, property.price, size]);
 
 

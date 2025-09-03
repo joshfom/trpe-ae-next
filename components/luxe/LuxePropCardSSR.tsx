@@ -107,7 +107,7 @@ export default function LuxePropCardSSR({
           <div className="flex items-center gap-1.5">
             <Square className="w-4 h-4 text-gray-500" />
             <span className="text-sm font-medium">{formatSqft(sqft)}</span>
-            <span className="text-xs">sq.ft</span>
+            <span className="text-xs">Sq</span>
           </div>
         </div>
 

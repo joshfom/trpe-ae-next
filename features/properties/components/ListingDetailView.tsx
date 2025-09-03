@@ -9,7 +9,6 @@ import currencyConverter from "@/lib/currency-converter";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {ShareSocial} from "react-share-social";
 import {usePathname} from 'next/navigation'
-import unitConverter from "@/lib/unit-converter";
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -230,7 +229,7 @@ function ListingDetailView({property}: ListingDetailViewProps) {
                             <div className={'flex items-center'}>
                                 <PropSize className={' w-5 h-5 mr-2'} />
                                 {
-                                    unitConverter(size / 100) + ' '
+                                    size ? `${(size / 100).toLocaleString()} sq.ft` : ''
                                 }
                             </div>
 
@@ -411,7 +410,7 @@ function ListingDetailView({property}: ListingDetailViewProps) {
                 slides={images.map(image => ({
                     src: image.s3Url,
                     title: title,
-                    description: `${bedrooms} Bedrooms, ${bathrooms} Bathrooms, ${unitConverter(size)}`
+                    description: `${bedrooms} Bedrooms, ${bathrooms} Bathrooms, ${size ? (size / 100).toLocaleString() + ' sq.ft' : ''}`
                 }))}
             />
         </div>

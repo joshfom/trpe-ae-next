@@ -649,7 +649,7 @@ export default function LuxePageClient({
                   whileTap={{ scale: 0.95 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Link href="/properties" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
+                  <Link href="/luxe/dubai/properties" className='inline-flex items-center px-6 py-3 bg-primary text-white rounded-3xl hover:bg-white hover:text-black hover:border-slate-200 border border-transparent transition-colors text-sm sm:text-base min-h-[44px]'>
                     Explore Properties
                   </Link>
                 </motion.div>

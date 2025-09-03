@@ -109,7 +109,7 @@ async function AdminLuxeProperties() {
                                                 {property.bedrooms ? `${property.bedrooms} bed` : ''} 
                                                 {property.bedrooms && property.bathrooms ? ' • ' : ''}
                                                 {property.bathrooms ? `${property.bathrooms} bath` : ''}
-                                                {property.size ? ` • ${Math.round(property.size )} sqft` : ''}
+                                                {property.size ? ` • ${Math.round(property.size / 100)} sqft` : ''}
                                             </div>
                                             
                                             <div className="flex items-center justify-between mt-auto">

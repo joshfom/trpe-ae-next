@@ -9,7 +9,6 @@ import currencyConverter from "@/lib/currency-converter";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {ShareSocial} from "react-share-social";
 import {usePathname, useSearchParams} from 'next/navigation'
-import unitConverter from "@/lib/unit-converter";
 import {ImageSwiper} from "@/features/properties/components/ImageSwiper";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
@@ -251,12 +250,12 @@ const ProjectDetailView = memo<ProjectDetailViewProps>(({project}) => {
 
                 <div>
                     Size from {' '} <span
-                    className="font-semibold">{unitConverter(parseInt(`${project.fromSize}`) / 100)}</span>
+                    className="font-semibold">{(parseInt(`${project.fromSize}`) / 100).toLocaleString()} sq.ft</span>
                 </div>
 
                 <div>
                     Size upto {' '} <span
-                    className="font-semibold">{unitConverter(parseInt(`${project.toSize}`) / 100 )}</span>
+                    className="font-semibold">{(parseInt(`${project.toSize}`) / 100).toLocaleString()} sq.ft</span>
                 </div>
 
                 <div className="">

@@ -107,7 +107,7 @@ export default async function LuxePropertiesPage() {
                   currency="AED"
                   beds={property.bedrooms || 0}
                   baths={property.bathrooms || 0}
-                  sqft={property.size || 0}
+                  sqft={property.size ? Math.round(property.size / 100) : 0}
                   imageUrl={primaryImage || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop'}
                   status={property.offeringType?.name as "For Sale" | "For Rent" | "Sold" || "For Sale"}
                   showPrice={true}
@@ -133,7 +133,7 @@ export default async function LuxePropertiesPage() {
                   currency="AED"
                   beds={property.bedrooms || 0}
                   baths={property.bathrooms || 0}
-                  sqft={property.size || 0}
+                  sqft={property.size ? Math.round(property.size / 100) : 0}
                   imageUrl={primaryImage || 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&h=600&fit=crop'}
                   status={property.offeringType?.name as "For Sale" | "For Rent" | "Sold" || "For Sale"}
                   showPrice={true}

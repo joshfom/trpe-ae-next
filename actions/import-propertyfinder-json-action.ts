@@ -550,17 +550,18 @@ async function processPropertyWithErrorHandling(
             stats.luxePropertiesWithImages++;
             luxuryStats.luxuryWithImages++;
             console.log(`💎 LUXURY WITH IMAGES: ${mappedProperty.referenceNumber} (${mappedProperty.images.length} images)`);
-            console.log(`💰 Price: ${mappedProperty.price.toLocaleString()} AED`);
+            console.log(`💰 Price: ${mappedProperty.price.toLocaleString()} AED (PropertyFinder luxury listing)`);
             console.log(`✅ Images will be processed for luxury property`);
           } else {
             stats.luxePropertiesWithoutImages++;
             luxuryStats.luxuryWithoutImages++;
             console.log(`💎 LUXURY WITHOUT IMAGES: ${mappedProperty.referenceNumber}`);
-            console.log(`💰 Price: ${mappedProperty.price.toLocaleString()} AED`);
+            console.log(`💰 Price: ${mappedProperty.price.toLocaleString()} AED (PropertyFinder luxury listing)`);
             console.log(`⚠️ No images to process for luxury property`);
           }
         } else {
-          console.log(`🏠 Standard property: ${mappedProperty.referenceNumber} (${mappedProperty.price.toLocaleString()} AED - below 20M threshold)`);
+          // This should never happen since all PropertyFinder properties are luxury
+          console.log(`🏠 PropertyFinder property (should be luxury): ${mappedProperty.referenceNumber} (${mappedProperty.price.toLocaleString()} AED)`);
         }
 
         // Log property details
@@ -1231,15 +1232,18 @@ function extractReferenceNumber(reference: string): string {
 /**
  * Check if a property qualifies as luxury based on price threshold
  * Requirements: 3.1 - Price threshold checking function (20M AED)
+ * NOTE: PropertyFinder specializes in luxury properties - ALL imports are treated as luxury
  */
 function isLuxuryProperty(price: number): boolean {
-  const LUXURY_PRICE_THRESHOLD = 20_000_000; // 20 million AED
-  return price > LUXURY_PRICE_THRESHOLD;
+  // PropertyFinder specializes in luxury real estate
+  // All PropertyFinder listings should be treated as luxury regardless of price
+  return true;
 }
 
 /**
  * Set isLuxe flag and log luxury property identification
  * Requirements: 3.2, 3.4 - Implement isLuxe flag setting and logging
+ * NOTE: PropertyFinder specializes in luxury properties - ALL imports are luxury
  */
 function setLuxuryStatus(price: number, referenceNumber: string, images: string[]): {
   isLuxe: boolean;
@@ -1248,8 +1252,8 @@ function setLuxuryStatus(price: number, referenceNumber: string, images: string[
   const isLuxe = isLuxuryProperty(price);
   
   if (isLuxe) {
-    console.log(`💎 LUXURY PROPERTY DETECTED: ${referenceNumber}`);
-    console.log(`💰 Price: ${price.toLocaleString()} AED (above 20M threshold)`);
+    console.log(`💎 LUXURY PROPERTY (PropertyFinder): ${referenceNumber}`);
+    console.log(`💰 Price: ${price.toLocaleString()} AED (PropertyFinder luxury listing)`);
     console.log(`🖼️ Images available for processing: ${images.length}`);
     
     if (images.length > 0) {
@@ -1257,9 +1261,6 @@ function setLuxuryStatus(price: number, referenceNumber: string, images: string[
     } else {
       console.log(`⚠️ No images available for luxury property - image processing skipped`);
     }
-  } else {
-    console.log(`🏠 Standard property: ${referenceNumber} (${price.toLocaleString()} AED - below luxury threshold)`);
-    console.log(`⏭️ Image processing skipped for non-luxury property`);
   }
   
   // Requirements: 3.3 - Conditional logic for image processing based on luxury status

@@ -196,7 +196,7 @@ export function generatePropertyFAQs(property: PropertyType): Array<{ question: 
   if (property.size) {
     faqs.push({
       question: `What is the area size of this property?`,
-      answer: `This property has an area of ${property.size} square feet.`
+      answer: `This property has an area of ${Math.round(property.size / 100)} square feet.`
     });
   }
 

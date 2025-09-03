@@ -84,7 +84,7 @@ export default async function PropertyDetailPage({ params }: { params: { slug: s
                 <span className="font-semibold">Bathrooms:</span> {property.bathrooms}
               </div>
               <div>
-                <span className="font-semibold">Size:</span> {property.size} sqft
+                <span className="font-semibold">Size:</span> {property.size ? Math.round(property.size / 100) : 0} sqft
               </div>
               <div>
                 <span className="font-semibold">Price:</span> AED {property.price?.toLocaleString()}

@@ -164,9 +164,9 @@ const LuxeAdvisorClient: React.FC<LuxeAdvisorClientProps> = ({ advisor, journalA
                 <div className="py-6">
                     <div className="bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] shadow-lg rounded-xl p-6 flex items-center justify-center flex-col gap-4 border border-white/20">
                         <div className="flex flex-col gap-2">
-                            <h1 className="text-3xl text-center font-semibold bg-gradient-to-r  bg-clip-text text-white">
+                            <h2 className="text-3xl text-center font-semibold bg-gradient-to-r  bg-clip-text text-white">
                                 {advisor?.firstName + ' ' + advisor?.lastName}
-                            </h1>
+                            </h2>
                             <div className="flex justify-between items-center">
                                 <p className="text-center text-gray-300">Luxury Property Advisor</p>
                                 {advisor?.rera && (

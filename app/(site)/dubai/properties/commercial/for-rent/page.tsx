@@ -1,7 +1,7 @@
 import React from 'react';
 import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {eq} from "drizzle-orm";
 import {offeringTypeTable} from "@/db/schema/offering-type-table";
@@ -114,24 +114,18 @@ async function PropertySearchPage({searchParams}: Props) {
     }
 
     return (
-        <div className={'bg-slate-50 min-h-screen'}>
-            {/* Mobile-optimized search filter - Server Side Rendered */}
-            <PropertyPageSearchFilterServer 
-                offeringType='commercial-rent'
-                searchParams={new URLSearchParams(resolvedSearchParams as Record<string, string>)}
-                pathname={pathname}
-            />
+        <div className={'bg-slate-100'}>
+            <PropertyPageSearchFilter offeringType='commercial-rent'/>
             
-            {/* Mobile-first heading and meta section */}
-            <div className="flex flex-col lg:flex-row justify-between py-4 lg:py-6 items-start lg:items-center pt-6 lg:pt-12 max-w-7xl px-4 sm:px-6 lg:px-0 mx-auto gap-4">
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 items-start sm:items-center w-full lg:w-auto">
+            <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto ">
+                <div className="flex space-x-2 items-center ">
                     <SearchPageH1Heading
                         heading={pageTitle}
                     />
                 </div>
 
                 {user && (
-                    <div className="flex justify-start lg:justify-end w-full lg:w-auto">
+                    <div className="flex justify-end mt-4 px-6">
                         <EditPageMetaSheetServer
                             pageMeta={pageMeta}
                             pathname={pathname}
@@ -140,22 +134,16 @@ async function PropertySearchPage({searchParams}: Props) {
                 )}
             </div>
             
-            {/* Mobile-optimized listings section - Server Side Rendered */}
-            <div className="px-4 sm:px-6 lg:px-0">
-                <ListingsServer
-                    offeringType={'commercial-rent'}
-                    searchParams={resolvedSearchParams}
-                    page={page}
-                    propertyType="commercial"
-                />
-            </div>
+            <ListingsServer
+                offeringType={'commercial-rent'}
+                searchParams={resolvedSearchParams}
+                page={page}
+                propertyType="commercial"
+            />
 
-            {/* Mobile-first content section */}
             {pageMeta?.content && (
-                <div className="max-w-7xl bg-white mx-auto px-4 sm:px-6 lg:px-4 py-8 lg:py-12 mt-4 mb-8 rounded-t-lg lg:rounded-lg shadow-sm min-h-[400px] flex flex-col justify-center">
-                    <div className="py-4 lg:py-8">
-                        <TipTapViewServer content={pageMeta.content}/>
-                    </div>
+                <div className="max-w-7xl bg-white mx-auto px-4 py-8">
+                    <TipTapViewServer content={pageMeta.content}/>
                 </div>
             )}
         </div>

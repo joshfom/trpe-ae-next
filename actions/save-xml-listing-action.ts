@@ -1009,6 +1009,9 @@ async function updateProperty(
         lastUpdate,
     } = options;
 
+    // Convert size from sqft to centi-sqft for database storage (multiply by 100)
+    // This allows for more precise fractional sizes while storing as integers
+    // Note: When displaying, divide by 100 to get back to sqft
     let size = newProperty.size ? (parseInt(newProperty.size) * 100) : null;
     let plot_size = newProperty.plot_size ? (parseInt(newProperty.plot_size) * 100) : null;
     let bedroom = isNaN(Number(newProperty.bedroom)) ? 0 : Number(newProperty.bedroom);
@@ -1070,8 +1073,11 @@ async function createProperty(
         lastUpdate,
     } = options;
 
-    let size = newProperty.size ? parseInt(newProperty.size) : null;
-    let plot_size = newProperty.plot_size ? parseInt(newProperty.plot_size) : null;
+    // Convert size from sqft to centi-sqft for database storage (multiply by 100)
+    // This allows for more precise fractional sizes while storing as integers
+    // Note: When displaying, divide by 100 to get back to sqft
+    let size = newProperty.size ? (parseInt(newProperty.size) * 100) : null;
+    let plot_size = newProperty.plot_size ? (parseInt(newProperty.plot_size) * 100) : null;
     let bedroom = isNaN(Number(newProperty.bedroom)) ? 0 : Number(newProperty.bedroom);
 
     // The price has already been validated with validateAndParsePrice in the main processing loop

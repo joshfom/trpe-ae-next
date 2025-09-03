@@ -505,7 +505,7 @@ export class StructuredDataGenerator {
     }
     
     if (property.size) {
-      parts.push(`${property.size} sqft`);
+      parts.push(`${Math.round(property.size / 100)} sqft`);
     }
     
     if (property.price) {

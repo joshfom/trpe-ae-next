@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from "next/link";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import { TipTapView } from "@/components/TiptapView";
 import Image from "next/image";
 import { db } from "@/db/drizzle";
@@ -73,10 +72,10 @@ async function ProjectDetailViewServer({ project }: ProjectDetailViewServerProps
                     Price upto {' '} <span className="font-semibold">{currencyConverter(parseInt(`${project.toPrice}`))}</span>
                 </div>
                 <div>
-                    Size from {' '} <span className="font-semibold">{unitConverter(parseInt(`${project.fromSize}`) / 100)}</span>
+                    Size from {' '} <span className="font-semibold">{(parseInt(`${project.fromSize}`) / 100).toLocaleString()} sq.ft</span>
                 </div>
                 <div>
-                    Size upto {' '} <span className="font-semibold">{unitConverter(parseInt(`${project.toSize}`) / 100)}</span>
+                    Size upto {' '} <span className="font-semibold">{(parseInt(`${project.toSize}`) / 100).toLocaleString()} sq.ft</span>
                 </div>
                 <div className="">
                     Permit Number {' '} <span className="font-semibold">{project.permitNumber}</span>

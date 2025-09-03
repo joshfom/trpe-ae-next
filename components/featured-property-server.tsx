@@ -1,7 +1,6 @@
 import React from 'react';
 import { getFeaturedPropertyAction } from "@/actions/properties/get-featured-property-action";
 import { ImageSwiper } from "@/features/properties/components/ImageSwiper";
-import unitConverter from "@/lib/unit-converter";
 import currencyConverter from "@/lib/currency-converter";
 import Link from "next/link";
 
@@ -35,7 +34,7 @@ export default async function FeaturedPropertyServer({ offeringType }: FeaturedP
 
         // Compute values
         const computedValues = {
-            size: unitConverter(property?.size ? Number(property.size) : null),
+            size: property?.size ? `${(Number(property.size) / 100).toLocaleString()} sq.ft` : null,
             price: currencyConverter(property?.price ? Number(property.price) : null),
             propertyUrl: `/properties/${property?.offeringType?.slug}/${property.slug}`
         };

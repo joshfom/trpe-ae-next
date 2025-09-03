@@ -1,7 +1,7 @@
 import React from 'react';
 import ListingsServer from "@/features/properties/components/ListingsServer";
 import {Metadata, ResolvingMetadata} from "next";
-import PropertyPageSearchFilterServer from '@/features/search/components/PropertyPageSearchFilterServer';
+import PropertyPageSearchFilter from '@/features/search/PropertyPageSearchFilter';
 import {db} from "@/db/drizzle";
 import {and, eq, sql} from "drizzle-orm";
 import {prepareExcerpt} from "@/lib/prepare-excerpt";
@@ -255,11 +255,7 @@ async function PropertySearchPage(props: Props) {
 
     return (
         <div className={'bg-slate-100'}>
-            <PropertyPageSearchFilterServer 
-                offeringType='commercial-rent' 
-                searchParams={new URLSearchParams(searchParams as Record<string, string>)}
-                pathname={pathname}
-            />
+            <PropertyPageSearchFilter offeringType='commercial-rent'/>
             
             <div className="flex justify-between py-6 items-center pt-12 max-w-7xl px-6 lg:px-0 mx-auto">
                 <div className="flex space-x-2 items-center">

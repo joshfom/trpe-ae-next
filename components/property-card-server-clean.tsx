@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { truncateText } from "@/lib/truncate-text";
 import currencyConverter from "@/lib/currency-converter";
-import unitConverter from "@/lib/unit-converter";
 import { prepareExcerpt } from "@/lib/prepare-excerpt";
 import { PropertyType } from "@/types/property";
 
@@ -35,7 +34,7 @@ function PropertyCardServer({ property, offeringType }: PropertyCardServerProps)
         title: truncateText(property.title, 35),
         description: prepareExcerpt(property.description, 90),
         price: currencyConverter(parseInt(property.price)),
-        size: unitConverter(size)
+        size: size ? `${size.toLocaleString()} sq.ft` : null
     };
 
     return (

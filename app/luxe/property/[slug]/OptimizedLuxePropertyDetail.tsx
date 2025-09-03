@@ -277,9 +277,9 @@ export default function OptimizedLuxePropertyDetail({ property }: OptimizedLuxeP
 
                 {/* Title */}
                 <div className="lg:py-6 pb-4 px-6">
-                    <h1 className="text-xl lg:text-3xl font-playfair font-light mb-4">
+                    <h2 className="text-xl lg:text-3xl font-playfair font-light mb-4">
                         {title}
-                    </h1>
+                    </h2>
                 </div>
 
   
