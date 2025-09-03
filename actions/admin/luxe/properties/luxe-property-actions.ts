@@ -595,8 +595,8 @@ async function validateImageOperations(
             errors.push('Property must have at least 6 images');
         }
 
-        if (finalCount > 20) {
-            errors.push('Property cannot have more than 20 images');
+        if (finalCount > 40) {
+            errors.push('Property cannot have more than 40 images');
         }
 
     } catch (error) {
